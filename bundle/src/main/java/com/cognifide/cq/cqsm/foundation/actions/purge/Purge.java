@@ -109,18 +109,6 @@ public class Purge implements Action {
 		return result;
 	}
 
-//	private Iterator<Resource> getPermissions(Context context)
-//			throws ActionExecutionException, RepositoryException {
-//		Iterator<Resource> iterator = Collections.emptyIterator();
-//		Resource resource = resourceResolver
-//				.getResource(PERMISSION_STORE_PATH + context.getCurrentAuthorizable().getID());
-//		if (resource != null) {
-//			iterator = resource.listChildren();
-//		}
-//
-//		return iterator;
-//	}
-
 	private String normalizePath(String path) {
 		return path + (path.endsWith("/") ? "" : "/");
 	}
@@ -129,5 +117,5 @@ public class Purge implements Action {
 	public boolean isGeneric() {
 		return false;
 	}
-	
+
 }
