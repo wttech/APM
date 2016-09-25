@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.cognifide.cq</groupId>
+        <artifactId>cqsm</artifactId>
+        <version>1.1.2-SNAPSHOT</version>
+    </parent>
+
+  <artifactId>documentation</artifactId>
+  <packaging>pom</packaging>
+
+  <name>AEM Permission Management :: Documentation</name>
+  <description>AEM Permission Management wiki documentation</description>
+
+
+  <profiles>
+    <profile>
+      <id>process-docs</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.github.eirslett</groupId>
+            <artifactId>frontend-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>node and npm install</id>
+                <goals>
+                  <goal>install-node-and-npm</goal>
+                </goals>
+                <configuration>
+                  <nodeVersion>v4.4.7</nodeVersion>
+                  <npmVersion>3.9.5</npmVersion>
+                </configuration>
+              </execution>
+              <execution>
+                <id>npm install</id>
+                <goals>
+                  <goal>npm</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>grunt build</id>
+                <goals>
+                  <goal>grunt</goal>
+                </goals>
+                <configuration>
+                  <arguments>build</arguments>
+                </configuration>
+              </execution>
+            </executions>
+            <configuration>
+              <workingDirectory>src/main</workingDirectory>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+</project>

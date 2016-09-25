@@ -1,0 +1,28 @@
+Upload script:
+
+you need:
+	login:password
+	file name
+	url
+	path to file
+
+curl -i -u [login:password] -H "file=[file name]" -X POST [url] -F file=@"[path]"
+
+for example:
+curl -i -u admin:admin -H "file=plik.cqsm" -X POST http://localhost:5502/bin/cqsm/cqsmFileUpload -F file=@"C:/Users/kamiljul/Desktop/plik.cqsm"
+
+
+
+********************************************
+
+run uploaded script
+
+you need:
+	login:password
+	uploaded file name
+	url
+	
+curl -i -u [login:password] -d "file=[ulpoaded file name]" -X POST [url]	
+	
+for example:	
+curl -i -u admin:admin -d "file=2013-05-24-admin-plik.cqsm" -X POST http://localhost:5502/bin/cqsm/run	

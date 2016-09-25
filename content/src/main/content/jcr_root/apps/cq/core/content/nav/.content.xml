@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="nt:unstructured">
+    <tools jcr:primaryType="nt:unstructured">
+        <cqsm
+            jcr:primaryType="nt:unstructured"
+            jcr:title="Security Management"
+            id="cqsm-root">
+            <import
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Import"
+                href="/etc/cqsm.html"
+                id="cqsm-import"/>
+            <history
+                jcr:primaryType="nt:unstructured"
+                jcr:title="History"
+                href="/etc/cqsm/history.html"
+                id="cqsm-history"/>
+        </cqsm>
+    </tools>
+</jcr:root>

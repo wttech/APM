@@ -1,0 +1,68 @@
+# Curl interface description
+
+### Uploading ###
+curl -i -u admin:admin -H "file=permissions.cqsm" -X POST http://localhost:4502/bin/cqsm/fileUpload -F file=@"misc/example scripts/permissions.cqsm"
+
+[
+  {
+    "verified": true,
+    "executionEnabled": true,
+    "path": "/etc/cqsm/cqsmImport/jcr:content/cqsmImport/permissions.cqsm",
+    "executionMode": "ON_DEMAND"
+  }
+]
+
+
+### Running ###
+curl -i -u admin:admin -d "file=permissions.cqsm&mode=DRY_RUN" -X POST http://localhost:4502/bin/cqsm/run
+
+[
+  ...
+
+  {
+    "authorizable": "test_group",
+    "actionName": "com.cognifide.cq.cqsm.foundation.actions.deny.Deny",
+    "parameters": "/content/geometrixx/it /* ALL",
+    "messages": [
+      {
+        "text": "Added deny privilege for test_group on /content/geometrixx/it",
+        "type": "info"
+      }
+    ],
+    "status": "SUCCESS"
+  }
+]
+
+### Validating ###
+curl -i -u admin:admin -d "content=CREATE USER foo" -X POST http://localhost:4502/bin/cqsm/validate
+
+{
+  "message": "Script passes validation",
+  "type": "success"
+}
+
+curl -i -u admin:admin -d "content=IMPORT nonexisting.cqsm" -X POST http://localhost:4502/bin/cqsm/validate
+
+{
+  "message": "Script does not pass validation",
+  "error": "Included script: \u0027nonexisting.cqsm\u0027 does not exists.",
+  "type": "error"
+}
+
+### Removing ###
+curl -i -u admin:admin -d "file=permissions.cqsm" -X POST http://localhost:4502/bin/cqsm/remove
+
+{
+  "message": "Script removed successfully: /etc/cqsm/cqsmImport/jcr:content/cqsmImport/permissions.cqsm",
+  "type": "success"
+}
+
+curl -i -u admin:admin -d "confirmation=true" -X POST http://localhost:4502/bin/cqsm/remove
+
+{
+  "message": "Scripts removed successfully, total: 1",
+  "paths": [
+    "/etc/cqsm/cqsmImport/jcr:content/cqsmImport/permissions.cqsm"
+  ],
+  "type": "success"
+}

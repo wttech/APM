@@ -1,0 +1,12 @@
+<cqsm='http://www.cognifide.com/cqsm/1.0'>
+
+[cqsm:File]
+ mixin
+  - cqsm:fileId (string)
+  - cqsm:verified (string)
+  - cqsm:dryRunSuccessful (string)
+  - cqsm:executionMode (string)
+  - cqsm:executionSchedule (date)
+  - cqsm:executionLast (date)
+  - cqsm:executionEnabled (boolean)
+  - cqsm:publishRun (boolean)

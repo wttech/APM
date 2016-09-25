@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0"
+          xmlns:jcr="http://www.jcp.org/jcr/1.0"
+          jcr:description="Page template presenting the CQSM execution history."
+          jcr:primaryType="cq:Template"
+          jcr:title="CQSM History template"
+          allowedParents="[/apps/cqsm/core/templates/main]"
+          ranking="{Long}100">
+    <jcr:content
+            cq:defaultView="html"
+            jcr:primaryType="cq:PageContent"
+            sling:resourceType="cqsm/core/renderers/cqsmHistoryRenderer">
+        <cqsmHistory
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="cqsm/core/components/cqsmHistory"/>
+    </jcr:content>
+</jcr:root>
