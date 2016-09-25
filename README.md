@@ -16,11 +16,8 @@ The AEM package is available [here](foo). For the full installation details, ple
 
 Please see our [user guide](https://github.com/Cognifide/apm/wiki/BasicUserGuide) to learn how to usie APM.
 
-## How to use
-quick guide, APM in 10 minutes?
-
 ## How to contribute
-link to contribute?
+See details in [Contributing section](https://github.com/Cognifide/APM/blob/master/CONTRIBUTING.md)
 
 ## License
 **APM** is licensed under [Apache License, Version 2.0 (the "License")](https://www.apache.org/licenses/LICENSE-2.0.txt)
