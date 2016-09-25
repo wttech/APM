@@ -6,7 +6,7 @@
     <!-- The Basics -->
     <groupId>com.cognifide.cq</groupId>
     <artifactId>cqsm</artifactId>
-    <version>1.1.2-SNAPSHOT</version>
+    <version>2.0.0</version>
     <packaging>pom</packaging>
     <dependencyManagement>
         <dependencies>
