@@ -12,7 +12,7 @@ APM (**A**EM **P**ermission **M**anagement) is an AEM based tool focused on stre
 ## How to start
 To start using **APM** an AEM 6.1 or 6.2 version running on top of Java 7 is required.
 
-The AEM package is available [here](foo). For the full installation details, please refer to the [Installation Guide](https://github.com/Cognifide/apm/wiki/Installing) in the documentation.
+The AEM package is available [here](https://github.com/Cognifide/APM/releases/download/2.0.0-beta/apm-2.0.0-beta.zip). For the full installation details, please refer to the [Installation Guide](https://github.com/Cognifide/apm/wiki/Installing) in the documentation.
 
 Please see our [user guide](https://github.com/Cognifide/apm/wiki/BasicUserGuide) to learn how to usie APM.
 
