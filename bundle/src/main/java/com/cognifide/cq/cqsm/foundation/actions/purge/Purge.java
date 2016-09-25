@@ -21,7 +21,6 @@ package com.cognifide.cq.cqsm.foundation.actions.purge;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.ActionResult;
-import com.cognifide.cq.cqsm.api.actions.interfaces.ResourceResolvable;
 import com.cognifide.cq.cqsm.api.exceptions.ActionExecutionException;
 import com.cognifide.cq.cqsm.api.executors.Context;
 import com.cognifide.cq.cqsm.api.logger.Status;
@@ -29,28 +28,23 @@ import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
 import com.cognifide.cq.cqsm.foundation.actions.removeall.RemoveAll;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.jackrabbit.api.JackrabbitSession;
 import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.apache.jackrabbit.oak.spi.security.authorization.permission.PermissionConstants;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
-import java.util.Iterator;
-
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 
-public class Purge implements Action, ResourceResolvable {
+public class Purge implements Action {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Purge.class);
 
 	private static final String PERMISSION_STORE_PATH = "/jcr:system/rep:permissionStore/crx.default/";
 
 	private final String path;
-
-	private ResourceResolver resourceResolver;
 
 	public Purge(final String path) {
 		this.path = path;
@@ -86,32 +80,33 @@ public class Purge implements Action, ResourceResolvable {
 
 	private void purge(final Context context, final ActionResult actionResult)
 			throws RepositoryException, ActionExecutionException {
-		Iterator<Resource> iterator = getPermissions(context);
+		NodeIterator iterator = getPermissions(context);
 		String normalizedPath = normalizePath(path);
-		while (iterator.hasNext()) {
-			String parentPath = iterator.next().getValueMap()
-					.get(PermissionConstants.REP_ACCESS_CONTROLLED_PATH, String.class);
-			String normalizedParentPath = normalizePath(parentPath);
-			if (StringUtils.startsWith(normalizedParentPath, normalizedPath)) {
-				RemoveAll removeAll = new RemoveAll(parentPath);
-				ActionResult removeAllResult = removeAll.execute(context);
-				if (Status.ERROR.equals(removeAllResult.getStatus())) {
-					actionResult.logError(removeAllResult);
+		while (iterator != null && iterator.hasNext()) {
+			Node node = iterator.nextNode();
+			if (node.hasProperty(PermissionConstants.REP_ACCESS_CONTROLLED_PATH)) {
+				String parentPath = node.getProperty(PermissionConstants.REP_ACCESS_CONTROLLED_PATH).getString();
+				String normalizedParentPath = normalizePath(parentPath);
+				if (StringUtils.startsWith(normalizedParentPath, normalizedPath)) {
+					RemoveAll removeAll = new RemoveAll(parentPath);
+					ActionResult removeAllResult = removeAll.execute(context);
+					if (Status.ERROR.equals(removeAllResult.getStatus())) {
+						actionResult.logError(removeAllResult);
+					}
 				}
 			}
 		}
 	}
 
-	private Iterator<Resource> getPermissions(Context context)
-			throws ActionExecutionException, RepositoryException {
-		Iterator<Resource> iterator = Collections.emptyIterator();
-		Resource resource = resourceResolver
-				.getResource(PERMISSION_STORE_PATH + context.getCurrentAuthorizable().getID());
-		if (resource != null) {
-			iterator = resource.listChildren();
+	private NodeIterator getPermissions(Context context) throws ActionExecutionException, RepositoryException {
+		JackrabbitSession session = context.getSession();
+		String path = PERMISSION_STORE_PATH + context.getCurrentAuthorizable().getID();
+		NodeIterator result = null;
+		if (session.nodeExists(path)) {
+			Node node = session.getNode(path);
+			result = node.getNodes();
 		}
-
-		return iterator;
+		return result;
 	}
 
 	private String normalizePath(String path) {
@@ -121,15 +116,6 @@ public class Purge implements Action, ResourceResolvable {
 	@Override
 	public boolean isGeneric() {
 		return false;
-	}
-
-	@Override
-	public void setResourceResolver(ResourceResolver resolver) {
-		this.resourceResolver = resolver;
-	}
-
-	@Override
-	public void setResourceResolverFactory(ResourceResolverFactory factory) {
 	}
 
 }
