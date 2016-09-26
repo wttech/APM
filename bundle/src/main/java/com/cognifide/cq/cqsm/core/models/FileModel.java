@@ -79,6 +79,7 @@ public class FileModel implements Comparable<FileModel> {
 		this.author = script.getAuthor();
 		this.path = script.getPath();
 		this.valid = script.isValid();
+
 		this.lastModified = script.getLastModified();
 		this.lastExecuted = script.getExecutionLast();
 		this.dryRunSuccessful = script.isDryRunSuccessful();

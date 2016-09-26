@@ -39,12 +39,12 @@
 	<table id="cqsm-files" class="tablesorter files-table">
 		<thead>
 		<tr>
-			<th width="20%">File</th>
+			<th width="30%">File</th>
 			<th width="10%">Author</th>
-			<th width="15%">Created at</th>
-			<th width="15%">Last run on author</th>
+			<th width="8%">Created at</th>
+			<th width="8%">Last run on author</th>
 			<th width="4%">Dry run</th>
-			<th width="36%">Actions</th>
+			<th width="40%">Actions</th>
 		</tr>
 		</thead>
 		<tbody>
