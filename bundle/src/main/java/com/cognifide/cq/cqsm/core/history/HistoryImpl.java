@@ -42,6 +42,7 @@ import com.day.cq.wcm.api.Page;
 import com.day.cq.wcm.api.PageManager;
 import com.day.cq.wcm.api.WCMException;
 
+import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Properties;
@@ -54,6 +55,7 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.api.resource.ResourceUtil;
 import org.apache.sling.api.resource.ValueMap;
+import org.apache.sling.jcr.resource.JcrResourceConstants;
 import org.osgi.framework.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,6 +85,8 @@ public class HistoryImpl implements History {
 	private static final String HISTORY_PATH = "/etc/cqsm/history";
 
 	private static final String HISTORY_COMPONENT = "cqsmHistory";
+
+	private static final String HISTORY_COMPONENT_RESOURCE_TYPE = "cqsm/core/components/cqsmHistory";
 
 	private static final String ENTRY_PATH = "/etc/cqsm/history/jcr:content/cqsmHistory";
 
@@ -183,6 +187,9 @@ public class HistoryImpl implements History {
 				try {
 					Page historyPage = getOrCreateLogDir(resolver);
 					Resource historyComponent = historyPage.getContentResource().getChild(HISTORY_COMPONENT);
+					if (historyComponent == null) {
+						historyComponent = createHistoryComponent(historyPage);
+					}
 					String uniqueName = ResourceUtil
 							.createUniqueChildName(historyComponent, source.getName());
 					Resource child = resolver
@@ -205,6 +212,14 @@ public class HistoryImpl implements History {
 				}
 
 				return result;
+			}
+
+			private Resource createHistoryComponent(Page historyPage) throws PersistenceException {
+				ResourceResolver resourceResolver = historyPage.getContentResource().getResourceResolver();
+				Map<String, Object> props = ImmutableMap.<String, Object> builder()//
+							.put(JcrResourceConstants.SLING_RESOURCE_TYPE_PROPERTY, HISTORY_COMPONENT_RESOURCE_TYPE) //
+							.build();
+				return resourceResolver.create(historyPage.getContentResource(), HISTORY_COMPONENT, props);
 			}
 		}, null);
 	}
