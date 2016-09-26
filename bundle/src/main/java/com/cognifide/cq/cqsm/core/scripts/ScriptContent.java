@@ -88,6 +88,11 @@ public class ScriptContent {
 	private Boolean executionEnabled;
 
 	@Inject
+	@Named(JcrConstants.JCR_LASTMODIFIED)
+	@Optional
+	private Date lastModified;
+
+	@Inject
 	@Named(JcrConstants.JCR_DATA)
 	@Optional
 	private String data; //FIXME lazy load would be better here
