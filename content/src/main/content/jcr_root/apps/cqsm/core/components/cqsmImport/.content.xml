@@ -2,6 +2,6 @@
 <jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
     cq:isContainer="{Boolean}false"
     jcr:primaryType="cq:Component"
-    jcr:title="CQ Security Management Import"
+    jcr:title="AEM Permission Management Import"
     allowedParents=""
     componentGroup="Security Management"/>
