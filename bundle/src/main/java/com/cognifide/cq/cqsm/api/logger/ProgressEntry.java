@@ -22,6 +22,7 @@ package com.cognifide.cq.cqsm.api.logger;
 import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
 import com.cognifide.cq.cqsm.api.actions.ActionResult;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.LinkedList;
@@ -46,6 +47,7 @@ public class ProgressEntry {
 	@Getter
 	private final Status status;
 
+	@Getter
 	private String parameters;
 
 	public ProgressEntry(ActionDescriptor actionDescriptor, ActionResult actionResult) {
@@ -65,7 +67,7 @@ public class ProgressEntry {
 
 	public String getLastMessageText() {
 		String message = null;
-		if (messages.size() > 0) {
+		if (CollectionUtils.isNotEmpty(messages)) {
 			message = messages.get(messages.size() - 1).getText();
 		}
 
