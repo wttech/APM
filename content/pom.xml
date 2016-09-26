@@ -50,8 +50,8 @@
                 <artifactId>content-package-maven-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
-                    <name>cqsm</name>
-                    <group>com.cognifide.cq</group>
+                    <name>apm</name>
+                    <group>com.cognifide.aem</group>
                     <filterSource>src/main/content/META-INF/vault/filter.xml</filterSource>
                     <embeddeds>
                         <embedded>
