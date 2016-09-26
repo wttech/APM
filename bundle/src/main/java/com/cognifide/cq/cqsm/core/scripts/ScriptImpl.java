@@ -129,7 +129,7 @@ public class ScriptImpl implements Script {
 
 	@Override
 	public Date getLastModified() {
-		return lastModified;
+		return scriptContent.getLastModified();
 	}
 
 	@Override
