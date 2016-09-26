@@ -38,6 +38,7 @@ import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.ReferenceCardinality;
 import org.apache.felix.scr.annotations.ReferencePolicy;
 import org.apache.felix.scr.annotations.Service;
+import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.framework.Constants;
@@ -47,6 +48,7 @@ import org.slf4j.LoggerFactory;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -135,8 +137,9 @@ public class ScriptStorageImpl implements ScriptStorage {
 				contentNode = fileNode.addNode(JcrConstants.JCR_CONTENT, JcrConstants.NT_RESOURCE);
 			}
 
-			contentNode.setProperty(JcrConstants.JCR_ENCODING, SCRIPT_ENCODING.name());
 			contentNode.setProperty(JcrConstants.JCR_DATA, binary);
+			contentNode.setProperty(JcrConstants.JCR_ENCODING, SCRIPT_ENCODING.name());
+			JcrUtils.setLastModified(contentNode, Calendar.getInstance());
 			session.save();
 			result = scriptFinder.find(fileNode.getPath(), resolver);
 		} catch (RepositoryException e) {
