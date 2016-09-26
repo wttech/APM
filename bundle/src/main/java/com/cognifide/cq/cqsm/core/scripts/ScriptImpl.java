@@ -49,11 +49,6 @@ public class ScriptImpl implements Script {
 	@Optional
 	private String author;
 
-	@Inject
-	@Named(JcrConstants.JCR_LASTMODIFIED)
-	@Optional
-	private Date lastModified;
-
 	protected final Checksum checksum;
 
 	public ScriptImpl(Resource resource) {
@@ -129,7 +124,7 @@ public class ScriptImpl implements Script {
 
 	@Override
 	public Date getLastModified() {
-		return lastModified;
+		return scriptContent.getLastModified();
 	}
 
 	@Override
