@@ -1,5 +1,6 @@
 ![Cognifide logo](http://cognifide.github.io/images/cognifide-logo.png)
 
+[![Build Status](https://travis-ci.org/Cognifide/APM.svg?branch=master)](https://travis-ci.org/Cognifide/APM)
 [![Apache License, Version 2.0, January 2004](https://img.shields.io/github/license/cognifide/apm.svg?label=License)](http://www.apache.org/licenses/)
 
 # AEM Permission Management
