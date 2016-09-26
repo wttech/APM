@@ -25,9 +25,7 @@ import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.apache.jackrabbit.api.security.user.Group;
 
 import java.security.Principal;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.Set;
 
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
@@ -133,18 +131,8 @@ public class MockGroup implements Group {
 	}
 
 	@Override
-	public Set<String> addMembers(String... strings) throws RepositoryException {
-		return Collections.emptySet();
-	}
-
-	@Override
 	public boolean removeMember(Authorizable authorizable) throws RepositoryException {
 		return false;
-	}
-
-	@Override
-	public Set<String> removeMembers(String... strings) throws RepositoryException {
-		return Collections.emptySet();
 	}
 
 }
