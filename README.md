@@ -23,7 +23,7 @@ Permission Management Tool is available on [http://localhost:4502/etc/cqsm.html]
 ### How to create script
 1. Open console<br />
 ![Console](documentation/src/main/wiki/assets/screens/consoleAutocompletion.png)
-2. Write script using [permission actions](https://github.com/Cognifide/APM/wiki/PermissionActions)
+2. Write script using [permission actions](https://github.com/Cognifide/APM/wiki/Actions)
 3. Check if your script passes validation
 4. Save
 5. Run script
