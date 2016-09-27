@@ -43,4 +43,3 @@ We can:
 * tailor the product to your needs,
 * provide a training for your engineers,
 * support your development teams.
-
