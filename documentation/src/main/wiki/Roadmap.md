@@ -10,5 +10,5 @@ Although the tool has been used for years with lot of success it's not a finaliz
 | ActionMapper injectors | The usage of `Context` object as a global accessible object makes the design impact. Having the possibility of simple injection would help it. |
 | API, Core, Foundation split | There are still some violations in terms of dependencies between packages. This shows some misdesign decisions. |
 | User guides | More direct an visually rich user tutorials to guide through specific APM features. |
-| Modules extraction | Currently, automatic executor and run on publish are quite seprated functionality that can and may be extracted to at least separated maven module. |
+| Modules extraction | Currently, automatic executor and run on publish are quite separated functionality that can and may be extracted to at least separated maven module. |
 | AEM platform compatibility | The approach to make the tool usable on wider set of AEM versions. |

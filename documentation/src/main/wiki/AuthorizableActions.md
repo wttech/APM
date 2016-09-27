@@ -67,7 +67,7 @@ FOR USER john-doe
 ```
 
 #### How to setup user password?
-Creating users would not make any sense if those could not login. For such purpose the `SET PASSWORD` action should be used. Bear in mind keeping actual passwords in scripts is a security vulnurability and should be avoided. This operation should be used sparely and user should be forced to login and change the password as quickly as possible.
+Creating users would not make any sense if those could not login. For such purpose the `SET PASSWORD` action should be used. Bear in mind keeping actual passwords in scripts is a security vulnerability and should be avoided. This operation should be used sparely and user should be forced to login and change the password as quickly as possible.
 
 ```
 FOR USER john-doe
