@@ -31,6 +31,7 @@ See [Roadmap](https://github.com/Cognifide/apm/wiki/Roadmap) for details.
 
 ## Documentation
 * [APM Wiki](https://github.com/Cognifide/apm/wiki)
+* [AMP users mailing group](http://aem-permission-management-forum.2359962.n4.nabble.com/)
 
 ## Commercial Support
 
@@ -42,3 +43,4 @@ We can:
 * tailor the product to your needs,
 * provide a training for your engineers,
 * support your development teams.
+
