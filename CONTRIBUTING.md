@@ -50,3 +50,6 @@ Below is short list of things that will help us maintaining APM quality and acce
 - update [documentation](https://github.com/Cognifide/apm/tree/master/documentation) and include changes in the same pull request which modifies the code,
 - when committing an improvement, try to show it in local demo example,
 - when logging use proper levels: `INFO` and `WARNING` should log only very important messages.
+
+## Mailing List
+To get notification about build changes add your email to .travis.yml in email section. More configuration for notification available in [documentation](https://docs.travis-ci.com/user/notifications#Email-notifications)
