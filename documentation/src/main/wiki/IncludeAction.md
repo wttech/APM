@@ -1,5 +1,5 @@
 ## Using includes
-For the better script maintenance, splitting scripts into smaller, functional blocks is preffered. The APM tool provides ways to control that.
+For the better script maintenance, splitting scripts into smaller, functional blocks is preferred. The APM tool provides ways to control that.
 
 ### How to define and use placeholders?
 To define a reusable string variable a `DEFINE` action needs to be used.
