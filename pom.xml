@@ -16,7 +16,7 @@
                 <artifactId>uber-jar</artifactId>
                 <version>6.1.0</version>
                 <scope>provided</scope>
-                <classifier>apis</classifier>
+                <classifier>obfuscated-apis</classifier>
             </dependency>
             <dependency>
                 <groupId>org.apache.sling</groupId>
