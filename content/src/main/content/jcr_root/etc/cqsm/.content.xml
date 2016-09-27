@@ -6,7 +6,7 @@
             cq:defaultView="html"
             cq:template="/apps/cqsm/core/templates/main"
             jcr:primaryType="cq:PageContent"
-            jcr:title="CQ Security Management"
+            jcr:title="AEM Permission Management"
             sling:resourceType="cqsm/core/renderers/cqsmRenderer">
         <cqsmImport
                 jcr:primaryType="nt:unstructured"

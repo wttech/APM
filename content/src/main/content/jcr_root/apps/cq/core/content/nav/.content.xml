@@ -4,7 +4,7 @@
     <tools jcr:primaryType="nt:unstructured">
         <cqsm
             jcr:primaryType="nt:unstructured"
-            jcr:title="Security Management"
+            jcr:title="Permission Management"
             id="cqsm-root">
             <import
                 jcr:primaryType="nt:unstructured"

@@ -89,6 +89,6 @@ ALLOW /content/geometrixx STRICT [ALL]
 
 Although it may look tempting to use this feature, the **best practice is to prefer the usual permission application over glob restriction**. Glob restriction make the permission scheme harder to read giving also some non-minimal performance overhead while calculating the effective permissions.
 
-On the other hand, glob patterns are inevitable whenever we'd like to apply a permisson scheme on not-yet-finalized content. Regexp matching makes it possible to treat the future content additions with no permission management effort.
+On the other hand, glob patterns are inevitable whenever we'd like to apply a permission scheme on not-yet-finalized content. Regexp matching makes it possible to treat the future content additions with no permission management effort.
 
 [Read more in the OAK documentation](https://jackrabbit.apache.org/oak/docs/security/authorization/restriction.html)

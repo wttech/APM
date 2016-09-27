@@ -46,7 +46,12 @@ After your pull request is merged, wiki pages will be updated. **Please do not u
 ## Coding Conventions
 Below is short list of things that will help us maintaining APM quality and accept pull requests:
 - Follow [Google Style Guide](https://github.com/google/styleguide) code formatting,
+- use 110(columns) right margin,
 - write javadoc, especially for interfaces and abstract methods,
 - update [documentation](https://github.com/Cognifide/apm/tree/master/documentation) and include changes in the same pull request which modifies the code,
 - when committing an improvement, try to show it in local demo example,
 - when logging use proper levels: `INFO` and `WARNING` should log only very important messages.
+- to generate getters and setters use [Lombok](https://projectlombok.org/). Plugins available both on Eclipse & Intellij IDE 
+
+## Mailing List
+To get notification about build changes add your email to .travis.yml in email section. More configuration for notification available in [documentation](https://docs.travis-ci.com/user/notifications#Email-notifications)

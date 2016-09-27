@@ -15,7 +15,18 @@ To start using **APM** an AEM 6.1 or 6.2 version running on top of Java 7 is req
 
 The AEM package is available [here](https://github.com/Cognifide/APM/releases/download/2.0.0-beta/apm-2.0.0-beta.zip). For the full installation details, please refer to the [Installation Guide](https://github.com/Cognifide/apm/wiki/Installing) in the documentation.
 
-Please see our [user guide](https://github.com/Cognifide/apm/wiki/BasicUserGuide) to learn how to usie APM.
+Please see our [user guide](https://github.com/Cognifide/apm/wiki/BasicUserGuide) to learn how to use APM.
+
+## How to use
+Permission Management Tool is available on [http://localhost:4502/etc/cqsm.html](http://localhost:4502/etc/cqsm.html) page. 
+
+### How to create script
+1. Open console<br />
+![Console](documentation/src/main/wiki/assets/screens/consoleAutocompletion.png)
+2. Write script using [permission actions](https://github.com/Cognifide/APM/wiki/Actions)
+3. Check if your script passes validation
+4. Save
+5. Run script
 
 ## How to contribute
 See details in [Contributing section](https://github.com/Cognifide/APM/blob/master/CONTRIBUTING.md)
@@ -28,6 +39,7 @@ See [Roadmap](https://github.com/Cognifide/apm/wiki/Roadmap) for details.
 
 ## Documentation
 * [APM Wiki](https://github.com/Cognifide/apm/wiki)
+* [AMP users mailing group](http://aem-permission-management-forum.2359962.n4.nabble.com/)
 
 ## Commercial Support
 

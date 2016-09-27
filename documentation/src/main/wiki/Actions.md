@@ -10,7 +10,7 @@ Typically, the structure of action is as following
 ACTION-NAME parameters-list modifiers-list
 ```
 
-where lists are seperated by whitespace. Depending on the action implementation a parameter can be multi-value type. In such case the following `[]` syntax should be used:
+where lists are separated by whitespace. Depending on the action implementation a parameter can be multi-value type. In such case the following `[]` syntax should be used:
 
 ```
 ALLOW /content [READ, CREATE, MODIFY]
