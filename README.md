@@ -17,6 +17,9 @@ The AEM package is available [here](https://github.com/Cognifide/APM/releases/do
 
 Please see our [user guide](https://github.com/Cognifide/apm/wiki/BasicUserGuide) to learn how to use APM.
 
+## How to use
+Quick start available on [Usage guide](https://github.com/Cognifide/apm/wiki/Usage)
+
 ## How to contribute
 See details in [Contributing section](https://github.com/Cognifide/APM/blob/master/CONTRIBUTING.md)
 
