@@ -1,1 +1,23 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg width="100%" height="100%" viewBox="0 0 57 57" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:1.41421;"><g><rect x="0" y="0" width="56.25" height="56.25" style="fill:#ff6623;"/><path d="M56.25,28.125l-28.125,-28.125l-28.125,28.125l28.125,28.125l28.125,-28.125Z" style="fill:#ffb291;"/><clipPath id="_clip1"><rect x="27.793" y="30.116" width="10.003" height="13.519"/></clipPath><g clip-path="url(#_clip1)"><path d="M30.423,34.068c0,-1.308 1.064,-2.371 2.372,-2.371c1.307,0 2.371,1.063 2.371,2.371l0,1.898l-4.743,0l0,-1.898Zm6.706,1.898l-0.382,0l0,-1.929l-0.002,0c-0.017,-2.165 -1.781,-3.921 -3.95,-3.921c-2.169,0 -3.934,1.756 -3.951,3.921l-0.002,0l0,1.929l-0.382,0c-0.368,0 -0.667,0.299 -0.667,0.667l0,6.335c0,0.369 0.299,0.667 0.667,0.667l8.669,0c0.369,0 0.667,-0.298 0.667,-0.667l0,-6.335c0,-0.368 -0.298,-0.667 -0.667,-0.667" style="fill:#fff;fill-rule:nonzero;"/></g><path d="M25.338,36.449l-10.109,0c-0.629,0 -1.138,-0.509 -1.138,-1.138c0,-1.301 0,-3.254 0,-3.254c0,-1.337 2.669,-2.605 5.788,-3.942c3.183,-1.337 4.201,-2.419 4.201,-4.833c0,-1.406 -1.018,-0.96 -1.4,-3.565c-0.191,-1.082 -1.019,0 -1.21,-2.482c0,-0.955 0.446,-1.21 0.446,-1.21c0,0 -0.191,-1.459 -0.318,-2.604c-0.128,-1.401 0.7,-4.966 5.087,-4.966c4.392,0 5.22,3.565 5.093,4.966c-0.128,1.145 -0.319,2.604 -0.319,2.604c0,0 0.446,0.255 0.446,1.21c-0.196,2.482 -1.019,1.4 -1.21,2.482c-0.382,2.605 -1.4,2.159 -1.4,3.565c0,1.936 0.655,3.015 2.552,4.056c-0.305,0.029 -0.583,0.155 -0.871,0.363c-3.303,1.208 -5.663,4.38 -5.663,8.098c0,0.219 0.009,0.435 0.025,0.65Z" style="fill:#fff;"/></g></svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+    * ========================LICENSE_START=================================
+    * AEM Permission Management
+    * %%
+    * Copyright (C) 2013 Cognifide Limited
+    * %%
+    * Licensed under the Apache License, Version 2.0 (the "License");
+    * you may not use this file except in compliance with the License.
+    * You may obtain a copy of the License at
+    *
+    *      http://www.apache.org/licenses/LICENSE-2.0
+    *
+    * Unless required by applicable law or agreed to in writing, software
+    * distributed under the License is distributed on an "AS IS" BASIS,
+    * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    * See the License for the specific language governing permissions and
+    * limitations under the License.
+    * =========================LICENSE_END==================================
+    */
+    -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 57 57" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:1.41421;"><g><rect x="0" y="0" width="56.25" height="56.25" style="fill:#ff6623;"/><path d="M56.25,28.125l-28.125,-28.125l-28.125,28.125l28.125,28.125l28.125,-28.125Z" style="fill:#ffb291;"/><clipPath id="_clip1"><rect x="27.793" y="30.116" width="10.003" height="13.519"/></clipPath><g clip-path="url(#_clip1)"><path d="M30.423,34.068c0,-1.308 1.064,-2.371 2.372,-2.371c1.307,0 2.371,1.063 2.371,2.371l0,1.898l-4.743,0l0,-1.898Zm6.706,1.898l-0.382,0l0,-1.929l-0.002,0c-0.017,-2.165 -1.781,-3.921 -3.95,-3.921c-2.169,0 -3.934,1.756 -3.951,3.921l-0.002,0l0,1.929l-0.382,0c-0.368,0 -0.667,0.299 -0.667,0.667l0,6.335c0,0.369 0.299,0.667 0.667,0.667l8.669,0c0.369,0 0.667,-0.298 0.667,-0.667l0,-6.335c0,-0.368 -0.298,-0.667 -0.667,-0.667" style="fill:#fff;fill-rule:nonzero;"/></g><path d="M25.338,36.449l-10.109,0c-0.629,0 -1.138,-0.509 -1.138,-1.138c0,-1.301 0,-3.254 0,-3.254c0,-1.337 2.669,-2.605 5.788,-3.942c3.183,-1.337 4.201,-2.419 4.201,-4.833c0,-1.406 -1.018,-0.96 -1.4,-3.565c-0.191,-1.082 -1.019,0 -1.21,-2.482c0,-0.955 0.446,-1.21 0.446,-1.21c0,0 -0.191,-1.459 -0.318,-2.604c-0.128,-1.401 0.7,-4.966 5.087,-4.966c4.392,0 5.22,3.565 5.093,4.966c-0.128,1.145 -0.319,2.604 -0.319,2.604c0,0 0.446,0.255 0.446,1.21c-0.196,2.482 -1.019,1.4 -1.21,2.482c-0.382,2.605 -1.4,2.159 -1.4,3.565c0,1.936 0.655,3.015 2.552,4.056c-0.305,0.029 -0.583,0.155 -0.871,0.363c-3.303,1.208 -5.663,4.38 -5.663,8.098c0,0.219 0.009,0.435 0.025,0.65Z" style="fill:#fff;"/></g></svg>
