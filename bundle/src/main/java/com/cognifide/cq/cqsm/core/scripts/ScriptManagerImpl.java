@@ -26,7 +26,6 @@ import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
 import com.cognifide.cq.cqsm.api.actions.ActionFactory;
 import com.cognifide.cq.cqsm.api.actions.ActionResult;
 import com.cognifide.cq.cqsm.api.actions.interfaces.DefinitionProvider;
-import com.cognifide.cq.cqsm.api.actions.interfaces.ResourceResolvable;
 import com.cognifide.cq.cqsm.api.actions.interfaces.ScriptProvider;
 import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
 import com.cognifide.cq.cqsm.api.exceptions.ExecutionException;
@@ -267,11 +266,6 @@ public class ScriptManagerImpl implements ScriptManager {
 									String.format("Included script: '%s' does not exists.", path));
 						}
 					}
-				} else if (action instanceof ResourceResolvable) {
-					final ResourceResolvable resolvable = (ResourceResolvable) action;
-
-					resolvable.setResourceResolverFactory(resolverFactory);
-					resolvable.setResourceResolver(resolver);
 				}
 			}
 		}
