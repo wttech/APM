@@ -102,13 +102,7 @@ public class RemoteScriptExecutionActionReceiver implements ActionReceiver {
 	private Progress getProgress(ValueMap valueMap, String userID) {
 		List<ProgressEntry> progressEntries = ProgressHelper
 				.fromJson(valueMap.get(ModifiableEntryBuilder.PROGRESS_LOG_PROPERTY, String.class));
-		ProgressImpl progress = new ProgressImpl(userID);
-		for (ProgressEntry progressEntry : progressEntries) {
-			for (Message message : progressEntry.getMessages()) {
-				progress.addEntry(message, progressEntry.getStatus());
-			}
-		}
-		return progress;
+		return new ProgressImpl(userID, progressEntries);
 	}
 
 	private InstanceDetails getInstanceDetails(ValueMap valueMap) {

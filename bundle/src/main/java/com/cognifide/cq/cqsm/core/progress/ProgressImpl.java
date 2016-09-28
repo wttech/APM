@@ -42,9 +42,13 @@ public class ProgressImpl implements Progress {
 	private boolean success;
 
 	public ProgressImpl(String executor) {
+		this(executor, new LinkedList<ProgressEntry>());
+	}
+
+	public ProgressImpl(String executor, List<ProgressEntry> entries) {
 		this.executor = executor;
+		this.entries = entries;
 		success = true;
-		entries = new LinkedList<>();
 	}
 
 	@Override
