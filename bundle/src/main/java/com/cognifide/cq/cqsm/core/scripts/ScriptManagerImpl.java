@@ -57,8 +57,6 @@ import org.apache.felix.scr.annotations.Service;
 import org.apache.jackrabbit.api.JackrabbitSession;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.apache.sling.settings.SlingSettingsService;
 import org.osgi.framework.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,13 +89,7 @@ public class ScriptManagerImpl implements ScriptManager {
 	private ActionFactory actionFactory;
 
 	@Reference
-	private SlingSettingsService settingsService;
-
-	@Reference
 	private ScriptStorage scriptStorage;
-
-	@Reference
-	private ResourceResolverFactory resolverFactory;
 
 	@Reference
 	private ScriptFinder scriptFinder;
