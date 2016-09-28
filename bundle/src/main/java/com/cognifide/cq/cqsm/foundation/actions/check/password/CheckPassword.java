@@ -86,16 +86,14 @@ public class CheckPassword implements Action {
 	}
 
 	private boolean checkLogin(Repository repository) throws RepositoryException {
-		Credentials credentials = new SimpleCredentials(userId, userPassword.toCharArray());
-
 		boolean loginSuccessful = true;
+		Credentials credentials = new SimpleCredentials(userId, userPassword.toCharArray());
 		try {
 			repository.login(credentials).logout();
 		} catch (LoginException e) {
 			loginSuccessful = false;
 		}
 		return loginSuccessful;
-
 	}
 
 	@Override
