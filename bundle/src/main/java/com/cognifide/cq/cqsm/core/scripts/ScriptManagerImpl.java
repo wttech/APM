@@ -246,22 +246,28 @@ public class ScriptManagerImpl implements ScriptManager {
 				if (action instanceof DefinitionProvider) {
 					definitions.putAll(((DefinitionProvider) action).provideDefinitions());
 				} else if (action instanceof ScriptProvider) {
-					for (String path : ((ScriptProvider) action).provideScripts()) {
-						Script include = scriptFinder.find(path, resolver);
-
-						if (include != null) {
-							includes.add(include);
-							descriptors.addAll(parseIncludeDescriptors(include, definitions, includes,
-									resolver));
-						} else {
-							throw new ActionCreationException(
-									String.format("Included script: '%s' does not exists.", path));
-						}
-					}
+					getIncludes(definitions, includes, resolver, descriptors, (ScriptProvider) action);
 				}
 			}
 		}
 		return descriptors;
+	}
+
+	private void getIncludes(Map<String, String> definitions, List<Script> includes,
+			ResourceResolver resolver, List<ActionDescriptor> descriptors, ScriptProvider action)
+			throws ExecutionException {
+		for (String path : action.provideScripts()) {
+			Script include = scriptFinder.find(path, resolver);
+
+			if (include != null) {
+				includes.add(include);
+				descriptors.addAll(parseIncludeDescriptors(include, definitions, includes,
+						resolver));
+			} else {
+				throw new ActionCreationException(
+						String.format("Included script: '%s' does not exists.", path));
+			}
+		}
 	}
 
 	private ActionExecutor createExecutor(Mode mode, ResourceResolver resolver) throws RepositoryException {
