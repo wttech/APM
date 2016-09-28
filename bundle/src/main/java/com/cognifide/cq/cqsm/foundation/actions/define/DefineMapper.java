@@ -25,17 +25,31 @@ import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
 
 public final class DefineMapper extends BasicActionMapper {
 
+	public static final String REFERENCE = "Create definitions holding values used multiple times across CQSM script.\n"
+			+ "To access definition value ${definition_name} syntax can be used."
+			+ " Value must be specified between single quotes e.g 'my value'.";
+
 	@Mapping(
 			value = {
 					"DEFINE" + SPACE + STRING + SPACE + QUOTED,
 					"DEFINE" + SPACE + STRING + SPACE + STRING
 			},
 			args = {"name", "value"},
-			reference = "Create definitions holding values used multiple times across CQSM script.\n"
-					+ "To access definition value ${definition_name} syntax can be used."
-					+ " Value must be specified between single quotes e.g 'my value'."
+			reference = REFERENCE
 	)
 	public Action mapAction(final String name, final String value) {
+		return new Define(name, value);
+	}
+
+	@Mapping(
+			value = {
+					"DEFINE" + SPACE + STRING + SPACE + QUOTED + SPACE + ("IF" + DASH + "NOT" + DASH + "EXISTS"),
+					"DEFINE" + SPACE + STRING + SPACE + STRING + SPACE + ("IF" + DASH + "NOT" + DASH + "EXISTS")
+			},
+			args = {"userId", "path"},
+			reference = REFERENCE
+	)
+	public Action mapActionWithIfNotExists(final String name, final String value) {
 		return new Define(name, value);
 	}
 }
