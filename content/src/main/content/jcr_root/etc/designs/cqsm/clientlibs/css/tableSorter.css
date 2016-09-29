@@ -19,63 +19,63 @@
  */
 /* tables */
 table.tablesorter {
-	font-family: arial;
-	background-color: #CDCDCD;
-	margin: 10px 0pt 15px;
-	font-size: 8pt;
-	width: 100%;
-	text-align: left;
+    font-family: arial;
+    background-color: #CDCDCD;
+    margin: 10px 0pt 15px;
+    font-size: 8pt;
+    width: 100%;
+    text-align: left;
 }
 
 table.tablesorter thead tr th,table.tablesorter tfoot tr th {
-	color: #D5DDE5;;
-	background: #1b1e24;
-	margin-bottom: 4px;
-	border-bottom: 4px solid #9ea7af;
-	font-size: 15px;
-	font-weight: 500;
-	padding: 4px;
-	text-align: left;
-	text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
-	vertical-align: middle;
+    color: #D5DDE5;;
+    background: #1b1e24;
+    margin-bottom: 4px;
+    border-bottom: 4px solid #9ea7af;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 4px;
+    text-align: left;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+    vertical-align: middle;
 }
 
 table.tablesorter thead tr .header {
-	background-image: url(bg.gif);
-	background-repeat: no-repeat;
-	background-position: center right;
-	cursor: pointer;
+    background-image: url(bg.gif);
+    background-repeat: no-repeat;
+    background-position: center right;
+    cursor: pointer;
 }
 
 table.tablesorter tbody td {
-	color: #3D3D3D;
-	padding: 4px;
-	background-color: #FFF;
-	vertical-align: middle;
-	border: 1px solid #9ea7af;
+    color: #3D3D3D;
+    padding: 4px;
+    background-color: #FFF;
+    vertical-align: middle;
+    border: 1px solid #9ea7af;
 }
 
 table.tablesorter tbody tr.unused td {
-	color: #FF0000;
+    color: #FF0000;
 }
 
 table.tablesorter tbody tr.odd td {
-	background-color: #F0F0F6;
+    background-color: #F0F0F6;
 }
 
 table.tablesorter thead tr .headerSortUp {
-	background-image: url(asc.gif);
+    background-image: url(asc.gif);
 }
 
 table.tablesorter thead tr .headerSortDown {
-	background-image: url(desc.gif);
+    background-image: url(desc.gif);
 }
 
 table.tablesorter thead tr .headerSortDown,table.tablesorter thead tr .headerSortUp
-	{
-	background-color: #8dbdd8;
+    {
+    background-color: #8dbdd8;
 }
 
 table.tablesorter tbody tr.emptyRow {
-	display: none;
+    display: none;
 }

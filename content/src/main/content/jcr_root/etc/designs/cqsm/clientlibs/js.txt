@@ -6,7 +6,6 @@ ace/token_tooltip.js
 ace/snippets/cqsm.js
 ace/ext-language_tools.js
 json2.js
-cqsmProgressHelper.js
 cqsmHelper.js
 cqsmLoader.js
 cqsmView.js
