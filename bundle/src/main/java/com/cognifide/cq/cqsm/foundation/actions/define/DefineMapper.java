@@ -38,7 +38,7 @@ public final class DefineMapper extends BasicActionMapper {
 			reference = REFERENCE
 	)
 	public Action mapAction(final String name, final String value) {
-		return new Define(name, value);
+		return new Define(name, value, false);
 	}
 
 	@Mapping(
@@ -50,6 +50,6 @@ public final class DefineMapper extends BasicActionMapper {
 			reference = REFERENCE
 	)
 	public Action mapActionWithIfNotExists(final String name, final String value) {
-		return new Define(name, value);
+		return new Define(name, value, true);
 	}
 }

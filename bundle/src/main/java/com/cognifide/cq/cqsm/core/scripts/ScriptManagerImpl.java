@@ -244,7 +244,7 @@ public class ScriptManagerImpl implements ScriptManager {
 				descriptors.add(descriptor);
 
 				if (action instanceof DefinitionProvider) {
-					definitions.putAll(((DefinitionProvider) action).provideDefinitions());
+					definitions.putAll(((DefinitionProvider) action).provideDefinitions(definitions));
 				} else if (action instanceof ScriptProvider) {
 					getIncludes(definitions, includes, resolver, descriptors, (ScriptProvider) action);
 				}
