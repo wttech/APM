@@ -46,7 +46,7 @@ public final class DefineMapper extends BasicActionMapper {
 					"DEFINE" + SPACE + STRING + SPACE + QUOTED + SPACE + ("IF" + DASH + "NOT" + DASH + "EXISTS"),
 					"DEFINE" + SPACE + STRING + SPACE + STRING + SPACE + ("IF" + DASH + "NOT" + DASH + "EXISTS")
 			},
-			args = {"userId", "path"},
+			args = {"name", "value"},
 			reference = REFERENCE
 	)
 	public Action mapActionWithIfNotExists(final String name, final String value) {
