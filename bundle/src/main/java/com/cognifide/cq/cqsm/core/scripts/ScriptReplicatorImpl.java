@@ -63,9 +63,9 @@ public class ScriptReplicatorImpl implements ScriptReplicator {
 
 	private static final String ROOT_PATH = "/etc/cqsm/import/jcr:content";
 
-	public static final String SCRIPT_PATH = ROOT_PATH + "/cqsmImport";
+	private static final String SCRIPT_PATH = ROOT_PATH + "/cqsmImport";
 
-	private static final String INCLUDE_PATH = ROOT_PATH + "/cqsmInclude";
+	private static final String REPLICATION_PATH = ROOT_PATH + "/cqsmReplication";
 
 	@Reference
 	private Replicator replicator;
@@ -86,11 +86,11 @@ public class ScriptReplicatorImpl implements ScriptReplicator {
 
 		final boolean autocommit = true;
 		final Resource includeDir = ResourceUtil
-				.getOrCreateResource(resolver, INCLUDE_PATH, JcrConstants.NT_UNSTRUCTURED,
+				.getOrCreateResource(resolver, REPLICATION_PATH, JcrConstants.NT_UNSTRUCTURED,
 						JcrConstants.NT_UNSTRUCTURED, autocommit);
 
 		for (final Script include : includes) {
-			final String path = (script.equals(include) ? SCRIPT_PATH : INCLUDE_PATH) + "/" + FilenameUtils
+			final String path = (script.equals(include) ? SCRIPT_PATH : REPLICATION_PATH) + "/" + FilenameUtils
 					.getName(script.getPath());
 
 			LOG.warn("Copying {} to {}", script.getPath(), includeDir.getPath());
