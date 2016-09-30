@@ -4,6 +4,14 @@ Permission management and maintenance, having the well defined suie of scripts c
 The automation is particulary useful for the [[check actions|CheckActions]] based scripts. This way an auto health-check for permission scheme can inform about a critical misconfiguration.
 
 ### Operations
+
+- [upload script](#how-to-upload-script)
+- [run script](#how-to-run-script)
+- [run script asynchronously](#how-to-run-script-asynchronously)
+- [validate script](#how-to-validate-script)
+- [remove script](#how-to-remove-script)
+- [history](#how-to-get-history-of-executed-scripts)
+
 #### How to upload script?
 **Request**
 ```bash
@@ -118,7 +126,7 @@ curl -i -u admin:admin -d "id=2016/4/22/9/42/0ea10a55-2dbb-4c1b-979c-98b9f1f7a73
 ```
 
 
-> Job details are stored in memory only for 10 minutes after successful run. After that the json object with type: "unknow" will be returned.
+> Job details are stored in memory only for 10 minutes after successful run. After that the json object with type: "unknown" will be returned.
 
 #### How to validate script?
 **Request**
@@ -172,4 +180,45 @@ curl -i -u admin:admin -d "confirmation=true" -X POST http://localhost:4502/bin/
   ],
   "type": "success"
 }
+```
+
+#### How to get history of executed scripts?
+**Request**
+```bash
+curl -i -u admin:admin -X GET http://localhost:4502/bin/cqsm/history?filter=publish
+```
+**Response**
+```bash
+[{
+   "fileName": "filename.cqsm",
+   "executionTime": "Sep 29, 2016 12:35:23 PM",
+   "author": "admin",
+   "uploadTime": "Sep 29, 2016 11:29:17 AM",
+   "instanceType": "publish",
+   "instanceHostname": "PUIG",
+   "mode": "AUTOMATIC_RUN",
+   "executor": "automatic run",
+   "executionSummary": [
+     {
+       "messages": [
+         {
+           "text": "Definition saved",
+           "type": "info"
+         }
+       ],
+       "status": "SUCCESS"
+     },
+     {
+       "messages": [
+         {
+           "text": "Authorizable with id: author already exists, and is a User",
+           "type": "error"
+         }
+       ],
+       "status": "ERROR"
+     }
+   ],
+   "path": "/etc/cqsm/history/jcr:content/cqsmHistory/filename.cqsm1",
+   "filePath": "/etc/cqsm/history/jcr:content/cqsmHistory/filename.cqsm1/script"
+}]
 ```
