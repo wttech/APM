@@ -24,7 +24,7 @@ import com.cognifide.cq.cqsm.api.actions.ActionResult;
 import com.cognifide.cq.cqsm.api.actions.interfaces.DefinitionProvider;
 import com.cognifide.cq.cqsm.api.executors.Context;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 
 public class Define implements Action, DefinitionProvider {
@@ -33,9 +33,12 @@ public class Define implements Action, DefinitionProvider {
 
 	private final String value;
 
-	public Define(String name, String value) {
+	private final boolean ifNotExists;
+
+	public Define(String name, String value, boolean ifNotExists) {
 		this.name = name;
 		this.value = value;
+		this.ifNotExists = ifNotExists;
 	}
 
 	@Override
@@ -57,9 +60,13 @@ public class Define implements Action, DefinitionProvider {
 	}
 
 	@Override
-	public Map<String, String> provideDefinitions() {
-		return new HashMap<String, String>() {{
-			put(name, value);
-		}};
+	public Map<String, String> provideDefinitions(Map<String, String> alreadyDefined) {
+		Map<String, String> result = Collections.emptyMap();
+		boolean definitionExists = alreadyDefined.containsKey(name);
+		boolean shouldBeAdded = !(definitionExists && ifNotExists);
+		if (shouldBeAdded) {
+			result = Collections.singletonMap(name, value);
+		}
+		return result;
 	}
 }

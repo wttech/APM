@@ -23,5 +23,5 @@ import java.util.Map;
 
 public interface DefinitionProvider {
 
-	Map<String, String> provideDefinitions();
+	Map<String, String> provideDefinitions(Map<String, String> alreadyDefined);
 }

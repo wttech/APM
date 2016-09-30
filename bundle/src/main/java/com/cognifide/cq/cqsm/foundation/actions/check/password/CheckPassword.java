@@ -21,7 +21,6 @@ package com.cognifide.cq.cqsm.foundation.actions.check.password;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.ActionResult;
-import com.cognifide.cq.cqsm.api.actions.interfaces.ResourceResolvable;
 import com.cognifide.cq.cqsm.api.exceptions.ActionExecutionException;
 import com.cognifide.cq.cqsm.api.executors.Context;
 import com.cognifide.cq.cqsm.api.utils.AuthorizablesUtils;
@@ -29,22 +28,18 @@ import com.cognifide.cq.cqsm.core.actions.ActionUtils;
 import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
 
 import org.apache.jackrabbit.api.security.user.User;
-import org.apache.sling.api.resource.LoginException;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceResolverFactory;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import javax.jcr.Credentials;
+import javax.jcr.LoginException;
+import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
+import javax.jcr.SimpleCredentials;
 
-public class CheckPassword implements Action, ResourceResolvable {
+public class CheckPassword implements Action {
 
 	private final String userPassword;
 
 	private final String userId;
-
-	private ResourceResolverFactory resolverFactory;
 
 	public CheckPassword(final String userId, final String userPassword) {
 		this.userId = userId;
@@ -67,7 +62,7 @@ public class CheckPassword implements Action, ResourceResolvable {
 			if (!tryGetUser(context, actionResult)) {
 				return actionResult;
 			}
-			boolean loginSuccessful = checkLogin();
+			boolean loginSuccessful = checkLogin(context.getSession().getRepository());
 			if (!loginSuccessful) {
 				actionResult.logError("Credentials for user " + userId + " seem invalid");
 				if (execute) {
@@ -90,32 +85,19 @@ public class CheckPassword implements Action, ResourceResolvable {
 		return true;
 	}
 
-	private boolean checkLogin() {
-		Map<String, Object> authenticationInfo = new HashMap<>();
-		authenticationInfo.put(ResourceResolverFactory.USER, userId);
-		authenticationInfo.put(ResourceResolverFactory.PASSWORD, userPassword.toCharArray());
+	private boolean checkLogin(Repository repository) throws RepositoryException {
 		boolean loginSuccessful = true;
-
+		Credentials credentials = new SimpleCredentials(userId, userPassword.toCharArray());
 		try {
-			resolverFactory.getResourceResolver(authenticationInfo).close();
+			repository.login(credentials).logout();
 		} catch (LoginException e) {
 			loginSuccessful = false;
 		}
 		return loginSuccessful;
-
 	}
 
 	@Override
 	public boolean isGeneric() {
 		return true;
-	}
-
-	@Override
-	public void setResourceResolver(ResourceResolver resolver) {
-	}
-
-	@Override
-	public void setResourceResolverFactory(ResourceResolverFactory factory) {
-		this.resolverFactory = factory;
 	}
 }

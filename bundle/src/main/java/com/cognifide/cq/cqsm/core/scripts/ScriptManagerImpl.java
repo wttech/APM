@@ -26,7 +26,6 @@ import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
 import com.cognifide.cq.cqsm.api.actions.ActionFactory;
 import com.cognifide.cq.cqsm.api.actions.ActionResult;
 import com.cognifide.cq.cqsm.api.actions.interfaces.DefinitionProvider;
-import com.cognifide.cq.cqsm.api.actions.interfaces.ResourceResolvable;
 import com.cognifide.cq.cqsm.api.actions.interfaces.ScriptProvider;
 import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
 import com.cognifide.cq.cqsm.api.exceptions.ExecutionException;
@@ -58,8 +57,6 @@ import org.apache.felix.scr.annotations.Service;
 import org.apache.jackrabbit.api.JackrabbitSession;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.apache.sling.settings.SlingSettingsService;
 import org.osgi.framework.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,13 +89,7 @@ public class ScriptManagerImpl implements ScriptManager {
 	private ActionFactory actionFactory;
 
 	@Reference
-	private SlingSettingsService settingsService;
-
-	@Reference
 	private ScriptStorage scriptStorage;
-
-	@Reference
-	private ResourceResolverFactory resolverFactory;
 
 	@Reference
 	private ScriptFinder scriptFinder;
@@ -253,29 +244,30 @@ public class ScriptManagerImpl implements ScriptManager {
 				descriptors.add(descriptor);
 
 				if (action instanceof DefinitionProvider) {
-					definitions.putAll(((DefinitionProvider) action).provideDefinitions());
+					definitions.putAll(((DefinitionProvider) action).provideDefinitions(definitions));
 				} else if (action instanceof ScriptProvider) {
-					for (String path : ((ScriptProvider) action).provideScripts()) {
-						Script include = scriptFinder.find(path, resolver);
-
-						if (include != null) {
-							includes.add(include);
-							descriptors.addAll(parseIncludeDescriptors(include, definitions, includes,
-									resolver));
-						} else {
-							throw new ActionCreationException(
-									String.format("Included script: '%s' does not exists.", path));
-						}
-					}
-				} else if (action instanceof ResourceResolvable) {
-					final ResourceResolvable resolvable = (ResourceResolvable) action;
-
-					resolvable.setResourceResolverFactory(resolverFactory);
-					resolvable.setResourceResolver(resolver);
+					getIncludes(definitions, includes, resolver, descriptors, (ScriptProvider) action);
 				}
 			}
 		}
 		return descriptors;
+	}
+
+	private void getIncludes(Map<String, String> definitions, List<Script> includes,
+			ResourceResolver resolver, List<ActionDescriptor> descriptors, ScriptProvider action)
+			throws ExecutionException {
+		for (String path : action.provideScripts()) {
+			Script include = scriptFinder.find(path, resolver);
+
+			if (include != null) {
+				includes.add(include);
+				descriptors.addAll(parseIncludeDescriptors(include, definitions, includes,
+						resolver));
+			} else {
+				throw new ActionCreationException(
+						String.format("Included script: '%s' does not exists.", path));
+			}
+		}
 	}
 
 	private ActionExecutor createExecutor(Mode mode, ResourceResolver resolver) throws RepositoryException {
