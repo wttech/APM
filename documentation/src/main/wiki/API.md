@@ -183,6 +183,11 @@ curl -i -u admin:admin -d "confirmation=true" -X POST http://localhost:4502/bin/
 ```
 
 #### How to get history of executed scripts?
+History can be filtered using **filter** parameter. Available filters:
+* automatic run
+* author
+* publish
+
 **Request**
 ```bash
 curl -i -u admin:admin -X GET http://localhost:4502/bin/cqsm/history?filter=publish
