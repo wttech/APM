@@ -77,7 +77,7 @@ Cog.component.cqsmImport = (function ($) {
                         success: function (data) {
                             var dataObject = JSON.parse(data);
                             if (dataObject.type === 'running') {
-                                setTimeout(checkStatus(jobId), 1000);
+                                setTimeout(function(){checkStatus(jobId)}, 1000);
                             } else if (dataObject.type === 'finished') {
                                 renderProgress(fileName, mode, jobId, item, start);
                             } else if (dataObject.type === 'unknown') {
