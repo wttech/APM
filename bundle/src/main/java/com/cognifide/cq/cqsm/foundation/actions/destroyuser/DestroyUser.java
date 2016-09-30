@@ -32,13 +32,15 @@ public class DestroyUser implements Action {
 
 	@Override
 	public ActionResult simulate(Context context) throws ActionExecutionException {
-		ActionResult actionResult = new ActionResult();
+		ActionResult actionResult;
 		try {
 			User user = AuthorizablesUtils.getUser(context, userId);
 			context.setCurrentAuthorizable(user);
-			purge.simulate(context).logError(actionResult);
-			remove.simulate(context).logError(actionResult);
+			ActionResult purgeResult = purge.simulate(context);
+			ActionResult removeResult = remove.simulate(context);
+			actionResult = new CompositeActionResult(purgeResult, removeResult);
 		} catch (RepositoryException | ActionExecutionException e) {
+			actionResult = new ActionResult();
 			actionResult.logError(MessagingUtils.createMessage(e));
 		}
 		return actionResult;
@@ -62,6 +64,6 @@ public class DestroyUser implements Action {
 
 	@Override
 	public boolean isGeneric() {
-		return false;
+		return true;
 	}
 }
