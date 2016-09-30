@@ -73,7 +73,7 @@ public class Entry implements Comparable<Entry> {
 	@Inject
 	@Getter
 	@Named(ModifiableEntryBuilder.PROGRESS_LOG_PROPERTY)
-	private String executionSummaryJson;
+	private transient String executionSummaryJson;
 
 	@Inject
 	private String mode;
