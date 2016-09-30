@@ -58,7 +58,7 @@
 				<td><a href="${file.path}" download="${file.fileName}" <c:if test="${not file.valid}">class="not-valid"</c:if>>${file.fileName}</a></td>
 				<td>${file.author}</td>
 				<td><c:if test="${not empty file.lastModified}"><fmt:formatDate value="${file.lastModified}" type="both" /></c:if></td>
-				<td>
+				<td class="last-run-author">
 					<c:if test="${not empty file.lastExecuted}"><fmt:formatDate value="${file.lastExecuted}" type="both" /></c:if>
 					<c:if test="${empty file.lastExecuted}">never</c:if>
 				</td>

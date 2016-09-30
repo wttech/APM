@@ -100,7 +100,7 @@ Cog.component.cqsmImport = (function ($) {
         if (mode === 'RUN') {
             var date = new Date(start);
             var time = date.format("M d, Y h:i:s A");
-            var lastRunField = item.parent().parent().children()[3];
+            var lastRunField = item.closest("tr").find(".last-run-author");
             lastRunField.innerText = time;
         }
     }
