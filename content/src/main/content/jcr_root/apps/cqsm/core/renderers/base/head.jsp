@@ -27,6 +27,6 @@
 <script src="/libs/cq/ui/resources/cq-ui.js" type="text/javascript"></script>
 <cq:includeClientLib categories="cq.widgets" />
 <cq:includeClientLib categories="cognifide.cqsm" />
-<link rel="shortcut icon" href="/etc/designs/cqsm/clientlibs/img/favicon.svg" type="image/x-icon">
+<link rel="shortcut icon" href="/etc/designs/cqsm/clientlibs/img/favicon.png" type="image/x-icon">
 <title><%=currentPage.getTitle()%></title>
 </head>
