@@ -18,7 +18,15 @@ The AEM package is available [here](https://github.com/Cognifide/APM/releases/do
 Please see our [user guide](https://github.com/Cognifide/apm/wiki/BasicUserGuide) to learn how to use APM.
 
 ## How to use
-Quick start available on [Usage guide](https://github.com/Cognifide/apm/wiki/Usage)
+Permission Management Tool is available on [http://localhost:4502/etc/cqsm.html](http://localhost:4502/etc/cqsm.html) page. 
+
+### How to create script
+1. Open console<br />
+![Console](documentation/src/main/wiki/assets/screens/consoleAutocompletion.png)
+2. Write script using [permission actions](https://github.com/Cognifide/APM/wiki/Actions)
+3. Check if your script passes validation
+4. Save
+5. Run script
 
 ## How to contribute
 See details in [Contributing section](https://github.com/Cognifide/APM/blob/master/CONTRIBUTING.md)

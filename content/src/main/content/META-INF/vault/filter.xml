@@ -5,6 +5,7 @@
     <filter root="/etc/cqsm">
         <exclude pattern="/etc/cqsm/history/jcr:content/cqsmHistory(/.*)?"/>
         <exclude pattern="/etc/cqsm/import/jcr:content/cqsmImport(/.*)?"/>
+        <exclude pattern="/etc/cqsm/import/jcr:content/cqsmInclude(/.*)?"/>
     </filter>
     <filter root="/etc/designs/cqsm"/>
     <filter root="/home/users/system/cqsm-system-user"/>

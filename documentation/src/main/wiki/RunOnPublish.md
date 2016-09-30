@@ -7,7 +7,7 @@ Running the script on publish is as easy as clicking the `Run on publish` button
 ![run-on-publish](assets/screens/runOnPublish.png)
 
 ### When to use the feature?
-CUGs are working well for pages and assets. For the resources lying outside this structure a separated treating is required. This is particulary useful whenever:
+CUGs are working well for pages and assets. For the resources lying outside this structure a separated treating is required. This is particularly useful whenever:
 
 * fine-grained permission management for **tags** is required,
 * **authorizable creation** on publish instance is required e.g. for cug admitted groups purpose,

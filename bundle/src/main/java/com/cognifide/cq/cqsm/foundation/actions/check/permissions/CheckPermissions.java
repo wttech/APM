@@ -24,7 +24,6 @@ import com.google.common.collect.Lists;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.ActionResult;
-import com.cognifide.cq.cqsm.api.actions.interfaces.ResourceResolvable;
 import com.cognifide.cq.cqsm.api.exceptions.ActionExecutionException;
 import com.cognifide.cq.cqsm.api.executors.Context;
 import com.cognifide.cq.cqsm.api.utils.AuthorizablesUtils;
@@ -36,9 +35,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.api.security.principal.PrincipalIterator;
 import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.apache.sling.api.resource.LoginException;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceResolverFactory;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -52,8 +48,9 @@ import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 
-public class CheckPermissions implements Action, ResourceResolvable {
+public class CheckPermissions implements Action {
 
 	private final String path;
 
@@ -64,8 +61,6 @@ public class CheckPermissions implements Action, ResourceResolvable {
 	private final boolean isAllow;
 
 	private final String authorizableId;
-
-	private ResourceResolver resourceResolver;
 
 	public CheckPermissions(final String authorizableId, final String path, final String glob,
 			final List<String> permissions, boolean isAllow) {
@@ -105,7 +100,7 @@ public class CheckPermissions implements Action, ResourceResolvable {
 							"All required privileges are set for " + authorizable.getID() + " on " + path);
 				}
 			} else {
-				checkPermissionsForGlob(execute, actionResult, authorizable, authorizablesToCheck, actions,
+				checkPermissionsForGlob(context.getSession(), execute, actionResult, authorizable, authorizablesToCheck, actions,
 						privilegesToCheck);
 			}
 
@@ -117,11 +112,11 @@ public class CheckPermissions implements Action, ResourceResolvable {
 		return actionResult;
 	}
 
-	private void checkPermissionsForGlob(final boolean execute, final ActionResult actionResult,
+	private void checkPermissionsForGlob(Session session, final boolean execute, final ActionResult actionResult,
 			final Authorizable authorizable, final Set<Principal> authorizablesToCheck,
 			final CqActions actions, final List<String> privilegesToCheck)
 			throws RepositoryException, LoginException {
-		final List<String> subpaths = getAllSubpaths(path);
+		final List<String> subpaths = getAllSubpaths(session, path);
 		Pattern pattern = Pattern.compile(path + StringUtils.replace(glob, "*", ".*"));
 		boolean foundMatch = false;
 		boolean failed = false;
@@ -164,14 +159,12 @@ public class CheckPermissions implements Action, ResourceResolvable {
 		}
 	}
 
-	private List<String> getAllSubpaths(final String path) throws RepositoryException, LoginException {
-		List<String> subpaths = new ArrayList<>();
-		Resource resource = resourceResolver.getResource(path);
-		Node node = resource.adaptTo(Node.class);
+	private List<String> getAllSubpaths(Session session, final String path) throws RepositoryException, LoginException {
+		List<String> subPaths = new ArrayList<>();
+		Node node = session.getNode(path);
+		subPaths.addAll(crawl(node));
 
-		subpaths.addAll(crawl(node));
-
-		return subpaths;
+		return subPaths;
 	}
 
 	private List<String> crawl(final Node node) throws RepositoryException {
@@ -204,15 +197,6 @@ public class CheckPermissions implements Action, ResourceResolvable {
 	@Override
 	public boolean isGeneric() {
 		return true;
-	}
-
-	@Override
-	public void setResourceResolver(ResourceResolver resolver) {
-		this.resourceResolver = resolver;
-	}
-
-	@Override
-	public void setResourceResolverFactory(ResourceResolverFactory factory) {
 	}
 
 	private static class toLowerCase implements Function<String, String> {
