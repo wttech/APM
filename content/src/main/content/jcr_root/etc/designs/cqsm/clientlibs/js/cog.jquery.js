@@ -22,7 +22,7 @@
  * It have to be executed at the end of the js-framework.
  */
 (function() {
-	window.COGjQuery = jQuery.noConflict(true);
-	window.COGNIFIDE = window.COGNIFIDE || {};
-	window.COGNIFIDE.COGeval = eval;
+    window.COGjQuery = jQuery.noConflict(true);
+    window.COGNIFIDE = window.COGNIFIDE || {};
+    window.COGNIFIDE.COGeval = eval;
 }(jQuery, window));

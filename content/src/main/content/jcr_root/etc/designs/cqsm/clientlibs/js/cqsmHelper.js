@@ -19,133 +19,133 @@
  */
 Cog.component.cqsmHelper = (function($) {
 
-	var api = {};
+    var api = {};
 
-	api.init = function($elements) {
+    api.init = function($elements) {
 
-	}
+    }
 
-	var defaults = {
-		maxValues : 5,
-		currentPart : 0,
-		total: 0
-	};
-	
-	function displayNav() {
-		$('#prev').show();
-		$('#next').show();
-		
-		if (defaults.currentPart == 0) {
-			$('#prev').hide();
-		}
-		
-		if (defaults.currentPart + defaults.maxValues >= defaults.total) {
-			$('#next').hide();
-		}
-	}
+    var defaults = {
+        maxValues : 5,
+        currentPart : 0,
+        total: 0
+    };
 
-	api.processList = function() {
-		var trs = $('.files-table tbody tr');
+    function displayNav() {
+        $('#prev').show();
+        $('#next').show();
 
-		trs.each(function() {
-			$(this).hide();
-		});
-		
-		defaults.total = trs.size();
+        if (defaults.currentPart == 0) {
+            $('#prev').hide();
+        }
 
-		if (defaults.currentPart === defaults.total) {
-			defaults.currentPart = defaults.currentPart - defaults.maxValues;
-		}
+        if (defaults.currentPart + defaults.maxValues >= defaults.total) {
+            $('#next').hide();
+        }
+    }
 
-		for (var i = defaults.currentPart; i < defaults.currentPart + defaults.maxValues; i++) {
-			trs.eq(i).show();
-		}
-		
-		displayNav();
-		
-		$('#prev').click(function(e) {
+    api.processList = function() {
+        var trs = $('.files-table tbody tr');
 
-			for (var i = defaults.currentPart; i < defaults.currentPart + defaults.maxValues; i++) {
-				trs.eq(i).hide();
-			}
-			
-			defaults.currentPart = defaults.currentPart - defaults.maxValues;
-			
-			for (var i = defaults.currentPart; i < defaults.currentPart + defaults.maxValues; i++) {
-				trs.eq(i).show();
-			}
+        trs.each(function() {
+            $(this).hide();
+        });
 
-			displayNav();
-			
-			e.preventDefault();
-		});
-		
-		$('#next').click(function(e) {
-			for (var i = defaults.currentPart; i < defaults.currentPart + defaults.maxValues; i++) {
-				trs.eq(i).hide();
-			}
-			
-			defaults.currentPart = defaults.currentPart + defaults.maxValues;
+        defaults.total = trs.size();
 
-			for (var i = defaults.currentPart; i < defaults.currentPart + defaults.maxValues; i++) {
-				trs.eq(i).show();
-			}
-			
-			displayNav();
-			
-			e.preventDefault();
-		});
-	};
+        if (defaults.currentPart === defaults.total) {
+            defaults.currentPart = defaults.currentPart - defaults.maxValues;
+        }
 
-	api.showMessage = function(message, type, doubleBox) {
-		$(".status-message").each(function(){$(this).empty().removeClass().addClass("status-message").addClass(type).append(message).show()});
-		if (!doubleBox) {
-			$("#second-status-message").hide();
-		}
-	};
+        for (var i = defaults.currentPart; i < defaults.currentPart + defaults.maxValues; i++) {
+            trs.eq(i).show();
+        }
 
-	api.getFileName = function(jObject) {
-		return $(jObject).closest('tr').find('td:first-child').children('a').html();
-	};
+        displayNav();
 
-	api.getFilePath = function(jObject) {
-		return $(jObject).closest('tr').find('td:first-child').children('a').attr("href");
-	};
-	
-	api.getFileRowId = function(jObject) {
-		return $(jObject).closest('tr').attr("id");
-	};
-	
-	api.openWindow = function(url, winName, xOffset, yOffset, width, height) {
-		var x = (window.screenX || window.screenLeft || 0) + (xOffset || 0);
-		var y = (window.screenY || window.screenTop || 0) + (yOffset || 0);
+        $('#prev').click(function(e) {
 
-		if (width === undefined) {
-			width = 750;
-		}
-		if (height === undefined) {
-			height = 480;
-		}
+            for (var i = defaults.currentPart; i < defaults.currentPart + defaults.maxValues; i++) {
+                trs.eq(i).hide();
+            }
 
-		return window.open(url, winName, 'top=' +y+ ',left=' +x+ ",menubar=1,width=" + width + ",height="
-			+ height + ",scrollbars=1");
-	};
+            defaults.currentPart = defaults.currentPart - defaults.maxValues;
 
-	api.refreshParentWindow = function() {
-		if (typeof window.opener !== 'undefined') {
-			window.opener.location.reload();
-		}
-	};
+            for (var i = defaults.currentPart; i < defaults.currentPart + defaults.maxValues; i++) {
+                trs.eq(i).show();
+            }
 
-	api.setMaxRows = function(rowNumber) {
-		defaults.maxValues = rowNumber;
-	};
+            displayNav();
 
-	return api;
+            e.preventDefault();
+        });
+
+        $('#next').click(function(e) {
+            for (var i = defaults.currentPart; i < defaults.currentPart + defaults.maxValues; i++) {
+                trs.eq(i).hide();
+            }
+
+            defaults.currentPart = defaults.currentPart + defaults.maxValues;
+
+            for (var i = defaults.currentPart; i < defaults.currentPart + defaults.maxValues; i++) {
+                trs.eq(i).show();
+            }
+
+            displayNav();
+
+            e.preventDefault();
+        });
+    };
+
+    api.showMessage = function(message, type, doubleBox) {
+        $(".status-message").each(function(){$(this).empty().removeClass().addClass("status-message").addClass(type).append(message).show()});
+        if (!doubleBox) {
+            $("#second-status-message").hide();
+        }
+    };
+
+    api.getFileName = function(jObject) {
+        return $(jObject).closest('tr').find('td:first-child').children('a').html();
+    };
+
+    api.getFilePath = function(jObject) {
+        return $(jObject).closest('tr').find('td:first-child').children('a').attr("href");
+    };
+
+    api.getFileRowId = function(jObject) {
+        return $(jObject).closest('tr').attr("id");
+    };
+
+    api.openWindow = function(url, winName, xOffset, yOffset, width, height) {
+        var x = (window.screenX || window.screenLeft || 0) + (xOffset || 0);
+        var y = (window.screenY || window.screenTop || 0) + (yOffset || 0);
+
+        if (width === undefined) {
+            width = 750;
+        }
+        if (height === undefined) {
+            height = 480;
+        }
+
+        return window.open(url, winName, 'top=' +y+ ',left=' +x+ ",menubar=1,width=" + width + ",height="
+            + height + ",scrollbars=1");
+    };
+
+    api.refreshParentWindow = function() {
+        if (typeof window.opener !== 'undefined') {
+            window.opener.location.reload();
+        }
+    };
+
+    api.setMaxRows = function(rowNumber) {
+        defaults.maxValues = rowNumber;
+    };
+
+    return api;
 
 }(COGjQuery));
 
 Cog.register({
-	name : 'cqsmHelper',
-	api : Cog.component.cqsmHelper
+    name : 'cqsmHelper',
+    api : Cog.component.cqsmHelper
 });

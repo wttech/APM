@@ -19,39 +19,38 @@
  */
 Cog.component.cqsmImport = (function ($) {
 
-	var api = {},
-		ongoing = false,
-		helper = Cog.component.cqsmHelper;
-	
-	function submitForm() {
-		document.getElementById('form').submit();
-	}
+    var api = {},
+        ongoing = false,
+        helper = Cog.component.cqsmHelper;
+
+    function submitForm() {
+        document.getElementById('form').submit();
+    }
 
     function renderProgress(fileName, mode, jobId, item, start) {
-        console.log("renderProgress");
 
         $.ajax({
-			type: "GET",
+            type: "GET",
             url: "/etc/cqsm.ajax.html",
             data: {'fileName': fileName, 'wcmmode': 'disabled', 'mode': mode, 'progressJobId': jobId},
-			dataType: "html",
-			success: function(data) {
-				Cog.fireEvent("loader", "showLoaderListener",  {
-					context: $("#cqsmImportPage")
-				});
-				ongoing = false;
-				$("#import-summary").empty().append(data);
-				var time = new Date().getTime() - start;
-				var statusMessageType = $("#status-message-type").text();
-				if (statusMessageType === "error") {
-					helper.showMessage("File: " + fileName + "<br>Mode: " + mode + "<br>Executed with errors in " + time + " ms", statusMessageType, true);
-				} else {
-					helper.showMessage("File: " + fileName + "<br>Mode: " + mode + "<br>Executed successfully in " + time + " ms", statusMessageType, true);
-				}
-				if (item !== null) {
-					var newClass = (statusMessageType === "error" ? 'dryRunFailed' : 'dryRunSuccess');
-					item.attr('class', newClass);
-				}
+            dataType: "html",
+            success: function(data) {
+                Cog.fireEvent("loader", "showLoaderListener",  {
+                    context: $("#cqsmImportPage")
+                });
+                ongoing = false;
+                $("#import-summary").empty().append(data);
+                var time = new Date().getTime() - start;
+                var statusMessageType = $("#status-message-type").text();
+                if (statusMessageType === "error") {
+                    helper.showMessage("File: " + fileName + "<br>Mode: " + mode + "<br>Executed with errors in " + time + " ms", statusMessageType, true);
+                } else {
+                    helper.showMessage("File: " + fileName + "<br>Mode: " + mode + "<br>Executed successfully in " + time + " ms", statusMessageType, true);
+                }
+                if (item !== null) {
+                    var newClass = (statusMessageType === "error" ? 'dryRunFailed' : 'dryRunSuccess');
+                    item.attr('class', newClass);
+                }
             }
         });
     }
@@ -91,157 +90,157 @@ Cog.component.cqsmImport = (function ($) {
                         }
                     });
                 })(jobId);
-			}
-		});
-	}
-	
-	function runOnPublish(fileName, item) {
-		
-		$.ajax({
-			type: "GET",
-			url: "/bin/cqsm/replicate?run=publish&fileName=" + fileName,
-			dataType: "json",
-			success: function(data) {
-				$("#import-summary").empty()
-				helper.showMessage(data.message, data.type, false);
-			}
-		});
-	}
-	
-	api.init = function ($elements) {
+            }
+        });
+    }
 
-		var errorMessage = 'Unexpected Error Happened';
+    function runOnPublish(fileName, item) {
 
-		$elements.each(function(){
-			helper.setMaxRows(10);
-			helper.processList();
+        $.ajax({
+            type: "GET",
+            url: "/bin/cqsm/replicate?run=publish&fileName=" + fileName,
+            dataType: "json",
+            success: function(data) {
+                $("#import-summary").empty()
+                helper.showMessage(data.message, data.type, false);
+            }
+        });
+    }
 
-			$(document).ajaxError(function(event, jqxhr, settings, exception) {
-				helper.showMessage(errorMessage, "error",false);
-			});
-			$(".mode-dry-run", $elements).click(function() {
-				var fileName = helper.getFileName(this);
-				var currentRow = $(this).closest("tr");
-				var dryRunStatusDiv = currentRow.find(".dryRunStatus div");
-				importCqsm(fileName, "DRY_RUN", dryRunStatusDiv);
-			});
-			$(".mode-import", $elements).click(function() {
-				var fileName = helper.getFileName(this);
-				var result = confirm("Do you really want to run this script?");
-				if (result) {
-					var currentRow = $(this).closest("tr");
-					var dryRunStatusDiv = currentRow.find(".dryRunStatus div");
-					importCqsm(fileName, "RUN", dryRunStatusDiv);
-				}
-			});
-			$(".mode-run-publish", $elements).click(function() {
-				var fileName = helper.getFileName(this);
-				var result = confirm("Do you really want to run this script on publish?");
-				if (result) {
-					var currentRow = $(this).closest("tr");
-					var dryRunStatusDiv = currentRow.find(".dryRunStatus div");
-					runOnPublish(fileName, dryRunStatusDiv);
-				}
-			});
+    api.init = function ($elements) {
 
-			$(".action-edit", $elements).click(function() {
-				var fileName = helper.getFileName(this);
-				var win = helper.openWindow("/etc/cqsm/pages/console.html?path=" + fileName, "Console", 200, 170);
+        var errorMessage = 'Unexpected Error Happened';
 
-				win.focus();
-			});
+        $elements.each(function(){
+            helper.setMaxRows(10);
+            helper.processList();
 
-			$(".action-remove", $elements).click(function() {
-				var fileName = helper.getFileName(this);
-				var fileRowId = helper.getFileRowId(this);
-				var result = confirm("Do you really want to remove this script?");
+            $(document).ajaxError(function(event, jqxhr, settings, exception) {
+                helper.showMessage(errorMessage, "error",false);
+            });
+            $(".mode-dry-run", $elements).click(function() {
+                var fileName = helper.getFileName(this);
+                var currentRow = $(this).closest("tr");
+                var dryRunStatusDiv = currentRow.find(".dryRunStatus div");
+                importCqsm(fileName, "DRY_RUN", dryRunStatusDiv);
+            });
+            $(".mode-import", $elements).click(function() {
+                var fileName = helper.getFileName(this);
+                var result = confirm("Do you really want to run this script?");
+                if (result) {
+                    var currentRow = $(this).closest("tr");
+                    var dryRunStatusDiv = currentRow.find(".dryRunStatus div");
+                    importCqsm(fileName, "RUN", dryRunStatusDiv);
+                }
+            });
+            $(".mode-run-publish", $elements).click(function() {
+                var fileName = helper.getFileName(this);
+                var result = confirm("Do you really want to run this script on publish?");
+                if (result) {
+                    var currentRow = $(this).closest("tr");
+                    var dryRunStatusDiv = currentRow.find(".dryRunStatus div");
+                    runOnPublish(fileName, dryRunStatusDiv);
+                }
+            });
 
-				if (result) {
-					$.ajax({
-						type: "POST",
-						data: { 'file' : fileName },
-						dataType: "json",
-						url :  '/bin/cqsm/remove',
-						success: function(data) {
-							if (data == null || data.type == "error") {
-								var msg;
-								data.message == null ? msg = errorMessage : msg =  data.message;
+            $(".action-edit", $elements).click(function() {
+                var fileName = helper.getFileName(this);
+                var win = helper.openWindow("/etc/cqsm/pages/console.html?path=" + fileName, "Console", 200, 170);
 
-								helper.showMessage(msg, "error", false);
-							} else {
-								$("#" + fileRowId).remove();
-								$("#import-summary").empty();
-								helper.processList();
-								helper.showMessage("File: " + fileName + "<br>Removed successfully", "success", false);
-							}
-						}
-					});
-				} 
-			});
+                win.focus();
+            });
 
-			$(".execution-enabled", $elements).change(function() {
-				var executionEnabled = $(this).prop('checked');
-				var fileName = helper.getFileName(this);
+            $(".action-remove", $elements).click(function() {
+                var fileName = helper.getFileName(this);
+                var fileRowId = helper.getFileRowId(this);
+                var result = confirm("Do you really want to remove this script?");
 
-				$.ajax({
-					type: "POST",
-					data: {
-						"executionEnabled": executionEnabled,
-						"scriptPath": fileName,
-					},
-					url: "/bin/cqsm/scriptConfig",
-					success: function() {
-						helper.showMessage("File: " + fileName + "<br>Configuration updated successfully",
-							"success", false);
-					}
-				});
-			});
-			
-			$("#remove-all", $elements).click(function() {
-				var result = confirm("Do you really want to remove all script?");
-				if (result) {
-					$.ajax({
-						type: "POST",
-						url: "/bin/cqsm/remove",
-						data: { "confirmation" : result },
-						dataType: "json",
-						success: function(data) {
-							$("#cqsm-files > tbody").empty();
-							$(".navigation").remove();
-							$("#import-summary").empty();
-							helper.showMessage(data.message, data.type, false);
-						}
-					});
-				} 
-			});
-			
-			$("#open-console", $elements).click(function() {
-				var win = helper.openWindow("/etc/cqsm/pages/console.html","Console",200,170);
-				win.focus();
-			});
+                if (result) {
+                    $.ajax({
+                        type: "POST",
+                        data: { 'file' : fileName },
+                        dataType: "json",
+                        url :  '/bin/cqsm/remove',
+                        success: function(data) {
+                            if (data == null || data.type == "error") {
+                                var msg;
+                                data.message == null ? msg = errorMessage : msg =  data.message;
 
-			$(".action-view", $elements).click(function() {
-				var fileName = helper.getFileName(this);
-				var filePath = helper.getFilePath(this);
-				var win = helper.openWindow("/etc/cqsm/pages/viewCqsmFile.html?wcmmode=disabled&filename="+ fileName
-					+ "&filepath="+filePath,"CQSM file",200,170);
-				win.focus();
-			});
-			
-			$("#fileToUpload", $elements).change(submitForm);
-			
-			$("#uploadButton", $elements).click(function() {
-				$("#fileToUpload", $elements).click();
-			});
-		
-		});
-	}
-	
-	return api;
+                                helper.showMessage(msg, "error", false);
+                            } else {
+                                $("#" + fileRowId).remove();
+                                $("#import-summary").empty();
+                                helper.processList();
+                                helper.showMessage("File: " + fileName + "<br>Removed successfully", "success", false);
+                            }
+                        }
+                    });
+                }
+            });
+
+            $(".execution-enabled", $elements).change(function() {
+                var executionEnabled = $(this).prop('checked');
+                var fileName = helper.getFileName(this);
+
+                $.ajax({
+                    type: "POST",
+                    data: {
+                        "executionEnabled": executionEnabled,
+                        "scriptPath": fileName,
+                    },
+                    url: "/bin/cqsm/scriptConfig",
+                    success: function() {
+                        helper.showMessage("File: " + fileName + "<br>Configuration updated successfully",
+                            "success", false);
+                    }
+                });
+            });
+
+            $("#remove-all", $elements).click(function() {
+                var result = confirm("Do you really want to remove all script?");
+                if (result) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/bin/cqsm/remove",
+                        data: { "confirmation" : result },
+                        dataType: "json",
+                        success: function(data) {
+                            $("#cqsm-files > tbody").empty();
+                            $(".navigation").remove();
+                            $("#import-summary").empty();
+                            helper.showMessage(data.message, data.type, false);
+                        }
+                    });
+                }
+            });
+
+            $("#open-console", $elements).click(function() {
+                var win = helper.openWindow("/etc/cqsm/pages/console.html","Console",200,170);
+                win.focus();
+            });
+
+            $(".action-view", $elements).click(function() {
+                var fileName = helper.getFileName(this);
+                var filePath = helper.getFilePath(this);
+                var win = helper.openWindow("/etc/cqsm/pages/viewCqsmFile.html?wcmmode=disabled&filename="+ fileName
+                    + "&filepath="+filePath,"CQSM file",200,170);
+                win.focus();
+            });
+
+            $("#fileToUpload", $elements).change(submitForm);
+
+            $("#uploadButton", $elements).click(function() {
+                $("#fileToUpload", $elements).click();
+            });
+
+        });
+    }
+
+    return api;
 }(COGjQuery));
 
 Cog.register({
-	name: 'cqsmImport',
-	api: Cog.component.cqsmImport,
-	selector: '#cqsmImportPage'
+    name: 'cqsmImport',
+    api: Cog.component.cqsmImport,
+    selector: '#cqsmImportPage'
 });

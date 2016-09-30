@@ -19,62 +19,62 @@
  */
 Cog.component.cqsmHistory = (function ($) {
 
-	var api = {};
-	
-	var helper = Cog.component.cqsmHelper;
-	
-	function getExecutionSummaryPath(jObject) {
-		return $(jObject).attr("path");
-	};
-	
-	function getSummary(path) {
-		$.ajax({
-			type: "GET",
-			url:"/etc/cqsm/history/jcr:content/cqsmHistory.details.html" + path,
-			dataType: "html",
-			success: function(data) {
-				$("#import-summary").empty().append(data);
-			}
-		});
-	};
-	
-	api.init = function ($elements) {
-		$elements.each(function(){
-			helper.setMaxRows(12);
-			helper.processList();
+    var api = {};
 
-			$(document).ajaxStart(function() {
-				$(".status-message").each(function(){$(this).hide().removeClass().addClass("status-message").empty()});
-			});
-			$(document).ajaxError(function(event, jqxhr, settings, exception) {
-				helper.showMessage("Unexpected Error Happend", "error",false);
-			});
-			
-			$(".action-show-summary").click(function() {
-				var path = getExecutionSummaryPath(this);
-				getSummary(path);
-			});
+    var helper = Cog.component.cqsmHelper;
 
-			$(".action-view").click(function() {
-				var fileName = helper.getFileName(this);
-				var filePath = helper.getFilePath(this);
-				var win = helper.openWindow("/etc/cqsm/pages/viewCqsmFile.html?wcmmode=disabled&filename="+ fileName + "&filepath="+filePath,"CQSM file",200,170);		  
-				win.focus();
-			});
+    function getExecutionSummaryPath(jObject) {
+        return $(jObject).attr("path");
+    };
 
-			$(".action-filter-history").change(function() {
-				$(this).closest('form').trigger('submit');
-			});
-		});
-	}
-	
+    function getSummary(path) {
+        $.ajax({
+            type: "GET",
+            url:"/etc/cqsm/history/jcr:content/cqsmHistory.details.html" + path,
+            dataType: "html",
+            success: function(data) {
+                $("#import-summary").empty().append(data);
+            }
+        });
+    };
 
-	return api;
+    api.init = function ($elements) {
+        $elements.each(function(){
+            helper.setMaxRows(12);
+            helper.processList();
+
+            $(document).ajaxStart(function() {
+                $(".status-message").each(function(){$(this).hide().removeClass().addClass("status-message").empty()});
+            });
+            $(document).ajaxError(function(event, jqxhr, settings, exception) {
+                helper.showMessage("Unexpected Error Happend", "error",false);
+            });
+
+            $(".action-show-summary").click(function() {
+                var path = getExecutionSummaryPath(this);
+                getSummary(path);
+            });
+
+            $(".action-view").click(function() {
+                var fileName = helper.getFileName(this);
+                var filePath = helper.getFilePath(this);
+                var win = helper.openWindow("/etc/cqsm/pages/viewCqsmFile.html?wcmmode=disabled&filename="+ fileName + "&filepath="+filePath,"CQSM file",200,170);
+                win.focus();
+            });
+
+            $(".action-filter-history").change(function() {
+                $(this).closest('form').trigger('submit');
+            });
+        });
+    }
+
+
+    return api;
 }(COGjQuery));
 
 Cog.register({
-	name: 'cqsmHistory',
-	api: Cog.component.cqsmHistory,
-	selector: '#cqsmHistoryPage'
+    name: 'cqsmHistory',
+    api: Cog.component.cqsmHistory,
+    selector: '#cqsmHistoryPage'
 });
 

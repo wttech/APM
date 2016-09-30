@@ -1,4 +1,3 @@
 #base=css
-jquery.tablesorter.css
-progressBar.css
+tableSorter.css
 main.css
