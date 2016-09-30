@@ -41,7 +41,6 @@ public class ScriptImpl implements Script {
 
 	@Inject
 	@Named(JcrConstants.JCR_CONTENT)
-	@Optional
 	private ScriptContent scriptContent;
 
 	@Inject

@@ -19,54 +19,54 @@
  */
 Cog.component.cqsmLoader = (function($) {
 
-	var api = {},
-		initialized = false,
-		defaults = {
-			moduleName : 'loader'
-		}, listeners = {
-			hideLoader : 'hideLoaderListener',
-			showLoader : 'showLoaderListener'
-		};
+    var api = {},
+        initialized = false,
+        defaults = {
+            moduleName : 'loader'
+        }, listeners = {
+            hideLoader : 'hideLoaderListener',
+            showLoader : 'showLoaderListener'
+        };
 
-	function hide(e) {
-		var scope = e.eventData.context,
-			animation = e.eventData.animation,
-			docWidth = $(document).width(),
-			docHeight = $(document).height();
+    function hide(e) {
+        var scope = e.eventData.context,
+            animation = e.eventData.animation,
+            docWidth = $(document).width(),
+            docHeight = $(document).height();
 
-		scope.append("<div id='overlay'></div>");
-		scope.addClass("grey-out");
-		$("#overlay").height(docHeight).width(docWidth).css({
-			'position' : 'absolute',
-			'top' : '0',
-			'left' : '0'
-		});
-		if(animation){
-			$("#overlay").addClass('loader');
-		}
-	}
+        scope.append("<div id='overlay'></div>");
+        scope.addClass("grey-out");
+        $("#overlay").height(docHeight).width(docWidth).css({
+            'position' : 'absolute',
+            'top' : '0',
+            'left' : '0'
+        });
+        if(animation){
+            $("#overlay").addClass('loader');
+        }
+    }
 
-	function show(e) {
-		var scope = e.eventData.context; 
+    function show(e) {
+        var scope = e.eventData.context;
 
-		$("#overlay").remove();
-		scope.removeClass('grey-out');
-		
-	}
+        $("#overlay").remove();
+        scope.removeClass('grey-out');
 
-	api.init = function($elements) {
-		if (!initialized) {
-			initialized = true;
-			Cog.addListener(defaults.moduleName, listeners.showLoader, show);
-			Cog.addListener(defaults.moduleName, listeners.hideLoader, hide);
-		}
-	};
+    }
 
-	return api;
+    api.init = function($elements) {
+        if (!initialized) {
+            initialized = true;
+            Cog.addListener(defaults.moduleName, listeners.showLoader, show);
+            Cog.addListener(defaults.moduleName, listeners.hideLoader, hide);
+        }
+    };
+
+    return api;
 
 }(COGjQuery));
 
 Cog.register({
-	name : 'cqsmLoader',
-	api : Cog.component.cqsmLoader
+    name : 'cqsmLoader',
+    api : Cog.component.cqsmLoader
 });

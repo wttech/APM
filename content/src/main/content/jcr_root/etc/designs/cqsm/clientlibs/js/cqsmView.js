@@ -19,42 +19,42 @@
  */
 Cog.component.cqsmView = (function ($) {
 
-	var api = {};
-	
-	function handleData(data) {
-		$("#data").append(data);
-	}
-	
-	function getFilePath() {
-		return $("#filePath").text();
-	};
-	
-	function getFileName() {
-		return $("#fileName").text();
-	};
-	
-	api.init = function ($elements) {
+    var api = {};
 
-		$elements.each(function(){
-				
-				var filePath = getFilePath();
-				var fileName = getFileName();
-				$.ajax({
-					type: "GET",
-					data: { "mode": "view", "filename": fileName, "filepath": filePath},
-					dataType: 'html',
-					url: "/bin/cqsm/fileDownload",
-					success: handleData
-				});  	
-			});
-			
-	};
-	
-	return api;
+    function handleData(data) {
+        $("#data").append(data);
+    }
+
+    function getFilePath() {
+        return $("#filePath").text();
+    };
+
+    function getFileName() {
+        return $("#fileName").text();
+    };
+
+    api.init = function ($elements) {
+
+        $elements.each(function(){
+
+                var filePath = getFilePath();
+                var fileName = getFileName();
+                $.ajax({
+                    type: "GET",
+                    data: { "mode": "view", "filename": fileName, "filepath": filePath},
+                    dataType: 'html',
+                    url: "/bin/cqsm/fileDownload",
+                    success: handleData
+                });
+            });
+
+    };
+
+    return api;
 }(COGjQuery));
 
 Cog.register({
-	name: 'cqsmView',
-	api: Cog.component.cqsmView,
-	selector: '#cqsmViewPage'
+    name: 'cqsmView',
+    api: Cog.component.cqsmView,
+    selector: '#cqsmViewPage'
 });

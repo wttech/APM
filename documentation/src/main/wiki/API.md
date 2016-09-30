@@ -118,7 +118,7 @@ curl -i -u admin:admin -d "id=2016/4/22/9/42/0ea10a55-2dbb-4c1b-979c-98b9f1f7a73
 ```
 
 
-> Job details are stored in memory only for 10 minutes after successful run. After that the json object with type: "unknow" will be returned.
+> Job details are stored in memory only for 10 minutes after successful run. After that the json object with type: "unknown" will be returned.
 
 #### How to validate script?
 **Request**
