@@ -41,4 +41,8 @@ public final class ProgressHelper {
 	public static String toJson(List<ProgressEntry> entries) {
 		return GSON.toJson(entries.toArray());
 	}
+
+	public static String toJson(ProgressEntry entry) {
+		return GSON.toJson(entry);
+	}
 }

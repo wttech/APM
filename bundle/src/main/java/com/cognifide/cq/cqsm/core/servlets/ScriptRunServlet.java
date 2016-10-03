@@ -86,10 +86,15 @@ public class ScriptRunServlet extends SlingAllMethodsServlet {
 
 		try {
 			final Mode mode = Mode.fromString(modeName, Mode.DRY_RUN);
-
 			final Progress progressLogger = scriptManager.process(script, mode, resolver);
 
-			ServletUtils.writeJson(response, ProgressHelper.toJson(progressLogger.getEntries()));
+			if (progressLogger.isSuccess()) {
+				ServletUtils.writeJson(response, ProgressHelper.toJson(progressLogger.getEntries()));
+			} else {
+				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				ServletUtils.writeJson(response, ProgressHelper.toJson(progressLogger.getLastError()));
+			}
+
 		} catch (RepositoryException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			ServletUtils.writeMessage(response, "error", String.format("Script cannot be executed because of"
