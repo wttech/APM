@@ -29,6 +29,8 @@ Cog.component.cqsmImport = (function ($) {
 
     function renderProgress(fileName, mode, jobId, item, start) {
 
+        setLastExecutionTime(mode, item, start);
+
         $.ajax({
             type: "GET",
             url: "/etc/cqsm.ajax.html",
@@ -92,6 +94,15 @@ Cog.component.cqsmImport = (function ($) {
                 })(jobId);
             }
         });
+    }
+
+    function setLastExecutionTime(mode, item, start) {
+        if (mode === 'RUN') {
+            var date = new Date(start);
+            var time = date.format("M d, Y h:i:s A");
+            var lastRunField = item.closest("tr").find(".last-run-author");
+            lastRunField.innerText = time;
+        }
     }
 
     function runOnPublish(fileName, item) {
