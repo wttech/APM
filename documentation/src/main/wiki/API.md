@@ -5,12 +5,61 @@ The automation is particulary useful for the [[check actions|CheckActions]] base
 
 ### Operations
 
+- [script list](#how-to-get-list-of-scripts)
 - [upload script](#how-to-upload-script)
 - [run script](#how-to-run-script)
 - [run script asynchronously](#how-to-run-script-asynchronously)
 - [validate script](#how-to-validate-script)
 - [remove script](#how-to-remove-script)
 - [history](#how-to-get-history-of-executed-scripts)
+
+#### How to get list of scripts?
+
+**Request**
+```bash
+curl -i -u admin:admin http://localhost:4502/bin/cqsm/list
+```
+Request has no available parameters to set.
+
+**Response**
+```bash
+[
+  {
+  "fileName": "filename.cqsm",
+  "author": "admin",
+  "executionEnabled": true,
+  "lastExecuted": "Oct 3, 2016 8:20:52 AM",
+  "lastModified": "Sep 30, 2016 10:15:24 AM",
+  "valid": true,
+  "path": "/etc/cqsm/import/jcr:content/cqsmImport/filename.cqsm",
+  "dryRunExecuted": true,
+  "dryRunSuccessful": true,
+  "executionMode": "ON_DEMAND"
+  },
+  {
+  "fileName": "filename-2.cqsm",
+  "author": "admin",
+  "executionEnabled": true,
+  "lastExecuted": "Oct 3, 2016 8:21:04 AM",
+  "lastModified": "Sep 30, 2016 10:15:06 AM",
+  "valid": true,
+  "path": "/etc/cqsm/import/jcr:content/cqsmImport/filename-2.cqsm",
+  "dryRunExecuted": true,
+  "dryRunSuccessful": false,
+  "executionMode": "ON_DEMAND"
+  }
+]
+```
+Response returns every properties set on the request:
+* General node properties (i.e author, fileName, lastModified, path)
+* Script specific properties:
+  * dryRunExecuted - (Boolean) if dry run was executed
+  * dryRunSuccessful - (Boolean) if script succeeded dry run 
+  * executionEnabled - (Boolean) if automated script execution is enabled
+  * executionMode - (ON_DEMAND, ON_START, ON_MODIFY, ON_SCHEDULE). To get more information about automatic script execution modes read  [documentation](https://github.com/Cognifide/APM/wiki/Autorun) to get more information about 
+  * lastExecuted - (Date) - last time script was executed 
+  * valid - (Boolean) if script passes validation
+
 
 #### How to upload script?
 **Request**
