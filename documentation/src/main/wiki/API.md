@@ -183,8 +183,8 @@ curl -i -u admin:admin -d "confirmation=true" -X POST http://localhost:4502/bin/
 ```
 
 #### How to get history of executed scripts?
-History can be filtered using **filter** parameter. Available filters:
-* automatic run - for script executed [automatically](https://github.com/Cognifide/APM/wiki/Autorun)
+History can be filtered using optional **filter** parameter. Available filters:
+* automatic run - for script executed [automatically](https://github.com/Cognifide/APM/wiki/Autorun) (automatic%20run)
 * author - for script executed on author
 * publish - for script executed on publish
 
