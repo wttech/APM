@@ -33,12 +33,12 @@ public class Define implements Action, DefinitionProvider {
 
 	private final String value;
 
-	private final boolean ifNotExists;
+	private final boolean ignoreIfExists;
 
-	public Define(String name, String value, boolean ifNotExists) {
+	public Define(String name, String value, boolean ignoreIfExists) {
 		this.name = name;
 		this.value = value;
-		this.ifNotExists = ifNotExists;
+		this.ignoreIfExists = ignoreIfExists;
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class Define implements Action, DefinitionProvider {
 	public Map<String, String> provideDefinitions(Map<String, String> alreadyDefined) {
 		Map<String, String> result = Collections.emptyMap();
 		boolean definitionExists = alreadyDefined.containsKey(name);
-		boolean shouldBeAdded = !(definitionExists && ifNotExists);
+		boolean shouldBeAdded = !(definitionExists && ignoreIfExists);
 		if (shouldBeAdded) {
 			result = Collections.singletonMap(name, value);
 		}

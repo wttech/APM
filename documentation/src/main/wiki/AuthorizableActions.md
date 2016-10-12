@@ -7,6 +7,7 @@ Following action can be executed with no context user preserved by using `FOR` a
 * `CREATE GROUP` - creates new authorizable of group type,
 * `CREATE USER` - creates new authorizable of user type,
 * `CREATE SYSTEM USER` - creates new system user for the service login purpose,
+* `DESTROY USER` - removes user from assigned groups, given permission and user itself,
 * `REMOVE GROUP` - removes the selected group,
 * `REMOVE USER` - removes the selected user.
 

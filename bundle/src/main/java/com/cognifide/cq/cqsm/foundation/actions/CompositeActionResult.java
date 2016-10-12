@@ -63,7 +63,7 @@ public class CompositeActionResult extends ActionResult {
 			String current = actionResult.getAuthorizable();
 			if (current != null && !StringUtils.equals(current, pattern)) {
 				String msg = String.format(MISMATCH_MSG, actionResult.getAuthorizable(), pattern);
-				throw new IllegalArgumentException();
+				throw new IllegalArgumentException(msg);
 			}
 		}
 		return pattern;
