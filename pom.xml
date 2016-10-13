@@ -309,6 +309,8 @@
                         <preparationGoals>clean install</preparationGoals>
                         <arguments>-Psonatype-oss-release</arguments>
                         <goals>deploy -DskipTests</goals>
+                        <username>${scm.username}</username>
+                        <password>${scm.password}</password>
                     </configuration>
                 </plugin>
                 <plugin>
