@@ -5,7 +5,7 @@
     <!-- The Basics -->
     <groupId>com.cognifide.cq</groupId>
     <artifactId>cqsm</artifactId>
-    <version>2.0.1-aem61-SNAPSHOT</version>
+    <version>2.0.0-aem61-SNAPSHOT</version>
     <packaging>pom</packaging>
     <dependencyManagement>
         <dependencies>
@@ -362,6 +362,7 @@
 
     <!-- More Project Information -->
     <name>AEM Permission Management :: Parent</name>
+    <description>AEM Permission Management - AEM based tool focused on streamlining the permission configuration</description>
     <url>http://www.cognifide.com</url>
     <organization>
         <name>Cognifide Ltd.</name>
