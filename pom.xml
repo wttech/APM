@@ -214,6 +214,7 @@
     <modules>
         <module>bundle</module>
         <module>content</module>
+        <module>documentation</module>
     </modules>
     <properties>
         <crx.host>localhost</crx.host>
