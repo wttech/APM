@@ -19,13 +19,9 @@
  */
 package com.cognifide.cq.cqsm.foundation.actions.purge;
 
-import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.ActionResult;
-import com.cognifide.cq.cqsm.api.exceptions.ActionExecutionException;
-import com.cognifide.cq.cqsm.api.executors.Context;
-import com.cognifide.cq.cqsm.api.logger.Status;
-import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
-import com.cognifide.cq.cqsm.foundation.actions.removeall.RemoveAll;
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.RepositoryException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.api.JackrabbitSession;
@@ -34,9 +30,13 @@ import org.apache.jackrabbit.oak.spi.security.authorization.permission.Permissio
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.RepositoryException;
+import com.cognifide.cq.cqsm.api.actions.Action;
+import com.cognifide.cq.cqsm.api.actions.ActionResult;
+import com.cognifide.cq.cqsm.api.exceptions.ActionExecutionException;
+import com.cognifide.cq.cqsm.api.executors.Context;
+import com.cognifide.cq.cqsm.api.logger.Status;
+import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
+import com.cognifide.cq.cqsm.foundation.actions.removeall.RemoveAll;
 
 public class Purge implements Action {
 
@@ -85,9 +85,11 @@ public class Purge implements Action {
 		while (iterator != null && iterator.hasNext()) {
 			Node node = iterator.nextNode();
 			if (node.hasProperty(PermissionConstants.REP_ACCESS_CONTROLLED_PATH)) {
-				String parentPath = node.getProperty(PermissionConstants.REP_ACCESS_CONTROLLED_PATH).getString();
+				String parentPath = node.getProperty(PermissionConstants.REP_ACCESS_CONTROLLED_PATH)
+						.getString();
 				String normalizedParentPath = normalizePath(parentPath);
-				if (StringUtils.startsWith(normalizedParentPath, normalizedPath)) {
+				boolean isUsersPermission = parentPath.startsWith(context.getCurrentAuthorizable().getPath());
+				if (StringUtils.startsWith(normalizedParentPath, normalizedPath) && !isUsersPermission) {
 					RemoveAll removeAll = new RemoveAll(parentPath);
 					ActionResult removeAllResult = removeAll.execute(context);
 					if (Status.ERROR.equals(removeAllResult.getStatus())) {
@@ -98,7 +100,8 @@ public class Purge implements Action {
 		}
 	}
 
-	private NodeIterator getPermissions(Context context) throws ActionExecutionException, RepositoryException {
+	private NodeIterator getPermissions(Context context)
+			throws ActionExecutionException, RepositoryException {
 		JackrabbitSession session = context.getSession();
 		String path = PERMISSION_STORE_PATH + context.getCurrentAuthorizable().getID();
 		NodeIterator result = null;
