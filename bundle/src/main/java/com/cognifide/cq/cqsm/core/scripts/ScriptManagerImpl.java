@@ -143,6 +143,7 @@ public class ScriptManagerImpl implements ScriptManager {
 		return process(script, mode, Maps.<String, String>newHashMap(), resolver);
 	}
 
+	@Override
 	public Progress process(Script script, final Mode mode, final Map<String, String> customDefinitions,
 			ResourceResolver resolver) throws RepositoryException, PersistenceException {
 		Progress progress;
@@ -180,6 +181,7 @@ public class ScriptManagerImpl implements ScriptManager {
 		return evaluate(scriptContent, mode, Maps.<String, String>newHashMap(), resolver);
 	}
 
+	@Override
 	public Progress evaluate(String scriptContent, Mode mode, Map<String, String> customDefinitions,
 			ResourceResolver resolver) throws RepositoryException, PersistenceException {
 		Script script = scriptFinder.find(ScriptManager.FILE_FOR_EVALUATION, false, resolver);

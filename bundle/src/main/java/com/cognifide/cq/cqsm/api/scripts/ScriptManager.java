@@ -41,10 +41,22 @@ public interface ScriptManager {
 	Progress process(final Script script, final Mode mode, ResourceResolver resolver)
 			throws RepositoryException, PersistenceException;
 
+
+	/**
+	 * Fail-safe execution of script in concrete mode (dry run, automatic execution, validation)
+	 */
+	Progress process(final Script script, final Mode mode, Map<String, String> customDefinitions, ResourceResolver resolver)
+			throws RepositoryException, PersistenceException;
+
 	/**
 	 * Fail-safe script content execution in concrete mode
 	 */
 	Progress evaluate(String scriptContent, Mode mode, ResourceResolver resolver)
+			throws RepositoryException, PersistenceException;
+	/**
+	 * Fail-safe script content execution in concrete mode
+	 */
+	Progress evaluate(String scriptContent, Mode mode, Map<String, String> customDefinitions, ResourceResolver resolver)
 			throws RepositoryException, PersistenceException;
 
 	/**
