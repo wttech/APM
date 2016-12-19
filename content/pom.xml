@@ -10,6 +10,13 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>cqsm-bundle</artifactId>
             <version>${project.version}</version>
+            <classifier>no-actions</classifier>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>cqsm-bundle</artifactId>
+            <version>${project.version}</version>
+            <classifier>with-actions</classifier>
         </dependency>
     </dependencies>
     <parent>
@@ -52,33 +59,91 @@
                     <name>apm</name>
                     <group>com.cognifide.aem</group>
                     <filterSource>src/main/content/META-INF/vault/filter.xml</filterSource>
-                    <embeddeds>
-                        <embedded>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>cqsm-bundle</artifactId>
-                            <target>/apps/cqsm/install</target>
-                        </embedded>
-                        <embedded>
-                            <groupId>com.cognifide.cq.actions</groupId>
-                            <artifactId>com.cognifide.cq.actions.api</artifactId>
-                            <target>/apps/cqsm/install</target>
-                        </embedded>
-                        <embedded>
-                            <groupId>com.cognifide.cq.actions</groupId>
-                            <artifactId>com.cognifide.cq.actions.core</artifactId>
-                            <target>/apps/cqsm/install</target>
-                        </embedded>
-                        <embedded>
-                            <groupId>com.cognifide.cq.actions</groupId>
-                            <artifactId>com.cognifide.cq.actions.msg.replication</artifactId>
-                            <target>/apps/cqsm/install</target>
-                        </embedded>
-                    </embeddeds>
                     <targetURL>http://${crx.host}:${crx.port}/crx/packmgr/service.jsp</targetURL>
                     <properties>
                         <acHandling>merge</acHandling>
                     </properties>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>dependencies-embed</id>
+                        <goals>
+                            <goal>package</goal>
+                        </goals>
+                        
+                        <configuration>
+                            <finalName>${project.build.finalName}-embed</finalName>
+                            <embeddeds>
+                                <embedded>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>cqsm-bundle</artifactId>
+                                    <classifier>with-actions</classifier>
+                                    <target>/apps/cqsm/install</target>
+                                </embedded>
+                            </embeddeds>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>dependencies-install</id>
+                        <goals>
+                            <goal>package</goal>
+                        </goals>
+                        <configuration>
+                            <embeddeds>
+                                <embedded>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>cqsm-bundle</artifactId>
+                                    <classifier>no-actions</classifier>
+                                    <target>/apps/cqsm/install</target>
+                                </embedded>
+                                <embedded>
+                                    <groupId>com.cognifide.cq.actions</groupId>
+                                    <artifactId>com.cognifide.cq.actions.api</artifactId>
+                                    <target>/apps/cqsm/install</target>
+                                </embedded>
+                                <embedded>
+                                    <groupId>com.cognifide.cq.actions</groupId>
+                                    <artifactId>com.cognifide.cq.actions.core</artifactId>
+                                    <target>/apps/cqsm/install</target>
+                                </embedded>
+                                <embedded>
+                                    <groupId>com.cognifide.cq.actions</groupId>
+                                    <artifactId>com.cognifide.cq.actions.msg.replication</artifactId>
+                                    <target>/apps/cqsm/install</target>
+                                </embedded>
+                            </embeddeds>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>install-embed-package</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <file>${project.build.directory}\${project.build.finalName}-embed.zip</file>
+                            <pomFile>${basedir}\pom.xml</pomFile>
+                            <classifier>embed</classifier>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>install-default-package</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <file>${project.build.directory}\${project.build.finalName}.zip</file>
+                            <pomFile>${basedir}\pom.xml</pomFile>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

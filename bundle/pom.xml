@@ -120,6 +120,18 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.cognifide.cq.actions</groupId>
+            <artifactId>com.cognifide.cq.actions.api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.cognifide.cq.actions</groupId>
+            <artifactId>com.cognifide.cq.actions.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.cognifide.cq.actions</groupId>
+            <artifactId>com.cognifide.cq.actions.msg.replication</artifactId>
+        </dependency>
     </dependencies>
     <parent>
         <groupId>com.cognifide.cq</groupId>
@@ -146,6 +158,7 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
+                	<classifier>no-actions</classifier>
                     <instructions>
                         <Export-Package>
                             com.cognifide.cq.cqsm.foundation.actions.*;com.cognifide.cq.cqsm.api.*;com.cognifide.cq.cqsm.core.models.*;com.cognifide.cq.cqsm.core.automaticexecutor.*;version="${project.version}"
@@ -160,6 +173,21 @@
                         <CQ-Security-Management-Actions>com.cognifide.cq.cqsm.foundation.actions</CQ-Security-Management-Actions>
                     </instructions>
                 </configuration>
+                <executions>
+                	<execution>
+                	    <id>package-with-emedded-action</id>
+                	    <phase>package</phase>
+                	    <goals>
+					        <goal>bundle</goal>
+					    </goals>
+                		<configuration>
+                			<classifier>with-actions</classifier>
+                        	<instructions>
+                				<Embed-Dependency>gson,guava,com.cognifide.cq.actions.api,com.cognifide.cq.actions.core,com.cognifide.cq.actions.msg.replication</Embed-Dependency>
+                			</instructions>
+                    	</configuration>
+                	</execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.sling</groupId>
