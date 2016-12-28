@@ -384,6 +384,8 @@
                             <exclude>**/*.zip</exclude>
                             <exclude>**/*.xml</exclude>
 
+                            <!-- Documentation module -->
+                            <exclude>**/documentation/*</exclude>
 
                             <!-- Eclipse files -->
                             <exclude>**/.project</exclude>
