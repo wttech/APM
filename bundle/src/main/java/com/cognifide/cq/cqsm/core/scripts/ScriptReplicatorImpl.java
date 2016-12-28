@@ -91,10 +91,10 @@ public class ScriptReplicatorImpl implements ScriptReplicator {
 
 		for (final Script include : includes) {
 			final String path = (script.equals(include) ? SCRIPT_PATH : REPLICATION_PATH) + "/" + FilenameUtils
-					.getName(script.getPath());
+					.getName(include.getPath());
 
-			LOG.warn("Copying {} to {}", script.getPath(), includeDir.getPath());
-			copy(resolver, script.getPath(), includeDir);
+			LOG.warn("Copying {} to {}", include.getPath(), includeDir.getPath());
+			copy(resolver, include.getPath(), includeDir);
 			resolver.commit();
 
 			final Session session = resolver.adaptTo(Session.class);
