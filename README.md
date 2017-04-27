@@ -11,7 +11,7 @@
 APM (**A**EM **P**ermission **M**anagement) is an AEM based tool focused on streamlining the permission configuration. It provides a rich UX console tailored for administrators. They can write human readable scripts that handle user/group creation/deletion and permissions application, both in bulk. Through it's flexible grammar, exposed API, and high extensibility it vastly improves **permission**-based implementations.
 
 ## How to start
-To start using **APM** an AEM 6.1 or 6.2 version running on top of Java 7 is required.
+To start using **APM** an AEM 6.1, 6.2 and 6.3 version running on top of Java 7 is required.
 
 The AEM package is available [here](https://github.com/Cognifide/APM/releases/download/2.0.0-beta/apm-2.0.0-beta.zip). For the full installation details, please refer to the [Installation Guide](https://github.com/Cognifide/apm/wiki/Installing) in the documentation.
 
