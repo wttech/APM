@@ -144,7 +144,7 @@
     <parent>
         <groupId>com.cognifide.cq</groupId>
         <artifactId>cqsm</artifactId>
-        <version>3.0.1-SNAPSHOT</version>
+        <version>3.0.0</version>
     </parent>
     <!-- Build Settings -->
     <build>
