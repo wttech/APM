@@ -48,6 +48,8 @@ public class ScriptRunnerJobManagerImpl implements ScriptRunnerJobManager {
 
 	public static final String MODE_NAME_PROPERTY_NAME = "modeName";
 
+	public static final String USER_NAME_PROPERTY_NAME = "userName";
+
 	@Reference
 	private JobManager jobManager;
 
@@ -59,6 +61,7 @@ public class ScriptRunnerJobManagerImpl implements ScriptRunnerJobManager {
 		final Map<String, Object> props = new HashMap<>();
 		props.put(SCRIPT_PATH_PROPERTY_NAME, parameters.getSearchPath());
 		props.put(MODE_NAME_PROPERTY_NAME, parameters.getModeName());
+		props.put(USER_NAME_PROPERTY_NAME, parameters.getUserName());
 		return jobManager.addJob(JOB_SCRIPT_RUN_TOPIC, props);
 
 	}
