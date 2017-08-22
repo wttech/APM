@@ -19,16 +19,12 @@
  */
 package com.cognifide.cq.cqsm.core.executors;
 
-import com.cognifide.cq.cqsm.api.executors.Mode;
-import com.cognifide.cq.cqsm.api.logger.Progress;
-import com.cognifide.cq.cqsm.api.scripts.EventListener;
-import com.cognifide.cq.cqsm.api.scripts.Script;
-import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
-import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
-import com.cognifide.cq.cqsm.core.Cqsm;
-import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
-import com.cognifide.cq.cqsm.core.utils.sling.OperateCallback;
-import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper;
+import static com.cognifide.cq.cqsm.core.scripts.ScriptFilters.filterOnStart;
+
+import java.util.List;
+import java.util.Set;
+
+import javax.jcr.RepositoryException;
 
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
@@ -38,16 +34,23 @@ import org.apache.felix.scr.annotations.Reference;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.settings.SlingSettingsService;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-
-import javax.jcr.RepositoryException;
-
-import static com.cognifide.cq.cqsm.core.scripts.ScriptFilters.filterOnStart;
+import com.cognifide.cq.cqsm.api.executors.Mode;
+import com.cognifide.cq.cqsm.api.logger.Progress;
+import com.cognifide.cq.cqsm.api.scripts.EventListener;
+import com.cognifide.cq.cqsm.api.scripts.Script;
+import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
+import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
+import com.cognifide.cq.cqsm.core.Cqsm;
+import com.cognifide.cq.cqsm.core.scripts.ScriptUtils;
+import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
+import com.cognifide.cq.cqsm.core.utils.sling.OperateCallback;
+import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper;
 
 @Component(immediate = true)
 @Properties({@Property(name = Constants.SERVICE_DESCRIPTION, value = "CQSM Startup Executor"),
@@ -70,6 +73,9 @@ public class StartupExecutor {
 
 	@Reference
 	private ResourceResolverFactory resolverFactory;
+	
+	@Reference
+	private SlingSettingsService slingSettingsService;
 
 	@Activate
 	private synchronized void activate(ComponentContext ctx) {
@@ -83,12 +89,14 @@ public class StartupExecutor {
 
 	private void runOnStartup(ResourceResolver resolver) throws PersistenceException {
 		final List<Script> scripts = scriptFinder.findAll(filterOnStart(resolver), resolver);
+		Set<String> instanceRunModes = slingSettingsService.getRunModes();
 		if (scripts.size() > 0) {
 			LOG.info("Startup script executor is trying to execute scripts on startup: {}", scripts.size());
 			LOG.info(MessagingUtils.describeScripts(scripts));
-
 			for (Script script : scripts) {
-				runScript(resolver, script);
+			  if(ScriptUtils.isAllowToExecute(instanceRunModes, script.getPath())) {
+			    runScript(resolver, script);
+			  }
 			}
 		} else {
 			LOG.info("Startup script executor has nothing to do");
