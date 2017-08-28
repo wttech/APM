@@ -21,11 +21,22 @@ package com.cognifide.cq.cqsm.core.executors;
 
 import static com.cognifide.cq.cqsm.core.scripts.ScriptFilters.filterOnStart;
 
+import com.cognifide.cq.cqsm.api.executors.Mode;
+import com.cognifide.cq.cqsm.api.logger.Progress;
+import com.cognifide.cq.cqsm.api.scripts.EventListener;
+import com.cognifide.cq.cqsm.api.scripts.Script;
+import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
+import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
+import com.cognifide.cq.cqsm.core.Cqsm;
+import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
+import com.cognifide.cq.cqsm.core.utils.sling.OperateCallback;
+import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper;
 import java.util.List;
 import java.util.Set;
-
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.jcr.RepositoryException;
-
+import org.apache.commons.lang.StringUtils;
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Properties;
@@ -39,18 +50,6 @@ import org.osgi.framework.Constants;
 import org.osgi.service.component.ComponentContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.cognifide.cq.cqsm.api.executors.Mode;
-import com.cognifide.cq.cqsm.api.logger.Progress;
-import com.cognifide.cq.cqsm.api.scripts.EventListener;
-import com.cognifide.cq.cqsm.api.scripts.Script;
-import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
-import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
-import com.cognifide.cq.cqsm.core.Cqsm;
-import com.cognifide.cq.cqsm.core.scripts.ScriptUtils;
-import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
-import com.cognifide.cq.cqsm.core.utils.sling.OperateCallback;
-import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper;
 
 @Component(immediate = true)
 @Properties({@Property(name = Constants.SERVICE_DESCRIPTION, value = "CQSM Startup Executor"),
@@ -89,14 +88,13 @@ public class StartupExecutor {
 
 	private void runOnStartup(ResourceResolver resolver) throws PersistenceException {
 		final List<Script> scripts = scriptFinder.findAll(filterOnStart(resolver), resolver);
-		Set<String> instanceRunModes = slingSettingsService.getRunModes();
 		if (scripts.size() > 0) {
 			LOG.info("Startup script executor is trying to execute scripts on startup: {}", scripts.size());
 			LOG.info(MessagingUtils.describeScripts(scripts));
 			for (Script script : scripts) {
-			  if(ScriptUtils.isAllowToExecute(instanceRunModes, script.getPath())) {
-			    runScript(resolver, script);
-			  }
+				if (isAllowedToExecute(script.getPath())) {
+					runScript(resolver, script);
+				}
 			}
 		} else {
 			LOG.info("Startup script executor has nothing to do");
@@ -125,5 +123,21 @@ public class StartupExecutor {
 		} else {
 			LOG.error("Script cannot be executed properly: {}", scriptPath);
 		}
+	}
+
+	private boolean isAllowedToExecute(String path) {
+		boolean isAllowed = false;
+		if (!path.contains("config.")) {
+			isAllowed = true;
+		} else {
+			Pattern pattern = Pattern.compile("config.+/");
+			Matcher matcher = pattern.matcher(path);
+			if (matcher.find()) {
+				String config = matcher.group(0);
+				String instance = StringUtils.removeStart(config, "config.").replaceAll("/", "");
+				isAllowed = slingSettingsService.getRunModes().contains(instance);
+			}
+		}
+		return isAllowed;
 	}
 }

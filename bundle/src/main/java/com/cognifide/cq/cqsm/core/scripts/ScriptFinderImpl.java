@@ -19,10 +19,14 @@
  */
 package com.cognifide.cq.cqsm.core.scripts;
 
+import com.cognifide.cq.cqsm.api.scripts.Script;
+import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
+import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
+import com.cognifide.cq.cqsm.core.Cqsm;
+import com.google.common.collect.ImmutableList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.io.FilenameUtils;
@@ -35,12 +39,6 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.framework.Constants;
 
-import com.cognifide.cq.cqsm.api.scripts.Script;
-import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
-import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
-import com.cognifide.cq.cqsm.core.Cqsm;
-import com.google.common.collect.ImmutableList;
-
 @Component
 @Service
 @Properties({@Property(name = Constants.SERVICE_DESCRIPTION, value = "CQSM Script Finder Service"),
@@ -52,7 +50,7 @@ public class ScriptFinderImpl implements ScriptFinder {
 	private static final String SCRIPT_PATH = ROOT_PATH + "/cqsmImport";
 
 	private static final String INCLUDE_PATH = ROOT_PATH + "/cqsmInclude";
-	
+
 	@Override
 	public List<Script> findAll(Predicate filter, ResourceResolver resolver) {
 		final List<Script> scripts = findAll(resolver);
@@ -106,19 +104,16 @@ public class ScriptFinderImpl implements ScriptFinder {
 		return result;
 	}
 
-	private List<Script> getScripts(Iterator<Resource> scriptIterator, boolean skipIgnored) {
-		List<Script> scripts = new LinkedList<>();
-		while (scriptIterator.hasNext()) {
-			Resource resource = scriptIterator.next();
-			if (!skipIgnored || isNotIgnoredPath(resource.getPath())) {
-				Script script = resource.adaptTo(ScriptImpl.class);
-				if (script != null) {
-					scripts.add(script);
-				}
-			}
-		}
-		return scripts;
-	}
+  private List<Script> getScripts(Iterator<Resource> scriptIterator, boolean skipIgnored) {
+    List<Script> scripts = new LinkedList<>();
+    while (scriptIterator.hasNext()) {
+      Resource resource = scriptIterator.next();
+      if (!skipIgnored || isNotIgnoredPath(resource.getPath())) {
+        scripts.addAll(checkIfScriptIsNotNull(resource));
+      }
+    }
+    return scripts;
+  }
 
 	private boolean isNotIgnoredPath(String path) {
 		return !ScriptManager.FILE_FOR_EVALUATION.equals(FilenameUtils.getBaseName(path));
@@ -130,28 +125,31 @@ public class ScriptFinderImpl implements ScriptFinder {
 				.add(INCLUDE_PATH) //
 				.build();
 	}
-	
-	private boolean isConfigNode(Resource resource) {
-		return resource.getPath().contains("config.");
-	}
-	
-	private List<Script> getAllChildNodes(Iterator<Resource> root, boolean skipIgnored) {
-	  List<Script> scripts = new LinkedList<>();
-	  while (root.hasNext()) {
-	    Resource resource = root.next();
-	    if ((!skipIgnored || isNotIgnoredPath(resource.getPath())) && !isConfigNode(resource)) {
-	      Script script = resource.adaptTo(ScriptImpl.class);
-	      if (script != null) {
-	        scripts.add(script);
-	      }
 
-	    } else {
-	      Iterator<Resource> children = resource.listChildren();
-	      scripts.addAll(getScripts(children, skipIgnored));
-	    }
-	  }
-	  return scripts;
-	}
+  private boolean isConfigNode(String path) {
+    return path.contains("config.");
+  }
 
+  private List<Script> getAllChildNodes(Iterator<Resource> root, boolean skipIgnored) {
+    List<Script> scripts = new LinkedList<>();
+    while (root.hasNext()) {
+      Resource resource = root.next();
+      if ((!skipIgnored || isNotIgnoredPath(resource.getPath())) && !isConfigNode(resource.getPath())) {
+        scripts.addAll(checkIfScriptIsNotNull(resource));
+      } else {
+        Iterator<Resource> children = resource.listChildren();
+        scripts.addAll(getScripts(children, skipIgnored));
+      }
+    }
+    return scripts;
+  }
 
+  private List<Script> checkIfScriptIsNotNull(Resource resource) {
+    List<Script> scripts = new LinkedList<>();
+    Script script = resource.adaptTo(ScriptImpl.class);
+    if (script != null) {
+      scripts.add(script);
+    }
+    return scripts;
+  }
 }

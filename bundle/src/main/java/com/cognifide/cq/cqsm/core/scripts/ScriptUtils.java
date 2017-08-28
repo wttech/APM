@@ -20,6 +20,10 @@
 
 package com.cognifide.cq.cqsm.core.scripts;
 
+import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
+import com.cognifide.cq.cqsm.api.scripts.Script;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,14 +32,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
-
-import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
-import com.cognifide.cq.cqsm.api.scripts.Script;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 public abstract class ScriptUtils {
 
@@ -94,22 +92,6 @@ public abstract class ScriptUtils {
 		}
 
 		return GSON.toJson(results);
-	}
-	
-	public static boolean isAllowToExecute(Set<String> instanceRunModes, String path) {
-	  if(!path.contains("config.")) {
-	    return true;
-	  } else {
-	    Pattern pattern = Pattern.compile("config.+/");
-	    Matcher matcher = pattern.matcher(path);
-	    if (matcher.find())
-	    {
-	      String config = matcher.group(0);
-	      String instance = StringUtils.removeStart(config, "config.").replaceAll("/", "");
-	      return instanceRunModes.contains(instance);
-	    }
-	    return false;
-	  }
 	}
 
 }
