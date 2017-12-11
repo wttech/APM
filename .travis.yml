@@ -1,7 +1,8 @@
 language: java
 jdk:
+  - openjdk7
   - oraclejdk8
-  - oraclejdk7
+  - oraclejdk9
 notifications:
   email:
     - mateusz.chrominski@cognifide.com
