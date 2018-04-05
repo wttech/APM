@@ -33,7 +33,7 @@
             <dependency>
                 <groupId>com.adobe.aem</groupId>
                 <artifactId>uber-jar</artifactId>
-                <version>6.3.0</version>
+                <version>6.4.0</version>
                 <scope>provided</scope>
                 <classifier>apis</classifier>
             </dependency>
@@ -95,19 +95,19 @@
             <dependency>
                 <groupId>com.cognifide.cq.actions</groupId>
                 <artifactId>com.cognifide.cq.actions.api</artifactId>
-                <version>6.0.2</version>
+                <version>6.4.0</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>com.cognifide.cq.actions</groupId>
                 <artifactId>com.cognifide.cq.actions.core</artifactId>
-                <version>6.0.2</version>
+                <version>6.4.0</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>com.cognifide.cq.actions</groupId>
                 <artifactId>com.cognifide.cq.actions.msg.replication</artifactId>
-                <version>6.0.2</version>
+                <version>6.4.0</version>
                 <scope>compile</scope>
             </dependency>
             <!-- apache commons -->

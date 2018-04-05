@@ -55,7 +55,6 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.api.resource.ResourceUtil;
 import org.apache.sling.api.resource.ValueMap;
-import org.apache.sling.jcr.resource.JcrResourceConstants;
 import org.osgi.framework.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -217,7 +216,7 @@ public class HistoryImpl implements History {
 			private Resource createHistoryComponent(Page historyPage) throws PersistenceException {
 				ResourceResolver resourceResolver = historyPage.getContentResource().getResourceResolver();
 				Map<String, Object> props = ImmutableMap.<String, Object> builder()//
-							.put(JcrResourceConstants.SLING_RESOURCE_TYPE_PROPERTY, HISTORY_COMPONENT_RESOURCE_TYPE) //
+							.put(ResourceResolver.PROPERTY_RESOURCE_TYPE, HISTORY_COMPONENT_RESOURCE_TYPE) //
 							.build();
 				return resourceResolver.create(historyPage.getContentResource(), HISTORY_COMPONENT, props);
 			}
