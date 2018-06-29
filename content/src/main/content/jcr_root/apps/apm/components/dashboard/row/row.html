@@ -17,37 +17,38 @@
 * limitations under the License.
 * =========================LICENSE_END==================================
 */ -->
-<sly data-sly-use.model="com.cognifide.cq.cqsm.core.models.DashboardRowModel"/>
-<tr class="foundation-collection-model ${(model.folder) && 'foundation-collection-navigator'}"
+<sly data-sly-use.model="com.cognifide.cq.cqsm.core.models.RowModel"/>
+<tr class="foundation-collection-model ${item.folder && 'foundation-collection-navigator'}"
     data-foundation-collection-model-id="${resource.path}" data-path="${resource.path}"
     data-type="${model.resourceType}"
     data-foundation-collection-navigator-href="/apm/dashboard.html${resource.path}"
-    data-timeline="true" is="coral-table-row" data-title="${model.title}">
+    data-timeline="true" is="coral-table-row" data-title="${model.scriptName}">
     <td is="coral-table-cell" coral-table-rowselect>
-        <coral-icon class="foundation-collection-model-thumbnail" icon="${model.folder ? 'folder' : model.iconName}" role="img"/>
+        <coral-icon class="foundation-collection-model-thumbnail" icon="${model.folder ? 'folder' : 'fileKey'}" role="img"/>
     </td>
-    <td is="coral-table-cell" value="${model.title}">
-        ${model.title}
+    <td is="coral-table-cell" value="${model.scriptName}">
+        <a class="foundation-layout-table-cellwrapper" data-sly-test.link="${model.folder}" href="/apm/dashboard.html${resource.path}">${model.scriptName}</a>
+        <sly data-sly-test="${!link}" >${model.scriptName}</sly>
     </td>
-    <td is="coral-table-cell" value="${model.title}">
+    <td is="coral-table-cell" value="${model.author}">
         ${model.author}
     </td>
-    <td is="coral-table-cell" value="${model.title}">
-        ${model.valid}
+    <td is="coral-table-cell" value="${model.valid}">
+        <coral-icon class="foundation-collection-model-thumbnail" icon="${model.valid ? 'check' : 'close'}" role="img"/>
     </td>
-    <td is="coral-table-cell" value="${model.title}">
-        ${model.executable}
+    <td is="coral-table-cell" value="${model.executionEnabled}">
+        <coral-icon class="foundation-collection-model-thumbnail" icon="${model.executionEnabled ? 'check' : 'close'}" role="img"/>
     </td>
     <td is="coral-table-cell" value="${model.lastModified.timeInMillis || 0}">
         <time datetime="${model.lastModified.timeInMillis || 0}"
               data-sly-use.modified="${'com.adobe.cq.xf.ui.DateFormatter' @ date=model.lastModified, relativeFormat='r'}">
-            ${modified.lastUpdated}
+            ${model.lastModified}
         </time>
     </td>
     <td is="coral-table-cell" value="${model.publishedDate.timeInMillis || 0}">
         <time data-sly-test.published="${model.publishedDate}" datetime="${model.publishedDate.timeInMillis || 0}"
               data-sly-use.published="${'com.adobe.cq.xf.ui.DateFormatter' @ date=model.publishedDate, relativeFormat='r'}">
-            ${published.lastRun}
+            ${model.executionLast}
         </time>
         <!--<span data-sly-test="${!published}" >${'Not published' @ i18n}</span>-->
         <!--<meta class="foundation-collection-quickactions" data-foundation-collection-quickactions-rel="${model.quickactionsRel @join=' '}">-->
@@ -55,7 +56,7 @@
     <td is="coral-table-cell" value="${model.lastModified.timeInMillis || 0}">
         <time datetime="${model.lastModified.timeInMillis || 0}"
               data-sly-use.modified="${'com.adobe.cq.xf.ui.DateFormatter' @ date=model.lastModified, relativeFormat='r'}">
-            ${modified.lastDryRun}
+            ${model.executionSchedule}
         </time>
     </td>
     <!--<td is="coral-table-cell" alignment="right">-->

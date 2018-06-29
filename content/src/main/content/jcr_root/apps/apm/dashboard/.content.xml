@@ -32,7 +32,7 @@
                     modeGroup="cq-experience-fragments-admin-childpages"
                     path="${requestPathInfo.suffix}"
                     rootPath="/conf/apm/scripts"
-                    rowReorderAction="/bin/wcmcommand?cmd=movePage&amp;srcPath={item}&amp;destPath={item}&amp;before={before}&amp;_charset_=utf-8&amp;"
+                    rowReorderAction=""
                     selectionMode="row"
                     size="${empty requestPathInfo.selectors[1] ? &quot;40&quot; : requestPathInfo.selectors[1]}"
                     sortMode="remote"
@@ -76,21 +76,15 @@
                 </columns>
                 <datasource
                         jcr:primaryType="nt:unstructured"
-                        sling:resourceType="cq/gui/components/common/wcm/datasources/childpages"
-                        itemResourceType="apm/components/dashboard/row"
-                        limit="${empty requestPathInfo.selectors[1] ? &quot;41&quot; : requestPathInfo.selectors[1] + 1}"
-                        offset="${requestPathInfo.selectors[0]}"
-                        path="${requestPathInfo.suffix}"
-                        sortDir="${param.sortDir}"
-                        sortName="${param.sortName}"/>
+                        sling:resourceType="apm/scripts"/>
             </list>
         </views>
         <breadcrumbs
                 jcr:primaryType="nt:unstructured"
                 sling:resourceType="wcm/commons/ui/shell/datasources/breadcrumbs"
                 path="${requestPathInfo.suffix}"
-                rootPath="/etc/bridge/collections"
-                rootTitle="Data Collections"/>
+                rootPath="/conf/apm/scripts"
+                rootTitle="Scripts Root"/>
         <actions jcr:primaryType="nt:unstructured">
             <secondary jcr:primaryType="nt:unstructured">
                 <create
@@ -100,23 +94,21 @@
                         text="Create"
                         variant="primary">
                     <items jcr:primaryType="nt:unstructured">
-                        <createcollection
-                                granite:comment="The actionlink uses the URI derived from the `href.uritemplate` value on the `data` node. The `href` attribute is  only used externally (e.g. HApi tests), not by the actionlink itself"
+                        <importscript
                                 granite:rel="cq-experiencefragments-admin-create-xf"
                                 jcr:primaryType="nt:unstructured"
                                 sling:resourceType="granite/ui/components/coral/foundation/collection/actionlink"
                                 action="foundation.link"
-                                href="/apps/accelerator/bridge/wizards/createcollection.html${requestPathInfo.suffix}"
-                                icon="collectionAdd"
+                                href="/apps/apm/edit.html"
+                                icon="fileAdd"
                                 relScope="collection"
                                 target=".cq-experience-fragments-admin-childpages"
-                                text="Data Collection">
+                                text="Create Script">
                             <data
                                     jcr:primaryType="nt:unstructured"
-                                    href.uritemplate="/apps/accelerator/bridge/wizards/createcollection.html{+id}"/>
-                        </createcollection>
+                                    href.uritemplate="/apps/apm/edit.html{+id}"/>
+                        </importscript>
                         <createfolder
-                                granite:comment="The actionlink uses the URI derived from the `href.uritemplate` value on the `data` node. The `href` attribute is  only used externally (e.g. HApi tests), not by the actionlink itself"
                                 granite:id="cq-experiencefragments-admin-createfolder"
                                 granite:rel="cq-siteadmin-admin-createfolder"
                                 jcr:primaryType="nt:unstructured"
@@ -136,67 +128,67 @@
                 </create>
             </secondary>
             <selection jcr:primaryType="nt:unstructured">
-                <viewproperties
+                <edit
                         granite:class="cq-siteadmin-admin-actions-properties-activator"
                         granite:comment="This button requires custom logic to show/hide, hence `activeSelectionCount` is not used"
                         jcr:primaryType="nt:unstructured"
                         sling:resourceType="granite/ui/components/coral/foundation/collection/action"
                         action="foundation.link"
                         activeSelectionCount="single"
-                        icon="infoCircle"
+                        icon="pencil"
                         relScope="item"
                         target=".cq-experience-fragments-admin-childpages"
-                        text="Properties"
+                        text="Edit"
                         variant="actionBar">
                     <data
                             jcr:primaryType="nt:unstructured"
-                            href.uritemplate="/mnt/overlay/wcm/core/content/sites/properties.html{?item*}"/>
-                </viewproperties>
-                <viewfolderproperties
+                            href.uritemplate="/apps/apm/edit.html{+item}"/>
+                </edit>
+                <dryrun
                         granite:rel="cq-siteadmin-admin-actions-folderproperties-activator"
                         jcr:primaryType="nt:unstructured"
                         sling:resourceType="granite/ui/components/coral/foundation/collection/action"
                         action="foundation.link"
                         activeSelectionCount="single"
-                        icon="infoCircle"
+                        icon="playCircle"
                         target=".cq-experience-fragments-admin-childpages"
-                        text="Properties"
+                        text="Dry Run"
                         variant="actionBar">
                     <data
                             jcr:primaryType="nt:unstructured"
                             href.uritemplate="/mnt/overlay/wcm/core/content/sites/folderproperties.html{+item}"/>
-                </viewfolderproperties>
-                <publish
+                </dryrun>
+                <runonauthor
                         granite:class="foundation-collection-action"
                         granite:rel="cq-siteadmin-admin-actions-publish-activator"
                         jcr:primaryType="nt:unstructured"
                         sling:resourceType="granite/ui/components/coral/foundation/collection/action"
                         action="cq.wcm.publish"
-                        icon="globe"
+                        icon="play"
                         relScope="collection"
                         target=".cq-experience-fragments-admin-childpages"
-                        text="Publish"
+                        text="Run on Author"
                         variant="actionBar">
                     <data
                             jcr:primaryType="nt:unstructured"
                             referenceSrc.url="/libs/wcm/core/content/reference.json?_charset_=utf-8{&amp;path*}"
                             wizardSrc.uritemplate="/mnt/overlay/wcm/core/content/sites/publishtemplatewizard.html?_charset_=utf-8{&amp;item*}"/>
-                </publish>
-                <unpublish
+                </runonauthor>
+                <runonpublish
                         granite:class="foundation-collection-action"
                         granite:rel="cq-siteadmin-admin-actions-unpublish-activator"
                         jcr:primaryType="nt:unstructured"
                         sling:resourceType="granite/ui/components/coral/foundation/collection/action"
                         action="cq.wcm.unpublish"
-                        icon="globeStrike"
+                        icon="play"
                         relScope="collection"
                         target=".cq-experience-fragments-admin-childpages"
-                        text="Unpublish"
+                        text="Run on Publish"
                         variant="actionBar">
                     <data
                             jcr:primaryType="nt:unstructured"
                             referenceSrc.url="/bin/wcm/references.json?_charset_=utf-8{&amp;path*}"/>
-                </unpublish>
+                </runonpublish>
                 <deletepage
                         granite:class="foundation-collection-action"
                         granite:rel="cq-siteadmin-admin-actions-delete-activator"
