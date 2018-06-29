@@ -34,10 +34,10 @@
         ${model.author}
     </td>
     <td is="coral-table-cell" value="${model.valid}">
-        <coral-icon class="foundation-collection-model-thumbnail" icon="${model.valid ? 'check' : 'close'}" role="img"/>
+        <coral-icon data-sly-test="${!model.folder}" class="foundation-collection-model-thumbnail" icon="${model.valid ? 'check' : 'close'}" role="img"/>
     </td>
     <td is="coral-table-cell" value="${model.executionEnabled}">
-        <coral-icon class="foundation-collection-model-thumbnail" icon="${model.executionEnabled ? 'check' : 'close'}" role="img"/>
+        <coral-icon data-sly-test="${!model.folder}" class="foundation-collection-model-thumbnail" icon="${model.executionEnabled ? 'check' : 'close'}" role="img"/>
     </td>
     <td is="coral-table-cell" value="${model.lastModified.timeInMillis || 0}">
         <time data-sly-test="${model.lastModified}" datetime="${model.lastModified.timeInMillis || 0}"
