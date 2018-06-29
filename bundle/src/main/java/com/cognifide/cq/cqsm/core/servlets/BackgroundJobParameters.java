@@ -25,9 +25,12 @@ public class BackgroundJobParameters {
 
 	private String modeName;
 
-	public BackgroundJobParameters(String searchPath, String modeName) {
+	private String userName;
+
+	public BackgroundJobParameters(String searchPath, String modeName, String userName) {
 		this.searchPath = searchPath;
 		this.modeName = modeName;
+		this.userName = userName;
 	}
 
 	public String getSearchPath() {
@@ -38,4 +41,7 @@ public class BackgroundJobParameters {
 		return modeName;
 	}
 
+	public String getUserName() {
+		return userName;
+	}
 }

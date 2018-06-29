@@ -25,7 +25,7 @@
     <!-- The Basics -->
     <groupId>com.cognifide.cq</groupId>
     <artifactId>cqsm</artifactId>
-    <version>2.1.1-SNAPSHOT</version>
+    <version>3.0.3</version>
     <packaging>pom</packaging>
     <dependencyManagement>
         <dependencies>
@@ -95,19 +95,19 @@
             <dependency>
                 <groupId>com.cognifide.cq.actions</groupId>
                 <artifactId>com.cognifide.cq.actions.api</artifactId>
-                <version>6.0.0</version>
+                <version>6.0.2</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>com.cognifide.cq.actions</groupId>
                 <artifactId>com.cognifide.cq.actions.core</artifactId>
-                <version>6.0.0</version>
+                <version>6.0.2</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>com.cognifide.cq.actions</groupId>
                 <artifactId>com.cognifide.cq.actions.msg.replication</artifactId>
-                <version>6.0.0</version>
+                <version>6.0.2</version>
                 <scope>compile</scope>
             </dependency>
             <!-- apache commons -->
@@ -482,7 +482,7 @@
     <scm>
         <connection>scm:git:git@github.com:Cognifide/apm.git</connection>
         <developerConnection>scm:git:git@github.com:Cognifide/apm.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>cqsm-3.0.3</tag>
         <url>https://github.com/Cognifide/apm</url>
     </scm>
     <!-- Repositories  -->
