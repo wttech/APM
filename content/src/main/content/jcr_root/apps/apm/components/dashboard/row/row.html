@@ -40,26 +40,21 @@
         <coral-icon class="foundation-collection-model-thumbnail" icon="${model.executionEnabled ? 'check' : 'close'}" role="img"/>
     </td>
     <td is="coral-table-cell" value="${model.lastModified.timeInMillis || 0}">
-        <time datetime="${model.lastModified.timeInMillis || 0}"
-              data-sly-use.modified="${'com.adobe.cq.xf.ui.DateFormatter' @ date=model.lastModified, relativeFormat='r'}">
-            ${model.lastModified}
+        <time data-sly-test="${model.lastModified}" datetime="${model.lastModified.timeInMillis || 0}"
+              data-sly-use.lastMod="${'com.adobe.cq.xf.ui.DateFormatter' @ date=model.lastModified, relativeFormat='r'}">
+            ${lastMod.date}
         </time>
     </td>
-    <td is="coral-table-cell" value="${model.publishedDate.timeInMillis || 0}">
-        <time data-sly-test.published="${model.publishedDate}" datetime="${model.publishedDate.timeInMillis || 0}"
-              data-sly-use.published="${'com.adobe.cq.xf.ui.DateFormatter' @ date=model.publishedDate, relativeFormat='r'}">
-            ${model.executionLast}
-        </time>
-        <!--<span data-sly-test="${!published}" >${'Not published' @ i18n}</span>-->
-        <!--<meta class="foundation-collection-quickactions" data-foundation-collection-quickactions-rel="${model.quickactionsRel @join=' '}">-->
-    </td>
-    <td is="coral-table-cell" value="${model.lastModified.timeInMillis || 0}">
-        <time datetime="${model.lastModified.timeInMillis || 0}"
-              data-sly-use.modified="${'com.adobe.cq.xf.ui.DateFormatter' @ date=model.lastModified, relativeFormat='r'}">
-            ${model.executionSchedule}
+    <td is="coral-table-cell" value="${model.executionLast.timeInMillis || 0}">
+        <time data-sly-test="${model.executionLast}" datetime="${model.executionLast.timeInMillis || 0}"
+              data-sly-use.execLast="${'com.adobe.cq.xf.ui.DateFormatter' @ date=model.executionLast, relativeFormat='r'}">
+            ${execLast.date}
         </time>
     </td>
-    <!--<td is="coral-table-cell" alignment="right">-->
-        <!--<button is="coral-button" variant="minimal" icon="dragHandle" coral-table-roworder></button>-->
-    <!--</td>-->
+    <td is="coral-table-cell" value="${model.executionSchedule.timeInMillis || 0}">${model.executionSchedule}
+        <time data-sly-test="${model.executionSchedule}" datetime="${model.executionSchedule.timeInMillis || 0}"
+              data-sly-use.execSched="${'com.adobe.cq.xf.ui.DateFormatter' @ date=model.executionSchedule, relativeFormat='r'}">
+            ${execSched.date}
+        </time>
+    </td>
 </tr>

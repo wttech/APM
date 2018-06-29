@@ -29,7 +29,9 @@ import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
 
 import javax.annotation.PostConstruct;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Set;
 
 @Model(adaptables = SlingHttpServletRequest.class)
@@ -62,16 +64,16 @@ public class RowModel {
         return script != null ? script.getAuthor() : "";
     }
 
-    public Date getExecutionLast() {
-        return script != null ? script.getExecutionLast() : null;
+    public Calendar getExecutionLast() {
+        return script != null ? asCalendar(script.getExecutionLast()) : null;
     }
 
-    public Date getLastModified() {
-        return script != null ? script.getLastModified() : null;
+    public Calendar getLastModified() {
+        return script != null ? asCalendar(script.getLastModified()) : null;
     }
 
-    public Date getExecutionSchedule() {
-        return script != null ? script.getExecutionSchedule() : null;
+    public Calendar getExecutionSchedule() {
+        return script != null ? asCalendar(script.getExecutionSchedule()) : null;
     }
 
     public Boolean isExecutionEnabled() {
@@ -88,6 +90,15 @@ public class RowModel {
 
     public Boolean isValid() {
         return script != null ? script.isValid() : null;
+    }
+
+    private Calendar asCalendar(Date date) {
+        if (date == null) {
+            return null;
+        }
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return calendar;
     }
 
 }
