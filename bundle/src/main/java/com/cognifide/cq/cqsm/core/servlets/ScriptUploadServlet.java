@@ -46,6 +46,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.jcr.RepositoryException;
 import javax.servlet.ServletException;
@@ -78,7 +79,9 @@ public class ScriptUploadServlet extends SlingAllMethodsServlet {
 				response.sendRedirect(getRedirectTo(request));
 			} else {
 				Map<String, Object> processingInfo = new HashMap<>();
-				processingInfo.put("uploadedScripts", scripts);
+
+				processingInfo.put("uploadedScripts",
+						ScriptUtils.convertToMaps(scripts));
 				ServletUtils.writeMessage(response, "success",
 						"File successfully saved", processingInfo);
 			}

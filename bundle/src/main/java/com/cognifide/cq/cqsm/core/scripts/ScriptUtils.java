@@ -79,21 +79,28 @@ public abstract class ScriptUtils {
 	}
 
 	public static String toJson(List<Script> scripts) {
+		final List<Map<String, Object>> results = convertToMaps(scripts);
+		return GSON.toJson(results);
+	}
+
+	public static List<Map<String, Object>> convertToMaps(final List<Script> scripts) {
 		final List<Map<String, Object>> results = new ArrayList<>();
 
 		for (final Script script : scripts) {
-			final HashMap<String, Object> result = new HashMap<>();
-
-			result.put("name", FilenameUtils.getBaseName(script.getPath()));
-			result.put("path", script.getPath());
-			result.put("verified", script.isValid());
-			result.put("executionEnabled", script.isExecutionEnabled());
-			result.put("executionMode", script.getExecutionMode());
-			result.put("executionSchedule", script.getExecutionSchedule());
-
-			results.add(result);
+			HashMap<String, Object> asMap = asMap(script);
+			results.add(asMap);
 		}
+		return results;
+	}
 
-		return GSON.toJson(results);
+	public static HashMap<String, Object> asMap(final Script script) {
+		final HashMap<String, Object> result = new HashMap<>();
+		result.put("name", FilenameUtils.getBaseName(script.getPath()));
+		result.put("path", script.getPath());
+		result.put("verified", script.isValid());
+		result.put("executionEnabled", script.isExecutionEnabled());
+		result.put("executionMode", script.getExecutionMode());
+		result.put("executionSchedule", script.getExecutionSchedule());
+		return result;
 	}
 }
