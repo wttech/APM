@@ -33,7 +33,7 @@
       this.$uploadButton = this.$el.find('#uploadButton').eq(0);
       this.$lastSavedOn = this.$el.find('.lastSavedOn').eq(0);
       this.initialValue = this.$textArea.val();
-      //this.editor = this.initEditor();
+      this.editor = this.initEditor();
       this.delegateEvents();
     }
 
@@ -99,56 +99,60 @@
           contentType: 'multipart/form-data; boundary=' + boundary,
           data: content.join('\r\n'),
           success: function (data) {
-            if (data.length > 0 && typeof data[0].name !== 'undefined') {
-              if (!self.isFileNameLocked()) {
-                self.changeFileName(data[0].name);
-              }
+            var scripts = data.uploadedScripts;
+            if (scripts.length > 0) {
               self.initialValue = value;
               self.$lastSavedOn.text('Last saved on: ' + new Date().toLocaleString());
-              helper.refreshParentWindow();
+              self.displayResponseFeedback(data);
             } else {
-              alert('Error while saving: ' + self.getFileName());
+              self.displayResponseFeedback({
+                type:'error',
+                message: 'Error while saving: ' + self.getFileName()
+              });
             }
+          },
+          error: function(response) {
+            self.displayResponseFeedback(response.responseJSON);
           }
         });
       },
-      // initEditor: function () {
-      //   var editor = null;
-      //
-      //   ace.config.set("basePath", "/etc/designs/cqsm/clientlibs/js/ace");
-      //   this.$textArea.hide();
-      //   editor = ace.edit("ace");
-      //
-      //   editor.setTheme("ace/theme/chrome");
-      //   editor.getSession().setMode("ace/mode/cqsm");
-      //   editor.getSession().setValue(this.initialValue);
-      //   ace.require(["ace/token_tooltip"], function (o) {
-      //     editor.tokenTooltip = new o.TokenTooltip(editor);
-      //   });
-      //
-      //   ace.require(["ace/ext/language_tools"], function () {
-      //     editor.setOptions({
-      //       enableBasicAutocompletion: true,
-      //       enableSnippets: true,
-      //       enableLiveAutocompletion: true
-      //     });
-      //   });
-      //
-      //   return editor;
-      // },
+      initEditor: function () {
+        var editor = null;
+
+        ace.config.set("basePath", "/apps/apm/clientlibs/js/ace");
+        this.$textArea.hide();
+        editor = ace.edit("ace");
+
+        editor.setTheme("ace/theme/chrome");
+        editor.getSession().setMode("ace/mode/cqsm");
+        editor.getSession().setValue(this.initialValue);
+        ace.require(["ace/token_tooltip"], function (o) {
+          editor.tokenTooltip = new o.TokenTooltip(editor);
+        });
+
+        ace.require(["ace/ext/language_tools"], function () {
+          editor.setOptions({
+            enableBasicAutocompletion: true,
+            enableSnippets: true,
+            enableLiveAutocompletion: true
+          });
+        });
+
+        return editor;
+      },
       delegateEvents: function () {
         var self = this;
 
-        // this.editor.getSession().on('change', function () {
-        //   self.$textArea.val(self.editor.getSession().getValue());
-        // });
+        this.editor.getSession().on('change', function () {
+          self.$textArea.val(self.editor.getSession().getValue());
+        });
 
         this.$showReference.click(function () {
           window.open(SHOW_REFERENCES_URL, '_blank');
         });
 
-        this.handleValidationResponse = function (response) {
-          var variant = response.error ? "error" : "success";
+        this.displayResponseFeedback = function (response) {
+          var variant = response.type == 'error' ? "error" : "success";
 
           var text = '';
           if (response.error) {
@@ -178,10 +182,10 @@
               content: self.$textArea.val()
             },
             success: function (response) {
-              self.handleValidationResponse(response);
+              self.displayResponseFeedback(response);
             },
             error: function (response) {
-              self.handleValidationResponse(response.responseJSON);
+              self.displayResponseFeedback(response.responseJSON);
             }
           });
         });

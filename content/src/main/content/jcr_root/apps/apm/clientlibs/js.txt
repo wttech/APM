@@ -1,2 +1,6 @@
 #base=js
+ace/ace.js
+ace/token_tooltip.js
+ace/snippets/cqsm.js
+ace/ext-language_tools.js
 apm-edit.js

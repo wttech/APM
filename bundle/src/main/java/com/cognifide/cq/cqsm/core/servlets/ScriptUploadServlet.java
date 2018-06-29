@@ -19,6 +19,7 @@
  */
 package com.cognifide.cq.cqsm.core.servlets;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
 import com.cognifide.cq.cqsm.api.scripts.Script;
@@ -42,6 +43,7 @@ import org.osgi.framework.Constants;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -75,11 +77,14 @@ public class ScriptUploadServlet extends SlingAllMethodsServlet {
 			if (shouldRedirect(request)) {
 				response.sendRedirect(getRedirectTo(request));
 			} else {
-				ServletUtils.writeJson(response, ScriptUtils.toJson(scripts));
+				Map<String, Object> processingInfo = new HashMap<>();
+				processingInfo.put("uploadedScripts", scripts);
+				ServletUtils.writeMessage(response, "success",
+						"File successfully saved", processingInfo);
 			}
 		} catch (RepositoryException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			ServletUtils.writeJson(response, "Cannot save script in repository: " + e.getMessage());
+			ServletUtils.writeMessage(response, "error", "Cannot save script in repository: " + e.getMessage());
 		}
 	}
 
