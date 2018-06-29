@@ -19,36 +19,39 @@
  */
 package com.cognifide.cq.cqsm.core.servlets;
 
+import com.cognifide.cq.cqsm.api.scriptrunnerjob.JobProgressOutput;
+import com.cognifide.cq.cqsm.core.Property;
+import com.cognifide.cq.cqsm.core.jobs.ScriptRunnerJobManager;
+import com.cognifide.cq.cqsm.core.utils.ServletUtils;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import com.cognifide.cq.cqsm.api.scriptrunnerjob.JobProgressOutput;
-import com.cognifide.cq.cqsm.core.jobs.ScriptRunnerJobManager;
-import com.cognifide.cq.cqsm.core.utils.ServletUtils;
-
 import org.apache.commons.lang.StringUtils;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
-import org.apache.felix.scr.annotations.sling.SlingServlet;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.apache.sling.event.jobs.Job;
-import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 import java.io.IOException;
 import java.util.Map;
 
+import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 
-@SlingServlet(paths = {"/bin/cqsm/run-background"}, methods = {"GET", "POST"})
-@Service
-@Properties({
-		@Property(name = Constants.SERVICE_DESCRIPTION, value = "CQSM Servlet for running scripts in background and checking theirs status"),
-		@Property(name = Constants.SERVICE_VENDOR, value = "Cognifide Ltd")})
+@Component(
+		immediate = true,
+		service = Servlet.class,
+		property = {
+				Property.PATH + "/bin/cqsm/run-background",
+				Property.METHOD + "GET",
+				Property.METHOD + "POST",
+				Property.DESCRIPTION + "CQSM Servlet for running scripts in background and checking theirs status",
+				Property.VENDOR
+		}
+)
 public class ScriptRunBackgroundServlet extends SlingAllMethodsServlet {
 
 	private static final String BACKGROUND_RESPONSE_TYPE = "background";

@@ -1,0 +1,24 @@
+allprojects  {
+    apply plugin: 'maven'
+
+    group = 'com.cognifide.cq'
+    version = '3.1.0-SNAPSHOT'
+
+    repositories {
+        mavenLocal()
+
+        maven { url "http://repo1.maven.org/maven2" }
+        maven { url "https://repo.adobe.com/nexus/content/groups/public/" }
+    }
+
+    plugins.withId 'com.cognifide.aem.base', {
+
+        // AEM configuration
+        aem {
+            config {
+                awaitStableCheck = { it.bundleState.stableExcept("org.apache.sling.jcr.webdav") }
+            }
+        }
+
+    }
+}

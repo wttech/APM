@@ -19,17 +19,13 @@
  */
 package com.cognifide.cq.cqsm.core.servlets;
 
-import com.cognifide.cq.cqsm.core.Cqsm;
+import com.cognifide.cq.cqsm.core.Property;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Service;
-import org.apache.felix.scr.annotations.sling.SlingServlet;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
-import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,14 +34,19 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 
+import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 
-@SlingServlet(paths = {"/bin/cqsm/executionResultDownload"}, methods = {"POST"})
-@Service
-// @formatter:off
-@Properties({@Property(name = Constants.SERVICE_DESCRIPTION, value = "Execution result Servlet"),
-		@Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)})
-// @formatter:on
+@Component(
+		immediate = true,
+		service = Servlet.class,
+		property = {
+				Property.PATH + "/bin/cqsm/executionResultDownload",
+				Property.METHOD + "POST",
+				Property.DESCRIPTION + "Execution result Servlet",
+				Property.VENDOR
+		}
+)
 public class ScriptResultServlet extends SlingAllMethodsServlet {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ScriptResultServlet.class);

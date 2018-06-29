@@ -19,8 +19,6 @@
  */
 package com.cognifide.cq.cqsm.core.executors;
 
-import com.google.common.collect.ImmutableMap;
-
 import com.cognifide.cq.cqsm.api.executors.Mode;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.scripts.ExecutionMode;
@@ -28,16 +26,13 @@ import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
 import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
 import com.cognifide.cq.cqsm.api.utils.InstanceTypeProvider;
+import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.scripts.ScriptContent;
 import com.cognifide.cq.cqsm.core.scripts.ScriptStorageImpl;
 import com.cognifide.cq.cqsm.core.utils.sling.ResolveCallback;
 import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper;
+import com.google.common.collect.ImmutableMap;
 
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.SlingConstants;
 import org.apache.sling.api.resource.PersistenceException;
@@ -48,6 +43,8 @@ import org.apache.sling.api.resource.observation.ResourceChangeListener;
 import org.apache.sling.event.jobs.Job;
 import org.apache.sling.event.jobs.JobManager;
 import org.apache.sling.event.jobs.consumer.JobConsumer;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,13 +54,21 @@ import java.util.Set;
 
 import javax.jcr.RepositoryException;
 
-@Service({JobConsumer.class, ResourceChangeListener.class})
-@Component(immediate = true, name = "CQSM Replication Event Handler")
-@Properties({
-		@Property(name = JobConsumer.PROPERTY_TOPICS, value = ReplicationExecutor.JOB_NAME),
-		@Property(name = ResourceChangeListener.PATHS, value = ScriptStorageImpl.SCRIPT_PATH),
-		@Property(name = ResourceChangeListener.CHANGES, value = {"ADDED", "CHANGED"})
-})
+@Component(
+		immediate = true,
+		service = {
+				JobConsumer.class,
+				ResourceChangeListener.class
+		},
+		property = {
+				Property.TOPIC + ReplicationExecutor.JOB_NAME,
+				Property.RESOURCE_PATH + ScriptStorageImpl.SCRIPT_PATH,
+				Property.CHANGE_TYPE + "ADDED",
+				Property.CHANGE_TYPE + "CHANGED",
+				Property.DESCRIPTION + "CQSM Replication Event Handler",
+				Property.VENDOR
+		}
+)
 public class ReplicationExecutor implements JobConsumer, ResourceChangeListener {
 
 	static final String JOB_NAME = "com/cognifide/cq/cqsm/core/executors/replication/executor";

@@ -19,31 +19,26 @@
  */
 package com.cognifide.cq.cqsm.core.scripts;
 
-import com.google.common.collect.Maps;
-
 import com.cognifide.cq.cqsm.api.exceptions.ExecutionException;
 import com.cognifide.cq.cqsm.api.scripts.Event;
 import com.cognifide.cq.cqsm.api.scripts.EventManager;
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
 import com.cognifide.cq.cqsm.api.scripts.ScriptReplicator;
-import com.cognifide.cq.cqsm.core.Cqsm;
+import com.cognifide.cq.cqsm.core.Property;
 import com.day.cq.commons.jcr.JcrConstants;
 import com.day.cq.replication.ReplicationActionType;
 import com.day.cq.replication.ReplicationException;
 import com.day.cq.replication.Replicator;
+import com.google.common.collect.Maps;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceUtil;
-import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,10 +48,14 @@ import java.util.Map;
 
 import javax.jcr.Session;
 
-@Component
-@Service
-@Properties({@Property(name = Constants.SERVICE_DESCRIPTION, value = "CQSM Script Replicator Service"),
-		@Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)})
+@Component(
+		immediate = true,
+		service = ScriptReplicator.class,
+		property = {
+				Property.DESCRIPTION + "CQSM Script Replicator Service",
+				Property.VENDOR
+		}
+)
 public class ScriptReplicatorImpl implements ScriptReplicator {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ScriptReplicatorImpl.class);

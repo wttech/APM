@@ -20,28 +20,31 @@
 package com.cognifide.cq.cqsm.core.servlets;
 
 import com.cognifide.cq.cqsm.api.history.Entry;
-import com.cognifide.cq.cqsm.core.Cqsm;
+import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.models.ExecutionHistoryModel;
 import com.cognifide.cq.cqsm.core.utils.ServletUtils;
 
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Service;
-import org.apache.felix.scr.annotations.sling.SlingServlet;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
-import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Component;
 
 import java.io.IOException;
 import java.util.List;
 
+import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 
-@SlingServlet(paths = {"/bin/cqsm/history"}, methods = {"GET"})
-@Service
-@Properties({@Property(name = Constants.SERVICE_DESCRIPTION, value = "CQSM History List Servlet"),
-		@Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)})
+@Component(
+		immediate = true,
+		service = Servlet.class,
+		property = {
+				Property.PATH + "/bin/cqsm/history",
+				Property.METHOD + "GET",
+				Property.DESCRIPTION + "CQSM History List Servlet",
+				Property.VENDOR
+		}
+)
 public class HistoryListServlet extends SlingAllMethodsServlet {
 
 	@Override

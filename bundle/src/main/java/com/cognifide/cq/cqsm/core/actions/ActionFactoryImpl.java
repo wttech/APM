@@ -26,17 +26,13 @@ import com.cognifide.cq.cqsm.api.actions.ActionMapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
 import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
-import com.cognifide.cq.cqsm.core.Cqsm;
+import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.actions.scanner.AnnotatedClassRegistry;
 
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Deactivate;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Service;
-import org.osgi.framework.Constants;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,10 +48,14 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@Component(immediate = true)
-@Service
-@Properties({@Property(name = Constants.SERVICE_DESCRIPTION, value = "Action factory service"),
-		@Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)})
+@Component(
+		immediate = true,
+		service = ActionFactory.class,
+		property = {
+				Property.DESCRIPTION + "Action factory service",
+				Property.VENDOR
+		}
+)
 public class ActionFactoryImpl implements ActionFactory {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ActionFactoryImpl.class);
