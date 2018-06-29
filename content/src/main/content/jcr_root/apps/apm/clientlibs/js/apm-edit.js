@@ -29,7 +29,7 @@
       this.$uploadButton = this.$el.find('#uploadButton').eq(0);
       this.$lastSavedOn = this.$el.find('.lastSavedOn').eq(0);
       this.initialValue = this.$textArea.val();
-      //this.editor = this.initEditor();
+      this.editor = this.initEditor();
       this.delegateEvents();
     }
 
@@ -101,46 +101,46 @@
               }
               self.initialValue = value;
               self.$lastSavedOn.text('Last saved on: ' + new Date().toLocaleString());
-              helper.refreshParentWindow();
+              // helper.refreshParentWindow();
             } else {
               alert('Error while saving: ' + self.getFileName());
             }
           }
         });
       },
-      // initEditor: function () {
-      //   var editor = null;
-      //
-      //   ace.config.set("basePath", "/etc/designs/cqsm/clientlibs/js/ace");
-      //   this.$textArea.hide();
-      //   editor = ace.edit("ace");
-      //
-      //   editor.setTheme("ace/theme/chrome");
-      //   editor.getSession().setMode("ace/mode/cqsm");
-      //   editor.getSession().setValue(this.initialValue);
-      //   ace.require(["ace/token_tooltip"], function (o) {
-      //     editor.tokenTooltip = new o.TokenTooltip(editor);
-      //   });
-      //
-      //   ace.require(["ace/ext/language_tools"], function () {
-      //     editor.setOptions({
-      //       enableBasicAutocompletion: true,
-      //       enableSnippets: true,
-      //       enableLiveAutocompletion: true
-      //     });
-      //   });
-      //
-      //   return editor;
-      // },
+      initEditor: function () {
+        var editor = null;
+
+        ace.config.set("basePath", "/apps/apm/clientlibs/js/ace");
+        this.$textArea.hide();
+        editor = ace.edit("ace");
+
+        editor.setTheme("ace/theme/chrome");
+        editor.getSession().setMode("ace/mode/cqsm");
+        editor.getSession().setValue(this.initialValue);
+        ace.require(["ace/token_tooltip"], function (o) {
+          editor.tokenTooltip = new o.TokenTooltip(editor);
+        });
+
+        ace.require(["ace/ext/language_tools"], function () {
+          editor.setOptions({
+            enableBasicAutocompletion: true,
+            enableSnippets: true,
+            enableLiveAutocompletion: true
+          });
+        });
+
+        return editor;
+      },
       delegateEvents: function () {
         var self = this;
 
-        // this.editor.getSession().on('change', function () {
-        //   self.$textArea.val(self.editor.getSession().getValue());
-        // });
+        this.editor.getSession().on('change', function () {
+          self.$textArea.val(self.editor.getSession().getValue());
+        });
 
         this.$showReference.click(function () {
-          var win = helper.openWindow("/etc/cqsm/pages/reference.html", "Reference", 760, 0, 800);
+          // var win = helper.openWindow("/etc/cqsm/pages/reference.html", "Reference", 760, 0, 800);
           win.focus();
         });
 
@@ -159,7 +159,7 @@
               }
 
               alert(text);
-              helper.refreshParentWindow();
+              // helper.refreshParentWindow();
             }
           });
         });

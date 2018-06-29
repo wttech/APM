@@ -67,9 +67,7 @@ public class ScriptStorageImpl implements ScriptStorage {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ScriptStorageImpl.class);
 
-	private static final String ROOT_PATH = "/etc/cqsm/import/jcr:content";
-
-	public static final String SCRIPT_PATH = ROOT_PATH + "/cqsmImport";
+	public static final String SCRIPT_PATH = "/conf/apm/scripts";
 
 	private static final Charset SCRIPT_ENCODING = StandardCharsets.UTF_8;
 
