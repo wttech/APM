@@ -5,6 +5,7 @@
         jcr:primaryType="nt:unstructured"
         jcr:title="APM Edit"
         sling:resourceType="granite/ui/components/shell/collectionpage"
+        granite:class="apm-edit-script-page"
         consoleId="apm-edit"
         contentPath="/content"
         targetCollection=".apm-edit-form">
@@ -12,8 +13,41 @@
         <clientlibs
                 jcr:primaryType="nt:unstructured"
                 sling:resourceType="granite/ui/components/coral/foundation/includeclientlibs"
-                categories="[apm-edit]"/>
+                categories="[apm-edit,cognifide.cqsm]"/>
     </head>
+    <actions
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="granite/ui/components/foundation/navigation"
+            class="content-header grid-generator-header">
+        <primary jcr:primaryType="nt:unstructured">
+            <showReferences
+                    granite:id="showReferences"
+                    granite:class="foundation-collection-action"
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="granite/ui/components/coral/foundation/collection/action"
+                    icon="file"
+                    text="Show References"
+                    variant="actionBar"/>
+            <validate
+                    granite:id="validate"
+                    granite:class="foundation-collection-action"
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="granite/ui/components/coral/foundation/collection/action"
+                    icon="spellcheck"
+                    text="Validate"
+                    variant="actionBar" />
+            <save
+                    granite:id="uploadButton"
+                    granite:class="foundation-collection-action"
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="granite/ui/components/coral/foundation/collection/action"
+                    icon="save"
+                    text="Save"
+                    variant="actionBar" />
+        </primary>
+        <secondary jcr:primaryType="nt:unstructured">
+        </secondary>
+    </actions>
     <views jcr:primaryType="nt:unstructured">
         <list
                 granite:class="apm-edit-form"
