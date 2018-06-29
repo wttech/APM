@@ -30,6 +30,9 @@
                         method="post"
                         style="vertical">
                     <items jcr:primaryType="nt:unstructured">
+                        <console
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="apm/components/console"/>
                         <text
                                 jcr:primaryType="nt:unstructured"
                                 sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
