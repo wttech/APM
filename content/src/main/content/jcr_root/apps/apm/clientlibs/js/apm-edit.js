@@ -20,9 +20,17 @@
 (function ($) {
   $(document).on('cui-contentloaded', function () {
 
+    var SHOW_REFERENCES_URL = '/etc/cqsm/pages/reference.html';
+
+    $('#cancelButton').on('click', function () {
+      window.location.href = '/apps/apm/dashboard.html';
+    });
+
     function Console($el) {
       this.$el = $el;
       this.$textArea = this.$el.find("#cqsm").eq(0);
+      this.$validationAlertContainer = $('<div class="validation-alert" />');
+      this.$textArea.parent().append(this.$validationAlertContainer);
       this.$fileName = this.$el.find('#fname').eq(0);
       this.$showReference = this.$el.find('#showReference').eq(0);
       this.$validateButton = this.$el.find('#validateButton').eq(0);
@@ -95,16 +103,20 @@
           contentType: 'multipart/form-data; boundary=' + boundary,
           data: content.join('\r\n'),
           success: function (data) {
-            if (data.length > 0 && typeof data[0].name !== 'undefined') {
-              if (!self.isFileNameLocked()) {
-                self.changeFileName(data[0].name);
-              }
+            var scripts = data.uploadedScripts;
+            if (scripts.length > 0) {
               self.initialValue = value;
               self.$lastSavedOn.text('Last saved on: ' + new Date().toLocaleString());
-              // helper.refreshParentWindow();
+              self.displayResponseFeedback(data);
             } else {
-              alert('Error while saving: ' + self.getFileName());
+              self.displayResponseFeedback({
+                type:'error',
+                message: 'Error while saving: ' + self.getFileName()
+              });
             }
+          },
+          error: function(response) {
+            self.displayResponseFeedback(response.responseJSON);
           }
         });
       },
@@ -140,9 +152,30 @@
         });
 
         this.$showReference.click(function () {
-          // var win = helper.openWindow("/etc/cqsm/pages/reference.html", "Reference", 760, 0, 800);
-          win.focus();
+          window.open(SHOW_REFERENCES_URL, '_blank');
         });
+
+        this.displayResponseFeedback = function (response) {
+          var variant = response.type == 'error' ? "error" : "success";
+
+          var text = '';
+          if (response.error) {
+            text += "</br>" + response.error;
+          }
+
+          var feedbackAlert = new Coral.Alert().set({
+            variant: variant,
+            id:'validation-alert',
+            header: {
+              innerHTML: response.message
+            },
+            content: {
+              innerHTML: text
+            }
+          });
+          self.$validationAlertContainer.html("");
+          self.$validationAlertContainer.append(feedbackAlert);
+        };
 
         this.$validateButton.click(function () {
           $.ajax({
@@ -153,13 +186,10 @@
               content: self.$textArea.val()
             },
             success: function (response) {
-              var text = response.message;
-              if (response.error) {
-                text += "\n" + response.error;
-              }
-
-              alert(text);
-              // helper.refreshParentWindow();
+              self.displayResponseFeedback(response);
+            },
+            error: function (response) {
+              self.displayResponseFeedback(response.responseJSON);
             }
           });
         });
