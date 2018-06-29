@@ -3,6 +3,5 @@
     cq:isContainer="{Boolean}false"
     jcr:primaryType="cq:Component"
     jcr:title="Abstract Renderer"
-    allowedTemplates=""
-    sling:resourceSuperType="wcm/core/components/designer">
+    allowedTemplates="">
 </jcr:root>
