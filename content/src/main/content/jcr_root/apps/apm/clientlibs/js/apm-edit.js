@@ -22,6 +22,10 @@
 
     var SHOW_REFERENCES_URL = '/etc/cqsm/pages/reference.html';
 
+    $('#cancelButton').on('click', function () {
+      window.location.href = '/apps/apm/dashboard.html';
+    });
+
     function Console($el) {
       this.$el = $el;
       this.$textArea = this.$el.find("#cqsm").eq(0);
