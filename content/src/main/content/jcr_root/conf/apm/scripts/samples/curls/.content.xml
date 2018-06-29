@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:designPath="/etc/designs/cqsm"
+        jcr:primaryType="cq:PageContent"
+        jcr:title="Curls"
+        sling:resourceType="apm/components/dashboard/row"
+        content="# Curls for example scripts&#xa;&#xa;# Script 1 upload&#xa;curl -i -u admin:admin -H &quot;file=cqsm_permissions.cqsm&quot; -X POST http://localhost:5502/bin/cqsm/fileUpload -F file=@&quot;C:/cqsm/cqsm_permissions.cqsm&quot;&#xa;&#xa;# Script 1 RUN&#xa;curl -i -u admin:admin -d &quot;file=cqsm_permissions.cqsm&quot; -X POST http://localhost:5502/bin/cqsm/run&#xa;&#xa;# Script 2 upload&#xa;curl -i -u admin:admin -H &quot;file=cqsm_authorizable.cqsm&quot; -X POST http://localhost:5502/bin/cqsm/fileUpload -F file=@&quot;C:/cqsm/cqsm_authorizable.cqsm&quot;&#xa;&#xa;# Script 2 RUN Asynchronously&#xa;curl -i -u admin:admin -d &quot;file=cqsm_authorizable.cqsm&amp;mode=DRY_RUN&quot; -X POST http://localhost:4502/bin/cqsm/run-background&#xa;{&#xa;  &quot;id&quot;: &quot;2016/4/22/9/42/0ea10a55-2dbb-4c1b-979c-98b9f1f7a73d_20&quot;,&#xa;  &quot;type&quot;: &quot;background&quot;&#xa;}&#xa;&#xa;curl -i -u admin:admin -d &quot;id=2016/4/22/9/42/0ea10a55-2dbb-4c1b-979c-98b9f1f7a73d_20&quot; -X GET http://localhost:4502/bin/cqsm/run-background&#xa;{&#xa;  &quot;type&quot;: &quot;running&quot;&#xa;}&#xa;&#xa;curl -i -u admin:admin -d &quot;id=2016/4/22/9/42/0ea10a55-2dbb-4c1b-979c-98b9f1f7a73d_20&quot; -X GET http://localhost:4502/bin/cqsm/run-background&#xa;{&#xa;  &quot;type&quot;: &quot;finished&quot;,&#xa;  &quot;entries&quot;: [...]&#xa;}"/>
+</jcr:root>

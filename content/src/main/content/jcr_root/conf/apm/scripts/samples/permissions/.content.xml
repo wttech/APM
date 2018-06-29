@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:designPath="/etc/designs/cqsm"
+        jcr:primaryType="cq:PageContent"
+        jcr:title="Permissions example"
+        sling:resourceType="apm/components/dashboard/row"
+        content="# This script provides example actions for permission manipulation.&#xa;&#xa;# This action will create group only if this group do not exist&#xa;CREATE-GROUP test_group IF-NOT-EXISTS&#xa;&#xa;# Change current context to specified authorizable&#xa;FOR-GROUP test_group&#xa;&#xa;# Purge will remove all permission for current context for whole subtree, starting from specified path as root&#xa;&#x9;PURGE&#x9;&#x9;/content/dam&#xa;&#x9;&#xa;# Remove-all will remove all privileges for current context&#xa;&#x9;REMOVE-ALL&#x9;/content/geometrixx/en&#xa;&#x9;REMOVE-ALL&#x9;/content/geometrixx/fr&#xa;&#x9;REMOVE-ALL&#x9;/content/geometrixx/es&#xa;&#x9;REMOVE-ALL&#x9;/content/geometrixx/it&#xa;&#xa;# Allow and deny are common actions that can be used for setting privileges.&#xa;&#x9;ALLOW&#x9;/apps READ&#xa;&#x9;ALLOW&#x9;/libs READ &#xa;&#x9;ALLOW&#x9;/tmp READ &#xa;&#x9;ALLOW&#x9;/var READ&#xa;&#x9;ALLOW&#x9;/etc READ READ_ACL MODIFY_ACL &#xa;&#x9;&#xa;&#x9;ALLOW&#x9;/content/geometrixx/en READ&#xa;&#x9;ALLOW&#x9;/content/geometrixx/fr IF-EXIST READ&#xa;&#x9;ALLOW&#x9;/content/geometrixx/es /* READ&#xa;&#x9;DENY&#x9;/content/geometrixx/en REPLICATE DELETE MODIFY CREATE&#xa;&#x9;DENY&#x9;/content/geometrixx/fr IF-EXIST REPLICATE DELETE MODIFY CREATE&#xa;&#x9;DENY&#x9;/content/geometrixx/es /* DELETE&#xa;&#x9;DENY&#x9;/content/geometrixx/it /* ALL&#xa;&#x9;"/>
+</jcr:root>
