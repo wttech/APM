@@ -13,7 +13,7 @@
         <clientlibs
                 jcr:primaryType="nt:unstructured"
                 sling:resourceType="granite/ui/components/coral/foundation/includeclientlibs"
-                categories="[apm-edit,cognifide.cqsm]"/>
+                categories="[apm-edit]"/>
     </head>
     <actions
             jcr:primaryType="nt:unstructured"
@@ -21,7 +21,7 @@
             class="content-header grid-generator-header">
         <primary jcr:primaryType="nt:unstructured">
             <showReferences
-                    granite:id="showReferences"
+                    granite:id="showReference"
                     granite:class="foundation-collection-action"
                     jcr:primaryType="nt:unstructured"
                     sling:resourceType="granite/ui/components/coral/foundation/collection/action"
