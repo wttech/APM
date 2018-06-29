@@ -20,9 +20,13 @@
 (function ($) {
   $(document).on('cui-contentloaded', function () {
 
+    var SHOW_REFERENCES_URL = '/etc/cqsm/pages/reference.html';
+
     function Console($el) {
       this.$el = $el;
       this.$textArea = this.$el.find("#cqsm").eq(0);
+      this.$validationAlertContainer = $('<div class="validation-alert" />');
+      this.$textArea.parent().append(this.$validationAlertContainer);
       this.$fileName = this.$el.find('#fname').eq(0);
       this.$showReference = this.$el.find('#showReference').eq(0);
       this.$validateButton = this.$el.find('#validateButton').eq(0);
@@ -140,9 +144,30 @@
         // });
 
         this.$showReference.click(function () {
-          var win = helper.openWindow("/etc/cqsm/pages/reference.html", "Reference", 760, 0, 800);
-          win.focus();
+          window.open(SHOW_REFERENCES_URL, '_blank');
         });
+
+        this.handleValidationResponse = function (response) {
+          var variant = response.error ? "error" : "success";
+
+          var text = '';
+          if (response.error) {
+            text += "</br>" + response.error;
+          }
+
+          var feedbackAlert = new Coral.Alert().set({
+            variant: variant,
+            id:'validation-alert',
+            header: {
+              innerHTML: response.message
+            },
+            content: {
+              innerHTML: text
+            }
+          });
+          self.$validationAlertContainer.html("");
+          self.$validationAlertContainer.append(feedbackAlert);
+        };
 
         this.$validateButton.click(function () {
           $.ajax({
@@ -153,13 +178,10 @@
               content: self.$textArea.val()
             },
             success: function (response) {
-              var text = response.message;
-              if (response.error) {
-                text += "\n" + response.error;
-              }
-
-              alert(text);
-              helper.refreshParentWindow();
+              self.handleValidationResponse(response);
+            },
+            error: function (response) {
+              self.handleValidationResponse(response.responseJSON);
             }
           });
         });
