@@ -19,8 +19,6 @@
  */
 package com.cognifide.cq.cqsm.core.scripts;
 
-import com.google.common.collect.Lists;
-
 import com.cognifide.cq.cqsm.api.executors.Mode;
 import com.cognifide.cq.cqsm.api.scripts.Event;
 import com.cognifide.cq.cqsm.api.scripts.Script;
@@ -28,20 +26,18 @@ import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
 import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
 import com.cognifide.cq.cqsm.api.scripts.ScriptStorage;
 import com.cognifide.cq.cqsm.core.Cqsm;
+import com.cognifide.cq.cqsm.core.Property;
 import com.day.cq.commons.jcr.JcrConstants;
+import com.google.common.collect.Lists;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.ReferenceCardinality;
-import org.apache.felix.scr.annotations.ReferencePolicy;
-import org.apache.felix.scr.annotations.Service;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,11 +54,14 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.ValueFactory;
 
-@Component
-@Service
-@Properties({@Property(name = Constants.SERVICE_DESCRIPTION, value = "Storage accessor for scripts"),
-		@Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)})
-
+@Component(
+		immediate = true,
+		service = ScriptStorage.class,
+		property = {
+				Property.DESCRIPTION + "Storage accessor for scripts",
+				Property.VENDOR
+		}
+)
 public class ScriptStorageImpl implements ScriptStorage {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ScriptStorageImpl.class);
@@ -71,8 +70,8 @@ public class ScriptStorageImpl implements ScriptStorage {
 
 	private static final Charset SCRIPT_ENCODING = StandardCharsets.UTF_8;
 
-	@Reference(cardinality = ReferenceCardinality.OPTIONAL_UNARY, policy = ReferencePolicy.DYNAMIC)
-	volatile private ScriptManager scriptManager;
+	@Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
+	private volatile ScriptManager scriptManager;
 
 	@Reference
 	private ScriptFinder scriptFinder;

@@ -1,0 +1,25 @@
+// Plugins configuration
+
+pluginManagement {
+    repositories {
+        maven { url "https://jcenter.bintray.com/" }
+        maven { url "https://plugins.gradle.org/m2/" }
+        maven { url "https://dl.bintray.com/cognifide/maven-public" }
+    }
+    resolutionStrategy {
+        eachPlugin {
+            if (requested.id.namespace == 'com.cognifide.aem') {
+                useModule('com.cognifide.gradle:aem-plugin:4.0.4')
+            }
+        }
+    }
+}
+
+rootProject.name = 'apm'
+include ':bundle'
+include ':content'
+include ':documentation'
+
+project(':bundle').projectDir = "$rootDir/bundle" as File
+project(':content').projectDir = "$rootDir/content" as File
+project(':documentation').projectDir = "$rootDir/documentation" as File

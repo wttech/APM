@@ -29,7 +29,7 @@ import com.cognifide.cq.cqsm.api.history.ModifiableEntryBuilder;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.utils.InstanceTypeProvider;
-import com.cognifide.cq.cqsm.core.Cqsm;
+import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.progress.ProgressHelper;
 import com.cognifide.cq.cqsm.core.scripts.ScriptContent;
 import com.cognifide.cq.cqsm.core.utils.sling.OperateCallback;
@@ -42,6 +42,19 @@ import com.day.cq.wcm.api.Page;
 import com.day.cq.wcm.api.PageManager;
 import com.day.cq.wcm.api.WCMException;
 import com.google.common.collect.ImmutableMap;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.sling.api.resource.PersistenceException;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.api.resource.ResourceUtil;
+import org.apache.sling.api.resource.ValueMap;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
@@ -52,29 +65,18 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
-import org.apache.commons.lang.StringUtils;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
-import org.apache.sling.api.resource.PersistenceException;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.apache.sling.api.resource.ResourceUtil;
-import org.apache.sling.api.resource.ValueMap;
-import org.apache.sling.jcr.resource.JcrResourceConstants;
-import org.osgi.framework.Constants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-@Component(immediate = true)
-@Service
-@Properties({@Property(name = Constants.SERVICE_DESCRIPTION, value = "CQSM History Service"),
-	@Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)})
+@Component(
+		immediate = true,
+		service = History.class,
+		property = {
+				Property.DESCRIPTION + "CQSM History Service",
+				Property.VENDOR
+		}
+)
 public class HistoryImpl implements History {
 
 	private static final Logger LOG = LoggerFactory.getLogger(HistoryImpl.class);
@@ -223,9 +225,9 @@ public class HistoryImpl implements History {
 
 			private Resource createHistoryComponent(Page historyPage) throws PersistenceException {
 				ResourceResolver resourceResolver = historyPage.getContentResource().getResourceResolver();
-				Map<String, Object> props = ImmutableMap.<String, Object>builder()//
-					.put(JcrResourceConstants.SLING_RESOURCE_TYPE_PROPERTY, HISTORY_COMPONENT_RESOURCE_TYPE) //
-					.build();
+				Map<String, Object> props = ImmutableMap.<String, Object> builder()//
+							.put(ResourceResolver.PROPERTY_RESOURCE_TYPE, HISTORY_COMPONENT_RESOURCE_TYPE) //
+							.build();
 				return resourceResolver.create(historyPage.getContentResource(), HISTORY_COMPONENT, props);
 			}
 		}, null);

@@ -19,33 +19,32 @@
  */
 package com.cognifide.cq.cqsm.core.scripts;
 
-import com.google.common.collect.ImmutableList;
-
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
 import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
-import com.cognifide.cq.cqsm.core.Cqsm;
+import com.cognifide.cq.cqsm.core.Property;
+import com.google.common.collect.ImmutableList;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Component;
 
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-@Component
-@Service
-@Properties({@Property(name = Constants.SERVICE_DESCRIPTION, value = "CQSM Script Finder Service"),
-		@Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)})
+@Component(
+		immediate = true,
+		service = ScriptFinder.class,
+		property = {
+				Property.DESCRIPTION + "CQSM Script Finder Service",
+				Property.VENDOR
+		}
+)
 public class ScriptFinderImpl implements ScriptFinder {
 
 	private static final String ROOT_PATH = "/conf/apm/scripts";

@@ -1,0 +1,10 @@
+plugins {
+  id 'com.cognifide.aem.package'
+}
+
+apply from: "common.gradle"
+
+aemCompose {
+  includeProject ':bundle'
+  includeProject ':content'
+}

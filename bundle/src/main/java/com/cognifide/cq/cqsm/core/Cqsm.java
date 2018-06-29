@@ -25,7 +25,7 @@ public final class Cqsm {
 		// util constructor
 	}
 
-	public static final String VENDOR_NAME = "Cognifide Ltd";
+	public static final String VENDOR_NAME = "Cognifide";
 
 	public static final String FILE_EXT = ".cqsm";
 }

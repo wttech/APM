@@ -27,20 +27,20 @@ import com.cognifide.cq.cqsm.api.scripts.EventListener;
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
 import com.cognifide.cq.cqsm.api.utils.InstanceTypeProvider;
-import com.cognifide.cq.cqsm.core.Cqsm;
+import com.cognifide.cq.cqsm.core.Property;
 
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
-import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
-@Component
-@Service
-@Properties({@Property(name = Constants.SERVICE_DESCRIPTION, value = "CQSM History Log Service"),
-		@Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)})
+@Component(
+		immediate = true,
+		service = EventListener.class,
+		property = {
+				Property.DESCRIPTION + "CQSM History Log Service",
+				Property.VENDOR
+		}
+)
 public class HistoryLogListener implements EventListener {
 
 	@Reference
