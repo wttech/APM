@@ -115,6 +115,6 @@ public class ScriptRunnerJobConsumer implements JobConsumer {
 	}
 
 	private String getUserId(Job job) {
-		return job.getProperty(com.day.cq.commons.jcr.JcrConstants.JCR_CREATED_BY, String.class);
+		return job.getProperty(ScriptRunnerJobManagerImpl.USER_NAME_PROPERTY_NAME, String.class);
 	}
 }
