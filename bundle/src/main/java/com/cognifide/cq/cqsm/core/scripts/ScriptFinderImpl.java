@@ -48,7 +48,7 @@ import java.util.List;
 		@Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)})
 public class ScriptFinderImpl implements ScriptFinder {
 
-	private static final String ROOT_PATH = "/etc/cqsm/import/jcr:content";
+	private static final String ROOT_PATH = "/conf/apm/scripts";
 
 	private static final String SCRIPT_PATH = ROOT_PATH + "/cqsmImport";
 

@@ -17,10 +17,12 @@
 * limitations under the License.
 * =========================LICENSE_END==================================
 */ -->
-<h1>TEST</h1>
 
 <div data-sly-use.model="com.cognifide.cq.cqsm.core.models.NewScriptEditModel">
 
+    <input type="text" value="${model.fileName}" name="fname" id="fname" readonly="${model.edit ? 'readonly' : ''}"><label>.cqsm</label>
+    <br/>
+    <div id="ace"></div>
     <textarea rows="12" cols="80" name="cqsm" id="cqsm">${model.content}</textarea>
     <br/>
 
