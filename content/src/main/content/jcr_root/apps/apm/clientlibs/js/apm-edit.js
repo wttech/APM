@@ -17,12 +17,13 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-(function ($) {
+(function (window, $) {
   $(document).on('cui-contentloaded', function () {
 
     var SHOW_REFERENCES_URL = '/etc/cqsm/pages/reference.html';
 
     function Console($el) {
+      this.uiHelper = $(window).adaptTo("foundation-ui");
       this.$el = $el;
       this.$textArea = this.$el.find("#cqsm").eq(0);
       this.$validationAlertContainer = $('<div class="validation-alert" />');
@@ -152,25 +153,18 @@
         });
 
         this.displayResponseFeedback = function (response) {
-          var variant = response.type == 'error' ? "error" : "success";
+          var isErrorMessage = response.type === 'error';
+          var variant = isErrorMessage ? 'error' : 'success';
 
           var text = '';
           if (response.error) {
-            text += "</br>" + response.error;
+            text +=  '</br>' + response.error;
           }
-
-          var feedbackAlert = new Coral.Alert().set({
-            variant: variant,
-            id:'validation-alert',
-            header: {
-              innerHTML: response.message
-            },
-            content: {
-              innerHTML: text
-            }
-          });
-          self.$validationAlertContainer.html("");
-          self.$validationAlertContainer.append(feedbackAlert);
+          if (isErrorMessage) {
+            self.uiHelper.alert(response.message, text, variant);
+          } else {
+            self.uiHelper.notify(response.message, text, variant);
+          }
         };
 
         this.$validateButton.click(function () {
@@ -215,4 +209,4 @@
 
     const console = new Console($('body'));
   });
-})(jQuery);
+})(window, jQuery);
