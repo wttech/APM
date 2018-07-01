@@ -22,6 +22,10 @@
 
     var SHOW_REFERENCES_URL = '/etc/cqsm/pages/reference.html';
 
+    $('#cancelButton').on('click', function () {
+      window.location.href = '/apps/apm/dashboard.html';
+    });
+
     function Console($el) {
       this.uiHelper = $(window).adaptTo("foundation-ui");
       this.$el = $el;
