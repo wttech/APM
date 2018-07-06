@@ -14,6 +14,11 @@
             omnisearchLocationPath="/libs/granite/omnisearch/content/metadata/experiencefragments"
             pageURITemplate="/apm/dashboard.html{+id}"
             targetCollection=".cq-experience-fragments-admin-childpages">
+        <redirector
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="granite/ui/components/coral/foundation/admin/contentchecker"
+                path="${requestPathInfo.suffix}"
+                redirectWhenEmpty="/apm/dashboard.html/conf/apm/scripts"/>
         <head jcr:primaryType="nt:unstructured">
             <clientlibs
                     jcr:primaryType="nt:unstructured"
@@ -76,7 +81,8 @@
                 </columns>
                 <datasource
                         jcr:primaryType="nt:unstructured"
-                        sling:resourceType="apm/scripts"/>
+                        sling:resourceType="apm/scripts"
+                        itemResourceType="apm/components/dashboard/row"/>
             </list>
         </views>
         <breadcrumbs
@@ -132,6 +138,7 @@
                         granite:class="foundation-collection-action"
                         jcr:primaryType="nt:unstructured"
                         sling:resourceType="granite/ui/components/coral/foundation/collection/action"
+                        activeSelectionCount="single"
                         icon="search"
                         relScope="item"
                         target=".cq-experience-fragments-admin-childpages"
@@ -145,6 +152,7 @@
                         granite:class="foundation-collection-action"
                         jcr:primaryType="nt:unstructured"
                         sling:resourceType="granite/ui/components/coral/foundation/collection/action"
+                        activeSelectionCount="single"
                         icon="playCircle"
                         relScope="item"
                         target=".cq-experience-fragments-admin-childpages"
@@ -158,6 +166,7 @@
                         granite:class="foundation-collection-action"
                         jcr:primaryType="nt:unstructured"
                         sling:resourceType="granite/ui/components/coral/foundation/collection/action"
+                        activeSelectionCount="single"
                         icon="play"
                         relScope="item"
                         target=".cq-experience-fragments-admin-childpages"
@@ -171,6 +180,7 @@
                         granite:class="foundation-collection-action"
                         jcr:primaryType="nt:unstructured"
                         sling:resourceType="granite/ui/components/coral/foundation/collection/action"
+                        activeSelectionCount="single"
                         icon="play"
                         relScope="item"
                         target=".cq-experience-fragments-admin-childpages"
@@ -184,6 +194,8 @@
                         granite:class="foundation-collection-action"
                         jcr:primaryType="nt:unstructured"
                         sling:resourceType="granite/ui/components/coral/foundation/collection/action"
+                        action="foundation.link"
+                        activeSelectionCount="single"
                         icon="edit"
                         relScope="item"
                         target=".cq-experience-fragments-admin-childpages"

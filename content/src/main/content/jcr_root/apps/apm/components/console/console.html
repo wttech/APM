@@ -19,7 +19,8 @@
 */-->
 <div data-sly-use.model="com.cognifide.cq.cqsm.core.models.NewScriptEditModel">
 
-    <input type="text" value="${model.fileName}" name="fname" id="fname" readonly="${model.edit ? 'readonly' : ''}"><label>.cqsm</label>
+    <input class="coral-Form-field coral-Textfield" type="text" value="${model.fileName}" name="fname" id="fname" readonly="${model.edit ? 'readonly' : ''}">
+    <input class="coral-Form-field coral-Textfield" type="text" value=".cqsm" disabled>
     <br/>
     <div id="ace"></div>
     <textarea rows="12" cols="80" name="cqsm" id="cqsm">${model.content}</textarea>
