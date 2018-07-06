@@ -37,7 +37,7 @@
                     text="Validate"
                     variant="actionBar" />
             <save
-                    granite:id="uploadButton"
+                    granite:id="saveButton"
                     granite:class="foundation-collection-action"
                     jcr:primaryType="nt:unstructured"
                     sling:resourceType="granite/ui/components/coral/foundation/collection/action"

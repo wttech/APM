@@ -21,10 +21,7 @@
   $(document).on('cui-contentloaded', function () {
 
     var SHOW_REFERENCES_URL = '/etc/cqsm/pages/reference.html';
-
-    $('#cancelButton').on('click', function () {
-      window.location.href = '/apps/apm/dashboard.html';
-    });
+    var DASHBOARD_URL = '/apps/apm/dashboard.html';
 
     function Console($el) {
       this.uiHelper = $(window).adaptTo("foundation-ui");
@@ -35,7 +32,8 @@
       this.$fileName = this.$el.find('#fname').eq(0);
       this.$showReference = this.$el.find('#showReference').eq(0);
       this.$validateButton = this.$el.find('#validateButton').eq(0);
-      this.$uploadButton = this.$el.find('#uploadButton').eq(0);
+      this.$saveButton = this.$el.find('#saveButton').eq(0);
+      this.$cancelButton = this.$el.find('#cancelButton').eq(0);
       this.$lastSavedOn = this.$el.find('.lastSavedOn').eq(0);
       this.initialValue = this.$textArea.val();
       this.editor = this.initEditor();
@@ -106,6 +104,9 @@
           success: function (data) {
             var scripts = data.uploadedScripts;
             if (scripts.length > 0) {
+              if (!self.isFileNameLocked()) {
+                  self.changeFileName(scripts[0].name);
+              }
               self.initialValue = value;
               self.$lastSavedOn.text('Last saved on: ' + new Date().toLocaleString());
               self.displayResponseFeedback(data);
@@ -156,6 +157,10 @@
           window.open(SHOW_REFERENCES_URL, '_blank');
         });
 
+        this.$cancelButton.click(function () {
+          window.location.href = DASHBOARD_URL;
+        });
+
         this.displayResponseFeedback = function (response) {
           var isErrorMessage = response.type === 'error';
           var variant = isErrorMessage ? 'error' : 'success';
@@ -188,7 +193,7 @@
           });
         });
 
-        this.$uploadButton.click(function () {
+        this.$saveButton.click(function () {
           self.fileUpload();
         });
 
