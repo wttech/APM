@@ -43,6 +43,7 @@ import com.cognifide.cq.cqsm.api.scripts.ScriptStorage;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.actions.executor.ActionExecutor;
 import com.cognifide.cq.cqsm.core.antlr.ApmLangParserFactory;
+import com.cognifide.cq.cqsm.core.antlr.ScriptRunner;
 import com.cognifide.cq.cqsm.core.progress.ProgressImpl;
 import com.cognifide.cq.cqsm.core.sessions.SessionSavingMode;
 import com.cognifide.cq.cqsm.core.sessions.SessionSavingPolicy;
@@ -152,29 +153,34 @@ public class ScriptManagerImpl implements ScriptManager {
 
     final String path = script.getPath();
 
-    ApmLangParser apmLangParser = ApmLangParserFactory.createParserForScript(script.getData());
-
     actionFactory.update();
     LOG.info(String.format("Script execution started: %s [%s]", path, mode));
     Progress progress = new ProgressImpl(resolver.getUserID());
-    final List<ActionDescriptor> descriptors = parseAllDescriptors(script, customDefinitions, resolver);
     final ActionExecutor actionExecutor = createExecutor(mode, resolver);
     final Context context = actionExecutor.getContext();
     final SessionSavingPolicy savingPolicy = context.getSavingPolicy();
 
     eventManager.trigger(Event.BEFORE_EXECUTE, script, mode, progress);
 
-    for (ActionDescriptor descriptor : descriptors) {
-      ActionResult result = actionExecutor.execute(descriptor);
-      progress.addEntry(descriptor, result);
+    ApmLangParser apmLangParser = ApmLangParserFactory.createParserForScript(script.getData());
+    ScriptRunner scriptRunner = new ScriptRunner((ctx, stringCommand) -> {
+      try {
+        ActionDescriptor descriptor = actionFactory.evaluate(stringCommand);
+        ActionResult result = actionExecutor.execute(descriptor);
+        progress.addEntry(descriptor, result);
 
-      if ((Status.ERROR == result.getStatus()) && (Mode.DRY_RUN != mode)) {
-        eventManager.trigger(Event.AFTER_EXECUTE, script, mode, progress);
-        return progress;
+        if ((Status.ERROR == result.getStatus()) && (Mode.DRY_RUN != mode)) {
+          eventManager.trigger(Event.AFTER_EXECUTE, script, mode, progress);
+          return Collections.emptyList();
+        }
+
+        savingPolicy.save(context.getSession(), SessionSavingMode.EVERY_ACTION);
+      } catch (ActionCreationException | RepositoryException e) {
+
       }
-
-      savingPolicy.save(context.getSession(), SessionSavingMode.EVERY_ACTION);
-    }
+      return Collections.emptyList();
+    });
+    scriptRunner.execute(apmLangParser.apm());
     savingPolicy.save(context.getSession(), SessionSavingMode.SINGLE);
 
     eventManager.trigger(Event.AFTER_EXECUTE, script, mode, progress);

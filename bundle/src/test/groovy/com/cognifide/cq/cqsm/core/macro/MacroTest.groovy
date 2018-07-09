@@ -1,8 +1,6 @@
-package com.cognifide.apm.antlr.macro
+package com.cognifide.cq.cqsm.core.macro
 
-import com.cognifide.apm.antlr.ApmLangParserHelper
-import com.cognifide.cq.cqsm.core.macro.MacroRegister
-import com.cognifide.cq.cqsm.core.macro.MacroRegistrar
+import com.cognifide.cq.cqsm.ApmLangParserHelper
 import spock.lang.Specification
 
 class MacroTest extends Specification {

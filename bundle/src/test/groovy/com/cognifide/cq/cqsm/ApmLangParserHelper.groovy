@@ -1,5 +1,7 @@
-package com.cognifide.apm.antlr
+package com.cognifide.cq.cqsm
 
+import com.cognifide.apm.antlr.ApmLangLexer
+import com.cognifide.apm.antlr.ApmLangParser
 import org.antlr.v4.runtime.CharStream
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CodePointCharStream

@@ -9,11 +9,21 @@ apm
     ;
 
 line
-    : (command | macroDefinition | comment)
+    : (command | macroDefinition | scriptInclusion | comment)
     ;
 
 name
     : IDENTIFIER
+    ;
+
+array
+    : ARRAY_BEGIN value (',' value)* ARRAY_END
+    ;
+
+value
+    : variable
+    | IDENTIFIER
+    | STRING_LITERAL
     ;
 
 variable
@@ -21,7 +31,8 @@ variable
     ;
 
 parameter
-    : variable
+    : array
+    | variable
     | IDENTIFIER
     | STRING_LITERAL
     ;
@@ -31,9 +42,8 @@ comment
     ;
 
 command
-    : USE_MACRO name parametersInvokation? # CommandUseMacro
-    | ALLOW parameter parameter? # CommandAllow
-    | IDENTIFIER parameter+ # CommandGeneric
+    : EXECUTE_MACRO name parametersInvokation? # MacroExecution
+    | IDENTIFIER parameter+ # GenericCommand
     ;
 
 parametersDefinition
@@ -48,8 +58,12 @@ body
     : (command? EOL)+
     ;
 
+scriptInclusion
+    : INCLUDE_SCRIPT parameter
+    ;
+
 macroDefinition
-    : DEFINE_MACRO name parametersDefinition? EOL? BEGIN EOL? body END
+    : DEFINE_MACRO name parametersDefinition? EOL? BLOCK_BEGIN EOL? body BLOCK_END
     ;
 
 /*
@@ -57,15 +71,17 @@ macroDefinition
  */
 
 //keywords
-ALLOW
-    : 'allow'
-    | 'ALLOW'
+ARRAY_BEGIN
+    : '['
     ;
-BEGIN
+ARRAY_END
+    : ']'
+    ;
+BLOCK_BEGIN
     : 'begin'
     | 'BEGIN'
     ;
-END
+BLOCK_END
     : 'end'
     | 'END'
     ;
@@ -73,9 +89,13 @@ DEFINE_MACRO
     : 'define macro'
     | 'DEFINE MACRO'
     ;
-USE_MACRO
+EXECUTE_MACRO
     : 'use macro'
     | 'USE MACRO'
+    ;
+INCLUDE_SCRIPT
+    : 'include'
+    | 'INCLUDE'
     ;
 STRING_LITERAL
     : '"' (~["\\\r\n] )* '"'

@@ -54,7 +54,45 @@ public class ApmLangBaseListener implements ApmLangListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitName(ApmLangParser.NameContext ctx) { }
+  @Override
+  public void exitName(ApmLangParser.NameContext ctx) {
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.</p>
+   */
+  @Override
+  public void enterArray(ApmLangParser.ArrayContext ctx) {
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.</p>
+   */
+  @Override
+  public void exitArray(ApmLangParser.ArrayContext ctx) {
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.</p>
+   */
+  @Override
+  public void enterValue(ApmLangParser.ValueContext ctx) {
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.</p>
+   */
+  @Override
+  public void exitValue(ApmLangParser.ValueContext ctx) {
+  }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -95,38 +133,34 @@ public class ApmLangBaseListener implements ApmLangListener {
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterCommandUseMacro(ApmLangParser.CommandUseMacroContext ctx) { }
+   */
+  @Override
+  public void enterMacroExecution(ApmLangParser.MacroExecutionContext ctx) {
+  }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitCommandUseMacro(ApmLangParser.CommandUseMacroContext ctx) { }
+   */
+  @Override
+  public void exitMacroExecution(ApmLangParser.MacroExecutionContext ctx) {
+  }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterCommandAllow(ApmLangParser.CommandAllowContext ctx) { }
+   */
+  @Override
+  public void enterGenericCommand(ApmLangParser.GenericCommandContext ctx) {
+  }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitCommandAllow(ApmLangParser.CommandAllowContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterCommandGeneric(ApmLangParser.CommandGenericContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitCommandGeneric(ApmLangParser.CommandGenericContext ctx) { }
+   */
+  @Override
+  public void exitGenericCommand(ApmLangParser.GenericCommandContext ctx) {
+  }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -162,7 +196,27 @@ public class ApmLangBaseListener implements ApmLangListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitBody(ApmLangParser.BodyContext ctx) { }
+  @Override
+  public void exitBody(ApmLangParser.BodyContext ctx) {
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.</p>
+   */
+  @Override
+  public void enterScriptInclusion(ApmLangParser.ScriptInclusionContext ctx) {
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.</p>
+   */
+  @Override
+  public void exitScriptInclusion(ApmLangParser.ScriptInclusionContext ctx) {
+  }
 	/**
 	 * {@inheritDoc}
 	 *

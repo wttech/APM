@@ -41,6 +41,34 @@ public interface ApmLangListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitName(ApmLangParser.NameContext ctx);
+
+	/**
+	 * Enter a parse tree produced by {@link ApmLangParser#array}.
+	 *
+	 * @param ctx the parse tree
+	 */
+	void enterArray(ApmLangParser.ArrayContext ctx);
+
+	/**
+	 * Exit a parse tree produced by {@link ApmLangParser#array}.
+	 *
+	 * @param ctx the parse tree
+	 */
+	void exitArray(ApmLangParser.ArrayContext ctx);
+
+	/**
+	 * Enter a parse tree produced by {@link ApmLangParser#value}.
+	 *
+	 * @param ctx the parse tree
+	 */
+	void enterValue(ApmLangParser.ValueContext ctx);
+
+	/**
+	 * Exit a parse tree produced by {@link ApmLangParser#value}.
+	 *
+	 * @param ctx the parse tree
+	 */
+	void exitValue(ApmLangParser.ValueContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ApmLangParser#variable}.
 	 * @param ctx the parse tree
@@ -71,42 +99,34 @@ public interface ApmLangListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitComment(ApmLangParser.CommentContext ctx);
+
 	/**
-	 * Enter a parse tree produced by the {@code CommandUseMacro}
+	 * Enter a parse tree produced by the {@code MacroExecution}
 	 * labeled alternative in {@link ApmLangParser#command}.
 	 * @param ctx the parse tree
 	 */
-	void enterCommandUseMacro(ApmLangParser.CommandUseMacroContext ctx);
+	void enterMacroExecution(ApmLangParser.MacroExecutionContext ctx);
+
 	/**
-	 * Exit a parse tree produced by the {@code CommandUseMacro}
+	 * Exit a parse tree produced by the {@code MacroExecution}
 	 * labeled alternative in {@link ApmLangParser#command}.
 	 * @param ctx the parse tree
 	 */
-	void exitCommandUseMacro(ApmLangParser.CommandUseMacroContext ctx);
+	void exitMacroExecution(ApmLangParser.MacroExecutionContext ctx);
+
 	/**
-	 * Enter a parse tree produced by the {@code CommandAllow}
+	 * Enter a parse tree produced by the {@code GenericCommand}
 	 * labeled alternative in {@link ApmLangParser#command}.
 	 * @param ctx the parse tree
 	 */
-	void enterCommandAllow(ApmLangParser.CommandAllowContext ctx);
+	void enterGenericCommand(ApmLangParser.GenericCommandContext ctx);
+
 	/**
-	 * Exit a parse tree produced by the {@code CommandAllow}
+	 * Exit a parse tree produced by the {@code GenericCommand}
 	 * labeled alternative in {@link ApmLangParser#command}.
 	 * @param ctx the parse tree
 	 */
-	void exitCommandAllow(ApmLangParser.CommandAllowContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code CommandGeneric}
-	 * labeled alternative in {@link ApmLangParser#command}.
-	 * @param ctx the parse tree
-	 */
-	void enterCommandGeneric(ApmLangParser.CommandGenericContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code CommandGeneric}
-	 * labeled alternative in {@link ApmLangParser#command}.
-	 * @param ctx the parse tree
-	 */
-	void exitCommandGeneric(ApmLangParser.CommandGenericContext ctx);
+	void exitGenericCommand(ApmLangParser.GenericCommandContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ApmLangParser#parametersDefinition}.
 	 * @param ctx the parse tree
@@ -137,6 +157,21 @@ public interface ApmLangListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitBody(ApmLangParser.BodyContext ctx);
+
+	/**
+	 * Enter a parse tree produced by {@link ApmLangParser#scriptInclusion}.
+	 *
+	 * @param ctx the parse tree
+	 */
+	void enterScriptInclusion(ApmLangParser.ScriptInclusionContext ctx);
+
+	/**
+	 * Exit a parse tree produced by {@link ApmLangParser#scriptInclusion}.
+	 *
+	 * @param ctx the parse tree
+	 */
+	void exitScriptInclusion(ApmLangParser.ScriptInclusionContext ctx);
+
 	/**
 	 * Enter a parse tree produced by {@link ApmLangParser#macroDefinition}.
 	 * @param ctx the parse tree

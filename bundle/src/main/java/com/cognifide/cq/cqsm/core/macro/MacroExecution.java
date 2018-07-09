@@ -1,6 +1,6 @@
 package com.cognifide.cq.cqsm.core.macro;
 
-import com.cognifide.apm.antlr.ApmLangParser.CommandUseMacroContext;
+import com.cognifide.apm.antlr.ApmLangParser.MacroExecutionContext;
 import com.cognifide.apm.antlr.ApmLangParser.ParameterContext;
 import java.util.Collections;
 import java.util.List;
@@ -8,14 +8,14 @@ import java.util.List;
 public final class MacroExecution {
 
   private final String name;
-  private final CommandUseMacroContext macro;
+  private final MacroExecutionContext macro;
 
-  private MacroExecution(String name, CommandUseMacroContext macro) {
+  private MacroExecution(String name, MacroExecutionContext macro) {
     this.name = name;
     this.macro = macro;
   }
 
-  public static MacroExecution of(CommandUseMacroContext macro) {
+  public static MacroExecution of(MacroExecutionContext macro) {
     String name = macro.name().IDENTIFIER().toString();
     return new MacroExecution(name, macro);
   }
@@ -24,7 +24,7 @@ public final class MacroExecution {
     return name;
   }
 
-  public CommandUseMacroContext getMacro() {
+  public MacroExecutionContext getMacro() {
     return macro;
   }
 
