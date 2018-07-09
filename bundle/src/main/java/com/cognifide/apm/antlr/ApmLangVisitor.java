@@ -17,11 +17,19 @@ public interface ApmLangVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitApm(ApmLangParser.ApmContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link ApmLangParser#name}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitName(ApmLangParser.NameContext ctx);
+   * Visit a parse tree produced by {@link ApmLangParser#line}.
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitLine(ApmLangParser.LineContext ctx);
+
+  /**
+   * Visit a parse tree produced by {@link ApmLangParser#name}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitName(ApmLangParser.NameContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link ApmLangParser#variable}.
 	 * @param ctx the parse tree

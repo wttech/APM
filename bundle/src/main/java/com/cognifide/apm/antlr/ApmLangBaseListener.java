@@ -28,7 +28,27 @@ public class ApmLangBaseListener implements ApmLangListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterName(ApmLangParser.NameContext ctx) { }
+  @Override
+  public void enterLine(ApmLangParser.LineContext ctx) {
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.</p>
+   */
+  @Override
+  public void exitLine(ApmLangParser.LineContext ctx) {
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.</p>
+   */
+  @Override
+  public void enterName(ApmLangParser.NameContext ctx) {
+  }
 	/**
 	 * {@inheritDoc}
 	 *

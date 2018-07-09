@@ -18,10 +18,24 @@ public interface ApmLangListener extends ParseTreeListener {
 	 */
 	void exitApm(ApmLangParser.ApmContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link ApmLangParser#name}.
-	 * @param ctx the parse tree
-	 */
-	void enterName(ApmLangParser.NameContext ctx);
+   * Enter a parse tree produced by {@link ApmLangParser#line}.
+   * @param ctx the parse tree
+   */
+  void enterLine(ApmLangParser.LineContext ctx);
+
+  /**
+   * Exit a parse tree produced by {@link ApmLangParser#line}.
+   *
+   * @param ctx the parse tree
+   */
+  void exitLine(ApmLangParser.LineContext ctx);
+
+  /**
+   * Enter a parse tree produced by {@link ApmLangParser#name}.
+   *
+   * @param ctx the parse tree
+   */
+  void enterName(ApmLangParser.NameContext ctx);
 	/**
 	 * Exit a parse tree produced by {@link ApmLangParser#name}.
 	 * @param ctx the parse tree

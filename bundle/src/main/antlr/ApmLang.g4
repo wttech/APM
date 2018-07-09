@@ -5,7 +5,11 @@ grammar ApmLang;
  */
 
 apm
-    : (command | macroDefinition | comment | EOL)+ EOF
+    : (line? EOL)+ line?
+    ;
+
+line
+    : (command | macroDefinition | comment)
     ;
 
 name
@@ -23,13 +27,13 @@ parameter
     ;
 
 comment
-    : COMMENT EOL
+    : COMMENT
     ;
 
 command
-    : USE_MACRO name parametersInvokation? EOL # CommandUseMacro
-    | ALLOW parameter parameter? EOL # CommandAllow
-    | IDENTIFIER parameter+ EOL # CommandGeneric
+    : USE_MACRO name parametersInvokation? # CommandUseMacro
+    | ALLOW parameter parameter? # CommandAllow
+    | IDENTIFIER parameter+ # CommandGeneric
     ;
 
 parametersDefinition
@@ -41,11 +45,11 @@ parametersInvokation
     ;
 
 body
-    : command+
+    : (command? EOL)+
     ;
 
 macroDefinition
-    : DEFINE_MACRO name parametersDefinition? EOL? BEGIN EOL? body END EOL
+    : DEFINE_MACRO name parametersDefinition? EOL? BEGIN EOL? body END
     ;
 
 /*
