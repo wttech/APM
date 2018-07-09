@@ -27,6 +27,8 @@ import java.util.Calendar;
 import java.util.List;
 
 import javax.jcr.RepositoryException;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 
 public interface History {
 
@@ -40,6 +42,8 @@ public interface History {
 	 * Save detailed script execution as entry
 	 */
 	Entry log(Script script, Mode mode, Progress progressLogger);
+
+	List<Resource> findAllResource(ResourceResolver resourceResolver);
 
 	/**
 	 * Replicate log entry from publish to author instance

@@ -93,6 +93,7 @@ public class ScriptRunBackgroundServlet extends SlingAllMethodsServlet {
 			final SlingHttpServletResponse response) throws IOException {
 		final String searchPath = request.getParameter(FILE_REQUEST_PARAMETER);
 		final String modeName = request.getParameter(MODE_REQUEST_PARAMETER);
+		final String userName = request.getUserPrincipal().getName();
 
 		if (StringUtils.isEmpty(searchPath)) {
 			ServletUtils.writeMessage(response, ERROR_RESPONSE_TYPE,
@@ -105,7 +106,7 @@ public class ScriptRunBackgroundServlet extends SlingAllMethodsServlet {
 			return null;
 		}
 
-		return new BackgroundJobParameters(searchPath, modeName);
+		return new BackgroundJobParameters(searchPath, modeName, userName);
 	}
 
 	private Map<String, Object> createMapWithJobIdKey(Job job) {
