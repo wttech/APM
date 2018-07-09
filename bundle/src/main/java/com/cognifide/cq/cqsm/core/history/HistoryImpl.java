@@ -41,8 +41,19 @@ import com.day.cq.replication.ReplicationAction;
 import com.day.cq.wcm.api.Page;
 import com.day.cq.wcm.api.PageManager;
 import com.day.cq.wcm.api.WCMException;
-
 import com.google.common.collect.ImmutableMap;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Properties;
@@ -60,24 +71,10 @@ import org.osgi.framework.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
-
 @Component(immediate = true)
 @Service
 @Properties({@Property(name = Constants.SERVICE_DESCRIPTION, value = "CQSM History Service"),
-		@Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)})
+	@Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)})
 public class HistoryImpl implements History {
 
 	private static final Logger LOG = LoggerFactory.getLogger(HistoryImpl.class);
@@ -104,16 +101,16 @@ public class HistoryImpl implements History {
 	@Override
 	public Entry log(Script script, Mode mode, Progress progressLogger) {
 		InstanceDetails.InstanceType instanceDetails = instanceTypeProvider.isOnAuthor() ?
-				InstanceDetails.InstanceType.AUTHOR :
-				InstanceDetails.InstanceType.PUBLISH;
+			InstanceDetails.InstanceType.AUTHOR :
+			InstanceDetails.InstanceType.PUBLISH;
 		return log(script, mode, progressLogger, instanceDetails, getHostname(), Calendar.getInstance());
 	}
 
 	@Override
 	public Entry logRemote(Script script, Mode mode, Progress progressLogger, InstanceDetails instanceDetails,
-			Calendar executionTime) {
+		Calendar executionTime) {
 		return log(script, mode, progressLogger, instanceDetails.getInstanceType(),
-				instanceDetails.getHostname(), executionTime);
+			instanceDetails.getHostname(), executionTime);
 	}
 
 	@Override
@@ -132,10 +129,20 @@ public class HistoryImpl implements History {
 	}
 
 	@Override
+	public List<Resource> findAllResource(ResourceResolver resourceResolver) {
+		List<Resource> result = new LinkedList<>();
+		Iterator<Resource> it = resourceResolver.getResource(HistoryImpl.ENTRY_PATH).listChildren();
+		while (it.hasNext()) {
+			result.add(it.next());
+		}
+		return result;
+	}
+
+	@Override
 	public void replicate(final Entry entry, String userId) throws RepositoryException {
 		if (actionSubmitter == null) {
 			LOG.warn(String.format("History entry '%s' replication cannot be performed on author instance",
-					entry.getPath()));
+				entry.getPath()));
 			return;
 		}
 		SlingHelper.operateTraced(resolverFactory, userId, new OperateCallback() {
@@ -176,8 +183,8 @@ public class HistoryImpl implements History {
 	}
 
 	private Entry log(final Script script, final Mode mode, final Progress progressLogger,
-			final InstanceDetails.InstanceType instanceType, final String hostname,
-			final Calendar executionTime) {
+		final InstanceDetails.InstanceType instanceType, final String hostname,
+		final Calendar executionTime) {
 		return SlingHelper.resolveDefault(resolverFactory, progressLogger.getExecutor(), new ResolveCallback<Entry>() {
 			@Override
 			public Entry resolve(ResourceResolver resolver) {
@@ -191,15 +198,15 @@ public class HistoryImpl implements History {
 						historyComponent = createHistoryComponent(historyPage);
 					}
 					String uniqueName = ResourceUtil
-							.createUniqueChildName(historyComponent, source.getName());
+						.createUniqueChildName(historyComponent, source.getName());
 					Resource child = resolver
-							.create(historyComponent, uniqueName, new HashMap<String, Object>());
+						.create(historyComponent, uniqueName, new HashMap<String, Object>());
 
 					String executor = getExecutor(resolver, mode);
 					ModifiableEntryBuilder builder = new ModifiableEntryBuilder(child);
 					fillEntryProperties(//
-							builder, mode, progressLogger, instanceType, //
-							hostname, executionTime, source, values, executor//
+						builder, mode, progressLogger, instanceType, //
+						hostname, executionTime, source, values, executor//
 					);
 
 					//easier to use JCR API here due to jcr:uuid copy constraints
@@ -216,26 +223,26 @@ public class HistoryImpl implements History {
 
 			private Resource createHistoryComponent(Page historyPage) throws PersistenceException {
 				ResourceResolver resourceResolver = historyPage.getContentResource().getResourceResolver();
-				Map<String, Object> props = ImmutableMap.<String, Object> builder()//
-							.put(JcrResourceConstants.SLING_RESOURCE_TYPE_PROPERTY, HISTORY_COMPONENT_RESOURCE_TYPE) //
-							.build();
+				Map<String, Object> props = ImmutableMap.<String, Object>builder()//
+					.put(JcrResourceConstants.SLING_RESOURCE_TYPE_PROPERTY, HISTORY_COMPONENT_RESOURCE_TYPE) //
+					.build();
 				return resourceResolver.create(historyPage.getContentResource(), HISTORY_COMPONENT, props);
 			}
 		}, null);
 	}
 
 	private void fillEntryProperties(ModifiableEntryBuilder entryBuilder, Mode mode, Progress progressLogger,
-			InstanceDetails.InstanceType instanceType, String hostname, Calendar executionTime,
-			Resource source, ValueMap values, String executor) {
+		InstanceDetails.InstanceType instanceType, String hostname, Calendar executionTime,
+		Resource source, ValueMap values, String executor) {
 		entryBuilder.setFileName(source.getName()) //
-				.setFilePath(source.getPath()) //
-				.setMode(mode.toString()) //
-				.setProgressLog(ProgressHelper.toJson(progressLogger.getEntries())) //
-				.setExecutionTime(executionTime) //
-				.setAuthor(values.get(JcrConstants.JCR_CREATED_BY, StringUtils.EMPTY)) //
-				.setUploadTime(values.get(JcrConstants.JCR_CREATED, StringUtils.EMPTY)) //
-				.setInstanceType(instanceType.getInstanceName()) //
-				.setInstanceHostname(hostname);
+			.setFilePath(source.getPath()) //
+			.setMode(mode.toString()) //
+			.setProgressLog(ProgressHelper.toJson(progressLogger.getEntries())) //
+			.setExecutionTime(executionTime) //
+			.setAuthor(values.get(JcrConstants.JCR_CREATED_BY, StringUtils.EMPTY)) //
+			.setUploadTime(values.get(JcrConstants.JCR_CREATED, StringUtils.EMPTY)) //
+			.setInstanceType(instanceType.getInstanceName()) //
+			.setInstanceHostname(hostname);
 		if (StringUtils.isNotBlank(executor)) {
 			entryBuilder.setExecutor(executor);
 		}
@@ -248,8 +255,8 @@ public class HistoryImpl implements History {
 		if (historyPage == null) {
 			boolean autoCommit = true;
 			historyPage = pageManager
-					.create("/etc/cqsm", "history", "/apps/cqsm/core/templates/historyTemplate", "History",
-							autoCommit);
+				.create("/etc/cqsm", "history", "/apps/cqsm/core/templates/historyTemplate", "History",
+					autoCommit);
 		}
 		return historyPage;
 	}

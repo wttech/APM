@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:granite="http://www.adobe.com/jcr/granite/1.0"
+        xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+        xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+        jcr:primaryType="nt:unstructured"
+        jcr:title="APM Edit"
+        sling:resourceType="granite/ui/components/shell/collectionpage"
+        granite:class="apm-edit-script-page"
+        consoleId="apm-edit"
+        contentPath="/content"
+        targetCollection=".apm-edit-form">
+    <head jcr:primaryType="nt:unstructured">
+        <clientlibs
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="granite/ui/components/coral/foundation/includeclientlibs"
+                categories="[apm-edit]"/>
+    </head>
+    <actions
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="granite/ui/components/foundation/navigation"
+            class="content-header grid-generator-header">
+        <primary jcr:primaryType="nt:unstructured">
+            <showReferences
+                    granite:id="showReference"
+                    granite:class="foundation-collection-action"
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="granite/ui/components/coral/foundation/collection/action"
+                    icon="file"
+                    text="Show References"
+                    variant="actionBar"/>
+            <validate
+                    granite:id="validateButton"
+                    granite:class="foundation-collection-action"
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="granite/ui/components/coral/foundation/collection/action"
+                    icon="spellcheck"
+                    text="Validate"
+                    variant="actionBar" />
+            <save
+                    granite:id="uploadButton"
+                    granite:class="foundation-collection-action"
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="granite/ui/components/coral/foundation/collection/action"
+                    icon="save"
+                    text="Save"
+                    variant="actionBar" />
+        </primary>
+        <secondary jcr:primaryType="nt:unstructured">
+        </secondary>
+    </actions>
+    <views jcr:primaryType="nt:unstructured">
+        <list
+                granite:class="apm-edit-form"
+                granite:rel="apm-edit"
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="granite/ui/components/coral/foundation/container"
+                margin="true">
+            <items jcr:primaryType="nt:unstructured">
+                <form
+                        granite:class="cache-warmup-form"
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="granite/ui/components/coral/foundation/form"
+                        action="${requestPathInfo.resourcePath}"
+                        method="post"
+                        style="vertical">
+                    <items jcr:primaryType="nt:unstructured">
+                        <console
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="apm/components/console"/>
+                        <text
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                                fieldLabel="Text"
+                                fieldDescription=""
+                                name="text"/>
+                        <start
+                                granite:class="start-button"
+                                jcr:primaryType="nt:unstructured"
+                                sling:resourceType="granite/ui/components/coral/foundation/button"
+                                text="Button"/>
+                    </items>
+                </form>
+            </items>
+        </list>
+    </views>
+</jcr:root>
