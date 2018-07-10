@@ -44,6 +44,7 @@ import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.actions.executor.ActionExecutor;
 import com.cognifide.cq.cqsm.core.antlr.ApmLangParserFactory;
 import com.cognifide.cq.cqsm.core.antlr.ScriptRunner;
+import com.cognifide.cq.cqsm.core.antlr.SingleActionFactory;
 import com.cognifide.cq.cqsm.core.progress.ProgressImpl;
 import com.cognifide.cq.cqsm.core.sessions.SessionSavingMode;
 import com.cognifide.cq.cqsm.core.sessions.SessionSavingPolicy;
@@ -59,7 +60,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import org.apache.commons.io.IOUtils;
@@ -69,6 +72,8 @@ import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,6 +97,13 @@ public class ScriptManagerImpl implements ScriptManager {
 
   @Reference
   private ScriptFinder scriptFinder;
+
+  @Reference(
+      cardinality = ReferenceCardinality.MULTIPLE,
+      policy = ReferencePolicy.DYNAMIC,
+      service = SingleActionFactory.class
+  )
+  private final Set<SingleActionFactory> actionFactories = new CopyOnWriteArraySet<>();
 
   private EventManager eventManager = new EventManager();
 
@@ -163,23 +175,29 @@ public class ScriptManagerImpl implements ScriptManager {
     eventManager.trigger(Event.BEFORE_EXECUTE, script, mode, progress);
 
     ApmLangParser apmLangParser = ApmLangParserFactory.createParserForScript(script.getData());
-    ScriptRunner scriptRunner = new ScriptRunner((ctx, stringCommand) -> {
-      try {
-        ActionDescriptor descriptor = actionFactory.evaluate(stringCommand);
-        ActionResult result = actionExecutor.execute(descriptor);
-        progress.addEntry(descriptor, result);
+    ScriptRunner scriptRunner = new ScriptRunner(
+        (ctx, stringCommand, commandName, parameters) -> {
+          try {
+            SingleActionFactory singleActionFactory = actionFactories.stream()
+                .filter(actionFactory -> actionFactory.getName().equals(commandName))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("now action factory"));
+            Action action = singleActionFactory.create(context, parameters);
+            ActionDescriptor descriptor = new ActionDescriptor(commandName, action);
+            ActionResult result = actionExecutor.execute(descriptor);
+            progress.addEntry(descriptor, result);
 
-        if ((Status.ERROR == result.getStatus()) && (Mode.DRY_RUN != mode)) {
-          eventManager.trigger(Event.AFTER_EXECUTE, script, mode, progress);
+            if ((Status.ERROR == result.getStatus()) && (Mode.DRY_RUN != mode)) {
+              eventManager.trigger(Event.AFTER_EXECUTE, script, mode, progress);
+              return Collections.emptyList();
+            }
+
+            savingPolicy.save(context.getSession(), SessionSavingMode.EVERY_ACTION);
+          } catch (RepositoryException e) {
+
+          }
           return Collections.emptyList();
-        }
-
-        savingPolicy.save(context.getSession(), SessionSavingMode.EVERY_ACTION);
-      } catch (ActionCreationException | RepositoryException e) {
-
-      }
-      return Collections.emptyList();
-    });
+        });
     scriptRunner.execute(apmLangParser.apm());
     savingPolicy.save(context.getSession(), SessionSavingMode.SINGLE);
 

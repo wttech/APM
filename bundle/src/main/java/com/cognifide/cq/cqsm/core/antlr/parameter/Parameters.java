@@ -1,4 +1,4 @@
-package com.cognifide.cq.cqsm.core.antlr;
+package com.cognifide.cq.cqsm.core.antlr.parameter;
 
 import com.cognifide.cq.cqsm.core.antlr.type.ApmNull;
 import com.cognifide.cq.cqsm.core.antlr.type.ApmType;

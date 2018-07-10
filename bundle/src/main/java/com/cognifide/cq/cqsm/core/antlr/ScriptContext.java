@@ -1,5 +1,6 @@
 package com.cognifide.cq.cqsm.core.antlr;
 
+import com.cognifide.cq.cqsm.core.antlr.parameter.ParameterResolver;
 import com.cognifide.cq.cqsm.core.macro.MacroRegister;
 
 public class ScriptContext {

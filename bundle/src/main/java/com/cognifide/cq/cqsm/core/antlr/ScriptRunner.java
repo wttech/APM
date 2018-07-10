@@ -6,6 +6,9 @@ import com.cognifide.apm.antlr.ApmLangParser.GenericCommandContext;
 import com.cognifide.apm.antlr.ApmLangParser.MacroDefinitionContext;
 import com.cognifide.apm.antlr.ApmLangParser.MacroExecutionContext;
 import com.cognifide.apm.antlr.ApmLangParser.ParameterContext;
+import com.cognifide.cq.cqsm.core.antlr.parameter.ParameterResolver;
+import com.cognifide.cq.cqsm.core.antlr.parameter.Parameters;
+import com.cognifide.cq.cqsm.core.antlr.type.ApmType;
 import com.cognifide.cq.cqsm.core.macro.MacroDefinition;
 import com.cognifide.cq.cqsm.core.macro.MacroExecution;
 import com.cognifide.cq.cqsm.core.macro.MacroRegister;
@@ -72,7 +75,7 @@ public class ScriptRunner {
         List<String> parametersNames = macroDefinition.getParametersNames();
         List<ParameterContext> parameters = commandUseMacro.getParameters();
         for (int i = 0; i < Math.min(parametersNames.size(), parameters.size()); i++) {
-          String value = parameterResolver.resolve(parameters.get(i));
+          ApmType value = parameterResolver.resolve(parameters.get(i));
           variableHolder.put(parametersNames.get(i), value);
         }
         return visit(macroDefinition.getBody());
@@ -83,10 +86,15 @@ public class ScriptRunner {
 
     @Override
     public List<String> visitGenericCommand(GenericCommandContext ctx) {
+      String commandName = ctx.IDENTIFIER().toString();
       String command = ctx.children.stream()
           .map(ParseTree::getText)
           .collect(Collectors.joining(" "));
-      return actionInvoker.runAction(ctx, command);
+      ParameterResolver parameterResolver = scriptContext.getParameterResolver();
+      List<ApmType> parameters = ctx.parameter().stream()
+          .map(parameterResolver::resolve)
+          .collect(Collectors.toList());
+      return actionInvoker.runAction(ctx, command, commandName, new Parameters(parameters));
     }
   }
 }

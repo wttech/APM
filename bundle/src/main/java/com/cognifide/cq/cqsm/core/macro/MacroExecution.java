@@ -29,8 +29,8 @@ public final class MacroExecution {
   }
 
   public List<ParameterContext> getParameters() {
-    if (macro.parametersInvokation() != null) {
-      return macro.parametersInvokation().parameter();
+    if (macro.parametersInvocation() != null) {
+      return macro.parametersInvocation().parameter();
     }
     return Collections.emptyList();
   }

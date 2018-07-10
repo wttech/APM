@@ -1,5 +1,7 @@
 package com.cognifide.cq.cqsm.core.antlr;
 
+import com.cognifide.cq.cqsm.core.antlr.type.ApmNull;
+import com.cognifide.cq.cqsm.core.antlr.type.ApmType;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
@@ -7,7 +9,7 @@ import java.util.Map;
 
 public class VariableHolder {
 
-  private final Deque<Map<String, String>> contexts = new ArrayDeque<>();
+  private final Deque<Map<String, ApmType>> contexts = new ArrayDeque<>();
 
   private VariableHolder() {
   }
@@ -18,13 +20,13 @@ public class VariableHolder {
     return variableHolder;
   }
 
-  public void put(String name, String value) {
+  public void put(String name, ApmType value) {
     contexts.peek().put(name, value);
   }
 
-  public String get(String name) {
-    String value = null;
-    for (Map<String, String> context : contexts) {
+  public ApmType get(String name) {
+    ApmType value = new ApmNull();
+    for (Map<String, ApmType> context : contexts) {
       if (context.containsKey(name)) {
         value = context.get(name);
       }

@@ -39,6 +39,7 @@ public class ApmLangBaseVisitor<T> extends AbstractParseTreeVisitor<T> implement
   public T visitName(ApmLangParser.NameContext ctx) {
     return visitChildren(ctx);
   }
+
 	/**
 	 * {@inheritDoc}
 	 *
@@ -57,17 +58,73 @@ public class ApmLangBaseVisitor<T> extends AbstractParseTreeVisitor<T> implement
    * {@link #visitChildren} on {@code ctx}.</p>
    */
   @Override
-  public T visitValue(ApmLangParser.ValueContext ctx) {
+  public T visitVariable(ApmLangParser.VariableContext ctx) {
     return visitChildren(ctx);
   }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation returns the result of calling
+   * {@link #visitChildren} on {@code ctx}.</p>
    */
   @Override
-  public T visitVariable(ApmLangParser.VariableContext ctx) {
+  public T visitBooleanValue(ApmLangParser.BooleanValueContext ctx) {
+    return visitChildren(ctx);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation returns the result of calling
+   * {@link #visitChildren} on {@code ctx}.</p>
+   */
+  @Override
+  public T visitNullValue(ApmLangParser.NullValueContext ctx) {
+    return visitChildren(ctx);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation returns the result of calling
+   * {@link #visitChildren} on {@code ctx}.</p>
+   */
+  @Override
+  public T visitNumberValue(ApmLangParser.NumberValueContext ctx) {
+    return visitChildren(ctx);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation returns the result of calling
+   * {@link #visitChildren} on {@code ctx}.</p>
+   */
+  @Override
+  public T visitStringValue(ApmLangParser.StringValueContext ctx) {
+    return visitChildren(ctx);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation returns the result of calling
+   * {@link #visitChildren} on {@code ctx}.</p>
+   */
+  @Override
+  public T visitStringConst(ApmLangParser.StringConstContext ctx) {
+    return visitChildren(ctx);
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation returns the result of calling
+   * {@link #visitChildren} on {@code ctx}.</p>
+   */
+  @Override
+  public T visitValue(ApmLangParser.ValueContext ctx) {
     return visitChildren(ctx);
   }
 
@@ -81,7 +138,8 @@ public class ApmLangBaseVisitor<T> extends AbstractParseTreeVisitor<T> implement
   public T visitParameter(ApmLangParser.ParameterContext ctx) {
     return visitChildren(ctx);
   }
-	/**
+
+  /**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
@@ -91,7 +149,8 @@ public class ApmLangBaseVisitor<T> extends AbstractParseTreeVisitor<T> implement
   public T visitComment(ApmLangParser.CommentContext ctx) {
     return visitChildren(ctx);
   }
-	/**
+
+  /**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
@@ -101,7 +160,8 @@ public class ApmLangBaseVisitor<T> extends AbstractParseTreeVisitor<T> implement
   public T visitMacroExecution(ApmLangParser.MacroExecutionContext ctx) {
     return visitChildren(ctx);
   }
-	/**
+
+  /**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
@@ -123,8 +183,11 @@ public class ApmLangBaseVisitor<T> extends AbstractParseTreeVisitor<T> implement
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitParametersInvokation(ApmLangParser.ParametersInvokationContext ctx) { return visitChildren(ctx); }
+   */
+  @Override
+  public T visitParametersInvocation(ApmLangParser.ParametersInvocationContext ctx) {
+    return visitChildren(ctx);
+  }
 	/**
 	 * {@inheritDoc}
 	 *
