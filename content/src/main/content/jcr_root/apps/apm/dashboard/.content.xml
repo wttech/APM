@@ -23,7 +23,7 @@
             <clientlibs
                     jcr:primaryType="nt:unstructured"
                     sling:resourceType="granite/ui/components/coral/foundation/includeclientlibs"
-                    categories="[cq.common.wcm,cq.sites.collectionpage,cq.siteadmin.admin.page.row,cq.experiencefragments.components.experiencefragment]"/>
+                    categories="[apm.dashboard,cq.common.wcm,cq.sites.collectionpage,cq.siteadmin.admin.page.row,cq.experiencefragments.components.experiencefragment]"/>
         </head>
         <views jcr:primaryType="nt:unstructured">
             <list
@@ -138,58 +138,46 @@
                         granite:class="foundation-collection-action"
                         jcr:primaryType="nt:unstructured"
                         sling:resourceType="granite/ui/components/coral/foundation/collection/action"
+                        action="dashboard.view"
                         activeSelectionCount="single"
                         icon="search"
                         relScope="item"
                         target=".cq-experience-fragments-admin-childpages"
                         text="View"
-                        variant="actionBar">
-                    <data
-                            jcr:primaryType="nt:unstructured"
-                            referenceSrc.url="/apps/apm/view.html{+item}"/>
-                </view>
+                        variant="actionBar"/>
                 <dryrun
                         granite:class="foundation-collection-action"
                         jcr:primaryType="nt:unstructured"
                         sling:resourceType="granite/ui/components/coral/foundation/collection/action"
+                        action="dashboard.dryrun"
                         activeSelectionCount="single"
                         icon="playCircle"
                         relScope="item"
                         target=".cq-experience-fragments-admin-childpages"
                         text="Dry Run"
-                        variant="actionBar">
-                    <data
-                            jcr:primaryType="nt:unstructured"
-                            referenceSrc.url="TODO"/>
-                </dryrun>
+                        variant="actionBar"/>
                 <runonauthor
                         granite:class="foundation-collection-action"
                         jcr:primaryType="nt:unstructured"
                         sling:resourceType="granite/ui/components/coral/foundation/collection/action"
+                        action="dashboard.runonauthor"
                         activeSelectionCount="single"
                         icon="play"
                         relScope="item"
                         target=".cq-experience-fragments-admin-childpages"
                         text="Run on Author"
-                        variant="actionBar">
-                    <data
-                            jcr:primaryType="nt:unstructured"
-                            referenceSrc.url="TODO"/>
-                </runonauthor>
+                        variant="actionBar"/>
                 <runonpublish
                         granite:class="foundation-collection-action"
                         jcr:primaryType="nt:unstructured"
                         sling:resourceType="granite/ui/components/coral/foundation/collection/action"
+                        action="dashboard.runonpublish"
                         activeSelectionCount="single"
                         icon="play"
                         relScope="item"
                         target=".cq-experience-fragments-admin-childpages"
                         text="Run on Publish"
-                        variant="actionBar">
-                    <data
-                            jcr:primaryType="nt:unstructured"
-                            referenceSrc.url="TODO"/>
-                </runonpublish>
+                        variant="actionBar"/>
                 <edit
                         granite:class="foundation-collection-action"
                         jcr:primaryType="nt:unstructured"
