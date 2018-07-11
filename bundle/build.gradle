@@ -1,6 +1,8 @@
 plugins {
     id 'com.cognifide.aem.bundle'
     id 'antlr'
+    id 'groovy'
+    id 'java'
 }
 
 description = 'AEM Permission Management :: Application Core'
@@ -59,7 +61,7 @@ generateGrammarSource {
     maxHeapSize = "64m"
     arguments += ["-visitor", "-long-messages"]
     arguments += ['-package', 'com.cognifide.apm.antlr']
-    outputDirectory =  project.file('src/main/java/com/cognifide/cq/apm/antlr')
+    outputDirectory =  project.file('src/main/java/com/cognifide/apm/antlr')
 }
 
 compileJava.dependsOn generateGrammarSource

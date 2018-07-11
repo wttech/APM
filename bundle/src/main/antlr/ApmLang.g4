@@ -5,47 +5,86 @@ grammar ApmLang;
  */
 
 apm
-    : (command | macroDefinition | comment | EOL)+ EOF
+    : (line? EOL)+ line?
+    ;
+
+line
+    : (command | macroDefinition | scriptInclusion | comment)
     ;
 
 name
     : IDENTIFIER
     ;
 
+array
+    : ARRAY_BEGIN value (',' value)* ARRAY_END
+    ;
+
 variable
-    : '${' IDENTIFIER '}'
+    : VARIABLE_PREFIX IDENTIFIER
+    ;
+
+booleanValue
+    : BOOLEAN_VALUE
+    ;
+
+nullValue
+    : NULL_VALUE
+    ;
+
+numberValue
+    : NUMBER_LITERAL
+    ;
+
+stringValue
+    : STRING_LITERAL
+    ;
+
+stringConst
+    : IDENTIFIER
+    ;
+
+value
+    : variable
+    | booleanValue
+    | nullValue
+    | numberValue
+    | stringValue
+    | stringConst
     ;
 
 parameter
-    : variable
-    | IDENTIFIER
-    | STRING_LITERAL
+    : array
+    | value
     ;
 
 comment
-    : COMMENT EOL
+    : COMMENT
     ;
 
 command
-    : USE_MACRO name parametersInvokation? EOL # CommandUseMacro
-    | ALLOW parameter parameter? EOL # CommandAllow
-    | IDENTIFIER parameter+ EOL # CommandGeneric
+    : EXECUTE_MACRO name parametersInvocation? # MacroExecution
+    | IDENTIFIER parameter+ # GenericCommand
     ;
 
 parametersDefinition
     : '(' IDENTIFIER (',' IDENTIFIER)* ')'
     ;
 
-parametersInvokation
+parametersInvocation
     : '(' parameter (',' parameter)* ')'
     ;
 
 body
-    : command+
+    : (command? EOL)+
+    ;
+
+scriptInclusion
+    : INCLUDE_SCRIPT parameter
     ;
 
 macroDefinition
-    : DEFINE_MACRO name parametersDefinition? EOL? BEGIN EOL? body END EOL
+    : DEFINE_MACRO name parametersDefinition? EOL? BLOCK_BEGIN EOL? body BLOCK_END
     ;
 
 /*
@@ -53,15 +92,17 @@ macroDefinition
  */
 
 //keywords
-ALLOW
-    : 'allow'
-    | 'ALLOW'
+ARRAY_BEGIN
+    : '['
     ;
-BEGIN
+ARRAY_END
+    : ']'
+    ;
+BLOCK_BEGIN
     : 'begin'
     | 'BEGIN'
     ;
-END
+BLOCK_END
     : 'end'
     | 'END'
     ;
@@ -69,13 +110,33 @@ DEFINE_MACRO
     : 'define macro'
     | 'DEFINE MACRO'
     ;
-USE_MACRO
+EXECUTE_MACRO
     : 'use macro'
     | 'USE MACRO'
+    ;
+INCLUDE_SCRIPT
+    : 'include'
+    | 'INCLUDE'
+    ;
+NUMBER_LITERAL
+    : [0-9]+
     ;
 STRING_LITERAL
     : '"' (~["\\\r\n] )* '"'
     | '\'' (~['\\\r\n] )* '\''
+    ;
+VARIABLE_PREFIX
+    : '$'
+    ;
+BOOLEAN_VALUE
+    : 'true'
+    | 'TRUE'
+    | 'false'
+    | 'FALSE'
+    ;
+NULL_VALUE
+    : 'null'
+    | 'NULL'
     ;
 IDENTIFIER
     : Letter LetterOrDigit*
@@ -92,7 +153,7 @@ fragment LetterOrDigit
     | [0-9]
     ;
 fragment Letter
-    : [a-zA-Z$_] // these are the "java letters" below 0x7F
+    : [a-zA-Z_] // these are the "java letters" below 0x7F
     | ~[\u0000-\u007F\uD800-\uDBFF] // covers all characters above 0x7F which are not a surrogate
     | [\uD800-\uDBFF] [\uDC00-\uDFFF] // covers UTF-16 surrogate pairs encodings for U+10000 to U+10FFFF
     ;
