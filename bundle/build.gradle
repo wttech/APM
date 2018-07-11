@@ -10,6 +10,10 @@ aem {
         attribute 'Bundle-Category', 'apm'
         attribute 'Bundle-Vendor', 'Cognifide'
         attribute 'Sling-Model-Packages', 'com.cognifide.cq.cqsm.core.models,com.cognifide.cq.cqsm.core.scripts,com.cognifide.cq.cqsm.api.history'
+        attribute 'Export-Package', 'com.cognifide.cq.cqsm.foundation.actions.*;com.cognifide.cq.cqsm.api.*;com.cognifide.cq.cqsm.core.models.*;com.cognifide.cq.cqsm.core.automaticexecutor.*'
+        attribute 'Import-Package', '!sun.misc,*'
+        attribute 'Sling-Nodetypes', 'CQ-INF/nodetypes/cqsm_nodetypes.cnd'
+        attribute 'CQ-Security-Management-Actions', 'com.cognifide.cq.cqsm.foundation.actions'
     }
 }
 
