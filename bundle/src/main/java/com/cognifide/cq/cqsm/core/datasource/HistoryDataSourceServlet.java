@@ -21,17 +21,11 @@ package com.cognifide.cq.cqsm.core.datasource;
 
 import com.adobe.granite.ui.components.ds.DataSource;
 import com.adobe.granite.ui.components.ds.SimpleDataSource;
-import com.adobe.granite.ui.components.ds.ValueMapResource;
-import com.cognifide.cq.cqsm.api.history.Entry;
 import com.cognifide.cq.cqsm.api.history.History;
 import com.cognifide.cq.cqsm.core.Cqsm;
-import com.google.common.collect.Maps;
+import com.google.common.collect.Lists;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import javax.servlet.ServletException;
 import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
@@ -40,11 +34,9 @@ import org.apache.felix.scr.annotations.Service;
 import org.apache.felix.scr.annotations.sling.SlingServlet;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
-import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.SyntheticResource;
+import org.apache.sling.api.resource.ResourceWrapper;
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
-import org.apache.sling.api.wrappers.ValueMapDecorator;
 import org.osgi.framework.Constants;
 
 @SlingServlet(resourceTypes = "apm/datasource/history")
@@ -59,7 +51,25 @@ public class HistoryDataSourceServlet extends SlingSafeMethodsServlet {
 	@Override
 	protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response)
 		throws ServletException, IOException {
-		DataSource dataSource = new SimpleDataSource(history.findAllResource(request.getResourceResolver()).iterator());
+		final List<Resource> allHistoryResources = Lists.newArrayList();
+
+		final List<Resource> allRawHistoryResources = history.findAllResource(request.getResourceResolver());
+		for (Resource rawHistoryResource:allRawHistoryResources) {
+			allHistoryResources.add(new ResourceTypeWrapper(rawHistoryResource));
+		}
+		DataSource dataSource = new SimpleDataSource(allHistoryResources.iterator());
 		request.setAttribute(DataSource.class.getName(), dataSource);
+	}
+
+	private class ResourceTypeWrapper extends ResourceWrapper {
+
+		ResourceTypeWrapper(Resource resource){
+			super(resource);
+		}
+
+		@Override
+		public String getResourceType() {
+			return "apm/components/historyRow";
+		}
 	}
 }

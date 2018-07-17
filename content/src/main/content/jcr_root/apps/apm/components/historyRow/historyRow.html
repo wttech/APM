@@ -17,34 +17,35 @@
 * limitations under the License.
 * =========================LICENSE_END==================================
 */ -->
-<sly data-sly-use.model="com.cognifide.cq.cqsm.api.history.Entry"/>
-<tr class="foundation-collection-model foundation-collection-navigator"
-    data-foundation-collection-model-id="${resource.path}" data-path="${resource.path}"
-    data-timeline="true" is="coral-table-row" data-script-name="${model.fileName}">
+<sly data-sly-use.item="com.cognifide.cq.cqsm.api.history.Entry"/>
+<tr class="foundation-collection-item foundation-collection-navigator"
+    data-foundation-collection-item-id="${resource.path}" data-path="${resource.path}"
+    data-timeline="true" is="coral-table-row" data-script-name="${item.fileName}">
+
     <td is="coral-table-cell" coral-table-rowselect>
     </td>
-    <td is="coral-table-cell" value="${model.fileName}">
-        ${model.fileName}
+    <td is="coral-table-cell" value="${item.fileName}">
+        ${item.fileName}
     </td>
-    <td is="coral-table-cell" value="${model.author}">
-        ${model.author}
+    <td is="coral-table-cell" value="${item.author}">
+        ${item.author}
     </td>
-    <td is="coral-table-cell" value="${model.uploadTime.timeInMillis || 0}">
-        <time datetime="${model.uploadTime.timeInMillis || 0}"
-              data-sly-use.modified="${'com.adobe.cq.xf.ui.DateFormatter' @ date=model.uploadTime, relativeFormat='r'}">
-            ${modified.uploadTime}
+    <td is="coral-table-cell" value="${item.lastModified.timeInMillis || 0}">
+        <time data-sly-test="${item.lastModified}" datetime="${item.lastModified.timeInMillis || 0}"
+              data-sly-use.lastMod="${'com.adobe.cq.xf.ui.DateFormatter' @ date=item.lastModified, relativeFormat='r'}">
+            ${lastMod.date}
         </time>
     </td>
-    <td is="coral-table-cell" value="${model.executionTime.timeInMillis || 0}">
-        <time datetime="${model.executionTime.timeInMillis || 0}"
+    <td is="coral-table-cell" value="${item.executionTime.timeInMillis || 0}">
+        <time datetime="${item.executionTime.timeInMillis || 0}"
               data-sly-use.modified="${'com.adobe.cq.xf.ui.DateFormatter' @ date=model.v, relativeFormat='r'}">
             ${modified.executionTime}
         </time>
     </td>
     <!--<td is="coral-table-cell" value="${model.lastDryRun.timeInMillis || 0}">-->
-        <!--<time datetime="${model.lastDryRun.timeInMillis || 0}"-->
-              <!--data-sly-use.modified="${'com.adobe.cq.xf.ui.DateFormatter' @ date=model.lastDryRun, relativeFormat='r'}">-->
-            <!--${modified.lastDryRun}-->
-        <!--</time>-->
+    <!--<time datetime="${model.lastDryRun.timeInMillis || 0}"-->
+    <!--data-sly-use.modified="${'com.adobe.cq.xf.ui.DateFormatter' @ date=model.lastDryRun, relativeFormat='r'}">-->
+    <!--${modified.lastDryRun}-->
+    <!--</time>-->
     <!--</td>-->
 </tr>

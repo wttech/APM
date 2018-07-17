@@ -39,17 +39,20 @@
                     stateId="xf.shell.collectionpage">
                 <columns jcr:primaryType="nt:unstructured">
                             select="{Boolean}true"/>
-                    <fileName
+                    <select
+                      jcr:primaryType="nt:unstructured"
+                      select="{Boolean}true"/>
+                    <scriptName
                             jcr:primaryType="nt:unstructured"
-                            jcr:title="File Name"
+                            jcr:title="Script"
                             sortable="{Boolean}true"/>
                     <author
                             jcr:primaryType="nt:unstructured"
                             jcr:title="Author"
                             sortable="{Boolean}true"/>
-                    <creationDate
+                    <updatedAt
                             jcr:primaryType="nt:unstructured"
-                            jcr:title="Created at"
+                            jcr:title="Updated at"
                             sortable="{Boolean}true"/>
                     <lastRunOn
                             jcr:primaryType="nt:unstructured"
