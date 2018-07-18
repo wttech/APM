@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,30 +19,32 @@
  */
 package com.cognifide.cq.cqsm.api.history;
 
-import com.google.common.collect.ComparisonChain;
-
 import com.cognifide.cq.cqsm.api.executors.Mode;
 import com.cognifide.cq.cqsm.api.logger.ProgressEntry;
+import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.core.progress.ProgressHelper;
-
+import com.cognifide.cq.cqsm.core.scripts.ScriptImpl;
+import com.google.common.collect.ComparisonChain;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
+import lombok.Getter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Model;
-
-import java.util.Date;
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import lombok.Getter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Model(adaptables = Resource.class, defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
 public class Entry implements Comparable<Entry> {
+
+	private static final Logger LOG = LoggerFactory.getLogger(Entry.class);
 
 	private static final String EXECUTION = "execution-result";
 
@@ -91,9 +93,45 @@ public class Entry implements Comparable<Entry> {
 	@Getter
 	private final String filePath;
 
+	@Getter
+	private Calendar lastModified;
+
+	@Getter
+	private Calendar lastAuthorExecution;
+
+	@Getter
+	private Calendar lastDryExecution;
+
+
+	// TODO: Perform refactoring
 	public Entry(Resource resource) {
-		path = resource.getPath();
-		filePath = getFilePath(resource);
+		final Resource scriptResource = resource.getChild("script");
+		if (scriptResource != null) {
+			Script script = scriptResource.adaptTo(ScriptImpl.class);
+			this.lastModified = Calendar.getInstance();
+			this.lastModified.setTime(script.getLastModified());
+
+			final Date lastAuthorExecutionDate = script.getExecutionLast();
+
+			if (lastAuthorExecutionDate != null) {
+				this.lastAuthorExecution = Calendar.getInstance();
+				this.lastAuthorExecution.setTime(lastAuthorExecutionDate);
+			}
+
+			final Date lastDryExecutionDate = script.getExecutionSchedule();
+			if (lastDryExecutionDate != null) {
+				this.lastDryExecution = Calendar.getInstance();
+				this.lastDryExecution.setTime(lastDryExecutionDate);
+			}
+
+
+		} else {
+			LOG.error("HISTORY_UTIL_NO_SCRIPT",
+				String.format("Can't find script for resource: {}", resource.getPath()));
+		}
+
+		this.path = resource.getPath();
+		this.filePath = getFilePath(resource);
 	}
 
 	@PostConstruct

@@ -23,29 +23,29 @@
     data-timeline="true" is="coral-table-row" data-script-name="${item.fileName}">
 
     <td is="coral-table-cell" coral-table-rowselect>
+      <coral-icon icon="fileKey" size="M">
+      </coral-icon>
     </td>
-    <td is="coral-table-cell" value="${item.fileName}">
-        ${item.fileName}
+    <td is="coral-table-cell" value="${item.scriptName}">
+      <a class="foundation-layout-table-cellwrapper" data-sly-test.link="${item.folder}" href="/apm/dashboard.html${resource.path}">${item.scriptName}</a>
+      <sly data-sly-test="${!link}" >${item.fileName}</sly>
     </td>
     <td is="coral-table-cell" value="${item.author}">
         ${item.author}
     </td>
     <td is="coral-table-cell" value="${item.lastModified.timeInMillis || 0}">
-        <time data-sly-test="${item.lastModified}" datetime="${item.lastModified.timeInMillis || 0}"
-              data-sly-use.lastMod="${'com.adobe.cq.xf.ui.DateFormatter' @ date=item.lastModified, relativeFormat='r'}">
-            ${lastMod.date}
+        <time data-sly-test="${item.lastModified}" datetime="${item.lastModified.timeInMillis || 0}">
+            ${'MMM dd, yyyy hh:mm:ss a' @ format=item.lastModified}
         </time>
     </td>
-    <td is="coral-table-cell" value="${item.executionTime.timeInMillis || 0}">
-        <time datetime="${item.executionTime.timeInMillis || 0}"
-              data-sly-use.modified="${'com.adobe.cq.xf.ui.DateFormatter' @ date=model.v, relativeFormat='r'}">
-            ${modified.executionTime}
+    <td is="coral-table-cell" value="${item.lastAuthorExecution.timeInMillis || 0}">
+        <time data-sly-test="${item.lastAuthorExecution}" datetime="${item.lastAuthorExecution.timeInMillis || 0}">
+            ${'MMM dd, yyyy hh:mm:ss a' @ format=item.lastAuthorExecution}
         </time>
     </td>
-    <!--<td is="coral-table-cell" value="${model.lastDryRun.timeInMillis || 0}">-->
-    <!--<time datetime="${model.lastDryRun.timeInMillis || 0}"-->
-    <!--data-sly-use.modified="${'com.adobe.cq.xf.ui.DateFormatter' @ date=model.lastDryRun, relativeFormat='r'}">-->
-    <!--${modified.lastDryRun}-->
-    <!--</time>-->
-    <!--</td>-->
+    <td is="coral-table-cell" value="${item.lastDryExecution.timeInMillis || 0}">
+        <time data-sly-test="${item.lastDryExecution}" datetime="${item.lastDryExecution.timeInMillis || 0}">
+            ${'MMM dd, yyyy hh:mm:ss a' @ format=item.lastDryExecution}
+        </time>
+    </td>
 </tr>
