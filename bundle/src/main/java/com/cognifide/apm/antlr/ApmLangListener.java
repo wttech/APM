@@ -194,17 +194,20 @@ public interface ApmLangListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void enterParametersDefinition(ApmLangParser.ParametersDefinitionContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link ApmLangParser#parametersDefinition}.
-	 * @param ctx the parse tree
+
+  /**
+   * Exit a parse tree produced by {@link ApmLangParser#parametersDefinition}.
+   * @param ctx the parse tree
    */
   void exitParametersDefinition(ApmLangParser.ParametersDefinitionContext ctx);
-	/**
+
+  /**
    * Enter a parse tree produced by {@link ApmLangParser#parametersInvocation}.
    * @param ctx the parse tree
    */
   void enterParametersInvocation(ApmLangParser.ParametersInvocationContext ctx);
-	/**
+
+  /**
    * Exit a parse tree produced by {@link ApmLangParser#parametersInvocation}.
    * @param ctx the parse tree
 	 */
@@ -215,10 +218,24 @@ public interface ApmLangListener extends ParseTreeListener {
 	 */
 	void enterBody(ApmLangParser.BodyContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link ApmLangParser#body}.
-	 * @param ctx the parse tree
-	 */
-	void exitBody(ApmLangParser.BodyContext ctx);
+   * Exit a parse tree produced by {@link ApmLangParser#body}.
+   * @param ctx the parse tree
+   */
+  void exitBody(ApmLangParser.BodyContext ctx);
+
+  /**
+   * Enter a parse tree produced by {@link ApmLangParser#path}.
+   *
+   * @param ctx the parse tree
+   */
+  void enterPath(ApmLangParser.PathContext ctx);
+
+  /**
+   * Exit a parse tree produced by {@link ApmLangParser#path}.
+   *
+   * @param ctx the parse tree
+   */
+  void exitPath(ApmLangParser.PathContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ApmLangParser#scriptInclusion}.
 	 * @param ctx the parse tree

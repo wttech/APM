@@ -19,20 +19,14 @@
  */
 package com.cognifide.cq.cqsm.core.servlets;
 
-import com.cognifide.cq.cqsm.api.actions.ActionFactory;
 import com.cognifide.cq.cqsm.core.Property;
-import com.cognifide.cq.cqsm.core.utils.ServletUtils;
-
+import java.io.IOException;
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-
-import java.io.IOException;
-
-import javax.servlet.Servlet;
-import javax.servlet.ServletException;
 
 @Component(
 		immediate = true,
@@ -47,12 +41,12 @@ import javax.servlet.ServletException;
 )
 public class ReferenceServlet extends SlingAllMethodsServlet {
 
-	@Reference
-	private ActionFactory actionFactory;
+//	@Reference
+//	private ActionFactory actionFactory;
 
 	@Override
 	protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response)
 			throws ServletException, IOException {
-		ServletUtils.writeJson(response, actionFactory.refer());
+//		ServletUtils.writeJson(response, actionFactory.refer());
 	}
 }

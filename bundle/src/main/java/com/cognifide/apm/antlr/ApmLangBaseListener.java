@@ -224,33 +224,39 @@ public class ApmLangBaseListener implements ApmLangListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitComment(ApmLangParser.CommentContext ctx) { }
-	/**
-	 * {@inheritDoc}
+  @Override
+  public void exitComment(ApmLangParser.CommentContext ctx) {
+  }
+
+  /**
+   * {@inheritDoc}
    *
    * <p>The default implementation does nothing.</p>
    */
   @Override
   public void enterMacroExecution(ApmLangParser.MacroExecutionContext ctx) {
   }
-	/**
-	 * {@inheritDoc}
+
+  /**
+   * {@inheritDoc}
    *
    * <p>The default implementation does nothing.</p>
    */
   @Override
   public void exitMacroExecution(ApmLangParser.MacroExecutionContext ctx) {
   }
-	/**
-	 * {@inheritDoc}
+
+  /**
+   * {@inheritDoc}
    *
    * <p>The default implementation does nothing.</p>
    */
   @Override
   public void enterGenericCommand(ApmLangParser.GenericCommandContext ctx) {
   }
-	/**
-	 * {@inheritDoc}
+
+  /**
+   * {@inheritDoc}
    *
    * <p>The default implementation does nothing.</p>
    */
@@ -268,17 +274,21 @@ public class ApmLangBaseListener implements ApmLangListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitParametersDefinition(ApmLangParser.ParametersDefinitionContext ctx) { }
-	/**
-	 * {@inheritDoc}
+  @Override
+  public void exitParametersDefinition(ApmLangParser.ParametersDefinitionContext ctx) {
+  }
+
+  /**
+   * {@inheritDoc}
    *
    * <p>The default implementation does nothing.</p>
    */
   @Override
   public void enterParametersInvocation(ApmLangParser.ParametersInvocationContext ctx) {
   }
-	/**
-	 * {@inheritDoc}
+
+  /**
+   * {@inheritDoc}
    *
    * <p>The default implementation does nothing.</p>
    */
@@ -289,15 +299,36 @@ public class ApmLangBaseListener implements ApmLangListener {
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterBody(ApmLangParser.BodyContext ctx) { }
-	/**
-	 * {@inheritDoc}
+   */
+  @Override
+  public void enterBody(ApmLangParser.BodyContext ctx) {
+  }
+
+  /**
+   * {@inheritDoc}
    *
    * <p>The default implementation does nothing.</p>
    */
   @Override
   public void exitBody(ApmLangParser.BodyContext ctx) {
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.</p>
+   */
+  @Override
+  public void enterPath(ApmLangParser.PathContext ctx) {
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.</p>
+   */
+  @Override
+  public void exitPath(ApmLangParser.PathContext ctx) {
   }
 
   /**

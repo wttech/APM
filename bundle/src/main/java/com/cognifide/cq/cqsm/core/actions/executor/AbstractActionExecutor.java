@@ -21,19 +21,15 @@ package com.cognifide.cq.cqsm.core.actions.executor;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
-import com.cognifide.cq.cqsm.api.actions.ActionFactory;
 import com.cognifide.cq.cqsm.api.exceptions.ActionException;
 import com.cognifide.cq.cqsm.api.executors.Context;
 
 public abstract class AbstractActionExecutor implements ActionExecutor {
 
-	protected final ActionFactory actionFactory;
-
 	protected final Context context;
 
-	public AbstractActionExecutor(Context context, ActionFactory actionFactory) {
+  public AbstractActionExecutor(Context context) {
 		this.context = context;
-		this.actionFactory = actionFactory;
 	}
 
 	public Context getContext() {

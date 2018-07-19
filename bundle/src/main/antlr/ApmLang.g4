@@ -79,8 +79,12 @@ body
     : (command? EOL)+
     ;
 
+path
+    : STRING_LITERAL
+    ;
+
 scriptInclusion
-    : INCLUDE_SCRIPT parameter
+    : INCLUDE_SCRIPT path
     ;
 
 macroDefinition

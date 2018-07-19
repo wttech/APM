@@ -1,11 +1,11 @@
-package com.cognifide.cq.cqsm.core.antlr;
+package com.cognifide.cq.cqsm.foundation.actions.allow;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
+import com.cognifide.cq.cqsm.api.actions.ActionFactory;
 import com.cognifide.cq.cqsm.api.executors.Context;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.antlr.parameter.Parameters;
 import com.cognifide.cq.cqsm.core.antlr.type.ApmValue;
-import com.cognifide.cq.cqsm.foundation.actions.allow.Allow;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,13 +13,13 @@ import org.osgi.service.component.annotations.Component;
 
 @Component(
     immediate = true,
-    service = SingleActionFactory.class,
+    service = ActionFactory.class,
     property = {
         Property.DESCRIPTION + "APM Allow action factory",
         Property.VENDOR
     }
 )
-public class AllowActionFactory implements SingleActionFactory {
+public class AllowActionFactory implements ActionFactory {
 
   @Override
   public String getName() {

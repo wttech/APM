@@ -57,7 +57,7 @@ public interface ApmLangVisitor<T> extends ParseTreeVisitor<T> {
 
   /**
    * Visit a parse tree produced by {@link ApmLangParser#nullValue}.
-	 * @param ctx the parse tree
+   * @param ctx the parse tree
    * @return the visitor result
    */
   T visitNullValue(ApmLangParser.NullValueContext ctx);
@@ -101,14 +101,14 @@ public interface ApmLangVisitor<T> extends ParseTreeVisitor<T> {
 	T visitParameter(ApmLangParser.ParameterContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link ApmLangParser#comment}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
+   * @param ctx the parse tree
+   * @return the visitor result
    */
   T visitComment(ApmLangParser.CommentContext ctx);
 
   /**
    * Visit a parse tree produced by the {@code MacroExecution}
-	 * labeled alternative in {@link ApmLangParser#command}.
+   * labeled alternative in {@link ApmLangParser#command}.
    * @param ctx the parse tree
    * @return the visitor result
    */
@@ -116,7 +116,7 @@ public interface ApmLangVisitor<T> extends ParseTreeVisitor<T> {
 
   /**
    * Visit a parse tree produced by the {@code GenericCommand}
-	 * labeled alternative in {@link ApmLangParser#command}.
+   * labeled alternative in {@link ApmLangParser#command}.
    * @param ctx the parse tree
    * @return the visitor result
    */
@@ -137,10 +137,18 @@ public interface ApmLangVisitor<T> extends ParseTreeVisitor<T> {
   T visitParametersInvocation(ApmLangParser.ParametersInvocationContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link ApmLangParser#body}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
+   * @param ctx the parse tree
+   * @return the visitor result
    */
   T visitBody(ApmLangParser.BodyContext ctx);
+
+  /**
+   * Visit a parse tree produced by {@link ApmLangParser#path}.
+   *
+   * @param ctx the parse tree
+   * @return the visitor result
+   */
+  T visitPath(ApmLangParser.PathContext ctx);
 
   /**
    * Visit a parse tree produced by {@link ApmLangParser#scriptInclusion}.

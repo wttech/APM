@@ -9,6 +9,7 @@ import com.cognifide.apm.antlr.ApmLangParser.NumberValueContext;
 import com.cognifide.apm.antlr.ApmLangParser.ParameterContext;
 import com.cognifide.apm.antlr.ApmLangParser.StringConstContext;
 import com.cognifide.apm.antlr.ApmLangParser.StringValueContext;
+import com.cognifide.cq.cqsm.core.antlr.StringLiteral;
 import com.cognifide.cq.cqsm.core.antlr.VariableHolder;
 import com.cognifide.cq.cqsm.core.antlr.type.ApmBoolean;
 import com.cognifide.cq.cqsm.core.antlr.type.ApmList;
@@ -74,8 +75,7 @@ public class ParameterResolver {
 
     @Override
     public ApmType visitStringValue(StringValueContext ctx) {
-      String stringLiteral = ctx.STRING_LITERAL().toString();
-      return new ApmString(stringLiteral.substring(1, stringLiteral.length() - 1));
+      return new ApmString(StringLiteral.getValue(ctx.STRING_LITERAL()));
     }
 
     @Override

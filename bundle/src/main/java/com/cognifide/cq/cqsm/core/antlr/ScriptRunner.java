@@ -6,9 +6,12 @@ import com.cognifide.apm.antlr.ApmLangParser.GenericCommandContext;
 import com.cognifide.apm.antlr.ApmLangParser.MacroDefinitionContext;
 import com.cognifide.apm.antlr.ApmLangParser.MacroExecutionContext;
 import com.cognifide.apm.antlr.ApmLangParser.ParameterContext;
+import com.cognifide.apm.antlr.ApmLangParser.ScriptInclusionContext;
 import com.cognifide.cq.cqsm.core.antlr.parameter.ParameterResolver;
 import com.cognifide.cq.cqsm.core.antlr.parameter.Parameters;
 import com.cognifide.cq.cqsm.core.antlr.type.ApmType;
+import com.cognifide.cq.cqsm.core.loader.ScriptInclusion;
+import com.cognifide.cq.cqsm.core.loader.ScriptTree;
 import com.cognifide.cq.cqsm.core.macro.MacroDefinition;
 import com.cognifide.cq.cqsm.core.macro.MacroExecution;
 import com.cognifide.cq.cqsm.core.macro.MacroRegister;
@@ -27,13 +30,20 @@ public class ScriptRunner {
     this.actionInvoker = actionInvoker;
   }
 
-  public List<String> execute(ApmContext script) {
-    MacroRegistrar macroRegistrar = new MacroRegistrar();
-    MacroRegister macroRegister = macroRegistrar.findMacroDefinitions(new MacroRegister(), script);
-    ScriptContext scriptContext = new ScriptContext(macroRegister);
-
+  public List<String> execute(ScriptTree scriptTree) {
+    MacroRegister macroRegister = buildMacroRegister(scriptTree);
+    ScriptContext scriptContext = new ScriptContext(macroRegister, scriptTree);
     Executor executor = new Executor(actionInvoker, scriptContext);
-    return executor.visit(script);
+    return executor.visit(scriptTree.getRoot());
+  }
+
+  private MacroRegister buildMacroRegister(ScriptTree scriptTree) {
+    MacroRegistrar macroRegistrar = new MacroRegistrar();
+    MacroRegister macroRegister = macroRegistrar.findMacroDefinitions(new MacroRegister(), scriptTree.getRoot());
+    for (ApmContext reference : scriptTree.getIncludedScripts()) {
+      macroRegister = macroRegistrar.findMacroDefinitions(macroRegister, reference);
+    }
+    return macroRegister;
   }
 
   private static class Executor extends ApmLangBaseVisitor<List<String>> {
@@ -57,6 +67,19 @@ public class ScriptRunner {
         aggregate.addAll(nextResult);
       }
       return aggregate;
+    }
+
+    @Override
+    public List<String> visitScriptInclusion(ScriptInclusionContext ctx) {
+      VariableHolder variableHolder = scriptContext.getVariableHolder();
+      try {
+        variableHolder.createLocalContext();
+        String referencePath = ScriptInclusion.of(ctx).getPath();
+        ApmContext includedScript = scriptContext.getScriptTree().getIncludedScript(referencePath);
+        return visit(includedScript);
+      } finally {
+        variableHolder.removeLocalContext();
+      }
     }
 
     @Override

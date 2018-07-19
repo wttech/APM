@@ -2,7 +2,7 @@ package com.cognifide.cq.cqsm.core.antlr.parameter
 
 import com.cognifide.apm.antlr.ApmLangParser
 import com.cognifide.cq.cqsm.ApmLangParserHelper
-import com.cognifide.cq.cqsm.ListReturningVisitor
+import com.cognifide.cq.cqsm.core.antlr.ListBaseVisitor
 import com.cognifide.cq.cqsm.core.antlr.VariableHolder
 import com.cognifide.cq.cqsm.core.antlr.type.*
 import com.google.common.collect.Lists
@@ -88,7 +88,7 @@ class ParameterResolverTest extends Specification {
         result[1].getList().get(1).getBoolean() == Boolean.FALSE
     }
 
-    static class ParameterVisitor extends ListReturningVisitor<ApmType> {
+    static class ParameterVisitor extends ListBaseVisitor<ApmType> {
 
         private final ParameterResolver parameterResolver
 

@@ -21,15 +21,14 @@ package com.cognifide.cq.cqsm.core.actions.executor;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
-import com.cognifide.cq.cqsm.api.actions.ActionFactory;
 import com.cognifide.cq.cqsm.api.actions.ActionResult;
 import com.cognifide.cq.cqsm.api.exceptions.ActionException;
 import com.cognifide.cq.cqsm.api.executors.Context;
 
 public final class DryRunActionExecutor extends AbstractActionExecutor {
 
-	public DryRunActionExecutor(Context context, ActionFactory actionFactory) {
-		super(context, actionFactory);
+  public DryRunActionExecutor(Context context) {
+    super(context);
 	}
 
 	@Override
