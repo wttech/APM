@@ -21,12 +21,15 @@ package com.cognifide.cq.cqsm.api.history;
 
 import com.cognifide.cq.cqsm.api.executors.Mode;
 import com.cognifide.cq.cqsm.api.logger.ProgressEntry;
+import com.cognifide.cq.cqsm.api.logger.Status;
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.core.progress.ProgressHelper;
 import com.cognifide.cq.cqsm.core.scripts.ScriptImpl;
 import com.google.common.collect.ComparisonChain;
-import java.util.Calendar;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -94,13 +97,16 @@ public class Entry implements Comparable<Entry> {
 	private final String filePath;
 
 	@Getter
-	private Calendar lastModified;
+	private Timestamp lastModified;
 
 	@Getter
-	private Calendar lastAuthorExecution;
+	private Timestamp lastExecution;
 
 	@Getter
-	private Calendar lastDryExecution;
+	private Timestamp lastDryExecution;
+
+	@Getter
+	private Boolean isSuccessful;
 
 
 	// TODO: Perform refactoring
@@ -108,20 +114,18 @@ public class Entry implements Comparable<Entry> {
 		final Resource scriptResource = resource.getChild("script");
 		if (scriptResource != null) {
 			Script script = scriptResource.adaptTo(ScriptImpl.class);
-			this.lastModified = Calendar.getInstance();
-			this.lastModified.setTime(script.getLastModified());
+			this.lastModified = new Timestamp(script.getLastModified().getTime());
+			this.lastModified.setTime(script.getLastModified().getTime());
 
-			final Date lastAuthorExecutionDate = script.getExecutionLast();
+			final Date lastExecutionDate = script.getExecutionLast();
 
-			if (lastAuthorExecutionDate != null) {
-				this.lastAuthorExecution = Calendar.getInstance();
-				this.lastAuthorExecution.setTime(lastAuthorExecutionDate);
+			if (lastExecutionDate != null) {
+				this.lastExecution = new Timestamp(lastExecutionDate.getTime());
 			}
 
 			final Date lastDryExecutionDate = script.getExecutionSchedule();
 			if (lastDryExecutionDate != null) {
-				this.lastDryExecution = Calendar.getInstance();
-				this.lastDryExecution.setTime(lastDryExecutionDate);
+				this.lastDryExecution = new Timestamp(lastDryExecutionDate.getTime());
 			}
 
 
@@ -139,6 +143,15 @@ public class Entry implements Comparable<Entry> {
 		executor = getExecutorValue();
 		//FIXME api->core relationship
 		executionSummary = ProgressHelper.fromJson(executionSummaryJson);
+		this.isSuccessful = Boolean.TRUE;
+		final Iterator<ProgressEntry> executionSummaryIterator = executionSummary.iterator();
+
+		while (executionSummaryIterator.hasNext() && isSuccessful) {
+			final ProgressEntry operation = executionSummaryIterator.next();
+			if (Status.ERROR.equals(operation.getStatus())) {
+				isSuccessful = Boolean.FALSE;
+			}
+		}
 	}
 
 	public String getExecutionResultFileName() {
@@ -156,6 +169,22 @@ public class Entry implements Comparable<Entry> {
 	private String getExecutorValue() {
 		Mode modeType = Mode.fromString(mode, Mode.DRY_RUN);
 		return StringUtils.isNotBlank(executor) ? executor : modeType.getName();
+	}
+
+	public String getLastExecutionStatus() {
+		String lastExecutionDateStr = new SimpleDateFormat("dd, yyyy hh:mm:ss a").format(lastExecution);
+		String lastExecutionMonthStr = StringUtils.capitalize(new SimpleDateFormat("MMM").format(lastExecution));
+		String lastExecutionFullDateStr = String.format("%s %s", lastExecutionMonthStr, lastExecutionDateStr);
+
+		return String.format("%s %s", StringUtils.capitalize(instanceType), lastExecutionFullDateStr);
+	}
+
+	public String getLastDryExecutionStatus() {
+		String lastDryExecutionDateStr = new SimpleDateFormat("dd, yyyy hh:mm:ss a").format(lastDryExecution);
+		String lastDryExecutionMonthStr = StringUtils.capitalize(new SimpleDateFormat("MMM").format(lastDryExecution));
+		String lastDryExecutionFullDateStr = String.format("%s %s", lastDryExecutionMonthStr, lastDryExecutionDateStr);
+
+		return String.format("%s %s", StringUtils.capitalize(instanceType), lastDryExecutionFullDateStr);
 	}
 
 	@Override
