@@ -47,7 +47,7 @@
       </sly>
     </td>
     <td is="coral-table-cell" value="${item.lastDryExecution.time || 0}">
-        <time data-sly-test="${item.lastDryExecution || item.instanceType}" datetime="${item.lastDryExecution.time || 0}">
+        <time data-sly-test="${item.lastDryExecution && item.instanceType}" datetime="${item.lastDryExecution.time || 0}">
             ${item.lastDryExecutionStatus}
         </time>
     </td>

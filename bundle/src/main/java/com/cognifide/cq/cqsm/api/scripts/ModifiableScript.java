@@ -19,9 +19,8 @@
  */
 package com.cognifide.cq.cqsm.api.scripts;
 
-import org.apache.sling.api.resource.PersistenceException;
-
 import java.util.Date;
+import org.apache.sling.api.resource.PersistenceException;
 
 public interface ModifiableScript {
 
@@ -59,5 +58,10 @@ public interface ModifiableScript {
 	 * Set publish run
 	 */
 	void setPublishRun(Boolean flag) throws PersistenceException;
+
+	/**
+	 * Set dry run execution date
+	 */
+	void setDryRunExecution(Date executionDate) throws PersistenceException;
 
 }

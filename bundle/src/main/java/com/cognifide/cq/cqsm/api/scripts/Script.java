@@ -20,10 +20,8 @@
 package com.cognifide.cq.cqsm.api.scripts;
 
 import com.cognifide.cq.cqsm.core.scripts.Checksum;
-
-import org.apache.sling.api.resource.ResourceResolver;
-
 import java.util.Date;
+import org.apache.sling.api.resource.ResourceResolver;
 
 public interface Script {
 
@@ -96,4 +94,9 @@ public interface Script {
 	 * Return copy of the file
 	 */
 	String getData();
+
+	/**
+	 * Return last dry run date
+	 */
+	Date getDryRunLast();
 }

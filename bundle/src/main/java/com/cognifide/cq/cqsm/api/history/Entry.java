@@ -21,15 +21,14 @@ package com.cognifide.cq.cqsm.api.history;
 
 import com.cognifide.cq.cqsm.api.executors.Mode;
 import com.cognifide.cq.cqsm.api.logger.ProgressEntry;
-import com.cognifide.cq.cqsm.api.logger.Status;
 import com.cognifide.cq.cqsm.api.scripts.Script;
+import com.cognifide.cq.cqsm.core.history.HistoryHelper;
 import com.cognifide.cq.cqsm.core.progress.ProgressHelper;
 import com.cognifide.cq.cqsm.core.scripts.ScriptImpl;
 import com.google.common.collect.ComparisonChain;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -123,7 +122,7 @@ public class Entry implements Comparable<Entry> {
 				this.lastExecution = new Timestamp(lastExecutionDate.getTime());
 			}
 
-			final Date lastDryExecutionDate = script.getExecutionSchedule();
+			final Date lastDryExecutionDate = script.getDryRunLast();
 			if (lastDryExecutionDate != null) {
 				this.lastDryExecution = new Timestamp(lastDryExecutionDate.getTime());
 			}
@@ -143,15 +142,7 @@ public class Entry implements Comparable<Entry> {
 		executor = getExecutorValue();
 		//FIXME api->core relationship
 		executionSummary = ProgressHelper.fromJson(executionSummaryJson);
-		this.isSuccessful = Boolean.TRUE;
-		final Iterator<ProgressEntry> executionSummaryIterator = executionSummary.iterator();
-
-		while (executionSummaryIterator.hasNext() && isSuccessful) {
-			final ProgressEntry operation = executionSummaryIterator.next();
-			if (Status.ERROR.equals(operation.getStatus())) {
-				isSuccessful = Boolean.FALSE;
-			}
-		}
+		this.isSuccessful = HistoryHelper.isSuccessful(executionSummary);
 	}
 
 	public String getExecutionResultFileName() {

@@ -47,6 +47,7 @@ import com.cognifide.cq.cqsm.core.progress.ProgressImpl;
 import com.cognifide.cq.cqsm.core.sessions.SessionSavingMode;
 import com.cognifide.cq.cqsm.core.sessions.SessionSavingPolicy;
 
+import java.util.Date;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.felix.scr.annotations.Component;
@@ -166,12 +167,17 @@ public class ScriptManagerImpl implements ScriptManager {
 			modifiableScript.setExecuted(true);
 		}
 
+		// Why?
 		if (Arrays.asList(Mode.DRY_RUN, Mode.RUN, Mode.AUTOMATIC_RUN).contains(mode)) {
 			modifiableScript.setDryRunStatus(success);
 		}
 
 		if (mode.equals(Mode.VALIDATION)) {
 			modifiableScript.setValid(success);
+		}
+
+		if (Mode.DRY_RUN.equals(mode)){
+			modifiableScript.setDryRunExecution(new Date());
 		}
 	}
 
