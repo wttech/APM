@@ -27,8 +27,7 @@
       </coral-icon>
     </td>
     <td is="coral-table-cell" value="${item.scriptName}">
-      <a class="foundation-layout-table-cellwrapper" data-sly-test.link="${item.folder}" href="/apm/dashboard.html${resource.path}">${item.scriptName}</a>
-      <sly data-sly-test="${!link}" >${item.fileName}</sly>
+      <a class="foundation-layout-table-cellwrapper" href="${item.filePath}" download="${item.fileName}">${item.fileName}</a>
     </td>
     <td is="coral-table-cell" value="${item.author}">
         ${item.author}
@@ -38,17 +37,29 @@
             ${'MMM dd, yyyy hh:mm:ss a' @ format=item.lastModified}
         </time>
     </td>
+    <td is="coral-table-cell" value="${item.executor}">
+      ${item.executor}
+    </td>
     <td is="coral-table-cell" value="${item.lastExecution.time || 0}">
-      <sly data-sly-test="${item.lastExecution && item.instanceType}" >
-        <div class="${item.isSuccessful ? 'runSuccess' : 'runFailed'}" role="img"></div>
-        <time datetime="${item.lastExecution.time || 0}">
+      <sly data-sly-test="${item.executionTime && item.instanceType}" >
+        <button class="action-show-summary cqsm-button" type="button">
+          <div class="icon summary">Show summary</div>
+        </button>
+        <div class="${item.isRunSuccessful ? 'runSuccess' : 'runFailed'}"></div>
+        <time datetime="${item.executionTime.time || 0}">
           ${item.lastExecutionStatus}
         </time>
       </sly>
     </td>
     <td is="coral-table-cell" value="${item.lastDryExecution.time || 0}">
-        <time data-sly-test="${item.lastDryExecution && item.instanceType}" datetime="${item.lastDryExecution.time || 0}">
-            ${item.lastDryExecutionStatus}
+      <sly data-sly-test="${item.lastDryExecution && item.instanceType}" >
+        <button class="action-show-summary cqsm-button" type="button">
+          <div class="icon summary">Show summary</div>
+        </button>
+        <div class="${item.isDryRunSuccessful ? 'runSuccess' : 'runFailed'}"></div>
+        <time datetime="${item.lastDryExecution.time || 0}">
+          ${item.lastDryExecutionStatus}
         </time>
+      </sly>
     </td>
 </tr>

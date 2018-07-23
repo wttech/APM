@@ -26,7 +26,7 @@ import java.util.List;
 
 public final class HistoryHelper {
 
-	public static Boolean isSuccessful(List<ProgressEntry> progressSummary) {
+	public static Boolean isRunSuccessful(List<ProgressEntry> progressSummary) {
 		Boolean isSuccessful = Boolean.TRUE;
 		final Iterator<ProgressEntry> executionSummaryIterator = progressSummary.iterator();
 

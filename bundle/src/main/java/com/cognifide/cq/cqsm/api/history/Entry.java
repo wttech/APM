@@ -50,6 +50,8 @@ public class Entry implements Comparable<Entry> {
 
 	private static final String EXECUTION = "execution-result";
 
+	private static final String SCRIPT_HISTORY_FILE_NAME = "script";
+
 	@Inject
 	@Getter
 	private String fileName;
@@ -99,35 +101,27 @@ public class Entry implements Comparable<Entry> {
 	private Timestamp lastModified;
 
 	@Getter
-	private Timestamp lastExecution;
-
-	@Getter
 	private Timestamp lastDryExecution;
 
 	@Getter
-	private Boolean isSuccessful;
+	private Boolean isRunSuccessful;
 
+	@Getter
+	private Boolean isDryRunSuccessful;
 
 	// TODO: Perform refactoring
 	public Entry(Resource resource) {
-		final Resource scriptResource = resource.getChild("script");
+		final Resource scriptResource = resource.getChild(SCRIPT_HISTORY_FILE_NAME);
 		if (scriptResource != null) {
 			Script script = scriptResource.adaptTo(ScriptImpl.class);
 			this.lastModified = new Timestamp(script.getLastModified().getTime());
 			this.lastModified.setTime(script.getLastModified().getTime());
 
-			final Date lastExecutionDate = script.getExecutionLast();
-
-			if (lastExecutionDate != null) {
-				this.lastExecution = new Timestamp(lastExecutionDate.getTime());
-			}
-
 			final Date lastDryExecutionDate = script.getDryRunLast();
 			if (lastDryExecutionDate != null) {
 				this.lastDryExecution = new Timestamp(lastDryExecutionDate.getTime());
 			}
-
-
+			this.isDryRunSuccessful = script.isDryRunSuccessful();
 		} else {
 			LOG.error("HISTORY_UTIL_NO_SCRIPT",
 				String.format("Can't find script for resource: {}", resource.getPath()));
@@ -137,34 +131,9 @@ public class Entry implements Comparable<Entry> {
 		this.filePath = getFilePath(resource);
 	}
 
-	@PostConstruct
-	protected void init() {
-		executor = getExecutorValue();
-		//FIXME api->core relationship
-		executionSummary = ProgressHelper.fromJson(executionSummaryJson);
-		this.isSuccessful = HistoryHelper.isSuccessful(executionSummary);
-	}
-
-	public String getExecutionResultFileName() {
-		return EXECUTION + "-" + StringUtils.replace(fileName, ".cqsm", ".txt");
-	}
-
-	private String getFilePath(Resource resource) {
-		String path = null;
-		if (resource.getChild("script") != null) {
-			path = resource.getPath() + "/script";
-		}
-		return path;
-	}
-
-	private String getExecutorValue() {
-		Mode modeType = Mode.fromString(mode, Mode.DRY_RUN);
-		return StringUtils.isNotBlank(executor) ? executor : modeType.getName();
-	}
-
 	public String getLastExecutionStatus() {
-		String lastExecutionDateStr = new SimpleDateFormat("dd, yyyy hh:mm:ss a").format(lastExecution);
-		String lastExecutionMonthStr = StringUtils.capitalize(new SimpleDateFormat("MMM").format(lastExecution));
+		String lastExecutionDateStr = new SimpleDateFormat("dd, yyyy hh:mm:ss a").format(executionTime);
+		String lastExecutionMonthStr = StringUtils.capitalize(new SimpleDateFormat("MMM").format(executionTime));
 		String lastExecutionFullDateStr = String.format("%s %s", lastExecutionMonthStr, lastExecutionDateStr);
 
 		return String.format("%s %s", StringUtils.capitalize(instanceType), lastExecutionFullDateStr);
@@ -192,5 +161,31 @@ public class Entry implements Comparable<Entry> {
 	@Override
 	public boolean equals(Object obj) {
 		return EqualsBuilder.reflectionEquals(this, obj);
+	}
+
+	public String getExecutionResultFileName() {
+		return EXECUTION + "-" + StringUtils.replace(fileName, ".cqsm", ".txt");
+	}
+
+	private String getFilePath(Resource resource) {
+		String path = null;
+		if (resource.getChild(SCRIPT_HISTORY_FILE_NAME) != null) {
+			path = resource.getPath() + "/" + SCRIPT_HISTORY_FILE_NAME;
+		}
+		return path;
+	}
+
+	private String getExecutorValue() {
+		Mode modeType = Mode.fromString(mode, Mode.DRY_RUN);
+		return StringUtils.isNotBlank(executor) ? executor : modeType.getName();
+	}
+
+	@PostConstruct
+	protected void init() {
+		executor = getExecutorValue();
+		//FIXME api->core relationship
+
+		executionSummary = ProgressHelper.fromJson(executionSummaryJson);
+		this.isRunSuccessful = HistoryHelper.isRunSuccessful(executionSummary);
 	}
 }

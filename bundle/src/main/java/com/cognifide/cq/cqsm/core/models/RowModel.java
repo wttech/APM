@@ -25,6 +25,7 @@ import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceUtil;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
 
@@ -51,9 +52,10 @@ public class RowModel {
     @PostConstruct
     public void init() {
         Resource resource = request.getResource();
-        script = resource.adaptTo(ScriptImpl.class);
-        scriptName = resource.getName();
         isFolder = FOLDER_TYPES.contains(resource.getValueMap().get(JcrConstants.JCR_PRIMARYTYPE, StringUtils.EMPTY));
+        scriptName = resource.getName();
+        if (!isFolder)
+            script = resource.adaptTo(ScriptImpl.class);
     }
 
     public String getScriptName() {
