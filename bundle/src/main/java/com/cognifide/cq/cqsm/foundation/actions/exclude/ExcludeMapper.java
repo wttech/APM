@@ -20,20 +20,18 @@
 package com.cognifide.cq.cqsm.foundation.actions.exclude;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.BasicActionMapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
 import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
-
 import java.util.Collections;
 import java.util.List;
 
-public final class ExcludeMapper extends BasicActionMapper {
+public final class ExcludeMapper {
 
 	public static final String REFERENCE = "Remove specified users and groups from current group.";
 
 	@Mapping(
-			value = {"EXCLUDE" + SPACE + STRING},
-			args = {"authorizableId"},
+
+      args = {"authorizableId"},
 			reference = REFERENCE
 	)
 	public Action mapAction(final String id) throws ActionCreationException {
@@ -41,8 +39,8 @@ public final class ExcludeMapper extends BasicActionMapper {
 	}
 
 	@Mapping(
-			value = {"EXCLUDE" + SPACE + LIST},
-			args = {"authorizableIds"},
+
+      args = {"authorizableIds"},
 			reference = REFERENCE
 	)
 	public Action mapAction(final List<String> ids) throws ActionCreationException {

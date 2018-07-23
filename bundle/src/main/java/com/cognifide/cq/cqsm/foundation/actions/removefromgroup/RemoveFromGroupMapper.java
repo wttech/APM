@@ -20,20 +20,18 @@
 package com.cognifide.cq.cqsm.foundation.actions.removefromgroup;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.BasicActionMapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
 import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
-
 import java.util.Collections;
 import java.util.List;
 
-public final class RemoveFromGroupMapper extends BasicActionMapper {
+public final class RemoveFromGroupMapper {
 
 	public static final String REFERENCE = "Remove current authorizable from specified groups.";
 
 	@Mapping(
-			value = {"REMOVE" + DASH + "FROM" + DASH + "GROUP" + SPACE + STRING},
-			args = {"groupId"},
+
+      args = {"groupId"},
 			reference = REFERENCE
 	)
 	public Action mapAction(final String id) throws ActionCreationException {
@@ -41,8 +39,8 @@ public final class RemoveFromGroupMapper extends BasicActionMapper {
 	}
 
 	@Mapping(
-			value = {"REMOVE" + DASH + "FROM" + DASH + "GROUP" + SPACE + LIST},
-			args = {"groupIds"},
+
+      args = {"groupIds"},
 			reference = REFERENCE
 	)
 	public Action mapAction(final List<String> ids) throws ActionCreationException {

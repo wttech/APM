@@ -20,21 +20,19 @@
 package com.cognifide.cq.cqsm.foundation.actions.include;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.BasicActionMapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
 import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
-
 import java.util.Collections;
 import java.util.List;
 
-public final class IncludeMapper extends BasicActionMapper {
+public final class IncludeMapper {
 
 	public static final String REFERENCE = "This action is an complementary one for EXCLUDE action, and can be used to"
 			+ " add specified users and groups to current group.";
 
 	@Mapping(
-			value = {"INCLUDE" + SPACE + STRING},
-			args = {"authorizableId"},
+
+      args = {"authorizableId"},
 			reference = REFERENCE
 	)
 	public Action mapAction(final String id) throws ActionCreationException {
@@ -42,8 +40,8 @@ public final class IncludeMapper extends BasicActionMapper {
 	}
 
 	@Mapping(
-			value = {"INCLUDE" + SPACE + LIST},
-			args = {"authorizableIds"},
+
+      args = {"authorizableIds"},
 			reference = REFERENCE
 	)
 	public Action mapAction(final List<String> ids) throws ActionCreationException {

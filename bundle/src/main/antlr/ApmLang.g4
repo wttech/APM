@@ -9,7 +9,7 @@ apm
     ;
 
 line
-    : (command | macroDefinition | scriptInclusion | comment)
+    : (command | variableDefinition | macroDefinition | scriptInclusion | comment)
     ;
 
 name
@@ -58,6 +58,10 @@ parameter
     | value
     ;
 
+variableDefinition
+    : DEFINE IDENTIFIER parameter
+    ;
+
 comment
     : COMMENT
     ;
@@ -68,11 +72,11 @@ command
     ;
 
 parametersDefinition
-    : '(' IDENTIFIER (',' IDENTIFIER)* ')'
+    : IDENTIFIER+
     ;
 
 parametersInvocation
-    : '(' parameter (',' parameter)* ')'
+    : parameter+
     ;
 
 body
@@ -121,6 +125,10 @@ EXECUTE_MACRO
 INCLUDE_SCRIPT
     : 'include'
     | 'INCLUDE'
+    ;
+DEFINE
+    : 'define'
+    | 'DEFINE'
     ;
 NUMBER_LITERAL
     : [0-9]+

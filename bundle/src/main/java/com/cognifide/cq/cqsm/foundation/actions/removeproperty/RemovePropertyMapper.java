@@ -20,15 +20,14 @@
 package com.cognifide.cq.cqsm.foundation.actions.removeproperty;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.BasicActionMapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
 import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
 
-public final class RemovePropertyMapper extends BasicActionMapper {
+public final class RemovePropertyMapper {
 
 	@Mapping(
-			value = {"REMOVE" + DASH + "PROPERTY" + SPACE + STRING},
-			args = {"name"},
+
+      args = {"name"},
 			reference = "This is general purpose action which can be used to remove specified property."
 	)
 	public Action mapAction(final String propertyName) throws ActionCreationException {

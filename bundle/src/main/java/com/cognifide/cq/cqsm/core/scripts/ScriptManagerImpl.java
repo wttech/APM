@@ -19,10 +19,10 @@
  */
 package com.cognifide.cq.cqsm.core.scripts;
 
-import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
 import com.cognifide.cq.cqsm.api.actions.ActionFactory;
 import com.cognifide.cq.cqsm.api.actions.ActionResult;
+import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
 import com.cognifide.cq.cqsm.api.exceptions.ExecutionException;
 import com.cognifide.cq.cqsm.api.executors.Context;
 import com.cognifide.cq.cqsm.api.executors.Mode;
@@ -53,9 +53,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
-import java.util.concurrent.CopyOnWriteArraySet;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import org.apache.jackrabbit.api.JackrabbitSession;
@@ -63,8 +61,6 @@ import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,16 +78,11 @@ public class ScriptManagerImpl implements ScriptManager {
 
   @Reference
   private ScriptStorage scriptStorage;
-
+  @Reference
+  private ActionFactory actionFactory;
   @Reference
   private ScriptFinder scriptFinder;
 
-  @Reference(
-      cardinality = ReferenceCardinality.MULTIPLE,
-      policy = ReferencePolicy.DYNAMIC,
-      service = ActionFactory.class
-  )
-  private final Set<ActionFactory> actionFactories = new CopyOnWriteArraySet<>();
 
   private EventManager eventManager = new EventManager();
 
@@ -166,12 +157,7 @@ public class ScriptManagerImpl implements ScriptManager {
     ScriptRunner scriptRunner = new ScriptRunner(
         (ctx, stringCommand, commandName, parameters) -> {
           try {
-            ActionFactory singleActionFactory = actionFactories.stream()
-                .filter(actionFactory -> actionFactory.getName().equals(commandName))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("now action factory"));
-            Action action = singleActionFactory.create(context, parameters);
-            ActionDescriptor descriptor = new ActionDescriptor(commandName, action);
+            ActionDescriptor descriptor = actionFactory.evaluate(commandName, parameters);
             ActionResult result = actionExecutor.execute(descriptor);
             progress.addEntry(descriptor, result);
 
@@ -183,6 +169,8 @@ public class ScriptManagerImpl implements ScriptManager {
             savingPolicy.save(context.getSession(), SessionSavingMode.EVERY_ACTION);
           } catch (RepositoryException e) {
 
+          } catch (ActionCreationException e) {
+            e.printStackTrace();
           }
           return Collections.emptyList();
         });

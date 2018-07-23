@@ -7,6 +7,7 @@ import com.cognifide.apm.antlr.ApmLangParser.MacroDefinitionContext;
 import com.cognifide.apm.antlr.ApmLangParser.MacroExecutionContext;
 import com.cognifide.apm.antlr.ApmLangParser.ParameterContext;
 import com.cognifide.apm.antlr.ApmLangParser.ScriptInclusionContext;
+import com.cognifide.apm.antlr.ApmLangParser.VariableDefinitionContext;
 import com.cognifide.cq.cqsm.core.antlr.parameter.ParameterResolver;
 import com.cognifide.cq.cqsm.core.antlr.parameter.Parameters;
 import com.cognifide.cq.cqsm.core.antlr.type.ApmType;
@@ -80,6 +81,16 @@ public class ScriptRunner {
       } finally {
         variableHolder.removeLocalContext();
       }
+    }
+
+    @Override
+    public List<String> visitVariableDefinition(VariableDefinitionContext ctx) {
+      ParameterResolver parameterResolver = scriptContext.getParameterResolver();
+      VariableHolder variableHolder = scriptContext.getVariableHolder();
+      String variableName = ctx.IDENTIFIER().toString();
+      ApmType variableValue = parameterResolver.resolve(ctx.parameter());
+      variableHolder.put(variableName, variableValue);
+      return Collections.emptyList();
     }
 
     @Override

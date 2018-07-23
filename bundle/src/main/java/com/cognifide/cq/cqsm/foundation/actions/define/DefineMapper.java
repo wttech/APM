@@ -20,20 +20,16 @@
 package com.cognifide.cq.cqsm.foundation.actions.define;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.BasicActionMapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
 
-public final class DefineMapper extends BasicActionMapper {
+public final class DefineMapper {
 
 	public static final String REFERENCE = "Create definitions holding values used multiple times across CQSM script.\n"
 			+ "To access definition value ${definition_name} syntax can be used."
 			+ " Value must be specified between single quotes e.g 'my value'.";
 
 	@Mapping(
-			value = {
-					"DEFINE" + SPACE + STRING + SPACE + QUOTED,
-					"DEFINE" + SPACE + STRING + SPACE + STRING
-			},
+
 			args = {"name", "value"},
 			reference = REFERENCE
 	)
@@ -42,10 +38,7 @@ public final class DefineMapper extends BasicActionMapper {
 	}
 
 	@Mapping(
-			value = {
-					"DEFINE" + SPACE + STRING + SPACE + QUOTED + SPACE + ("IF" + DASH + "NOT" + DASH + "EXISTS"),
-					"DEFINE" + SPACE + STRING + SPACE + STRING + SPACE + ("IF" + DASH + "NOT" + DASH + "EXISTS")
-			},
+
 			args = {"name", "value"},
 			reference = REFERENCE
 	)

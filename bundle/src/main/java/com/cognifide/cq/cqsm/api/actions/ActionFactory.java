@@ -19,13 +19,16 @@
  */
 package com.cognifide.cq.cqsm.api.actions;
 
-import com.cognifide.cq.cqsm.api.executors.Context;
+import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
 import com.cognifide.cq.cqsm.core.antlr.parameter.Parameters;
+import java.util.List;
+import java.util.Map;
 
 public interface ActionFactory {
 
-  String getName();
+  ActionDescriptor evaluate(String command, Parameters parameters) throws ActionCreationException;
 
-  Action create(Context context, Parameters parameters);
+  List<Map<String, Object>> refer();
 
+  boolean update();
 }

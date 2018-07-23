@@ -20,21 +20,14 @@
 package com.cognifide.cq.cqsm.foundation.actions.imports;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.BasicActionMapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
-
 import java.util.List;
 
-public final class ImportMapper extends BasicActionMapper {
+public final class ImportMapper {
 
 	@Mapping(
-			value = {
-					"IMPORT" + SPACE + STRING,
-					"IMPORT" + SPACE + QUOTED,
-					"INCLUDE" + DASH + "SCRIPT" + SPACE + STRING,
-					"INCLUDE" + DASH + "SCRIPT" + SPACE + QUOTED
-			},
-			args = {"path"},
+
+      args = {"path"},
 			reference = "Import script from other file by specifying its path."
 	)
 	public Action mapAction(final String path) {
@@ -42,11 +35,8 @@ public final class ImportMapper extends BasicActionMapper {
 	}
 
 	@Mapping(
-			value = {
-					"IMPORT" + SPACE + LIST,
-					"INCLUDE" + DASH + "SCRIPT" + SPACE + LIST
-			},
-			args = {"path"},
+
+      args = {"path"},
 			reference = "Import multiple scripts from other files by specifying its paths."
 	)
 	public Action mapAction(final List<String> paths) {

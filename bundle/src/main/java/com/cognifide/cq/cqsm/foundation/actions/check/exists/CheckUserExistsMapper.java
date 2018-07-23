@@ -20,17 +20,16 @@
 package com.cognifide.cq.cqsm.foundation.actions.check.exists;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.BasicActionMapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
 
-public final class CheckUserExistsMapper extends BasicActionMapper {
+public final class CheckUserExistsMapper {
 
 	public static final String REFERENCE = "Verify that provided authorizable exists and is a user."
 			+ " Optionally it can be used to verify that given user resides in specific path.";
 
 	@Mapping(
-			value = {"CHECK" + DASH + "USER" + DASH + "EXISTS" + SPACE + STRING},
-			args = {"userId"},
+
+      args = {"userId"},
 			reference = REFERENCE
 	)
 	public Action mapAction(final String id) {
@@ -38,8 +37,8 @@ public final class CheckUserExistsMapper extends BasicActionMapper {
 	}
 
 	@Mapping(
-			value = {"CHECK" + DASH + "USER" + DASH + "EXISTS" + SPACE + STRING + SPACE + PATH},
-			args = {"userId", "path"},
+
+      args = {"userId", "path"},
 			reference = REFERENCE
 	)
 	public Action mapAction(final String id, final String path) {

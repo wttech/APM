@@ -51,4 +51,8 @@ public class ApmType {
   public List<ApmValue> getList() {
     return null;
   }
+
+  public Object getValue() {
+    return null;
+  }
 }

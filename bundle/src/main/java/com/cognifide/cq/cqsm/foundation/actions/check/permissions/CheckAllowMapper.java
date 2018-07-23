@@ -20,19 +20,17 @@
 package com.cognifide.cq.cqsm.foundation.actions.check.permissions;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.BasicActionMapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
-
 import java.util.List;
 
-public final class CheckAllowMapper extends BasicActionMapper {
+public final class CheckAllowMapper {
 
 	public static final String REFERENCE = "Check that specific permissions are allowed for current authorizable"
 			+ " on specified path.";
 
 	@Mapping(
-			value = {"CHECK" + DASH + "ALLOW" + SPACE + STRING + SPACE + PATH + SPACE + LIST},
-			args = {"authorizableId", "path", "permissions"},
+
+      args = {"authorizableId", "path", "permissions"},
 			reference = REFERENCE
 	)
 	public Action mapAction(final String id, final String path, List<String> permissions) {
@@ -40,8 +38,8 @@ public final class CheckAllowMapper extends BasicActionMapper {
 	}
 
 	@Mapping(
-			value = {"CHECK" + DASH + "ALLOW" + SPACE + STRING + SPACE + PATH + SPACE + STRING + SPACE + LIST},
-			args = {"authorizableId", "path", "glob", "permissions"},
+
+      args = {"authorizableId", "path", "glob", "permissions"},
 			reference = REFERENCE
 	)
 	public Action mapAction(final String id, final String path, String glob, List<String> permissions) {

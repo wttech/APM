@@ -20,18 +20,15 @@
 package com.cognifide.cq.cqsm.foundation.actions.check.exclude;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.BasicActionMapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
-
 import java.util.Collections;
 import java.util.List;
 
-public final class CheckExcludesMapper extends BasicActionMapper {
+public final class CheckExcludesMapper {
 
 	public static final String REFERENCE = "Verify that provided group DOES NOT contain any of listed authorizables.";
 
 	@Mapping(
-			value = {"CHECK" + DASH + "EXCLUDES" + SPACE + STRING + SPACE + STRING},
 			args = {"group", "authorizableIds"},
 			reference = REFERENCE
 	)
@@ -40,7 +37,6 @@ public final class CheckExcludesMapper extends BasicActionMapper {
 	}
 
 	@Mapping(
-			value = {"CHECK" + DASH + "EXCLUDES" + SPACE + STRING + SPACE + LIST},
 			args = {"group", "authorizableIds"},
 			reference = REFERENCE
 	)

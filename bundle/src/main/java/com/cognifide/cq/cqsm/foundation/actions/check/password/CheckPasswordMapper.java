@@ -20,16 +20,15 @@
 package com.cognifide.cq.cqsm.foundation.actions.check.password;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.BasicActionMapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
 
-public final class CheckPasswordMapper extends BasicActionMapper {
+public final class CheckPasswordMapper {
 
 	public static final String REFERENCE = "Verify that specific password is set for given authorizable.";
 
 	@Mapping(
-			value = {"CHECK" + DASH + "PASSWORD" + SPACE + STRING + SPACE + STRING},
-			args = {"userId", "password"},
+
+      args = {"userId", "password"},
 			reference = REFERENCE
 	)
 	public Action mapAction(final String userId, final String password) {

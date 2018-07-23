@@ -11,39 +11,39 @@ DEFINE group_contentReviewers 'content-reviewers'
 
 
 # Global author group for all colgate sites
-CREATE GROUP ${group_dragonflyAuthors} ${cp_path} IF NOT EXISTS
-FOR GROUP ${group_dragonflyAuthors}
+CREATE GROUP $group_dragonflyAuthors $cp_path IF NOT EXISTS
+FOR GROUP $group_dragonflyAuthors
     SET PROPERTY  'profile/givenName' 'Dragonfly Authors'
 
 # Global super author group for all colgate sites
-CREATE GROUP ${group_dragonflySuperAuthors} ${cp_path} IF NOT EXISTS
-FOR GROUP ${group_dragonflySuperAuthors}
+CREATE GROUP $group_dragonflySuperAuthors $cp_path IF NOT EXISTS
+FOR GROUP $group_dragonflySuperAuthors
     SET PROPERTY  'profile/givenName' 'Dragonfly Super Authors'
 
 # Global administrators group for all colgate sites
-CREATE GROUP ${group_dragonflyAdministrators} ${cp_path} IF NOT EXISTS
-FOR GROUP ${group_dragonflyAdministrators}
+CREATE GROUP $group_dragonflyAdministrators $cp_path IF NOT EXISTS
+FOR GROUP $group_dragonflyAdministrators
     SET PROPERTY  'profile/givenName' 'Dragonfly Administrators'
 
 # Global administrators group for all colgate sites
-CREATE GROUP ${group_dragonflyPublishers} ${cp_path} IF NOT EXISTS
-FOR GROUP ${group_dragonflyPublishers}
+CREATE GROUP $group_dragonflyPublishers $cp_path IF NOT EXISTS
+FOR GROUP $group_dragonflyPublishers
     SET PROPERTY  'profile/givenName' 'Dragonfly Publishers'
     
 # Global content reviewers group for all colgate sites
-CREATE GROUP ${group_contentReviewers} ${cp_path} IF NOT EXISTS
-FOR GROUP ${group_contentReviewers}
+CREATE GROUP $group_contentReviewers $cp_path IF NOT EXISTS
+FOR GROUP $group_contentReviewers
     SET PROPERTY  'profile/givenName' 'Content Reviewers'
     
 # Global base group for all colgate sites
-CREATE GROUP ${group_dragonflyBase} ${cp_path} IF NOT EXISTS
-FOR GROUP ${group_dragonflyBase}
+CREATE GROUP $group_dragonflyBase $cp_path IF NOT EXISTS
+FOR GROUP $group_dragonflyBase
     SET PROPERTY  'profile/givenName' 'Dragonfly Base'
     ADD TO GROUP 'workflow-users'
-    INCLUDE [${group_dragonflyAuthors}, ${group_dragonflySuperAuthors}, ${group_dragonflyAdministrators}, ${group_dragonflyPublishers}, ${group_contentReviewers}]
+    INCLUDE [$group_dragonflyAuthors, $group_dragonflySuperAuthors, $group_dragonflyAdministrators, $group_dragonflyPublishers, $group_contentReviewers]
 
 # Dragonfly Base Permissions
-FOR GROUP ${group_dragonflyBase}
+FOR GROUP $group_dragonflyBase
     PURGE    '/'
 
     ALLOW     '/apps' NULL                                                                                                           [READ]
@@ -94,7 +94,7 @@ FOR GROUP ${group_dragonflyBase}
     DENY     '/etc/cp-zg-extension/core/unwantedReferenceReportGenerator'                                                        [ALL] IF EXISTS
 
 # Dragonfly Authors Permissions 
-FOR GROUP ${group_dragonflyAuthors}
+FOR GROUP $group_dragonflyAuthors
     PURGE    '/'
 
     # Allow cp-sites and cp-sites-demo
@@ -150,7 +150,7 @@ FOR GROUP ${group_dragonflyAuthors}
     DENY     '/apps/cp-zg-extension/core/handlers/reset-password-handler'                                                        [READ]
     DENY     '/apps/cp-zg-extension/core/handlers/vip_market_check_acc_handler'                                                  [READ]
 
-FOR GROUP ${group_dragonflySuperAuthors}
+FOR GROUP $group_dragonflySuperAuthors
     PURGE    '/'
     
     ALLOW    '/content/pim'                                                                                                      [ALL] IF EXISTS
@@ -186,7 +186,7 @@ FOR GROUP ${group_dragonflySuperAuthors}
     ALLOW    '/content/accelerated-migration'                                                                                    [ALL] IF EXISTS
     ALLOW    '/content/dam/accelerated-migration'                                                                                [ALL] IF EXISTS
 
-FOR GROUP ${group_dragonflyAdministrators}
+FOR GROUP $group_dragonflyAdministrators
     PURGE    '/'
 
     # Allow pim
@@ -217,7 +217,7 @@ FOR GROUP ${group_dragonflyAdministrators}
     ALLOW     '/apps/cq/core/content/nav/tools/reportGenerator'                                                                  [ALL] IF EXISTS
     ALLOW     '/etc/cp-zg-extension/core/unwantedReferenceReportGenerator'                                                       [ALL]  IF EXISTS
 
-FOR GROUP ${group_dragonflyPublishers}
+FOR GROUP $group_dragonflyPublishers
     PURGE    '/'
 
     ALLOW    '/content/pim'                                                                                                      [REPLICATE] IF EXISTS
@@ -246,5 +246,5 @@ FOR GROUP ${group_dragonflyPublishers}
     ALLOW    '/content/cp-sites' '/*/configuration/country-selector-configuration'                                                 [REPLICATE]  IF EXISTS
     ALLOW    '/content/cp-sites-demo' '/*/configuration/country-selector-configuration'                                            [REPLICATE]  IF EXISTS
 
-FOR GROUP ${group_contentReviewers}
+FOR GROUP $group_contentReviewers
     PURGE    '/'

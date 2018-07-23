@@ -20,14 +20,12 @@
 package com.cognifide.cq.cqsm.foundation.actions.removegroup;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.BasicActionMapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
 import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
-
 import java.util.Collections;
 import java.util.List;
 
-public final class RemoveGroupMapper extends BasicActionMapper {
+public final class RemoveGroupMapper {
 
 	public static final String REFERENCE = "Remove specified groups.\n"
 			+ "No group's members are removed, but they no longer belong to the removed group (reference is removed).\n"
@@ -35,8 +33,8 @@ public final class RemoveGroupMapper extends BasicActionMapper {
 			+ " - it will automatically gain those permissions.";
 
 	@Mapping(
-			value = {"REMOVE" + DASH + "GROUP" + SPACE + STRING},
-			args = {"groupId"},
+
+      args = {"groupId"},
 			reference = REFERENCE
 	)
 	public Action mapAction(String id) throws ActionCreationException {
@@ -44,8 +42,8 @@ public final class RemoveGroupMapper extends BasicActionMapper {
 	}
 
 	@Mapping(
-			value = {"REMOVE" + DASH + "GROUP" + SPACE + LIST},
-			args = {"groupIds"},
+
+      args = {"groupIds"},
 			reference = REFERENCE
 	)
 	public Action mapAction(final List<String> ids) throws ActionCreationException {

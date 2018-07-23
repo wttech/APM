@@ -18,24 +18,20 @@ public interface ApmLangListener extends ParseTreeListener {
 	 */
 	void exitApm(ApmLangParser.ApmContext ctx);
 	/**
-   * Enter a parse tree produced by {@link ApmLangParser#line}.
-   * @param ctx the parse tree
-   */
-  void enterLine(ApmLangParser.LineContext ctx);
-
-  /**
-   * Exit a parse tree produced by {@link ApmLangParser#line}.
-   *
-   * @param ctx the parse tree
-   */
-  void exitLine(ApmLangParser.LineContext ctx);
-
-  /**
-   * Enter a parse tree produced by {@link ApmLangParser#name}.
-   *
-   * @param ctx the parse tree
-   */
-  void enterName(ApmLangParser.NameContext ctx);
+	 * Enter a parse tree produced by {@link ApmLangParser#line}.
+	 * @param ctx the parse tree
+	 */
+	void enterLine(ApmLangParser.LineContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ApmLangParser#line}.
+	 * @param ctx the parse tree
+	 */
+	void exitLine(ApmLangParser.LineContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ApmLangParser#name}.
+	 * @param ctx the parse tree
+	 */
+	void enterName(ApmLangParser.NameContext ctx);
 	/**
 	 * Exit a parse tree produced by {@link ApmLangParser#name}.
 	 * @param ctx the parse tree
@@ -61,90 +57,66 @@ public interface ApmLangListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitVariable(ApmLangParser.VariableContext ctx);
-
-  /**
-   * Enter a parse tree produced by {@link ApmLangParser#booleanValue}.
-   *
-   * @param ctx the parse tree
-   */
-  void enterBooleanValue(ApmLangParser.BooleanValueContext ctx);
-
-  /**
-   * Exit a parse tree produced by {@link ApmLangParser#booleanValue}.
-   *
-   * @param ctx the parse tree
-   */
-  void exitBooleanValue(ApmLangParser.BooleanValueContext ctx);
-
-  /**
-   * Enter a parse tree produced by {@link ApmLangParser#nullValue}.
-   *
-   * @param ctx the parse tree
-   */
-  void enterNullValue(ApmLangParser.NullValueContext ctx);
-
-  /**
-   * Exit a parse tree produced by {@link ApmLangParser#nullValue}.
-   *
-   * @param ctx the parse tree
-   */
-  void exitNullValue(ApmLangParser.NullValueContext ctx);
-
-  /**
-   * Enter a parse tree produced by {@link ApmLangParser#numberValue}.
-   *
-   * @param ctx the parse tree
-   */
-  void enterNumberValue(ApmLangParser.NumberValueContext ctx);
-
-  /**
-   * Exit a parse tree produced by {@link ApmLangParser#numberValue}.
-   *
-   * @param ctx the parse tree
-   */
-  void exitNumberValue(ApmLangParser.NumberValueContext ctx);
-
-  /**
-   * Enter a parse tree produced by {@link ApmLangParser#stringValue}.
-   *
-   * @param ctx the parse tree
-   */
-  void enterStringValue(ApmLangParser.StringValueContext ctx);
-
-  /**
-   * Exit a parse tree produced by {@link ApmLangParser#stringValue}.
-   *
-   * @param ctx the parse tree
-   */
-  void exitStringValue(ApmLangParser.StringValueContext ctx);
-
-  /**
-   * Enter a parse tree produced by {@link ApmLangParser#stringConst}.
-   *
-   * @param ctx the parse tree
-   */
-  void enterStringConst(ApmLangParser.StringConstContext ctx);
-
-  /**
-   * Exit a parse tree produced by {@link ApmLangParser#stringConst}.
-   *
-   * @param ctx the parse tree
-   */
-  void exitStringConst(ApmLangParser.StringConstContext ctx);
-
-  /**
-   * Enter a parse tree produced by {@link ApmLangParser#value}.
-   *
-   * @param ctx the parse tree
-   */
-  void enterValue(ApmLangParser.ValueContext ctx);
-
-  /**
-   * Exit a parse tree produced by {@link ApmLangParser#value}.
-   *
-   * @param ctx the parse tree
-   */
-  void exitValue(ApmLangParser.ValueContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ApmLangParser#booleanValue}.
+	 * @param ctx the parse tree
+	 */
+	void enterBooleanValue(ApmLangParser.BooleanValueContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ApmLangParser#booleanValue}.
+	 * @param ctx the parse tree
+	 */
+	void exitBooleanValue(ApmLangParser.BooleanValueContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ApmLangParser#nullValue}.
+	 * @param ctx the parse tree
+	 */
+	void enterNullValue(ApmLangParser.NullValueContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ApmLangParser#nullValue}.
+	 * @param ctx the parse tree
+	 */
+	void exitNullValue(ApmLangParser.NullValueContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ApmLangParser#numberValue}.
+	 * @param ctx the parse tree
+	 */
+	void enterNumberValue(ApmLangParser.NumberValueContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ApmLangParser#numberValue}.
+	 * @param ctx the parse tree
+	 */
+	void exitNumberValue(ApmLangParser.NumberValueContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ApmLangParser#stringValue}.
+	 * @param ctx the parse tree
+	 */
+	void enterStringValue(ApmLangParser.StringValueContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ApmLangParser#stringValue}.
+	 * @param ctx the parse tree
+	 */
+	void exitStringValue(ApmLangParser.StringValueContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ApmLangParser#stringConst}.
+	 * @param ctx the parse tree
+	 */
+	void enterStringConst(ApmLangParser.StringConstContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ApmLangParser#stringConst}.
+	 * @param ctx the parse tree
+	 */
+	void exitStringConst(ApmLangParser.StringConstContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ApmLangParser#value}.
+	 * @param ctx the parse tree
+	 */
+	void enterValue(ApmLangParser.ValueContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ApmLangParser#value}.
+	 * @param ctx the parse tree
+	 */
+	void exitValue(ApmLangParser.ValueContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ApmLangParser#parameter}.
 	 * @param ctx the parse tree
@@ -155,6 +127,16 @@ public interface ApmLangListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitParameter(ApmLangParser.ParameterContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ApmLangParser#variableDefinition}.
+	 * @param ctx the parse tree
+	 */
+	void enterVariableDefinition(ApmLangParser.VariableDefinitionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ApmLangParser#variableDefinition}.
+	 * @param ctx the parse tree
+	 */
+	void exitVariableDefinition(ApmLangParser.VariableDefinitionContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ApmLangParser#comment}.
 	 * @param ctx the parse tree
@@ -194,48 +176,41 @@ public interface ApmLangListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void enterParametersDefinition(ApmLangParser.ParametersDefinitionContext ctx);
-
-  /**
-   * Exit a parse tree produced by {@link ApmLangParser#parametersDefinition}.
-   * @param ctx the parse tree
-   */
-  void exitParametersDefinition(ApmLangParser.ParametersDefinitionContext ctx);
-
-  /**
-   * Enter a parse tree produced by {@link ApmLangParser#parametersInvocation}.
-   * @param ctx the parse tree
-   */
-  void enterParametersInvocation(ApmLangParser.ParametersInvocationContext ctx);
-
-  /**
-   * Exit a parse tree produced by {@link ApmLangParser#parametersInvocation}.
-   * @param ctx the parse tree
+	/**
+	 * Exit a parse tree produced by {@link ApmLangParser#parametersDefinition}.
+	 * @param ctx the parse tree
 	 */
-  void exitParametersInvocation(ApmLangParser.ParametersInvocationContext ctx);
+	void exitParametersDefinition(ApmLangParser.ParametersDefinitionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ApmLangParser#parametersInvocation}.
+	 * @param ctx the parse tree
+	 */
+	void enterParametersInvocation(ApmLangParser.ParametersInvocationContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ApmLangParser#parametersInvocation}.
+	 * @param ctx the parse tree
+	 */
+	void exitParametersInvocation(ApmLangParser.ParametersInvocationContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ApmLangParser#body}.
 	 * @param ctx the parse tree
 	 */
 	void enterBody(ApmLangParser.BodyContext ctx);
 	/**
-   * Exit a parse tree produced by {@link ApmLangParser#body}.
-   * @param ctx the parse tree
-   */
-  void exitBody(ApmLangParser.BodyContext ctx);
-
-  /**
-   * Enter a parse tree produced by {@link ApmLangParser#path}.
-   *
-   * @param ctx the parse tree
-   */
-  void enterPath(ApmLangParser.PathContext ctx);
-
-  /**
-   * Exit a parse tree produced by {@link ApmLangParser#path}.
-   *
-   * @param ctx the parse tree
-   */
-  void exitPath(ApmLangParser.PathContext ctx);
+	 * Exit a parse tree produced by {@link ApmLangParser#body}.
+	 * @param ctx the parse tree
+	 */
+	void exitBody(ApmLangParser.BodyContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ApmLangParser#path}.
+	 * @param ctx the parse tree
+	 */
+	void enterPath(ApmLangParser.PathContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ApmLangParser#path}.
+	 * @param ctx the parse tree
+	 */
+	void exitPath(ApmLangParser.PathContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ApmLangParser#scriptInclusion}.
 	 * @param ctx the parse tree

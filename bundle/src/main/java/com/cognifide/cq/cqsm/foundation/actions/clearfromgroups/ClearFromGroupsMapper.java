@@ -20,22 +20,21 @@
 package com.cognifide.cq.cqsm.foundation.actions.clearfromgroups;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.BasicActionMapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
 
-public final class ClearFromGroupsMapper extends BasicActionMapper {
+public final class ClearFromGroupsMapper {
 
 	@Mapping(
-			value = {"CLEAR" + DASH + "FROM" + DASH + "GROUPS"},
-			reference = "This action removes all memberships of a given group."
+
+      reference = "This action removes all memberships of a given group."
 	)
 	public Action mapAction() {
 		return new ClearFromGroups(ClearFromGroupOperationTypes.ALL_PARENTS);
 	}
 
 	@Mapping(
-			value = {"CLEAR" + DASH + "FROM" + DASH + "GROUPS" + DASH + "ALL-CHILDREN"},
-			reference = "This action removes given group membership from child groups."
+
+      reference = "This action removes given group membership from child groups."
 	)
 
 	public Action mapActionWithAllChildren() {
@@ -43,8 +42,8 @@ public final class ClearFromGroupsMapper extends BasicActionMapper {
 	}
 
 	@Mapping(
-			value = {"CLEAR" + DASH + "FROM" + DASH + "GROUPS" + DASH + "ALL-PARENTS"},
-			reference = "This action removes all memberships of a given group."
+
+      reference = "This action removes all memberships of a given group."
 	)
 
 	public Action mapActionWithAllParents() {
@@ -52,8 +51,8 @@ public final class ClearFromGroupsMapper extends BasicActionMapper {
 	}
 
 	@Mapping(
-			value = {"CLEAR" + DASH + "GROUPS"},
-			reference = "This action removes all groups from a given group."
+
+      reference = "This action removes all groups from a given group."
 	)
 	public Action mapActionForClearGroups() {
 		return new ClearFromGroups(ClearFromGroupOperationTypes.ALL_CHILDREN);

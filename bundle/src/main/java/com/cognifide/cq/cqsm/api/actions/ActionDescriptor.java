@@ -21,20 +21,17 @@ package com.cognifide.cq.cqsm.api.actions;
 
 import java.util.Collections;
 import java.util.List;
-
 import lombok.Getter;
 
 @Getter
 public final class ActionDescriptor {
 
 	private final String command;
-
 	private final List<String> args;
-
 	private final Action action;
 
 	public ActionDescriptor(String command, Action action) {
-		this(command, action, Collections.<String>emptyList());
+    this(command, action, Collections.emptyList());
 	}
 
 	public ActionDescriptor(String command, Action action, List<String> args) {
@@ -42,4 +39,8 @@ public final class ActionDescriptor {
 		this.action = action;
 		this.args = args;
 	}
+
+  public String argsToString() {
+    return args.toString();
+  }
 }

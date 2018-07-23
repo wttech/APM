@@ -20,16 +20,15 @@
 package com.cognifide.cq.cqsm.foundation.actions.check.exists;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.BasicActionMapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
 
-public final class CheckGroupExistsMapper extends BasicActionMapper {
+public final class CheckGroupExistsMapper {
 
 	public static final String REFERENCE = "Verify that provided authorizable exists and is a group."
 			+ " Optionally it can be used to verify that given group resides in specific path.";
 
 	@Mapping(
-			value = {"CHECK" + DASH + "GROUP" + DASH + "EXISTS" + SPACE + STRING},
+
 			args = {"groupId"},
 			reference = REFERENCE
 	)
@@ -38,7 +37,7 @@ public final class CheckGroupExistsMapper extends BasicActionMapper {
 	}
 
 	@Mapping(
-			value = {"CHECK" + DASH + "GROUP" + DASH + "EXISTS" + SPACE + STRING + SPACE + PATH},
+
 			args = {"groupId", "path"},
 			reference = REFERENCE
 	)

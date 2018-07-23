@@ -20,15 +20,14 @@
 package com.cognifide.cq.cqsm.foundation.actions.purge;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.BasicActionMapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
 import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
 
-public final class PurgeMapper extends BasicActionMapper {
+public final class PurgeMapper {
 
 	@Mapping(
-			value = {"PURGE" + SPACE + PATH},
-			args = {"path"},
+
+      args = {"path"},
 			reference = "Delete every permission applied for current authorizable"
 					+ " starting from specified path. It invokes REMOVE-ALL action recursively for every sub-path."
 	)

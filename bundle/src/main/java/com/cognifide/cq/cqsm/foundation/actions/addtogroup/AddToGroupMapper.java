@@ -20,19 +20,16 @@
 package com.cognifide.cq.cqsm.foundation.actions.addtogroup;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.BasicActionMapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
 import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
-
 import java.util.Collections;
 import java.util.List;
 
-public final class AddToGroupMapper extends BasicActionMapper {
+public final class AddToGroupMapper {
 
 	public static final String REFERENCE = "Add current authorizable to specified groups.";
 
 	@Mapping(
-			value = {"ADD" + DASH + "TO" + DASH + "GROUP" + SPACE + STRING},
 			args = {"group"},
 			reference = REFERENCE
 	)
@@ -41,7 +38,6 @@ public final class AddToGroupMapper extends BasicActionMapper {
 	}
 
 	@Mapping(
-			value = {"ADD" + DASH + "TO" + DASH + "GROUP" + SPACE + LIST},
 			args = {"groupIds"},
 			reference = REFERENCE
 	)

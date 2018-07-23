@@ -20,16 +20,15 @@
 package com.cognifide.cq.cqsm.foundation.actions.createauthorizable;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.BasicActionMapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
 
-public class CreateGroupMapper extends BasicActionMapper {
+public class CreateGroupMapper {
 
 	public static final String REFERENCE = "Create a group.";
 
 	@Mapping(
-			value = {"CREATE" + DASH + "GROUP" + SPACE + STRING},
-			args = {"groupId"},
+
+      args = {"groupId"},
 			reference = REFERENCE
 	)
 	public Action mapAction(String id) {
@@ -37,8 +36,8 @@ public class CreateGroupMapper extends BasicActionMapper {
 	}
 
 	@Mapping(
-			value = {"CREATE" + DASH + "GROUP" + SPACE + STRING + SPACE + PATH},
-			args = {"groupId", "path"},
+
+      args = {"groupId", "path"},
 			reference = REFERENCE
 	)
 	public Action mapAction(String id, String path) {
@@ -46,8 +45,8 @@ public class CreateGroupMapper extends BasicActionMapper {
 	}
 
 	@Mapping(
-			value = {"CREATE" + DASH + "GROUP" + SPACE + STRING + SPACE + ("IF" + DASH + "NOT" + DASH + "EXISTS")},
-			args = {"groupId"},
+
+      args = {"groupId"},
 			reference = REFERENCE
 	)
 	public Action mapActionWithIfNotExists(String id) {
@@ -55,8 +54,8 @@ public class CreateGroupMapper extends BasicActionMapper {
 	}
 
 	@Mapping(
-			value = {"CREATE" + DASH + "GROUP" + SPACE + STRING + SPACE + PATH + SPACE + ("IF" + DASH + "NOT" + DASH + "EXISTS")},
-			args = {"groupId", "path"},
+
+      args = {"groupId", "path"},
 			reference = REFERENCE
 	)
 	public Action mapActionWithIfNotExists(String id, String path) {

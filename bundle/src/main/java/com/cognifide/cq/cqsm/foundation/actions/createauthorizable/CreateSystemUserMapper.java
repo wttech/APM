@@ -20,15 +20,13 @@
 package com.cognifide.cq.cqsm.foundation.actions.createauthorizable;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.BasicActionMapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
 
-public class CreateSystemUserMapper extends BasicActionMapper {
+public class CreateSystemUserMapper {
 
 	public static final String REFERENCE = "Create a system user.";
 
 	@Mapping(
-			value = {"CREATE" + DASH + "SYSTEM" + SPACE + "USER" + SPACE + STRING},
 			args = {"userId"},
 			reference = REFERENCE
 	)
@@ -37,7 +35,6 @@ public class CreateSystemUserMapper extends BasicActionMapper {
 	}
 
 	@Mapping(
-			value = {"CREATE" + DASH + "SYSTEM" + SPACE + "USER" + SPACE + STRING + SPACE + PATH},
 			args = {"userId", "path"},
 			reference = REFERENCE
 	)
@@ -46,7 +43,6 @@ public class CreateSystemUserMapper extends BasicActionMapper {
 	}
 
 	@Mapping(
-			value = {"CREATE" + DASH + "SYSTEM" + SPACE + "USER" + SPACE + STRING + SPACE + ("IF" + DASH + "NOT" + DASH + "EXISTS")},
 			args = {"userId"},
 			reference = REFERENCE
 	)
@@ -55,7 +51,6 @@ public class CreateSystemUserMapper extends BasicActionMapper {
 	}
 
 	@Mapping(
-			value = {"CREATE" + DASH + "SYSTEM" + SPACE + "USER" + SPACE + STRING + SPACE + PATH + SPACE + ("IF" + DASH + "NOT" + DASH + "EXISTS")},
 			args = {"userId", "path"},
 			reference = REFERENCE
 	)

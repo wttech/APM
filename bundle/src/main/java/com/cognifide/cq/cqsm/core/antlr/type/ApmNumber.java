@@ -12,4 +12,9 @@ public class ApmNumber extends ApmValue {
   public Number getNumber() {
     return value;
   }
+
+  @Override
+  public Number getValue() {
+    return value;
+  }
 }

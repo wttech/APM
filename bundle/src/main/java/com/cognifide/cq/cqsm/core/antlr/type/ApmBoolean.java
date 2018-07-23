@@ -12,4 +12,9 @@ public class ApmBoolean extends ApmValue {
   public Boolean getBoolean() {
     return value;
   }
+
+  @Override
+  public Object getValue() {
+    return value;
+  }
 }
