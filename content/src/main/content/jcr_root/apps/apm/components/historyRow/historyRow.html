@@ -26,8 +26,8 @@
       <coral-icon icon="fileKey" size="M">
       </coral-icon>
     </td>
-    <td is="coral-table-cell" value="${item.scriptName}">
-      <a class="foundation-layout-table-cellwrapper" href="${item.filePath}" download="${item.fileName}">${item.fileName}</a>
+    <td is="coral-table-cell" value="${item.fileName}">
+      <a href="${item.filePath}" download="${item.fileName}">${item.fileName}</a>
     </td>
     <td is="coral-table-cell" value="${item.author}">
         ${item.author}
@@ -42,24 +42,24 @@
     </td>
     <td is="coral-table-cell" value="${item.lastExecution.time || 0}">
       <sly data-sly-test="${item.executionTime && item.instanceType}" >
-        <button class="action-show-summary cqsm-button" type="button">
-          <div class="icon summary">Show summary</div>
-        </button>
-        <div class="${item.isRunSuccessful ? 'runSuccess' : 'runFailed'}"></div>
+        <img class="${item.isRunSuccessful ? 'runSuccess' : 'runFailed'}"/>
         <time datetime="${item.executionTime.time || 0}">
           ${item.lastExecutionStatus}
         </time>
+        <button class="action-show-summary cqsm-button" type="button">
+          <div class="icon summary">Show summary</div>
+        </button>
       </sly>
     </td>
     <td is="coral-table-cell" value="${item.lastDryExecution.time || 0}">
       <sly data-sly-test="${item.lastDryExecution && item.instanceType}" >
-        <button class="action-show-summary cqsm-button" type="button">
-          <div class="icon summary">Show summary</div>
-        </button>
-        <div class="${item.isDryRunSuccessful ? 'runSuccess' : 'runFailed'}"></div>
+        <img class="${item.isDryRunSuccessful ? 'runSuccess' : 'runFailed'}"/>
         <time datetime="${item.lastDryExecution.time || 0}">
           ${item.lastDryExecutionStatus}
         </time>
+        <button class="action-show-summary cqsm-button" type="button">
+          <div class="icon summary">Show summary</div>
+        </button>
       </sly>
     </td>
 </tr>

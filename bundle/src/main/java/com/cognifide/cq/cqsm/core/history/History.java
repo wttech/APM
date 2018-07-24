@@ -17,9 +17,11 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.cq.cqsm.api.history;
+package com.cognifide.cq.cqsm.core.history;
 
 import com.cognifide.cq.cqsm.api.executors.Mode;
+import com.cognifide.cq.cqsm.api.history.Entry;
+import com.cognifide.cq.cqsm.api.history.InstanceDetails;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.scripts.Script;
 

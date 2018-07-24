@@ -21,7 +21,7 @@ package com.cognifide.cq.cqsm.core.datasource;
 
 import com.adobe.granite.ui.components.ds.DataSource;
 import com.adobe.granite.ui.components.ds.SimpleDataSource;
-import com.cognifide.cq.cqsm.api.history.History;
+import com.cognifide.cq.cqsm.core.history.History;
 import com.cognifide.cq.cqsm.core.Cqsm;
 import com.google.common.collect.Lists;
 import java.io.IOException;

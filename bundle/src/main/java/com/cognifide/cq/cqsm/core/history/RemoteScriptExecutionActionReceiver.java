@@ -23,10 +23,8 @@ import com.google.common.base.Preconditions;
 
 import com.cognifide.actions.api.ActionReceiver;
 import com.cognifide.cq.cqsm.api.executors.Mode;
-import com.cognifide.cq.cqsm.api.history.History;
 import com.cognifide.cq.cqsm.api.history.InstanceDetails;
 import com.cognifide.cq.cqsm.api.history.ModifiableEntryBuilder;
-import com.cognifide.cq.cqsm.api.logger.Message;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.logger.ProgressEntry;
 import com.cognifide.cq.cqsm.api.scripts.Script;

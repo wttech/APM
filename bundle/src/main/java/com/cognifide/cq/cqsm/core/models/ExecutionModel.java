@@ -20,7 +20,7 @@
 package com.cognifide.cq.cqsm.core.models;
 
 import com.cognifide.cq.cqsm.api.history.Entry;
-import com.cognifide.cq.cqsm.api.history.History;
+import com.cognifide.cq.cqsm.core.history.History;
 
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.models.annotations.Model;

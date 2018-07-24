@@ -23,7 +23,6 @@ import com.cognifide.actions.api.ActionSendException;
 import com.cognifide.actions.api.ActionSubmitter;
 import com.cognifide.cq.cqsm.api.executors.Mode;
 import com.cognifide.cq.cqsm.api.history.Entry;
-import com.cognifide.cq.cqsm.api.history.History;
 import com.cognifide.cq.cqsm.api.history.InstanceDetails;
 import com.cognifide.cq.cqsm.api.history.ModifiableEntryBuilder;
 import com.cognifide.cq.cqsm.api.logger.Progress;
