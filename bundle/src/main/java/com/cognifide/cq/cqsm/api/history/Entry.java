@@ -30,6 +30,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -115,16 +116,13 @@ public class Entry implements Comparable<Entry> {
 		if (scriptResource != null) {
 			Script script = scriptResource.adaptTo(ScriptImpl.class);
 			this.lastModified = new Timestamp(script.getLastModified().getTime());
-			this.lastModified.setTime(script.getLastModified().getTime());
 
-			final Date lastDryExecutionDate = script.getDryRunLast();
-			if (lastDryExecutionDate != null) {
-				this.lastDryExecution = new Timestamp(lastDryExecutionDate.getTime());
-			}
+			final Optional<Date> lastDryExecutionDate = Optional.ofNullable(script.getDryRunLast());
+			lastDryExecutionDate.ifPresent(date -> this.lastDryExecution = new Timestamp(date.getTime()));
 			this.isDryRunSuccessful = script.isDryRunSuccessful();
 		} else {
 			LOG.error("HISTORY_UTIL_NO_SCRIPT",
-				String.format("Can't find script for resource: {}", resource.getPath()));
+				String.format("Can't find script for resource: %s", resource.getPath()));
 		}
 
 		this.path = resource.getPath();
