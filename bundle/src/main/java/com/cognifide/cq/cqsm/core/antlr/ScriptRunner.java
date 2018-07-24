@@ -120,7 +120,7 @@ public class ScriptRunner {
 
     @Override
     public List<String> visitGenericCommand(GenericCommandContext ctx) {
-      String commandName = ctx.IDENTIFIER().toString();
+      String commandName = ctx.IDENTIFIER().toString().toUpperCase();
       String command = ctx.children.stream()
           .map(ParseTree::getText)
           .collect(Collectors.joining(" "));

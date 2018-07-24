@@ -73,9 +73,9 @@ public class ActionFactoryService implements ActionFactory {
 
   @Override
   public ActionDescriptor evaluate(String command, Parameters parameters) throws ActionCreationException {
-    MapperDescriptor mapper = getMappers().get(command);
+    MapperDescriptor mapper = getMappers().get(command.toUpperCase());
     if (mapper == null) {
-      throw new ActionCreationException("");
+      throw new ActionCreationException("Cannot find mapper for command: " + command.toUpperCase());
     }
     return actionDescriptionFactory.evaluate(mapper, command, parameters);
   }
@@ -93,7 +93,7 @@ public class ActionFactoryService implements ActionFactory {
     for (Class clazz : classes) {
       try {
         MapperDescriptor mapperDescriptor = MapperDescriptorFactory.create(clazz);
-        mappers.put(mapperDescriptor.getCommandName(), mapperDescriptor);
+        mappers.put(mapperDescriptor.getCommandName().toUpperCase(), mapperDescriptor);
       } catch (CannotCreateMapperException e) {
         LOG.error("Cannot create action mapper: {}", e.getMessage());
       }
@@ -112,7 +112,7 @@ public class ActionFactoryService implements ActionFactory {
     for (MapperDescriptor mapper : getMappers().values()) {
       for (MappingDescriptor mapping : mapper.getMappings()) {
         HashMap<String, Object> reference = new HashMap<>();
-        reference.put("commands", mapper.getCommandName());
+        reference.put("commands", mapper.getCommandName().toUpperCase());
         reference.put("pattern", "");
         reference.put("args", mapping.getAnnotation().args());
         reference.put("reference", mapping.getAnnotation().reference());

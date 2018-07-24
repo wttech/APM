@@ -36,7 +36,7 @@ public class DenyMapper {
       reference = REFERENCE,
       order = 1
   )
-  public Action mapActionWithIfExists(String path, String glob, List<String> permissions, String flag) {
+  public Action mapAction(String path, String glob, List<String> permissions, String flag) {
     return mapAction(path, glob, permissions, Flag.isIfExists(flag));
   }
 
@@ -50,9 +50,18 @@ public class DenyMapper {
   }
 
   @Mapping(
-      args = {"path", "permissions"},
+      args = {"path", "permissions", Flag.IF_EXISTS},
       reference = REFERENCE,
       order = 3
+  )
+  public Action mapAction(String path, List<String> permissions, String flag) {
+    return mapAction(path, null, permissions, Flag.isIfExists(flag));
+  }
+
+  @Mapping(
+      args = {"path", "permissions"},
+      reference = REFERENCE,
+      order = 4
   )
   public Action mapAction(String path, List<String> permissions) {
     return mapAction(path, null, permissions, false);

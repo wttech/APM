@@ -38,11 +38,11 @@ public class CreateUserMapper {
   }
 
   @Mapping(
-      args = {"userId", "password"},
+      args = {"userId", "password", Flag.IF_NOT_EXISTS},
       reference = REFERENCE
   )
-  public Action mapAction(String id, String password) {
-    return mapAction(id, password, null, false);
+  public Action mapAction(String id, String password, String flag) {
+    return mapAction(id, password, null, Flag.isIfNotExists(flag));
   }
 
   @Mapping(

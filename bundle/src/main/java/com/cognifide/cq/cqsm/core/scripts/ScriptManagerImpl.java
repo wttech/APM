@@ -167,10 +167,9 @@ public class ScriptManagerImpl implements ScriptManager {
             }
 
             savingPolicy.save(context.getSession(), SessionSavingMode.EVERY_ACTION);
-          } catch (RepositoryException e) {
-
-          } catch (ActionCreationException e) {
-            e.printStackTrace();
+          } catch (RepositoryException | ActionCreationException e) {
+            LOG.error("Error while processing command: {}", commandName, e);
+            progress.addEntry(commandName, Message.getErrorMessage(e.getMessage()), Status.ERROR);
           }
           return Collections.emptyList();
         });

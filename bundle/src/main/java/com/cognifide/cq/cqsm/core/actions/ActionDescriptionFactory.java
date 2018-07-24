@@ -19,13 +19,14 @@
  */
 package com.cognifide.cq.cqsm.core.actions;
 
+import static java.lang.String.format;
+
 import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
 import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
 import com.cognifide.cq.cqsm.core.antlr.parameter.Parameters;
 import com.cognifide.cq.cqsm.core.antlr.type.ApmType;
 import com.google.common.base.Preconditions;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -60,14 +61,12 @@ class ActionDescriptionFactory {
       try {
         Action action = (Action) mappingMethod.getMethod().invoke(mapper.getObject(), args.toArray());
         return new ActionDescriptor(command, action, infoArgs);
-      } catch (IllegalAccessException e) {
-        LOG.error("Cannot access action mapper method: {} while processing command: {}", e.getMessage(), command);
-      } catch (InvocationTargetException e) {
-        LOG.error("Cannot invoke action mapper method: {} while processing command: {}", e.getMessage(), command);
+      } catch (ReflectiveOperationException e) {
+        throw new ActionCreationException(
+            format("Error while invoking method: %s", mappingMethod.getMethod().toString()), e);
       }
-
     }
-    throw new ActionCreationException(String.format("Cannot find action for command: %s", command));
+    throw new ActionCreationException(format("Cannot find mapping for parameters: %s", infoArgs.toString()));
   }
 
   private boolean validParameters(List<Object> values, Type[] parameterTypes) {

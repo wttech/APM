@@ -49,6 +49,15 @@ public class AllowMapper {
   }
 
   @Mapping(
+      args = {"path", "permissions", Flag.IF_EXISTS},
+      reference = REFERENCE,
+      order = 3
+  )
+  public Action mapAction(String path, List<String> permissions, String flag) {
+    return mapAction(path, null, permissions, Flag.isIfExists(flag));
+  }
+
+  @Mapping(
       args = {"path", "permissions"},
       reference = REFERENCE,
       order = 3

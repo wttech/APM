@@ -72,6 +72,7 @@ class ActionDescriptionFactoryTest extends Specification {
         Parameters parameters = new Parameters([
                 new ApmString("/path"),
                 new ApmList([new ApmString("read")]),
+                new ApmString("if_exists"),
                 new ApmString("if_exists")
         ])
 
