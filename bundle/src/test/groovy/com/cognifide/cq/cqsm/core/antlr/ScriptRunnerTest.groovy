@@ -4,6 +4,8 @@ import com.cognifide.apm.antlr.ApmLangParser
 import com.cognifide.cq.cqsm.ApmLangParserHelper
 import com.cognifide.cq.cqsm.core.antlr.parameter.Parameters
 import com.cognifide.cq.cqsm.core.loader.ScriptTree
+import com.cognifide.cq.cqsm.core.macro.MacroRegister
+import com.cognifide.cq.cqsm.core.macro.MacroRegistrar
 import spock.lang.Specification
 
 class ScriptRunnerTest extends Specification {
@@ -13,9 +15,11 @@ class ScriptRunnerTest extends Specification {
         def parser = ApmLangParserHelper.createParserUsingFile("/macros.apm")
         def scriptExecutor = new ScriptRunner(createActionInvoker())
         def scriptTree = new ScriptTree(parser.apm(), Collections.emptyMap())
+        def macroRegister = new MacroRegistrar().buildMacroRegister(scriptTree)
+        def scriptContext = new ScriptContext(macroRegister, scriptTree)
 
         when:
-        def result = scriptExecutor.execute(scriptTree)
+        def result = scriptExecutor.execute(scriptContext)
 
         then:
         result == ["Executing command ALLOW \$path1 WRITE",
@@ -34,9 +38,10 @@ class ScriptRunnerTest extends Specification {
         def parser = ApmLangParserHelper.createParserUsingFile("/example.cqsm")
         def scriptExecutor = new ScriptRunner(createActionInvoker())
         def scriptTree = new ScriptTree(parser.apm(), Collections.emptyMap())
+        def scriptContext = new ScriptContext(new MacroRegister(), scriptTree)
 
         when:
-        def result = scriptExecutor.execute(scriptTree)
+        def result = scriptExecutor.execute(scriptContext)
 
         then:
         result != []

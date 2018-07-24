@@ -20,14 +20,32 @@
 package com.cognifide.cq.cqsm.foundation.actions.createauthorizable;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
+import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
+import com.cognifide.cq.cqsm.foundation.actions.Flag;
 
+@Mapper("create_group")
 public class CreateGroupMapper {
 
 	public static final String REFERENCE = "Create a group.";
 
 	@Mapping(
+			args = {"groupId", "path", Flag.IF_NOT_EXISTS},
+			reference = REFERENCE
+	)
+	public Action mapAction(String id, String path, String flag) {
+		return mapAction(id, path, Flag.isIfNotExists(flag));
+	}
 
+	@Mapping(
+			args = {"groupId", "path"},
+			reference = REFERENCE
+	)
+	public Action mapAction(String id, String path) {
+		return mapAction(id, path, true);
+	}
+
+	@Mapping(
       args = {"groupId"},
 			reference = REFERENCE
 	)
@@ -37,29 +55,11 @@ public class CreateGroupMapper {
 
 	@Mapping(
 
-      args = {"groupId", "path"},
-			reference = REFERENCE
-	)
-	public Action mapAction(String id, String path) {
-		return mapAction(id, path, false);
-	}
-
-	@Mapping(
-
       args = {"groupId"},
 			reference = REFERENCE
 	)
 	public Action mapActionWithIfNotExists(String id) {
 		return mapAction(id, null, true);
-	}
-
-	@Mapping(
-
-      args = {"groupId", "path"},
-			reference = REFERENCE
-	)
-	public Action mapActionWithIfNotExists(String id, String path) {
-		return mapAction(id, path, true);
 	}
 
 	private Action mapAction(String id, String path, Boolean ifNotExists) {

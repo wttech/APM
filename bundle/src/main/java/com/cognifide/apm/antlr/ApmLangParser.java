@@ -18,7 +18,7 @@ public class ApmLangParser extends Parser {
 		new PredictionContextCache();
 	public static final int
 		T__0=1, ARRAY_BEGIN=2, ARRAY_END=3, BLOCK_BEGIN=4, BLOCK_END=5, DEFINE_MACRO=6, 
-		EXECUTE_MACRO=7, INCLUDE_SCRIPT=8, DEFINE=9, NUMBER_LITERAL=10, STRING_LITERAL=11, 
+		EXECUTE_MACRO=7, IMPORT_SCRIPT=8, DEFINE=9, NUMBER_LITERAL=10, STRING_LITERAL=11, 
 		VARIABLE_PREFIX=12, BOOLEAN_VALUE=13, NULL_VALUE=14, IDENTIFIER=15, COMMENT=16, 
 		WHITESPACE=17, EOL=18;
 	public static final int
@@ -41,7 +41,7 @@ public class ApmLangParser extends Parser {
 	};
 	private static final String[] _SYMBOLIC_NAMES = {
 		null, null, "ARRAY_BEGIN", "ARRAY_END", "BLOCK_BEGIN", "BLOCK_END", "DEFINE_MACRO", 
-		"EXECUTE_MACRO", "INCLUDE_SCRIPT", "DEFINE", "NUMBER_LITERAL", "STRING_LITERAL", 
+		"EXECUTE_MACRO", "IMPORT_SCRIPT", "DEFINE", "NUMBER_LITERAL", "STRING_LITERAL", 
 		"VARIABLE_PREFIX", "BOOLEAN_VALUE", "NULL_VALUE", "IDENTIFIER", "COMMENT", 
 		"WHITESPACE", "EOL"
 	};
@@ -143,7 +143,7 @@ public class ApmLangParser extends Parser {
 					setState(43);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
-					if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << DEFINE_MACRO) | (1L << EXECUTE_MACRO) | (1L << INCLUDE_SCRIPT) | (1L << DEFINE) | (1L << IDENTIFIER) | (1L << COMMENT))) != 0)) {
+					if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << DEFINE_MACRO) | (1L << EXECUTE_MACRO) | (1L << IMPORT_SCRIPT) | (1L << DEFINE) | (1L << IDENTIFIER) | (1L << COMMENT))) != 0)) {
 						{
 						setState(42);
 						line();
@@ -165,7 +165,7 @@ public class ApmLangParser extends Parser {
 			setState(51);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << DEFINE_MACRO) | (1L << EXECUTE_MACRO) | (1L << INCLUDE_SCRIPT) | (1L << DEFINE) | (1L << IDENTIFIER) | (1L << COMMENT))) != 0)) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << DEFINE_MACRO) | (1L << EXECUTE_MACRO) | (1L << IMPORT_SCRIPT) | (1L << DEFINE) | (1L << IDENTIFIER) | (1L << COMMENT))) != 0)) {
 				{
 				setState(50);
 				line();
@@ -248,7 +248,7 @@ public class ApmLangParser extends Parser {
 				macroDefinition();
 				}
 				break;
-			case INCLUDE_SCRIPT:
+			case IMPORT_SCRIPT:
 				{
 				setState(56);
 				scriptInclusion();
@@ -1262,7 +1262,7 @@ public class ApmLangParser extends Parser {
 	}
 
 	public static class ScriptInclusionContext extends ParserRuleContext {
-		public TerminalNode INCLUDE_SCRIPT() { return getToken(ApmLangParser.INCLUDE_SCRIPT, 0); }
+		public TerminalNode IMPORT_SCRIPT() { return getToken(ApmLangParser.IMPORT_SCRIPT, 0); }
 		public PathContext path() {
 			return getRuleContext(PathContext.class,0);
 		}
@@ -1292,7 +1292,7 @@ public class ApmLangParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(137);
-			match(INCLUDE_SCRIPT);
+			match(IMPORT_SCRIPT);
 			setState(138);
 			path();
 			}

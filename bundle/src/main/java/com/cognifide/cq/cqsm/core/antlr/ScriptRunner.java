@@ -12,11 +12,8 @@ import com.cognifide.cq.cqsm.core.antlr.parameter.ParameterResolver;
 import com.cognifide.cq.cqsm.core.antlr.parameter.Parameters;
 import com.cognifide.cq.cqsm.core.antlr.type.ApmType;
 import com.cognifide.cq.cqsm.core.loader.ScriptInclusion;
-import com.cognifide.cq.cqsm.core.loader.ScriptTree;
 import com.cognifide.cq.cqsm.core.macro.MacroDefinition;
 import com.cognifide.cq.cqsm.core.macro.MacroExecution;
-import com.cognifide.cq.cqsm.core.macro.MacroRegister;
-import com.cognifide.cq.cqsm.core.macro.MacroRegistrar;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,20 +28,9 @@ public class ScriptRunner {
     this.actionInvoker = actionInvoker;
   }
 
-  public List<String> execute(ScriptTree scriptTree) {
-    MacroRegister macroRegister = buildMacroRegister(scriptTree);
-    ScriptContext scriptContext = new ScriptContext(macroRegister, scriptTree);
+  public List<String> execute(ScriptContext scriptContext) {
     Executor executor = new Executor(actionInvoker, scriptContext);
-    return executor.visit(scriptTree.getRoot());
-  }
-
-  private MacroRegister buildMacroRegister(ScriptTree scriptTree) {
-    MacroRegistrar macroRegistrar = new MacroRegistrar();
-    MacroRegister macroRegister = macroRegistrar.findMacroDefinitions(new MacroRegister(), scriptTree.getRoot());
-    for (ApmContext reference : scriptTree.getIncludedScripts()) {
-      macroRegister = macroRegistrar.findMacroDefinitions(macroRegister, reference);
-    }
-    return macroRegister;
+    return executor.visit(scriptContext.getScriptTree().getRoot());
   }
 
   private static class Executor extends ApmLangBaseVisitor<List<String>> {

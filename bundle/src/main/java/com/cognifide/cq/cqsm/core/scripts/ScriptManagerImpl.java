@@ -38,9 +38,12 @@ import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
 import com.cognifide.cq.cqsm.api.scripts.ScriptStorage;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.actions.executor.ActionExecutor;
+import com.cognifide.cq.cqsm.core.antlr.ScriptContext;
 import com.cognifide.cq.cqsm.core.antlr.ScriptRunner;
 import com.cognifide.cq.cqsm.core.loader.ScriptTree;
 import com.cognifide.cq.cqsm.core.loader.ScriptTreeLoader;
+import com.cognifide.cq.cqsm.core.macro.MacroRegister;
+import com.cognifide.cq.cqsm.core.macro.MacroRegistrar;
 import com.cognifide.cq.cqsm.core.progress.ProgressImpl;
 import com.cognifide.cq.cqsm.core.sessions.SessionSavingMode;
 import com.cognifide.cq.cqsm.core.sessions.SessionSavingPolicy;
@@ -152,8 +155,9 @@ public class ScriptManagerImpl implements ScriptManager {
 
     eventManager.trigger(Event.BEFORE_EXECUTE, script, mode, progress);
 
-    ScriptTreeLoader scriptTreeLoader = new ScriptTreeLoader(resolver, scriptFinder);
-    ScriptTree scriptTree = scriptTreeLoader.loadScriptTree(script);
+    final ScriptTree scriptTree = new ScriptTreeLoader(resolver, scriptFinder).loadScriptTree(script);
+    final MacroRegister macroRegister = new MacroRegistrar().buildMacroRegister(scriptTree);
+    final ScriptContext scriptContext = new ScriptContext(macroRegister, scriptTree);
     ScriptRunner scriptRunner = new ScriptRunner(
         (ctx, stringCommand, commandName, parameters) -> {
           try {
@@ -173,8 +177,10 @@ public class ScriptManagerImpl implements ScriptManager {
           }
           return Collections.emptyList();
         });
-    scriptRunner.execute(scriptTree);
-    savingPolicy.save(context.getSession(), SessionSavingMode.SINGLE);
+    scriptRunner.execute(scriptContext);
+    if (progress.isSuccess()) {
+      savingPolicy.save(context.getSession(), SessionSavingMode.SINGLE);
+    }
 
     eventManager.trigger(Event.AFTER_EXECUTE, script, mode, progress);
     return progress;

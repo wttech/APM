@@ -88,7 +88,7 @@ path
     ;
 
 scriptInclusion
-    : INCLUDE_SCRIPT path
+    : IMPORT_SCRIPT path
     ;
 
 macroDefinition
@@ -122,9 +122,9 @@ EXECUTE_MACRO
     : 'use macro'
     | 'USE MACRO'
     ;
-INCLUDE_SCRIPT
-    : 'include'
-    | 'INCLUDE'
+IMPORT_SCRIPT
+    : 'import'
+    | 'IMPORT'
     ;
 DEFINE
     : 'define'
