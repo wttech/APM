@@ -172,7 +172,8 @@
           if (isErrorMessage) {
             self.uiHelper.alert(response.message, text, variant);
           } else {
-            self.uiHelper.notify(response.message, text, variant);
+            text = 'info';
+            self.uiHelper.notify(text, response.message,  variant);
           }
         };
 
