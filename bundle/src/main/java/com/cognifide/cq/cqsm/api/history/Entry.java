@@ -130,19 +130,19 @@ public class Entry implements Comparable<Entry> {
 	}
 
 	public String getLastExecutionStatus() {
-		String lastExecutionDateStr = new SimpleDateFormat("dd, yyyy hh:mm:ss a").format(executionTime);
-		String lastExecutionMonthStr = StringUtils.capitalize(new SimpleDateFormat("MMM").format(executionTime));
-		String lastExecutionFullDateStr = String.format("%s %s", lastExecutionMonthStr, lastExecutionDateStr);
-
-		return String.format("%s %s", StringUtils.capitalize(instanceType), lastExecutionFullDateStr);
+		return generateHistoryPageDateFormat(executionTime);
 	}
 
 	public String getLastDryExecutionStatus() {
-		String lastDryExecutionDateStr = new SimpleDateFormat("dd, yyyy hh:mm:ss a").format(lastDryExecution);
-		String lastDryExecutionMonthStr = StringUtils.capitalize(new SimpleDateFormat("MMM").format(lastDryExecution));
-		String lastDryExecutionFullDateStr = String.format("%s %s", lastDryExecutionMonthStr, lastDryExecutionDateStr);
+		return generateHistoryPageDateFormat(lastDryExecution);
+	}
 
-		return String.format("%s %s", StringUtils.capitalize(instanceType), lastDryExecutionFullDateStr);
+	private String generateHistoryPageDateFormat(Date date) {
+		String dateStr = new SimpleDateFormat("dd, yyyy hh:mm:ss a").format(date);
+		String monthStr = StringUtils.capitalize(new SimpleDateFormat("MMM").format(date));
+		String fullDateStr = String.format("%s %s", monthStr, dateStr);
+
+		return String.format("%s %s", StringUtils.capitalize(instanceType), fullDateStr);
 	}
 
 	@Override

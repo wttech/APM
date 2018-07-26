@@ -22,44 +22,49 @@
     data-foundation-collection-item-id="${resource.path}" data-path="${resource.path}"
     data-timeline="true" is="coral-table-row" data-script-name="${item.fileName}">
 
-    <td is="coral-table-cell" coral-table-rowselect>
-      <coral-icon icon="fileKey" size="M">
-      </coral-icon>
-    </td>
-    <td is="coral-table-cell" value="${item.fileName}">
-      <a href="${item.filePath}" download="${item.fileName}">${item.fileName}</a>
-    </td>
-    <td is="coral-table-cell" value="${item.author}">
-        ${item.author}
-    </td>
-    <td is="coral-table-cell" value="${item.lastModified.time || 0}">
-        <time class="text-uppercase text-muted" data-sly-test="${item.lastModified}" datetime="${item.lastModified.time || 0}">
-            ${'MMM dd, yyyy hh:mm:ss a' @ format=item.lastModified}
-        </time>
-    </td>
-    <td is="coral-table-cell" value="${item.executor}">
-      ${item.executor}
-    </td>
-    <td is="coral-table-cell" value="${item.lastExecution.time || 0}">
-      <sly data-sly-test="${item.executionTime && item.instanceType}" >
-        <img class="${item.isRunSuccessful ? 'runSuccess' : 'runFailed'}"/>
-        <time datetime="${item.executionTime.time || 0}">
-          ${item.lastExecutionStatus}
-        </time>
-        <button class="action-show-summary cqsm-button" type="button">
-          <div class="icon summary">Show summary</div>
-        </button>
-      </sly>
-    </td>
-    <td is="coral-table-cell" value="${item.lastDryExecution.time || 0}">
-      <sly data-sly-test="${item.lastDryExecution && item.instanceType}" >
-        <img class="${item.isDryRunSuccessful ? 'runSuccess' : 'runFailed'}"/>
-        <time datetime="${item.lastDryExecution.time || 0}">
-          ${item.lastDryExecutionStatus}
-        </time>
-        <button class="action-show-summary cqsm-button" type="button">
-          <div class="icon summary">Show summary</div>
-        </button>
-      </sly>
-    </td>
+  <td is="coral-table-cell" coral-table-rowselect>
+    <coral-icon icon="fileKey" size="M">
+    </coral-icon>
+  </td>
+  <td is="coral-table-cell" value="${item.fileName}">
+    <a href="${item.filePath}" download="${item.fileName}">${item.fileName}</a>
+  </td>
+  <td is="coral-table-cell" value="${item.author}">
+    ${item.author}
+  </td>
+  <td is="coral-table-cell" value="${item.lastModified.time || 0}">
+    <time class="text-uppercase text-muted" data-sly-test="${item.lastModified}"
+          datetime="${item.lastModified.time || 0}">
+      ${'MMM dd, yyyy hh:mm:ss a' @ format=item.lastModified}
+    </time>
+  </td>
+  <td is="coral-table-cell" value="${item.executor}">
+    ${item.executor}
+  </td>
+  <td is="coral-table-cell" value="${item.lastExecution.time || 0}">
+    <sly data-sly-test="${item.executionTime && item.instanceType}">
+      <img class="${item.isRunSuccessful ? 'runSuccess' : 'runFailed'}"/>
+      <time datetime="${item.executionTime.time || 0}">
+        ${item.lastExecutionStatus}
+      </time>
+      <button is="coral-button" class="execution-summary-button"
+              data-sly-attribute.executionSummaryJson="${item.executionSummaryJson}"
+              data-sly-attribute.scriptName="${item.fileName}"
+              data-sly-attribute.instanceType="${item.instanceType}"
+              data-sly-attribute.executor="${item.executor}">
+        <div class="icon summary">Show summary</div>
+      </button>
+    </sly>
+  </td>
+  <td is="coral-table-cell" value="${item.lastDryExecution.time || 0}">
+    <sly data-sly-test="${item.lastDryExecution && item.instanceType}">
+      <img class="${item.isDryRunSuccessful ? 'runSuccess' : 'runFailed'}"/>
+      <time datetime="${item.lastDryExecution.time || 0}">
+        ${item.lastDryExecutionStatus}
+      </time>
+      <button is="coral-button" id="demoButton1">
+        <div class="icon summary">Show summary</div>
+      </button>
+    </sly>
+  </td>
 </tr>
