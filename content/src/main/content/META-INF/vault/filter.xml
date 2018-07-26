@@ -14,4 +14,5 @@
     <filter root="/home/users/system/cqsm-system-user"/>
     <filter root="/rep:policy"/>
     <filter root="/var/classes/org/apache/jsp/apps/cqsm"/>
+    <filter root="/libs/granite/ui/components/shell/collectionpagewithoutheader"/>
 </workspaceFilter>
