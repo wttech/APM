@@ -276,6 +276,24 @@ public class ApmLangBaseListener implements ApmLangListener {
 	 */
 	@Override public void exitMacroDefinition(ApmLangParser.MacroDefinitionContext ctx) { }
 
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.</p>
+   */
+  @Override
+  public void enterForeach(ApmLangParser.ForeachContext ctx) {
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>The default implementation does nothing.</p>
+   */
+  @Override
+  public void exitForeach(ApmLangParser.ForeachContext ctx) {
+  }
+
 	/**
 	 * {@inheritDoc}
 	 *

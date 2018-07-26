@@ -231,4 +231,18 @@ public interface ApmLangListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitMacroDefinition(ApmLangParser.MacroDefinitionContext ctx);
+
+  /**
+   * Enter a parse tree produced by {@link ApmLangParser#foreach}.
+   *
+   * @param ctx the parse tree
+   */
+  void enterForeach(ApmLangParser.ForeachContext ctx);
+
+  /**
+   * Exit a parse tree produced by {@link ApmLangParser#foreach}.
+   *
+   * @param ctx the parse tree
+   */
+  void exitForeach(ApmLangParser.ForeachContext ctx);
 }

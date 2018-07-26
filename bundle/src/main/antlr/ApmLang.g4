@@ -9,7 +9,7 @@ apm
     ;
 
 line
-    : (command | variableDefinition | macroDefinition | scriptInclusion | comment)
+    : (command | variableDefinition | foreach | macroDefinition | scriptInclusion | comment)
     ;
 
 name
@@ -95,6 +95,10 @@ macroDefinition
     : DEFINE_MACRO name parametersDefinition? EOL? BLOCK_BEGIN EOL? body BLOCK_END
     ;
 
+foreach
+    : FOR_EACH IDENTIFIER IN parameter EOL? BLOCK_BEGIN EOL? body BLOCK_END
+    ;
+
 /*
  * Lexer Rules
  */
@@ -125,6 +129,14 @@ EXECUTE_MACRO
 IMPORT_SCRIPT
     : 'import'
     | 'IMPORT'
+    ;
+FOR_EACH
+    : 'foreach'
+    | 'FOREACH'
+    ;
+IN
+    : 'in'
+    | 'IN'
     ;
 DEFINE
     : 'define'

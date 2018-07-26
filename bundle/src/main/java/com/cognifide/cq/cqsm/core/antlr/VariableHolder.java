@@ -35,7 +35,7 @@ public class VariableHolder {
   }
 
   public void createLocalContext() {
-    contexts.add(new HashMap<>());
+    contexts.push(new HashMap<>());
   }
 
   public void removeLocalContext() {

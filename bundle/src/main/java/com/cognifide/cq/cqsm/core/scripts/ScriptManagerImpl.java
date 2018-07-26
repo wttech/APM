@@ -148,36 +148,32 @@ public class ScriptManagerImpl implements ScriptManager {
     final String path = script.getPath();
 
     LOG.info(String.format("Script execution started: %s [%s]", path, mode));
-    Progress progress = new ProgressImpl(resolver.getUserID());
     final ActionExecutor actionExecutor = createExecutor(mode, resolver);
     final Context context = actionExecutor.getContext();
     final SessionSavingPolicy savingPolicy = context.getSavingPolicy();
 
-    eventManager.trigger(Event.BEFORE_EXECUTE, script, mode, progress);
-
     final ScriptTree scriptTree = new ScriptTreeLoader(resolver, scriptFinder).loadScriptTree(script);
     final MacroRegister macroRegister = new MacroRegistrar().buildMacroRegister(scriptTree);
-    final ScriptContext scriptContext = new ScriptContext(macroRegister, scriptTree);
-    ScriptRunner scriptRunner = new ScriptRunner(
-        (ctx, stringCommand, commandName, parameters) -> {
-          try {
-            ActionDescriptor descriptor = actionFactory.evaluate(commandName, parameters);
-            ActionResult result = actionExecutor.execute(descriptor);
-            progress.addEntry(descriptor, result);
+    final ScriptContext scriptContext = new ScriptContext(resolver.getUserID(), macroRegister, scriptTree);
+    eventManager.trigger(Event.BEFORE_EXECUTE, script, mode, scriptContext.getProgress());
+    ScriptRunner scriptRunner = new ScriptRunner((progress, commandName, parameters) -> {
+      try {
+        ActionDescriptor descriptor = actionFactory.evaluate(commandName, parameters);
+        ActionResult result = actionExecutor.execute(descriptor);
+        progress.addEntry(descriptor, result);
 
-            if ((Status.ERROR == result.getStatus()) && (Mode.DRY_RUN != mode)) {
-              eventManager.trigger(Event.AFTER_EXECUTE, script, mode, progress);
-              return Collections.emptyList();
-            }
+        if ((Status.ERROR == result.getStatus()) && (Mode.DRY_RUN != mode)) {
+          eventManager.trigger(Event.AFTER_EXECUTE, script, mode, progress);
+        } else {
+          savingPolicy.save(context.getSession(), SessionSavingMode.EVERY_ACTION);
+        }
+      } catch (RepositoryException | ActionCreationException e) {
+        LOG.error("Error while processing command: {}", commandName, e);
+        progress.addEntry(commandName, Message.getErrorMessage(e.getMessage()), Status.ERROR);
+      }
+    });
 
-            savingPolicy.save(context.getSession(), SessionSavingMode.EVERY_ACTION);
-          } catch (RepositoryException | ActionCreationException e) {
-            LOG.error("Error while processing command: {}", commandName, e);
-            progress.addEntry(commandName, Message.getErrorMessage(e.getMessage()), Status.ERROR);
-          }
-          return Collections.emptyList();
-        });
-    scriptRunner.execute(scriptContext);
+    final Progress progress = scriptRunner.execute(scriptContext);
     if (progress.isSuccess()) {
       savingPolicy.save(context.getSession(), SessionSavingMode.SINGLE);
     }

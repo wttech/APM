@@ -111,7 +111,7 @@ public class ActionFactoryService implements ActionFactory {
 
     for (MapperDescriptor mapper : getMappers().values()) {
       for (MappingDescriptor mapping : mapper.getMappings()) {
-        HashMap<String, Object> reference = new HashMap<>();
+        Map<String, Object> reference = new HashMap<>();
         reference.put("commands", mapper.getCommandName().toUpperCase());
         reference.put("pattern", "");
         reference.put("args", mapping.getAnnotation().args());
