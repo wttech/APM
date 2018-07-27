@@ -18,16 +18,6 @@
  * =========================LICENSE_END==================================
  */
 (function (window, $) {
-
-    $(window).adaptTo("foundation-registry").register(
-        "foundation.collection.action.action", {
-            name: "dashboard.view",
-            handler: function (name, el, config, collection, selections) {
-                var selected = selections[0].attributes['data-path'].value;
-                console.info('Implement Me: view CLICK ' + selected);
-            }
-        });
-
     $(window).adaptTo("foundation-registry").register(
         "foundation.collection.action.action", {
             name: "dashboard.dryrun",
