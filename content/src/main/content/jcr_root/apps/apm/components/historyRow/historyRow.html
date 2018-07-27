@@ -43,22 +43,19 @@
   </td>
   <td is="coral-table-cell" value="${item.lastExecution.time || 0}">
     <sly data-sly-test="${item.executionTime && item.instanceType}">
-      <img class="${item.isRunSuccessful ? 'runSuccess' : 'runFailed'}"/>
+      <img class="${item.isRunSuccessful ? 'runSuccess' : 'runError'}"/>
       <time datetime="${item.executionTime.time || 0}">
         ${item.lastExecutionStatus}
       </time>
       <button is="coral-button" class="execution-summary-button"
-              data-sly-attribute.executionSummaryJson="${item.executionSummaryJson}"
-              data-sly-attribute.scriptName="${item.fileName}"
-              data-sly-attribute.instanceType="${item.instanceType}"
-              data-sly-attribute.executor="${item.executor}">
+              data-sly-attribute.scriptResourcePath="${item.path}">
         <div class="icon summary">Show summary</div>
       </button>
     </sly>
   </td>
   <td is="coral-table-cell" value="${item.lastDryExecution.time || 0}">
     <sly data-sly-test="${item.lastDryExecution && item.instanceType}">
-      <img class="${item.isDryRunSuccessful ? 'runSuccess' : 'runFailed'}"/>
+      <img class="${item.isDryRunSuccessful ? 'dryRunSuccess' : 'dryRunError'}"/>
       <time datetime="${item.lastDryExecution.time || 0}">
         ${item.lastDryExecutionStatus}
       </time>
