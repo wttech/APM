@@ -4,7 +4,7 @@
         xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
         jcr:primaryType="nt:unstructured"
         jcr:title="APM Edit"
-        sling:resourceType="granite/ui/components/shell/collectionpage"
+        sling:resourceType="granite/ui/components/shell/collectionpagewithoutheader"
         granite:class="apm-edit-script-page"
         consoleId="apm-edit"
         contentPath="/content"
