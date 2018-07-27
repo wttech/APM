@@ -68,11 +68,17 @@
                                 }, 1000);
                             } else if (dataObject.type === 'finished') {
                                 console.log(scriptPath + " finished: " + JSON.stringify(dataObject.entries));
-                                console.log(
-                                    "Implement me: provide more sophisticated way of displaying results after finishing the script")
+                                if(mode === 'DRY_RUN') {
+                                    uiHelper.notify('info', 'Dry Run executed successfully', 'Info');
+                                }else if (mode === 'RUN'){
+                                    uiHelper.notify('info', 'Run on author executed successfully', 'Info');
+                                }
                             } else if (dataObject.type === 'unknown') {
-                                console.log(
-                                    "Implement me: handle \"unknown\" case");
+                                if(mode === 'DRY_RUN') {
+                                    uiHelper.alert('Dry Run wasn\'t executed successfully', '', 'error');
+                                }else if (mode === 'RUN'){
+                                    uiHelper.alert('Run on author wasn\'t executed successfully', '', 'error');
+                                }
                             }
                         }
                     });
@@ -89,7 +95,11 @@
             dataType: "json",
             success: function (data) {
                 console.log("publish response: " + JSON.stringify(data));
-                console.log("Implement me: handle \'publish\' case");
+                uiHelper.notify('info', 'Run on publish executed successfully', 'info');
+            },
+            error: function (data) {
+                console.log("publish  response: " + JSON.stringify(data));
+                uiHelper.alert('Run on publish wasn\'t executed successfully', '', 'error');
             }
         });
     }
