@@ -1,4 +1,4 @@
-<!-- /*
+<!--/*
 * ========================LICENSE_START=================================
 * AEM Permission Management
 * %%
@@ -16,10 +16,10 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 * =========================LICENSE_END==================================
-*/ -->
+*/-->
 <sly data-sly-use.item="com.cognifide.cq.cqsm.core.models.ExecutionModel"/>
 <coral-dialog id="summaryDialog" variant="info">
-  <coral-dialog-header>The result of ${item.entry.fileName} script by ${item.entry.executor} on
+  <coral-dialog-header id="summaryDialogHeader">The result of ${item.entry.fileName} script by ${item.entry.executor} on
     ${item.entry.instanceType} instance
   </coral-dialog-header>
   <coral-dialog-content>
@@ -69,7 +69,7 @@
             <span class="${message.info ? message.info : ''}">
               ${message.text}
             </span>
-              <br data-sly-test="${!messageList.last}" />
+              <br data-sly-test="${!messageList.last}"/>
             </sly>
           </td>
         </tr>
@@ -78,14 +78,19 @@
     </table>
   </coral-dialog-content>
   <coral-dialog-footer>
-    <button is="coral-button" icon="download" iconsize="S" class="coral-Button coral-Button--secondary" size="M"
-            variant="secondary">
-      <coral-icon class="coral-Icon coral-Icon--sizeS coral-Icon--download" icon="download" size="S"
-                  alt=""></coral-icon>
-      <coral-button-label>
-        Download
-      </coral-button-label>
-    </button>
+    <form method="POST" action="/bin/cqsm/executionResultDownload">
+      <input type="hidden" name="filename" value="${'execution-result-{0}.txt' @ format=item.entry.fileName}">
+      <input type="hidden" name="content" value="${item.entry.executionSummaryJson}">
+      <button type="submit" is="coral-button" icon="download" iconsize="S" class="coral-Button coral-Button--secondary"
+              size="M"
+              variant="secondary">
+        <coral-icon class="coral-Icon coral-Icon--sizeS coral-Icon--download" coral-close="" icon="download" size="S"
+                    alt=""></coral-icon>
+        <coral-button-label>
+          Download
+        </coral-button-label>
+      </button>
+    </form>
     <button is="coral-button" variant="primary" coral-close="" class="coral-Button coral-Button--primary" size="M">
       <coral-button-label>Ok</coral-button-label>
     </button>

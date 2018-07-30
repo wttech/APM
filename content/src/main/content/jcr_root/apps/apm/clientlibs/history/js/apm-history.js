@@ -21,15 +21,14 @@
     $(document).on('cui-contentloaded', function () {
 
         // prototype pattern
-        function SummaryDialog($el) {
+        var SummaryHandling = function ($el) {
             this.$rootElement = $el;
             this.executionSummaryButtons = this.$rootElement.find(
                 '.execution-summary-button');
             this.delegateEvents();
-        }
+        };
 
-        SummaryDialog.prototype = {
-
+        SummaryHandling.prototype = {
             showDialog: function (scriptPath) {
                 var self = this;
                 $.ajax({
@@ -39,16 +38,15 @@
                     dataType: "html",
                     success: function (data) {
 
-                        var parsedData = $.parseHTML(data);
-
-                        self.summaryDialog = parsedData[2]; // FIXME: please find it in more sophisticated way
-
+                        if (self.$rootElement.has(self.summaryDialog).length) {
+                            self.summaryDialog.remove();
+                        }
+                        self.summaryDialog = $.parseHTML($.trim(data))[0];
                         self.$rootElement.append(self.summaryDialog);
                         self.summaryDialog.show();
                     }
                 });
             },
-
             delegateEvents: function () {
                 var self = this;
 
@@ -62,7 +60,7 @@
             }
         };
 
-        var summaryDialog = new SummaryDialog($('body'));
+        var summaryHandling = new SummaryHandling($('body'));
 
     });
 })(window, jQuery);
