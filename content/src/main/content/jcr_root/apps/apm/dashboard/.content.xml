@@ -100,21 +100,7 @@
                         text="Create"
                         variant="primary">
                     <items jcr:primaryType="nt:unstructured">
-                        <importviewscript
-                                granite:rel="cq-experiencefragments-admin-create-xf"
-                                jcr:primaryType="nt:unstructured"
-                                sling:resourceType="granite/ui/components/coral/foundation/collection/actionlink"
-                                action="foundation.link"
-                                href="/apps/apm/view.html"
-                                icon="fileAdd"
-                                relScope="collection"
-                                target=".cq-experience-fragments-admin-childpages"
-                                text="Create Script">
-                            <data
-                                    jcr:primaryType="nt:unstructured"
-                                    href.uritemplate="/apps/apm/view.html{+id}"/>
-                        </importviewscript>
-                        <importeditscript
+                        <importscript
                                 granite:rel="cq-experiencefragments-admin-create-xf"
                                 jcr:primaryType="nt:unstructured"
                                 sling:resourceType="granite/ui/components/coral/foundation/collection/actionlink"
@@ -126,8 +112,8 @@
                                 text="Create Script">
                             <data
                                     jcr:primaryType="nt:unstructured"
-                                    href.uritemplate="/apps/apm/edit.html{+id}"/>
-                        </importeditscript>
+                                    href.uritemplate="/apm/edit.html{+id}"/>
+                        </importscript>
                         <createfolder
                                 granite:id="cq-experiencefragments-admin-createfolder"
                                 granite:rel="cq-siteadmin-admin-createfolder"
@@ -161,7 +147,7 @@
                         variant="actionBar">
                         <data
                                 jcr:primaryType="nt:unstructured"
-                                href.uritemplate="/apps/apm/view.html{+item}"/>
+                                href.uritemplate="/apm/view.html{+item}"/>
                 </view>
                 <dryrun
                         granite:class="foundation-collection-action"

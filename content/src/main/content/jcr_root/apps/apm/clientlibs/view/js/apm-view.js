@@ -20,13 +20,13 @@
 (function (window, $) {
   $(document).on('cui-contentloaded', function () {
 
-      var DASHBOARD_URL = '/apps/apm/dashboard.html';
+      const DASHBOARD_URL = '/apps/apm/dashboard.html';
 
       function Console($el) {
       this.$el = $el;
       this.$textArea = this.$el.find("#cqsm").eq(0);
       this.$fileName = this.$el.find('#fname').eq(0);
-      this.$cancelButton = this.$el.find('#backButton').eq(0);
+      this.$backButton = this.$el.find('#backButton').eq(0);
       this.initialValue = this.$textArea.val();
       this.editor = this.initEditor();
       this.delegateEvents();
@@ -48,7 +48,7 @@
       },
 
       initEditor: function () {
-        var editor = null;
+        let editor = null;
 
         ace.config.set("basePath", "/apps/apm/clientlibs/editor/js/ace");
         this.$textArea.hide();
@@ -66,7 +66,7 @@
       },
 
       delegateEvents: function () {
-         this.$cancelButton.click(function () {
+         this.$backButton.click(function () {
              window.location.href = DASHBOARD_URL;
          });
       }

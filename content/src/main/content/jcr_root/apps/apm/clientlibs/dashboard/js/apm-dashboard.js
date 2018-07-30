@@ -18,11 +18,14 @@
  * =========================LICENSE_END==================================
  */
 (function (window, $) {
+
+    let uiHelper = $(window).adaptTo("foundation-ui");
+
     $(window).adaptTo("foundation-registry").register(
         "foundation.collection.action.action", {
             name: "dashboard.dryrun",
             handler: function (name, el, config, collection, selections) {
-                var selected = selections[0].attributes['data-path'].value;
+                const selected = selections[0].attributes['data-path'].value;
                 runOnAuthor(selected, "DRY_RUN");
             }
         });
@@ -31,7 +34,7 @@
         "foundation.collection.action.action", {
             name: "dashboard.runonauthor",
             handler: function (name, el, config, collection, selections) {
-                var selected = selections[0].attributes['data-path'].value;
+                const selected = selections[0].attributes['data-path'].value;
                 runOnAuthor(selected, "RUN");
             }
         });
@@ -40,7 +43,7 @@
         "foundation.collection.action.action", {
             name: "dashboard.runonpublish",
             handler: function (name, el, config, collection, selections) {
-                var selected = selections[0].attributes['data-path'].value;
+                const selected = selections[0].attributes['data-path'].value;
                 runOnPublish(selected);
             }
         });
@@ -53,7 +56,7 @@
             + mode,
             dataType: "html",
             success: function (data) {
-                var jobId = JSON.parse(data).id;
+                const jobId = JSON.parse(data).id;
 
                 (function checkStatus(jobId) {
                     $.ajax({
@@ -61,23 +64,29 @@
                         url: "/bin/cqsm/run-background?id=" + jobId,
                         dataType: "html",
                         success: function (data) {
-                            var dataObject = JSON.parse(data);
+                            const dataObject = JSON.parse(data);
                             if (dataObject.type === 'running') {
                                 setTimeout(function () {
                                     checkStatus(jobId)
                                 }, 1000);
                             } else if (dataObject.type === 'finished') {
                                 console.log(scriptPath + " finished: " + JSON.stringify(dataObject.entries));
-                                if(mode === 'DRY_RUN') {
-                                    uiHelper.notify('info', 'Dry Run executed successfully', 'Info');
-                                }else if (mode === 'RUN'){
-                                    uiHelper.notify('info', 'Run on author executed successfully', 'Info');
+                                switch(mode){
+                                    case 'DRY_RUN':
+                                        uiHelper.notify('info', 'Dry Run executed successfully', 'Info');
+                                        break;
+                                    case 'RUN':
+                                        uiHelper.notify('info', 'Run on author executed successfully', 'Info');
+                                        break;
                                 }
                             } else if (dataObject.type === 'unknown') {
-                                if(mode === 'DRY_RUN') {
-                                    uiHelper.alert('Dry Run wasn\'t executed successfully', '', 'error');
-                                }else if (mode === 'RUN'){
-                                    uiHelper.alert('Run on author wasn\'t executed successfully', '', 'error');
+                                switch(mode) {
+                                    case 'DRY_RUN':
+                                        uiHelper.alert('Dry Run wasn\'t executed successfully', data.responseJSON.message, 'error');
+                                        break;
+                                    case 'RUN':
+                                        uiHelper.alert('Run on author wasn\'t executed successfully', data.responseJSON.message, 'error');
+                                        break;
                                 }
                             }
                         }
@@ -99,7 +108,7 @@
             },
             error: function (data) {
                 console.log("publish  response: " + JSON.stringify(data));
-                uiHelper.alert('Run on publish wasn\'t executed successfully', '', 'error');
+                uiHelper.alert('Run on publish wasn\'t executed successfully', data.responseJSON.message, 'error');
             }
         });
     }

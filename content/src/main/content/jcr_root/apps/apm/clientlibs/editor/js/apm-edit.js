@@ -20,8 +20,8 @@
 (function (window, $) {
   $(document).on('cui-contentloaded', function () {
 
-    var SHOW_REFERENCES_URL = '/etc/cqsm/pages/reference.html';
-    var DASHBOARD_URL = '/apps/apm/dashboard.html';
+    const SHOW_REFERENCES_URL = '/etc/cqsm/pages/reference.html';
+    const DASHBOARD_URL = '/apm/dashboard.html';
 
     function Console($el) {
       this.uiHelper = $(window).adaptTo("foundation-ui");
@@ -58,7 +58,7 @@
         return this.isFileNameLocked() ? 'true' : 'false';
       },
       fileUpload: function () {
-        var self = this,
+        let self = this,
             boundary = '-----------------------------' +
                 Math.floor(Math.random() * Math.pow(10, 8)),
             value = this.$textArea.val(),
@@ -102,7 +102,7 @@
           contentType: 'multipart/form-data; boundary=' + boundary,
           data: content.join('\r\n'),
           success: function (data) {
-            var scripts = data.uploadedScripts;
+            const scripts = data.uploadedScripts;
             if (scripts.length > 0) {
               if (!self.isFileNameLocked()) {
                   self.changeFileName(scripts[0].name);
@@ -123,7 +123,7 @@
         });
       },
       initEditor: function () {
-        var editor = null;
+        let editor = null;
 
         ace.config.set("basePath", "/apps/apm/clientlibs/editor/js/ace");
         this.$textArea.hide();
@@ -147,7 +147,7 @@
         return editor;
       },
       delegateEvents: function () {
-        var self = this;
+        const self = this;
 
         this.editor.getSession().on('change', function () {
           self.$textArea.val(self.editor.getSession().getValue());
@@ -162,10 +162,10 @@
         });
 
         this.displayResponseFeedback = function (response) {
-          var isErrorMessage = response.type === 'error';
-          var variant = isErrorMessage ? 'error' : 'success';
+          const isErrorMessage = response.type === 'error';
+          const variant = isErrorMessage ? 'error' : 'success';
 
-          var text = '';
+          let text = '';
           if (response.error) {
             text +=  '</br>' + response.error;
           }
@@ -200,7 +200,7 @@
 
         $(document).ready(function () {
           $(document).keydown(function (e) {
-            var S_CHARACTER_CODE = 83;
+            const S_CHARACTER_CODE = 83;
             if (e.ctrlKey && e.keyCode === S_CHARACTER_CODE) {
               e.stopPropagation();
               e.preventDefault();

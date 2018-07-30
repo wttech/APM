@@ -4,8 +4,9 @@
           xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
           jcr:primaryType="nt:unstructured"
           jcr:title="APM View"
-          sling:resourceType="granite/ui/components/shell/collectionpage"
+          sling:resourceType="granite/ui/components/shell/collectionpagewithoutheader"
           granite:class="apm-view-script-page"
+          sling:vanityPath="/apm/view"
           consoleId="apm-view"
           contentPath="/content"
           targetCollection=".apm-view-form">
