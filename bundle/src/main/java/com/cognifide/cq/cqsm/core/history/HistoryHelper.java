@@ -36,7 +36,6 @@ public final class HistoryHelper {
 	private HistoryHelper() {
 	}
 
-
 	public static Boolean isRunSuccessful(List<ProgressEntry> progressSummary) {
 		Boolean isSuccessful = Boolean.TRUE;
 		final Iterator<ProgressEntry> executionSummaryIterator = progressSummary.iterator();

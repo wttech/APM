@@ -167,7 +167,6 @@ public class ScriptManagerImpl implements ScriptManager {
 			modifiableScript.setExecuted(true);
 		}
 
-		// Why?
 		if (Arrays.asList(Mode.DRY_RUN, Mode.RUN, Mode.AUTOMATIC_RUN).contains(mode)) {
 			modifiableScript.setDryRunStatus(success);
 		}
