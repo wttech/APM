@@ -18,6 +18,7 @@
  * =========================LICENSE_END==================================
  */
 (function (window, $) {
+    "use strict";
     $(document).on('cui-contentloaded', function () {
 
         // prototype pattern
@@ -41,7 +42,10 @@
                         if (self.$rootElement.has(self.summaryDialog).length) {
                             self.summaryDialog.remove();
                         }
-                        self.summaryDialog = $.parseHTML($.trim(data))[0];
+                        self.summaryDialog = $.parseHTML($.trim(data))[0]; // trick to remove problematic spaces created by sightly tags
+                        self.summaryDialog.on("coral-overlay:close", function () {
+                                this.remove();
+                            });
                         self.$rootElement.append(self.summaryDialog);
                         self.summaryDialog.show();
                     }
@@ -61,6 +65,5 @@
         };
 
         var summaryHandling = new SummaryHandling($('body'));
-
     });
 })(window, jQuery);

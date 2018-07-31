@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * AEM Permission Management
  * %%
- * Copyright (C) 2013 Cognifide Limited
+ * Copyright (C) 2018 Cognifide Limited
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,21 @@ package com.cognifide.cq.cqsm.core.history;
 
 import com.cognifide.cq.cqsm.api.logger.ProgressEntry;
 import com.cognifide.cq.cqsm.api.logger.Status;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
+import org.apache.commons.lang.StringUtils;
+import org.apache.sling.api.resource.Resource;
 
 public final class HistoryHelper {
+
+	public static final String SCRIPT_HISTORY_FILE_NAME = "script";
+
+	private HistoryHelper() {
+	}
+
 
 	public static Boolean isRunSuccessful(List<ProgressEntry> progressSummary) {
 		Boolean isSuccessful = Boolean.TRUE;
@@ -39,6 +50,24 @@ public final class HistoryHelper {
 		return isSuccessful;
 	}
 
+	public static Boolean isHistoryResource(Resource resource) {
+		return resource.getChild(SCRIPT_HISTORY_FILE_NAME) != null;
+	}
 
+	public static String generateHistoryPageRunDateFormat(Date date, String instanceType) {
+		return String.format("%s %s", StringUtils.capitalize(instanceType), createHistoryPageDateStr(date));
+	}
 
+	public static String generateHistoryPageDateFormat(Date date) {
+		String fullDateStr = createHistoryPageDateStr(date);
+
+		return fullDateStr;
+	}
+
+	private static String createHistoryPageDateStr(Date date) {
+		Locale locale = Locale.getDefault();
+		String dateStr = new SimpleDateFormat("dd, yyyy hh:mm:ss a", locale).format(date);
+		String monthStr = StringUtils.capitalize(new SimpleDateFormat("MMM", locale).format(date));
+		return String.format("%s %s", monthStr, dateStr);
+	}
 }

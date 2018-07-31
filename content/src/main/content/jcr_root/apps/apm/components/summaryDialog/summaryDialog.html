@@ -79,7 +79,7 @@
   </coral-dialog-content>
   <coral-dialog-footer>
     <form method="POST" action="/bin/cqsm/executionResultDownload">
-      <input type="hidden" name="filename" value="${'execution-result-{0}.txt' @ format=item.entry.fileName}">
+      <input type="hidden" name="filename" value="${item.entry.executionResultFileName}">
       <input type="hidden" name="content" value="${item.entry.executionSummaryJson}">
       <button type="submit" is="coral-button" icon="download" iconsize="S" class="coral-Button coral-Button--secondary"
               size="M"
@@ -87,7 +87,7 @@
         <coral-icon class="coral-Icon coral-Icon--sizeS coral-Icon--download" coral-close="" icon="download" size="S"
                     alt=""></coral-icon>
         <coral-button-label>
-          Download
+          Export to file
         </coral-button-label>
       </button>
     </form>

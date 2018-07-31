@@ -35,13 +35,13 @@
   <td is="coral-table-cell" value="${item.lastModified.time || 0}">
     <time class="text-uppercase text-muted" data-sly-test="${item.lastModified}"
           datetime="${item.lastModified.time || 0}">
-      ${'MMM dd, yyyy hh:mm:ss a' @ format=item.lastModified}
+      ${item.lastModifiedFormatted}
     </time>
   </td>
   <td is="coral-table-cell" value="${item.executor}">
     ${item.executor}
   </td>
-  <td is="coral-table-cell" value="${item.lastExecution.time || 0}">
+  <td is="coral-table-cell" value="${item.executionTime.time || 0}">
     <sly data-sly-test="${item.executionTime && item.instanceType}">
       <img class="${item.isRunSuccessful ? 'runSuccess' : 'runError'}"/>
       <time datetime="${item.executionTime.time || 0}">
@@ -59,9 +59,6 @@
       <time datetime="${item.lastDryExecution.time || 0}">
         ${item.lastDryExecutionStatus}
       </time>
-      <button is="coral-button" id="demoButton1">
-        <div class="icon summary">Show summary</div>
-      </button>
     </sly>
   </td>
 </tr>

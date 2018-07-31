@@ -21,16 +21,13 @@ package com.cognifide.cq.cqsm.api.history;
 
 import com.cognifide.cq.cqsm.api.executors.Mode;
 import com.cognifide.cq.cqsm.api.logger.ProgressEntry;
-import com.cognifide.cq.cqsm.api.scripts.Script;
+import com.cognifide.cq.cqsm.core.history.HistoryEntryPropsFactory;
 import com.cognifide.cq.cqsm.core.history.HistoryHelper;
 import com.cognifide.cq.cqsm.core.progress.ProgressHelper;
-import com.cognifide.cq.cqsm.core.scripts.ScriptImpl;
 import com.google.common.collect.ComparisonChain;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -41,17 +38,11 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Model;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Model(adaptables = Resource.class, defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
 public class Entry implements Comparable<Entry> {
 
-	private static final Logger LOG = LoggerFactory.getLogger(Entry.class);
-
 	private static final String EXECUTION = "execution-result";
-
-	private static final String SCRIPT_HISTORY_FILE_NAME = "script";
 
 	@Inject
 	@Getter
@@ -96,13 +87,10 @@ public class Entry implements Comparable<Entry> {
 	private final String path;
 
 	@Getter
-	private final String filePath;
+	private String filePath;
 
 	@Getter
 	private Timestamp lastModified;
-
-	@Getter
-	private Timestamp lastDryExecution;
 
 	@Getter
 	private Boolean isRunSuccessful;
@@ -110,39 +98,32 @@ public class Entry implements Comparable<Entry> {
 	@Getter
 	private Boolean isDryRunSuccessful;
 
-	// TODO: Perform refactoring
+	@Getter
+	private Timestamp lastDryExecution;
+
 	public Entry(Resource resource) {
-		final Resource scriptResource = resource.getChild(SCRIPT_HISTORY_FILE_NAME);
-		if (scriptResource != null) {
-			Script script = scriptResource.adaptTo(ScriptImpl.class);
-			this.lastModified = new Timestamp(script.getLastModified().getTime());
+		if (HistoryHelper.isHistoryResource(resource)) {
+			final HistoryEntryPropsFactory historyEntryPropsFactory = new HistoryEntryPropsFactory(resource);
 
-			final Optional<Date> lastDryExecutionDate = Optional.ofNullable(script.getDryRunLast());
-			lastDryExecutionDate.ifPresent(date -> this.lastDryExecution = new Timestamp(date.getTime()));
-			this.isDryRunSuccessful = script.isDryRunSuccessful();
-		} else {
-			LOG.error("HISTORY_UTIL_NO_SCRIPT",
-				String.format("Can't find script for resource: %s", resource.getPath()));
+			this.lastModified = historyEntryPropsFactory.getLastModificationTimestamp();
+			this.lastDryExecution = historyEntryPropsFactory.getLastDryRunTimestamp();
+			this.isDryRunSuccessful = historyEntryPropsFactory.isLastDryRunSuccessful();
+			this.filePath = historyEntryPropsFactory.getFilePath();
 		}
-
 		this.path = resource.getPath();
-		this.filePath = getFilePath(resource);
 	}
 
 	public String getLastExecutionStatus() {
-		return generateHistoryPageDateFormat(executionTime);
+		return HistoryHelper.generateHistoryPageRunDateFormat(executionTime, instanceType);
+	}
+
+	public String getLastModifiedFormatted(){
+		return HistoryHelper.generateHistoryPageDateFormat(lastModified);
 	}
 
 	public String getLastDryExecutionStatus() {
-		return generateHistoryPageDateFormat(lastDryExecution);
-	}
-
-	private String generateHistoryPageDateFormat(Date date) {
-		String dateStr = new SimpleDateFormat("dd, yyyy hh:mm:ss a").format(date);
-		String monthStr = StringUtils.capitalize(new SimpleDateFormat("MMM").format(date));
-		String fullDateStr = String.format("%s %s", monthStr, dateStr);
-
-		return String.format("%s %s", StringUtils.capitalize(instanceType), fullDateStr);
+		final String lastDryExecutionStatus = HistoryHelper.generateHistoryPageRunDateFormat(lastDryExecution, instanceType);
+		return lastDryExecutionStatus;
 	}
 
 	@Override
@@ -163,14 +144,6 @@ public class Entry implements Comparable<Entry> {
 
 	public String getExecutionResultFileName() {
 		return EXECUTION + "-" + StringUtils.replace(fileName, ".cqsm", ".txt");
-	}
-
-	private String getFilePath(Resource resource) {
-		String path = null;
-		if (resource.getChild(SCRIPT_HISTORY_FILE_NAME) != null) {
-			path = resource.getPath() + "/" + SCRIPT_HISTORY_FILE_NAME;
-		}
-		return path;
 	}
 
 	private String getExecutorValue() {
