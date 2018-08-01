@@ -157,6 +157,6 @@ public class Entry implements Comparable<Entry> {
 		//FIXME api->core relationship
 
 		executionSummary = ProgressHelper.fromJson(executionSummaryJson);
-		this.isRunSuccessful = HistoryHelper.isRunSuccessful(executionSummary);
+		this.isRunSuccessful = ProgressHelper.calculateSuccess(executionSummary);
 	}
 }

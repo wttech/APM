@@ -36,19 +36,6 @@ public final class HistoryHelper {
 	private HistoryHelper() {
 	}
 
-	public static Boolean isRunSuccessful(List<ProgressEntry> progressSummary) {
-		Boolean isSuccessful = Boolean.TRUE;
-		final Iterator<ProgressEntry> executionSummaryIterator = progressSummary.iterator();
-
-		while (executionSummaryIterator.hasNext() && isSuccessful) {
-			final ProgressEntry operation = executionSummaryIterator.next();
-			if (Status.ERROR.equals(operation.getStatus())) {
-				isSuccessful = Boolean.FALSE;
-			}
-		}
-		return isSuccessful;
-	}
-
 	public static Boolean isHistoryResource(Resource resource) {
 		return resource.getChild(SCRIPT_HISTORY_FILE_NAME) != null;
 	}

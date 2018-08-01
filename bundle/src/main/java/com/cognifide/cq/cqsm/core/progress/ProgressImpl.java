@@ -19,8 +19,6 @@
  */
 package com.cognifide.cq.cqsm.core.progress;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
@@ -68,7 +66,7 @@ public class ProgressImpl implements Progress {
 
 	@Override
 	public boolean isSuccess() {
-		calculateSuccess();
+		success = ProgressHelper.calculateSuccess(entries);
 		return success;
 	}
 
@@ -88,16 +86,5 @@ public class ProgressImpl implements Progress {
 	@Override
 	public String getExecutor() {
 		return executor;
-	}
-
-	private void calculateSuccess() {
-		success = !Iterables.any(entries, new IsErrorPredicate());
-	}
-
-	private static class IsErrorPredicate implements Predicate<ProgressEntry> {
-		@Override
-		public boolean apply(ProgressEntry input) {
-			return input != null && Status.ERROR == input.getStatus();
-		}
 	}
 }
