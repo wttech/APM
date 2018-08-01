@@ -56,7 +56,7 @@ public class HistoryEntryPropsFactory {
 	public Timestamp getLastDryRunTimestamp() {
 		final Optional<Date> lastDryExecutionDate = Optional.ofNullable(script.getDryRunLast());
 
-		final Timestamp lastDryRunTimestamp = lastDryExecutionDate.map(date -> new Timestamp(date.getTime())).get();
+		final Timestamp lastDryRunTimestamp = lastDryExecutionDate.map(date -> new Timestamp(date.getTime())).orElse(null);
 		return lastDryRunTimestamp;
 	}
 
