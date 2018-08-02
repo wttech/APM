@@ -31,7 +31,7 @@
                     limit="{Long}40"
                     modeGroup="cq-experience-fragments-admin-childpages"
                     path="${requestPathInfo.suffix}"
-                    rootPath="/etc/cqsm/history/jcr:content/cqsmHistory"
+                    rootPath="/conf/apm/history/jcr:content/cqsmHistory"
                     selectionMode="row"
                     size="${empty requestPathInfo.selectors[1] ? &quot;40&quot; : requestPathInfo.selectors[1]}"
                     sortMode="remote"

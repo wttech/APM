@@ -78,13 +78,13 @@ public class HistoryImpl implements History {
 
 	private static final Logger LOG = LoggerFactory.getLogger(HistoryImpl.class);
 
-	private static final String HISTORY_PATH = "/etc/cqsm/history";
+	private static final String HISTORY_PATH = "/conf/apm/history";
 
 	private static final String HISTORY_COMPONENT = "cqsmHistory";
 
 	private static final String HISTORY_COMPONENT_RESOURCE_TYPE = "cqsm/core/components/cqsmHistory";
 
-	private static final String ENTRY_PATH = "/etc/cqsm/history/jcr:content/cqsmHistory";
+	private static final String ENTRY_PATH = "/conf/apm/history/jcr:content/cqsmHistory";
 
 	public static final String REPLICATE_ACTION = "com/cognifide/actions/cqsm/history/replicate";
 
@@ -254,7 +254,7 @@ public class HistoryImpl implements History {
 		if (historyPage == null) {
 			boolean autoCommit = true;
 			historyPage = pageManager
-				.create("/etc/cqsm", "history", "/apps/cqsm/core/templates/historyTemplate", "History",
+				.create("/conf/apm", "history", "/apps/cqsm/core/templates/historyTemplate", "History",
 					autoCommit);
 		}
 		return historyPage;
