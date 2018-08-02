@@ -19,6 +19,8 @@
  */
 package com.cognifide.cq.cqsm.core.history;
 
+import static com.cognifide.cq.cqsm.api.history.Entry.SCRIPT_HISTORY_FILE_NAME;
+
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.core.scripts.ScriptImpl;
 import java.sql.Timestamp;
@@ -39,7 +41,7 @@ public class HistoryEntryPropsFactory {
 
 	public HistoryEntryPropsFactory(Resource resource) {
 		this.resource = resource;
-		final Resource scriptResource = this.resource.getChild(HistoryHelper.SCRIPT_HISTORY_FILE_NAME);
+		final Resource scriptResource = this.resource.getChild(SCRIPT_HISTORY_FILE_NAME);
 		try {
 			this.script = scriptResource.adaptTo(ScriptImpl.class);
 		} catch (MissingElementsException exception) {
@@ -65,6 +67,6 @@ public class HistoryEntryPropsFactory {
 	}
 
 	public String getFilePath() {
-		return String.format("%s/%s", resource.getPath(), HistoryHelper.SCRIPT_HISTORY_FILE_NAME);
+		return String.format("%s/%s", resource.getPath(), SCRIPT_HISTORY_FILE_NAME);
 	}
 }

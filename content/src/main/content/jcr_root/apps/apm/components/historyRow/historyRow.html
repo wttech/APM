@@ -35,7 +35,7 @@
   <td is="coral-table-cell" value="${item.lastModified.time || 0}">
     <time class="text-uppercase text-muted" data-sly-test="${item.lastModified}"
           datetime="${item.lastModified.time || 0}">
-      ${item.lastModifiedFormatted}
+      ${'MMM dd, yyyy hh:mm:ss a' @ format=item.lastModified, locale=request.locale.language}
     </time>
   </td>
   <td is="coral-table-cell" value="${item.executor}">
@@ -44,9 +44,9 @@
   <td is="coral-table-cell" value="${item.executionTime.time || 0}">
     <sly data-sly-test="${item.executionTime && item.instanceType}">
       <img class="${item.isRunSuccessful ? 'runSuccess' : 'runError'}"/>
-      <time datetime="${item.executionTime.time || 0}">
-        ${item.lastExecutionStatus}
-      </time>
+      <span class="last-execution-status">
+        <span class="instance">${item.instanceType}</span> <time datetime="${item.executionTime.time || 0}">${'MMM dd, yyyy hh:mm:ss a' @ format=item.executionTime, locale=request.locale.language}</time>
+      </span>
       <button is="coral-button" class="execution-summary-button"
               data-sly-attribute.scriptResourcePath="${item.path}">
         <div class="icon summary">Show summary</div>
@@ -56,9 +56,9 @@
   <td is="coral-table-cell" value="${item.lastDryExecution.time || 0}">
     <sly data-sly-test="${item.lastDryExecution && item.instanceType}">
       <img class="${item.isDryRunSuccessful ? 'dryRunSuccess' : 'dryRunError'}"/>
-      <time datetime="${item.lastDryExecution.time || 0}">
-        ${item.lastDryExecutionStatus}
-      </time>
+      <span class="last-dry-execution-status">
+        <span class="instance">${item.instanceType}</span> <time datetime="${item.lastDryExecution.time || 0}">${'MMM dd, yyyy hh:mm:ss a' @ format=item.lastDryExecution, locale=request.locale.language}</time>
+      </span>
     </sly>
   </td>
 </tr>

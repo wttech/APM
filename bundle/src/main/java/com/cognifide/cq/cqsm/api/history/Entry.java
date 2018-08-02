@@ -19,10 +19,10 @@
  */
 package com.cognifide.cq.cqsm.api.history;
 
+
 import com.cognifide.cq.cqsm.api.executors.Mode;
 import com.cognifide.cq.cqsm.api.logger.ProgressEntry;
 import com.cognifide.cq.cqsm.core.history.HistoryEntryPropsFactory;
-import com.cognifide.cq.cqsm.core.history.HistoryHelper;
 import com.cognifide.cq.cqsm.core.progress.ProgressHelper;
 import com.google.common.collect.ComparisonChain;
 import java.sql.Timestamp;
@@ -36,11 +36,14 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceUtil;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Model;
 
 @Model(adaptables = Resource.class, defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
 public class Entry implements Comparable<Entry> {
+
+	public static final String SCRIPT_HISTORY_FILE_NAME = "script";
 
 	private static final String EXECUTION = "execution-result";
 
@@ -102,7 +105,8 @@ public class Entry implements Comparable<Entry> {
 	private Timestamp lastDryExecution;
 
 	public Entry(Resource resource) {
-		if (HistoryHelper.isHistoryResource(resource)) {
+		boolean isHistoryResource = resource.getChild(SCRIPT_HISTORY_FILE_NAME) != null;
+		if (isHistoryResource) {
 			final HistoryEntryPropsFactory historyEntryPropsFactory = new HistoryEntryPropsFactory(resource);
 
 			this.lastModified = historyEntryPropsFactory.getLastModificationTimestamp();
@@ -111,19 +115,6 @@ public class Entry implements Comparable<Entry> {
 			this.filePath = historyEntryPropsFactory.getFilePath();
 		}
 		this.path = resource.getPath();
-	}
-
-	public String getLastExecutionStatus() {
-		return HistoryHelper.generateHistoryPageRunDateFormat(executionTime, instanceType);
-	}
-
-	public String getLastModifiedFormatted(){
-		return HistoryHelper.generateHistoryPageDateFormat(lastModified);
-	}
-
-	public String getLastDryExecutionStatus() {
-		final String lastDryExecutionStatus = HistoryHelper.generateHistoryPageRunDateFormat(lastDryExecution, instanceType);
-		return lastDryExecutionStatus;
 	}
 
 	@Override
