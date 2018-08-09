@@ -26,7 +26,7 @@ import com.cognifide.cq.cqsm.foundation.actions.Flag;
 import java.util.List;
 
 @Mapper("deny")
-public class DenyMapper {
+public final class DenyMapper {
 
   public static final String REFERENCE = "This action is an complementary one for ALLOW action, and can be used to"
       + " add deny permission for current authorizable on specified path.";

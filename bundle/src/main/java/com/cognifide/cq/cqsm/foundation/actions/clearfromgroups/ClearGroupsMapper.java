@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,32 +17,19 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.cq.cqsm.foundation.actions.define;
+package com.cognifide.cq.cqsm.foundation.actions.clearfromgroups;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
+import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
 
-public final class DefineMapper {
+@Mapper("clear_groups")
+public final class ClearGroupsMapper {
 
-	public static final String REFERENCE = "Create definitions holding values used multiple times across CQSM script.\n"
-			+ "To access definition value ${definition_name} syntax can be used."
-			+ " Value must be specified between single quotes e.g 'my value'.";
-
-	@Mapping(
-
-			args = {"name", "value"},
-			reference = REFERENCE
-	)
-	public Action mapAction(final String name, final String value) {
-		return new Define(name, value, false);
-	}
-
-	@Mapping(
-
-			args = {"name", "value"},
-			reference = REFERENCE
-	)
-	public Action mapActionWithIfNotExists(final String name, final String value) {
-		return new Define(name, value, true);
-	}
+  @Mapping(
+      reference = "This action removes all groups from a given group."
+  )
+  public Action mapActionForClearGroups() {
+    return new ClearFromGroups(ClearFromGroupOperationTypes.ALL_CHILDREN);
+  }
 }

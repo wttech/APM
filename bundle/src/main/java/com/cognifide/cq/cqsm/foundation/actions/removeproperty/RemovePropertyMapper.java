@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,18 +20,18 @@
 package com.cognifide.cq.cqsm.foundation.actions.removeproperty;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
+import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
-import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
 
+@Mapper("remove_property")
 public final class RemovePropertyMapper {
 
-	@Mapping(
-
+  @Mapping(
       args = {"name"},
-			reference = "This is general purpose action which can be used to remove specified property."
-	)
-	public Action mapAction(final String propertyName) throws ActionCreationException {
-		return new RemoveProperty(propertyName);
-	}
+      reference = "This is general purpose action which can be used to remove specified property."
+  )
+  public Action mapAction(final String propertyName) {
+    return new RemoveProperty(propertyName);
+  }
 
 }

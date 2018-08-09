@@ -20,17 +20,17 @@
 package com.cognifide.cq.cqsm.foundation.actions.save;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
+import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
-import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
 
+@Mapper("save")
 public final class SaveMapper {
 
 	@Mapping(
-
-      reference = "Useful in addition to the SESSION-SAVE ON-DEMAND action to execute saving session.\n" +
+			reference = "Useful in addition to the SESSION_SAVE ON-DEMAND action to execute saving session.\n" +
 					"Ignored when mode other than ON-DEMAND is used."
 	)
-	public Action mapAction() throws ActionCreationException {
+	public Action mapAction() {
 		return new Save();
 	}
 

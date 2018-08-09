@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,18 +20,19 @@
 package com.cognifide.cq.cqsm.foundation.actions.check.property;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
+import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
 
+@Mapper("check_property")
 public final class CheckPropertyMapper {
 
-	public static final String REFERENCE = "Verify that a property is set to specific value for given authorizable.";
+  public static final String REFERENCE = "Verify that a property is set to specific value for given authorizable.";
 
-	@Mapping(
-
+  @Mapping(
       args = {"authorizableId", "name", "value"},
-			reference = REFERENCE
-	)
-	public Action mapAction(final String id, final String name, final String value) {
-		return new CheckProperty(id, name, value);
-	}
+      reference = REFERENCE
+  )
+  public Action mapAction(final String id, final String name, final String value) {
+    return new CheckProperty(id, name, value);
+  }
 }

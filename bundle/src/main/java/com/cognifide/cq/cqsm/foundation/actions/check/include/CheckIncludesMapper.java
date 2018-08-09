@@ -20,29 +20,29 @@
 package com.cognifide.cq.cqsm.foundation.actions.check.include;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
+import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
 import java.util.Collections;
 import java.util.List;
 
+@Mapper("check_includes")
 public final class CheckIncludesMapper {
 
-	public static final String REFERENCE = "Verify that provided group contains all listed authorizables.";
+  public static final String REFERENCE = "Verify that provided group contains all listed authorizables.";
 
-	@Mapping(
-
+  @Mapping(
       args = {"authorizableId", "groupId"},
-			reference = REFERENCE
-	)
-	public Action mapAction(final String id, final String group) {
-		return mapAction(id, Collections.singletonList(group));
-	}
+      reference = REFERENCE
+  )
+  public Action mapAction(final String id, final String group) {
+    return mapAction(id, Collections.singletonList(group));
+  }
 
-	@Mapping(
-
+  @Mapping(
       args = {"authorizableId", "groupIds"},
-			reference = REFERENCE
-	)
-	public Action mapAction(final String id, final List<String> groups) {
-		return new CheckIncludes(id, groups);
-	}
+      reference = REFERENCE
+  )
+  public Action mapAction(final String id, final List<String> groups) {
+    return new CheckIncludes(id, groups);
+  }
 }

@@ -26,7 +26,7 @@ import com.cognifide.cq.cqsm.foundation.actions.Flag;
 import java.util.List;
 
 @Mapper("allow")
-public class AllowMapper {
+public final class AllowMapper {
 
   public static final String REFERENCE = "Add allow permissions for current authorizable on specified path.";
 

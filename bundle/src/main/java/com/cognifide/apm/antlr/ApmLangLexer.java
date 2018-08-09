@@ -20,7 +20,7 @@ public class ApmLangLexer extends Lexer {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		T__0=1, ARRAY_BEGIN=2, ARRAY_END=3, BLOCK_BEGIN=4, BLOCK_END=5, DEFINE_MACRO=6,
+      T__0 = 1, ARRAY_BEGIN = 2, ARRAY_END = 3, BLOCK_BEGIN = 4, BLOCK_END = 5, DEFINE_MACRO = 6,
       EXECUTE_MACRO = 7, IMPORT_SCRIPT = 8, FOR_EACH = 9, IN = 10, DEFINE = 11, NUMBER_LITERAL = 12,
       STRING_LITERAL = 13, VARIABLE_PREFIX = 14, BOOLEAN_VALUE = 15, NULL_VALUE = 16,
       IDENTIFIER = 17, COMMENT = 18, WHITESPACE = 19, EOL = 20;
@@ -33,18 +33,18 @@ public class ApmLangLexer extends Lexer {
 	};
 
 	public static final String[] ruleNames = {
-		"T__0", "ARRAY_BEGIN", "ARRAY_END", "BLOCK_BEGIN", "BLOCK_END", "DEFINE_MACRO",
+      "T__0", "ARRAY_BEGIN", "ARRAY_END", "BLOCK_BEGIN", "BLOCK_END", "DEFINE_MACRO",
       "EXECUTE_MACRO", "IMPORT_SCRIPT", "FOR_EACH", "IN", "DEFINE", "NUMBER_LITERAL",
       "STRING_LITERAL", "VARIABLE_PREFIX", "BOOLEAN_VALUE", "NULL_VALUE", "IDENTIFIER",
       "COMMENT", "Digits", "LetterOrDigit", "Letter", "WHITESPACE", "EOL"
 	};
 
 	private static final String[] _LITERAL_NAMES = {
-		null, "','", "'['", "']'", null, null, null, null, null, null, null, null,
+      null, "','", "'['", "']'", null, null, null, null, null, null, null, null,
       null, null, "'$'"
 	};
 	private static final String[] _SYMBOLIC_NAMES = {
-		null, null, "ARRAY_BEGIN", "ARRAY_END", "BLOCK_BEGIN", "BLOCK_END", "DEFINE_MACRO",
+      null, null, "ARRAY_BEGIN", "ARRAY_END", "BLOCK_BEGIN", "BLOCK_END", "DEFINE_MACRO",
       "EXECUTE_MACRO", "IMPORT_SCRIPT", "FOR_EACH", "IN", "DEFINE", "NUMBER_LITERAL",
       "STRING_LITERAL", "VARIABLE_PREFIX", "BOOLEAN_VALUE", "NULL_VALUE", "IDENTIFIER",
       "COMMENT", "WHITESPACE", "EOL"
