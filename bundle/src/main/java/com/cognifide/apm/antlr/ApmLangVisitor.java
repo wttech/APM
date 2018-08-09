@@ -144,12 +144,10 @@ public interface ApmLangVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitMacroDefinition(ApmLangParser.MacroDefinitionContext ctx);
-
-  /**
-   * Visit a parse tree produced by {@link ApmLangParser#foreach}.
-   *
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  T visitForeach(ApmLangParser.ForeachContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ApmLangParser#foreach}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitForeach(ApmLangParser.ForeachContext ctx);
 }

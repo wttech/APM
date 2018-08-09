@@ -165,15 +165,11 @@ public class ApmLangBaseVisitor<T> extends AbstractParseTreeVisitor<T> implement
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitMacroDefinition(ApmLangParser.MacroDefinitionContext ctx) { return visitChildren(ctx); }
-
-  /**
-   * {@inheritDoc}
-   *
-   * <p>The default implementation returns the result of calling
-   * {@link #visitChildren} on {@code ctx}.</p>
-   */
-  @Override
-  public T visitForeach(ApmLangParser.ForeachContext ctx) {
-    return visitChildren(ctx);
-  }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitForeach(ApmLangParser.ForeachContext ctx) { return visitChildren(ctx); }
 }
