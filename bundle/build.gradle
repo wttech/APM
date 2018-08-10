@@ -61,7 +61,17 @@ generateGrammarSource {
     maxHeapSize = "64m"
     arguments += ["-visitor", "-long-messages"]
     arguments += ['-package', 'com.cognifide.apm.antlr']
-    outputDirectory =  project.file('src/main/java/com/cognifide/apm/antlr')
+    outputDirectory =  project.file('src/main/generated/com/cognifide/apm/antlr')
+}
+
+compileJava.dependsOn generateGrammarSource
+
+sourceSets {
+    main {
+        java {
+            srcDirs += 'src/main/generated'
+        }
+    }
 }
 
 compileJava.dependsOn generateGrammarSource

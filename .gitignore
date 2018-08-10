@@ -4,6 +4,7 @@
 *.class
 target/
 build/
+generated/
 .gradle/
 
 # Mobile Tools for Java (J2ME)
