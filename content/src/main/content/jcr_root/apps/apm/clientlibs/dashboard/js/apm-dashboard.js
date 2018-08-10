@@ -57,6 +57,7 @@
             dataType: "html",
             success: function (data) {
                 const jobId = JSON.parse(data).id;
+                const jobMessage = JSON.parse(data).message;
 
                 (function checkStatus(jobId) {
                     $.ajax({
@@ -82,10 +83,10 @@
                             } else if (dataObject.type === 'unknown') {
                                 switch(mode) {
                                     case 'DRY_RUN':
-                                        uiHelper.alert('Dry Run wasn\'t executed successfully', data.responseJSON.message, 'error');
+                                        uiHelper.alert('Dry Run wasn\'t executed successfully', jobMessage, 'error');
                                         break;
                                     case 'RUN':
-                                        uiHelper.alert('Run on author wasn\'t executed successfully', data.responseJSON.message, 'error');
+                                        uiHelper.alert('Run on author wasn\'t executed successfully', jobMessage, 'error');
                                         break;
                                 }
                             }
