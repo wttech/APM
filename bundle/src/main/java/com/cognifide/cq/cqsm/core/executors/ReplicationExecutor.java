@@ -42,8 +42,6 @@ import org.apache.sling.api.resource.observation.ResourceChangeListener;
 import org.apache.sling.event.jobs.Job;
 import org.apache.sling.event.jobs.JobManager;
 import org.apache.sling.event.jobs.consumer.JobConsumer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -59,8 +57,6 @@ import java.util.Set;
 public class ReplicationExecutor extends AbstractExecutor implements JobConsumer, ResourceChangeListener {
 
 	static final String JOB_NAME = "com/cognifide/cq/cqsm/core/executors/replication/executor";
-
-	private static final Logger LOG = LoggerFactory.getLogger(ReplicationExecutor.class);
 
 	@Reference
 	private InstanceTypeProvider instanceTypeProvider;
@@ -78,13 +74,13 @@ public class ReplicationExecutor extends AbstractExecutor implements JobConsumer
 		JobResult result = JobResult.FAILED;
 		final Script script = scriptFinder.find(searchPath, resolver);
 		if (script == null) {
-			LOG.warn("Replicated script cannot be found by script manager: {}", searchPath);
+			logger.warn("Replicated script cannot be found by script manager: {}", searchPath);
 		} else if (ExecutionMode.ON_DEMAND.equals(script.getExecutionMode()) && script.isPublishRun()) {
 			try {
 				processScript(script, resolver, "Replication");
 				result = JobResult.OK;
 			} catch (PersistenceException e) {
-				LOG.error(e.getMessage(), e);
+				logger.error(e.getMessage(), e);
 			}
 		}
 		return result;
@@ -135,10 +131,5 @@ public class ReplicationExecutor extends AbstractExecutor implements JobConsumer
 			result = changedPropertyNames.contains(JcrConstants.JCR_UUID);
 		}
 		return result;
-	}
-
-	@Override
-	Logger getLogger() {
-		return LOG;
 	}
 }

@@ -31,8 +31,6 @@ import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.framework.Constants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.List;
@@ -46,8 +44,6 @@ import static com.cognifide.cq.cqsm.core.scripts.ScriptFilters.filterOnSchedule;
 		@Property(name = "scheduler.expression", value = "0 * * * * ?")})
 public class ScheduleExecutor extends AbstractExecutor implements Runnable {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ScheduleExecutor.class);
-
 	@Override
 	public synchronized void run() {
 		SlingHelper.operateTraced(resolverFactory, this::runScheduled);
@@ -58,17 +54,12 @@ public class ScheduleExecutor extends AbstractExecutor implements Runnable {
 		if (scripts.isEmpty()) {
 			return;
 		}
-		if(LOG.isInfoEnabled()) {
-			LOG.info(String.format("Schedule executor is trying to execute script(s): %d", scripts.size()));
-			LOG.info(MessagingUtils.describeScripts(scripts));
+		if(logger.isInfoEnabled()) {
+			logger.info(String.format("Schedule executor is trying to execute script(s): %d", scripts.size()));
+			logger.info(MessagingUtils.describeScripts(scripts));
 		}
 		for (Script script : scripts) {
 			processScript(script, resolver, "Schedule");
 		}
-	}
-
-	@Override
-	Logger getLogger() {
-		return LOG;
 	}
 }

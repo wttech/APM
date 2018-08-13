@@ -33,8 +33,6 @@ import org.apache.felix.scr.annotations.Reference;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.framework.Constants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -44,8 +42,6 @@ import static com.cognifide.cq.cqsm.core.scripts.ScriptFilters.filterOnModify;
 @Properties({@Property(name = Constants.SERVICE_DESCRIPTION, value = "CQSM Script Modification Executor"),
 		@Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)})
 public class ModifyExecutor extends AbstractExecutor {
-
-	private static final Logger LOG = LoggerFactory.getLogger(ModifyExecutor.class);
 
 	/**
 	 * Reference needed for proper event hook up on activation
@@ -61,21 +57,14 @@ public class ModifyExecutor extends AbstractExecutor {
 	private void runModified(ResourceResolver resolver) throws PersistenceException {
 		final List<Script> scripts = scriptFinder.findAll(filterOnModify(resolver), resolver);
 
-		if (scripts.isEmpty()) {
-			if(LOG.isInfoEnabled()) {
-				LOG.info("Executor will try to run following scripts: {}", scripts.size());
-				LOG.info(MessagingUtils.describeScripts(scripts));
-			}
+		if (!scripts.isEmpty()) {
+			logger.info("Executor will try to run following scripts: {}", scripts.size());
+			logger.info(MessagingUtils.describeScripts(scripts));
 			for (Script script : scripts) {
 				processScript(script, resolver, "Modify");
 			}
 		} else {
-			LOG.info("Executor has not detected any changes");
+			logger.info("Executor has not detected any changes");
 		}
-	}
-
-	@Override
-	Logger getLogger() {
-		return LOG;
 	}
 }

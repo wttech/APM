@@ -33,8 +33,6 @@ import org.apache.felix.scr.annotations.Reference;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.framework.Constants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -44,8 +42,6 @@ import static com.cognifide.cq.cqsm.core.scripts.ScriptFilters.filterOnStart;
 @Properties({@Property(name = Constants.SERVICE_DESCRIPTION, value = "CQSM Startup Executor"),
 		@Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)})
 public class StartupExecutor extends AbstractExecutor {
-
-	private static final Logger LOG = LoggerFactory.getLogger(StartupExecutor.class);
 
 	/**
 	 * Reference needed for proper event hook up on activation
@@ -60,21 +56,16 @@ public class StartupExecutor extends AbstractExecutor {
 
 	private void runOnStartup(ResourceResolver resolver) throws PersistenceException {
 		final List<Script> scripts = scriptFinder.findAll(filterOnStart(resolver), resolver);
-		if (scripts.isEmpty()) {
-			if(LOG.isInfoEnabled()) {
-				LOG.info("Startup script executor is trying to execute scripts on startup: {}", scripts.size());
-				LOG.info(MessagingUtils.describeScripts(scripts));
+		if (!scripts.isEmpty()) {
+			if(logger.isInfoEnabled()) {
+				logger.info("Startup script executor is trying to execute scripts on startup: {}", scripts.size());
+				logger.info(MessagingUtils.describeScripts(scripts));
 			}
 			for (Script script : scripts) {
 				processScript(script, resolver,"Startup");
 			}
 		} else {
-			LOG.info("Startup script executor has nothing to do");
+			logger.info("Startup script executor has nothing to do");
 		}
-	}
-
-	@Override
-	Logger getLogger() {
-		return LOG;
 	}
 }

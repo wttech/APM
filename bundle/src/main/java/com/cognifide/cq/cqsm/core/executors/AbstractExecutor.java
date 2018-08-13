@@ -29,10 +29,13 @@ import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.jcr.RepositoryException;
 
 abstract class AbstractExecutor {
+
+    protected final Logger logger;
 
     @Reference
     private ScriptManager scriptManager;
@@ -43,6 +46,10 @@ abstract class AbstractExecutor {
     @Reference
     ResourceResolverFactory resolverFactory;
 
+    AbstractExecutor() {
+        logger = LoggerFactory.getLogger(this.getClass());
+    }
+
     void processScript(Script script, ResourceResolver resolver, String executorType) throws PersistenceException {
         final String scriptPath = script.getPath();
         try {
@@ -51,22 +58,18 @@ abstract class AbstractExecutor {
                 final Progress progress = scriptManager.process(script, Mode.AUTOMATIC_RUN, resolver);
                 logStatus(scriptPath, progress.isSuccess(), executorType);
             } else {
-                if(getLogger().isWarnEnabled()) {
-                    getLogger().warn(String.format("%s executor cannot execute script which is not valid: {}", executorType), scriptPath);
-                }
+                logger.warn("{} executor cannot execute script which is not valid: {}", executorType, scriptPath);
             }
         } catch (RepositoryException e) {
-            getLogger().error("Script cannot be processed because of repository error: {}", scriptPath, e);
+            logger.error("Script cannot be processed because of repository error: {}", scriptPath, e);
         }
     }
 
     private void logStatus(String scriptPath, boolean success, String executorType) {
-        if (success && getLogger().isInfoEnabled()) {
-            getLogger().info(String.format("%s script successfully executed: {}", executorType), scriptPath);
+        if (success) {
+            logger.info("{} script successfully executed: {}", executorType, scriptPath);
         } else {
-            getLogger().error(String.format("%s script cannot be executed properly: {}", executorType), scriptPath);
+            logger.error("{} script cannot be executed properly: {}", executorType, scriptPath);
         }
     }
-
-    abstract Logger getLogger();
 }
