@@ -19,15 +19,10 @@
  */
 package com.cognifide.cq.cqsm.core.executors;
 
-import com.cognifide.cq.cqsm.api.executors.Mode;
-import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.scripts.EventListener;
 import com.cognifide.cq.cqsm.api.scripts.Script;
-import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
-import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
 import com.cognifide.cq.cqsm.core.Cqsm;
 import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
-import com.cognifide.cq.cqsm.core.utils.sling.OperateCallback;
 import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper;
 
 import org.apache.felix.scr.annotations.Activate;
@@ -37,24 +32,16 @@ import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.osgi.framework.Constants;
-import org.osgi.service.component.ComponentContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
-
-import javax.jcr.RepositoryException;
 
 import static com.cognifide.cq.cqsm.core.scripts.ScriptFilters.filterOnStart;
 
 @Component(immediate = true)
 @Properties({@Property(name = Constants.SERVICE_DESCRIPTION, value = "CQSM Startup Executor"),
 		@Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)})
-public class StartupExecutor {
-
-	private static final Logger LOG = LoggerFactory.getLogger(StartupExecutor.class);
+public class StartupExecutor extends AbstractExecutor {
 
 	/**
 	 * Reference needed for proper event hook up on activation
@@ -62,60 +49,23 @@ public class StartupExecutor {
 	@Reference
 	private EventListener eventListener;
 
-	@Reference
-	private ScriptManager scriptManager;
-
-	@Reference
-	private ScriptFinder scriptFinder;
-
-	@Reference
-	private ResourceResolverFactory resolverFactory;
-
 	@Activate
-	private synchronized void activate(ComponentContext ctx) {
-		SlingHelper.operateTraced(resolverFactory, new OperateCallback() {
-			@Override
-			public void operate(ResourceResolver resolver) throws Exception {
-				runOnStartup(resolver);
-			}
-		});
+	private synchronized void activate() {
+		SlingHelper.operateTraced(resolverFactory, this::runOnStartup);
 	}
 
 	private void runOnStartup(ResourceResolver resolver) throws PersistenceException {
 		final List<Script> scripts = scriptFinder.findAll(filterOnStart(resolver), resolver);
-		if (scripts.size() > 0) {
-			LOG.info("Startup script executor is trying to execute scripts on startup: {}", scripts.size());
-			LOG.info(MessagingUtils.describeScripts(scripts));
-
+		if (!scripts.isEmpty()) {
+			if(logger.isInfoEnabled()) {
+				logger.info("Startup script executor is trying to execute scripts on startup: {}", scripts.size());
+				logger.info(MessagingUtils.describeScripts(scripts));
+			}
 			for (Script script : scripts) {
-				runScript(resolver, script);
+				processScript(script, resolver,"Startup");
 			}
 		} else {
-			LOG.info("Startup script executor has nothing to do");
-		}
-	}
-
-	private void runScript(ResourceResolver resolver, Script script) throws PersistenceException {
-		final String scriptPath = script.getPath();
-
-		try {
-			scriptManager.process(script, Mode.VALIDATION, resolver);
-			if (script.isValid()) {
-				final Progress progress = scriptManager.process(script, Mode.AUTOMATIC_RUN, resolver);
-				logStatus(scriptPath, progress.isSuccess());
-			} else {
-				LOG.warn("Startup executor cannot execute script which is not valid: {}", scriptPath);
-			}
-		} catch (RepositoryException e) {
-			LOG.error("Script cannot be processed because of repository error: {}", e);
-		}
-	}
-
-	private void logStatus(String scriptPath, boolean success) {
-		if (success) {
-			LOG.info("Script successfully executed: {}", scriptPath);
-		} else {
-			LOG.error("Script cannot be executed properly: {}", scriptPath);
+			logger.info("Startup script executor has nothing to do");
 		}
 	}
 }

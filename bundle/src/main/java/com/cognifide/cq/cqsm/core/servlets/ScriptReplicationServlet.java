@@ -97,8 +97,8 @@ public class ScriptReplicationServlet extends SlingSafeMethodsServlet {
 		} catch (PersistenceException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			ServletUtils.writeMessage(response, "error",
-					String.format("Script '%s' cannot be processed because of" + " repository error: %s",
-							scriptPath, e.getMessage()));
+					String.format("Script '%s' cannot be processed because of repository error: %s",
+																		 scriptPath, e.getMessage()));
 		} catch (ExecutionException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			ServletUtils.writeMessage(response, "error",
