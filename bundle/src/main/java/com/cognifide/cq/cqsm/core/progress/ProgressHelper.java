@@ -19,14 +19,12 @@
  */
 package com.cognifide.cq.cqsm.core.progress;
 
+import com.cognifide.cq.cqsm.api.logger.ProgressEntry;
 import com.cognifide.cq.cqsm.api.logger.Status;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
-import com.cognifide.cq.cqsm.api.logger.ProgressEntry;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -50,9 +48,7 @@ public final class ProgressHelper {
 	}
 
 	public static boolean calculateSuccess(List<ProgressEntry> entries) {
-
-		boolean success = !Iterables.any(entries, new ProgressHelper.IsErrorPredicate());
-		return success;
+		return !Iterables.any(entries, new IsErrorPredicate());
 	}
 
 	private static class IsErrorPredicate implements Predicate<ProgressEntry> {

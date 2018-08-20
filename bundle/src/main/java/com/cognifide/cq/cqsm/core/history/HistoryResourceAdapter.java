@@ -23,43 +23,38 @@ import static com.cognifide.cq.cqsm.api.history.Entry.SCRIPT_HISTORY_FILE_NAME;
 
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.core.scripts.ScriptImpl;
-import java.sql.Timestamp;
 import java.util.Date;
-import java.util.Optional;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.factory.MissingElementsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class HistoryEntryPropsFactory {
+public class HistoryResourceAdapter {
 
-	private static final Logger LOG = LoggerFactory.getLogger(HistoryEntryPropsFactory.class);
+	private static final Logger LOG = LoggerFactory.getLogger(HistoryResourceAdapter.class);
 
 	private Resource resource;
 
 	private Script script;
 
-	public HistoryEntryPropsFactory(Resource resource) {
+	public HistoryResourceAdapter(Resource resource) {
 		this.resource = resource;
 		final Resource scriptResource = this.resource.getChild(SCRIPT_HISTORY_FILE_NAME);
 		try {
 			this.script = scriptResource.adaptTo(ScriptImpl.class);
 		} catch (MissingElementsException exception) {
-			LOG.error("HISTORY_PROP_FACT_NO_SCRIPT",
+			LOG.error("HISTORY_RES_ADAPT_NO_SCRIPT",
 				String.format("Can't find script for resource: %s", resource.getPath()));
 			throw exception;
 		}
 	}
 
-	public Timestamp getLastModificationTimestamp() {
-		return new Timestamp(script.getLastModified().getTime());
+	public Date getLastModification() {
+		return script.getLastModified();
 	}
 
-	public Timestamp getLastDryRunTimestamp() {
-		final Optional<Date> lastDryExecutionDate = Optional.ofNullable(script.getDryRunLast());
-
-		final Timestamp lastDryRunTimestamp = lastDryExecutionDate.map(date -> new Timestamp(date.getTime())).orElse(null);
-		return lastDryRunTimestamp;
+	public Date getLastDryRun() {
+		return script.getDryRunLast();
 	}
 
 	public Boolean isLastDryRunSuccessful() {

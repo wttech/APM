@@ -55,13 +55,13 @@
           <td is="coral-table-cell">${execution.parameters}</td>
           <td is="coral-table-cell">
             <sly data-sly-test="${execution.status == 'ERROR'}">
-              <img class="runError"/>
+              <img class="run-error"/>
             </sly>
             <sly data-sly-test="${execution.status == 'WARNING'}">
-              <img class="runWarning"/>
+              <img class="run-warning"/>
             </sly>
             <sly data-sly-test="${execution.status == 'SUCCESS'}">
-              <img class="runSuccess"/>
+              <img class="run-success"/>
             </sly>
           </td>
           <td is="coral-table-cell">

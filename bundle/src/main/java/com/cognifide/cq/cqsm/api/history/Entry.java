@@ -22,10 +22,9 @@ package com.cognifide.cq.cqsm.api.history;
 
 import com.cognifide.cq.cqsm.api.executors.Mode;
 import com.cognifide.cq.cqsm.api.logger.ProgressEntry;
-import com.cognifide.cq.cqsm.core.history.HistoryEntryPropsFactory;
+import com.cognifide.cq.cqsm.core.history.HistoryResourceAdapter;
 import com.cognifide.cq.cqsm.core.progress.ProgressHelper;
 import com.google.common.collect.ComparisonChain;
-import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -36,7 +35,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceUtil;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Model;
 
@@ -93,7 +91,7 @@ public class Entry implements Comparable<Entry> {
 	private String filePath;
 
 	@Getter
-	private Timestamp lastModified;
+	private Date lastModified;
 
 	@Getter
 	private Boolean isRunSuccessful;
@@ -102,19 +100,11 @@ public class Entry implements Comparable<Entry> {
 	private Boolean isDryRunSuccessful;
 
 	@Getter
-	private Timestamp lastDryExecution;
+	private Date lastDryExecution;
 
 	public Entry(Resource resource) {
-		boolean isHistoryResource = resource.getChild(SCRIPT_HISTORY_FILE_NAME) != null;
-		if (isHistoryResource) {
-			final HistoryEntryPropsFactory historyEntryPropsFactory = new HistoryEntryPropsFactory(resource);
-
-			this.lastModified = historyEntryPropsFactory.getLastModificationTimestamp();
-			this.lastDryExecution = historyEntryPropsFactory.getLastDryRunTimestamp();
-			this.isDryRunSuccessful = historyEntryPropsFactory.isLastDryRunSuccessful();
-			this.filePath = historyEntryPropsFactory.getFilePath();
-		}
 		this.path = resource.getPath();
+		processHistoryData(resource);
 	}
 
 	@Override
@@ -140,6 +130,18 @@ public class Entry implements Comparable<Entry> {
 	private String getExecutorValue() {
 		Mode modeType = Mode.fromString(mode, Mode.DRY_RUN);
 		return StringUtils.isNotBlank(executor) ? executor : modeType.getName();
+	}
+
+	private void processHistoryData(Resource resource) {
+		boolean isHistoryResource = resource.getChild(SCRIPT_HISTORY_FILE_NAME) != null;
+		if (isHistoryResource) {
+			final HistoryResourceAdapter historyResourceAdapter = new HistoryResourceAdapter(resource);
+
+			this.lastModified = historyResourceAdapter.getLastModification();
+			this.lastDryExecution = historyResourceAdapter.getLastDryRun();
+			this.isDryRunSuccessful = historyResourceAdapter.isLastDryRunSuccessful();
+			this.filePath = historyResourceAdapter.getFilePath();
+		}
 	}
 
 	@PostConstruct
