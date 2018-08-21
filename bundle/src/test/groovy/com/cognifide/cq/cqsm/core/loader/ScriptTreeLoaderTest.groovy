@@ -20,7 +20,33 @@
 
 package com.cognifide.cq.cqsm.core.loader
 
+import com.cognifide.cq.cqsm.api.scripts.Script
+import com.cognifide.cq.cqsm.core.antlr.InvalidSyntaxException
+import com.cognifide.cq.cqsm.core.antlr.InvalidSyntaxMessageFactory
+import org.apache.commons.io.IOUtils
 import spock.lang.Specification
+import spock.lang.Unroll
 
 class ScriptTreeLoaderTest extends Specification {
+
+    @Unroll
+    def "run script #file"(String file, String output) {
+        given:
+        def script = Mock(Script)
+        script.data >> IOUtils.toString(getClass().getResourceAsStream(file))
+        script.path >> file
+        def loader = new ScriptTreeLoader(null, null)
+
+        when:
+        loader.loadScriptTree(script)
+
+        then:
+        def e = thrown(InvalidSyntaxException)
+        InvalidSyntaxMessageFactory.detailedSyntaxError(e) == output
+
+        where:
+        file            | output
+        "/invalid1.apm" | "Invalid line: DEFINE \$ nana\nInvalid sequence: \$"
+        "/invalid2.apm" | "Invalid line: DEFINE / nana\nInvalid sequence: /"
+    }
 }
