@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,8 +19,6 @@
  */
 package com.cognifide.cq.cqsm.core.scripts;
 
-import com.google.common.collect.Lists;
-
 import com.cognifide.cq.cqsm.api.executors.Mode;
 import com.cognifide.cq.cqsm.api.scripts.Event;
 import com.cognifide.cq.cqsm.api.scripts.Script;
@@ -29,7 +27,18 @@ import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
 import com.cognifide.cq.cqsm.api.scripts.ScriptStorage;
 import com.cognifide.cq.cqsm.core.Cqsm;
 import com.day.cq.commons.jcr.JcrConstants;
-
+import com.google.common.collect.Lists;
+import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
+import javax.jcr.Binary;
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.jcr.ValueFactory;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Properties;
@@ -45,23 +54,10 @@ import org.osgi.framework.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
-
-import javax.jcr.Binary;
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.ValueFactory;
-
 @Component
 @Service
 @Properties({@Property(name = Constants.SERVICE_DESCRIPTION, value = "Storage accessor for scripts"),
-		@Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)})
+	@Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)})
 
 public class ScriptStorageImpl implements ScriptStorage {
 
@@ -90,7 +86,7 @@ public class ScriptStorageImpl implements ScriptStorage {
 
 	@Override
 	public Script save(String fileName, InputStream input, boolean overwrite, ResourceResolver resolver)
-			throws RepositoryException, PersistenceException {
+		throws RepositoryException, PersistenceException {
 		final Script script = saveScript(resolver, fileName, input, overwrite);
 		scriptManager.process(script, Mode.VALIDATION, resolver);
 		scriptManager.getEventManager().trigger(Event.AFTER_SAVE, script);
@@ -104,7 +100,7 @@ public class ScriptStorageImpl implements ScriptStorage {
 
 	@Override
 	public List<Script> saveAll(Map<String, InputStream> files, boolean overwrite, ResourceResolver resolver)
-			throws RepositoryException, PersistenceException {
+		throws RepositoryException, PersistenceException {
 		final List<Script> scripts = Lists.newArrayList();
 		for (Map.Entry<String, InputStream> entry : files.entrySet()) {
 			scripts.add(saveScript(resolver, entry.getKey(), entry.getValue(), overwrite));
@@ -117,7 +113,7 @@ public class ScriptStorageImpl implements ScriptStorage {
 	}
 
 	private Script saveScript(ResourceResolver resolver, final String fileName, final InputStream input,
-			final boolean overwrite) {
+		final boolean overwrite) {
 		Script result = null;
 		final Session session = resolver.adaptTo(Session.class);
 		final ValueFactory valueFactory;
@@ -137,6 +133,9 @@ public class ScriptStorageImpl implements ScriptStorage {
 
 			contentNode.setProperty(JcrConstants.JCR_DATA, binary);
 			contentNode.setProperty(JcrConstants.JCR_ENCODING, SCRIPT_ENCODING.name());
+			removeProp(contentNode, ScriptContent.CQSM_DRY_RUN_LAST);
+			removeProp(contentNode, ScriptContent.CQSM_DRY_RUN_SUCCESSFUL);
+			removeProp(contentNode, ScriptContent.CQSM_EXECUTION_LAST);
 			JcrUtils.setLastModified(contentNode, Calendar.getInstance());
 			session.save();
 			result = scriptFinder.find(fileNode.getPath(), resolver);
@@ -144,6 +143,12 @@ public class ScriptStorageImpl implements ScriptStorage {
 			LOG.error(e.getMessage(), e);
 		}
 		return result;
+	}
+
+	private void removeProp(Node contentNode, String propName) throws RepositoryException {
+		if (contentNode.hasProperty(propName)) {
+			contentNode.getProperty(propName).remove();
+		}
 	}
 
 	private String generateFileName(String fileName, Node saveNode) throws RepositoryException {
