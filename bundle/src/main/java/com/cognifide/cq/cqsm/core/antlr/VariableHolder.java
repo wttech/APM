@@ -27,12 +27,13 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class VariableHolder {
 
-  private final Deque<Map<String, ApmType>> contexts = new ArrayDeque<>();
+  private final Deque<Context> contexts = new ArrayDeque<>();
 
   public static VariableHolder empty() {
     VariableHolder variableHolder = new VariableHolder();
@@ -45,18 +46,49 @@ public class VariableHolder {
   }
 
   public ApmType get(String name) {
-    return contexts.stream()
-        .filter(context -> context.containsKey(name))
-        .findFirst()
-        .map(context -> context.get(name))
-        .orElse(new ApmNull());
+    for (Context context : contexts) {
+      if (context.containsKey(name)) {
+        return context.get(name);
+      }
+      if (context.isIsolated()) {
+        break;
+      }
+    }
+    return new ApmNull();
+  }
+
+  public void createIsolatedLocalContext() {
+    contexts.push(new Context(true));
   }
 
   public void createLocalContext() {
-    contexts.push(new HashMap<>());
+    contexts.push(new Context(false));
   }
 
   public void removeLocalContext() {
     contexts.pop();
+  }
+
+  @AllArgsConstructor(access = AccessLevel.PRIVATE)
+  private static class Context {
+
+    private final Map<String, ApmType> variables = new HashMap<>();
+    private final boolean isolated;
+
+    public boolean containsKey(Object key) {
+      return variables.containsKey(key);
+    }
+
+    public ApmType get(Object key) {
+      return variables.get(key);
+    }
+
+    public ApmType put(String key, ApmType value) {
+      return variables.put(key, value);
+    }
+
+    public boolean isIsolated() {
+      return isolated;
+    }
   }
 }

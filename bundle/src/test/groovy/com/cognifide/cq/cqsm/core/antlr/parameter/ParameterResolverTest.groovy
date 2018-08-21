@@ -30,21 +30,44 @@ import spock.lang.Specification
 
 class ParameterResolverTest extends Specification {
 
-    def "resolve parameters from new context"() {
+    def "resolve parameters from isolated local context"() {
         given:
         def variableHolder = VariableHolder.empty()
-        variableHolder.put("var1", new ApmString("val1"))
+        variableHolder.put("var1", new ApmString("val1")) // this is not accessible
+        variableHolder.createIsolatedLocalContext()
+        variableHolder.put("var2", new ApmString("val2"))
         variableHolder.createLocalContext()
-        variableHolder.put("var1", new ApmString("val3"))
+        variableHolder.put("var2", new ApmString("val3"))
+
         def parameterResolver = new ParameterResolver(variableHolder)
-        def parser = ApmLangParserHelper.createParserUsingScript("GENERIC \$var1 'val2'")
+        def parser = ApmLangParserHelper.createParserUsingScript("GENERIC \$var1 \$var2")
 
         when:
         def result = new ParameterVisitor(parameterResolver).visit(parser.apm())
 
         then:
-        result[0].getString() == "val3"
-        result[1].getString() == "val2"
+        result[0].getString() == null
+        result[1].getString() == "val3"
+    }
+
+    def "resolve parameters from local context"() {
+        given:
+        def variableHolder = VariableHolder.empty()
+        variableHolder.put("var1", new ApmString("val1"))
+        variableHolder.createLocalContext()
+        variableHolder.put("var2", new ApmString("val2"))
+        variableHolder.createLocalContext()
+        variableHolder.put("var2", new ApmString("val3"))
+
+        def parameterResolver = new ParameterResolver(variableHolder)
+        def parser = ApmLangParserHelper.createParserUsingScript("GENERIC \$var1 \$var2")
+
+        when:
+        def result = new ParameterVisitor(parameterResolver).visit(parser.apm())
+
+        then:
+        result[0].getString() == "val1"
+        result[1].getString() == "val3"
     }
 
     def "resolve boolean parameters"() {
