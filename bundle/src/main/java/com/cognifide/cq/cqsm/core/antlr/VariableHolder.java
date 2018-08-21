@@ -26,13 +26,13 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class VariableHolder {
 
   private final Deque<Map<String, ApmType>> contexts = new ArrayDeque<>();
-
-  private VariableHolder() {
-  }
 
   public static VariableHolder empty() {
     VariableHolder variableHolder = new VariableHolder();
@@ -45,13 +45,11 @@ public class VariableHolder {
   }
 
   public ApmType get(String name) {
-    ApmType value = new ApmNull();
-    for (Map<String, ApmType> context : contexts) {
-      if (context.containsKey(name)) {
-        value = context.get(name);
-      }
-    }
-    return value;
+    return contexts.stream()
+        .filter(context -> context.containsKey(name))
+        .findFirst()
+        .map(context -> context.get(name))
+        .orElse(new ApmNull());
   }
 
   public void createLocalContext() {

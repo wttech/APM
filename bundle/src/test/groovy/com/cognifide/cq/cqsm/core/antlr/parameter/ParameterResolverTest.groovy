@@ -30,6 +30,23 @@ import spock.lang.Specification
 
 class ParameterResolverTest extends Specification {
 
+    def "resolve parameters from new context"() {
+        given:
+        def variableHolder = VariableHolder.empty()
+        variableHolder.put("var1", new ApmString("val1"))
+        variableHolder.createLocalContext()
+        variableHolder.put("var1", new ApmString("val3"))
+        def parameterResolver = new ParameterResolver(variableHolder)
+        def parser = ApmLangParserHelper.createParserUsingScript("GENERIC \$var1 'val2'")
+
+        when:
+        def result = new ParameterVisitor(parameterResolver).visit(parser.apm())
+
+        then:
+        result[0].getString() == "val3"
+        result[1].getString() == "val2"
+    }
+
     def "resolve boolean parameters"() {
         given:
         def variableHolder = VariableHolder.empty()
