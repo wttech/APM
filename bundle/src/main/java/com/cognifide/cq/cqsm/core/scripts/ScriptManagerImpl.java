@@ -47,11 +47,11 @@ import com.cognifide.cq.cqsm.core.macro.MacroRegistrar;
 import com.cognifide.cq.cqsm.core.progress.ProgressImpl;
 import com.cognifide.cq.cqsm.core.sessions.SessionSavingMode;
 import com.cognifide.cq.cqsm.core.sessions.SessionSavingPolicy;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -202,7 +202,7 @@ public class ScriptManagerImpl implements ScriptManager {
   @Override
   public Map<String, String> getPredefinedDefinitions() {
     if (predefinedDefinitions == null) {
-      predefinedDefinitions = Collections.synchronizedMap(new TreeMap<String, String>());
+      predefinedDefinitions = Collections.synchronizedMap(new TreeMap<>());
       eventManager.trigger(Event.INIT_DEFINITIONS);
     }
     return predefinedDefinitions;
@@ -214,13 +214,10 @@ public class ScriptManagerImpl implements ScriptManager {
   }
 
   @Override
-  public List<Script> findIncludes(Script script, ResourceResolver resolver) throws ExecutionException {
-    final List<Script> includes = new ArrayList<>();
-
+  public List<Script> findIncludes(Script script, ResourceResolver resolver) {
     ScriptTreeLoader scriptTreeLoader = new ScriptTreeLoader(resolver, scriptFinder);
     ScriptTree scriptTree = scriptTreeLoader.loadScriptTree(script);
-
-    return includes;
+    return Lists.newArrayList(scriptTree.getIncludedScripts());
   }
 
   private ActionExecutor createExecutor(Mode mode, ResourceResolver resolver) throws RepositoryException {

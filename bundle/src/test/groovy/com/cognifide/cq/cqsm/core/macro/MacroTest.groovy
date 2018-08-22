@@ -21,6 +21,7 @@
 package com.cognifide.cq.cqsm.core.macro
 
 import com.cognifide.cq.cqsm.ApmLangParserHelper
+import com.cognifide.cq.cqsm.api.scripts.Script
 import spock.lang.Specification
 
 class MacroTest extends Specification {
@@ -28,10 +29,12 @@ class MacroTest extends Specification {
     def "registers macros"() {
         given:
         def parser = ApmLangParserHelper.createParserUsingFile("/macros.apm")
+        def script = Mock(Script)
+        script.apm >> parser.apm()
         def macroRegistrar = new MacroRegistrar()
 
         when:
-        def result = macroRegistrar.findMacroDefinitions(new MacroRegister(), parser.apm())
+        def result = macroRegistrar.findMacroDefinitions(new MacroRegister(), script)
 
         then:
         result.get("macro1") != null

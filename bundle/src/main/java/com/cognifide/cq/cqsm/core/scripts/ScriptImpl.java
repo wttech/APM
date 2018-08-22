@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,115 +19,119 @@
  */
 package com.cognifide.cq.cqsm.core.scripts;
 
+import com.cognifide.apm.antlr.ApmLangParser.ApmContext;
 import com.cognifide.cq.cqsm.api.scripts.ExecutionMode;
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.day.cq.commons.jcr.JcrConstants;
-
+import java.util.Date;
+import javax.inject.Inject;
+import javax.inject.Named;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.Optional;
 
-import java.util.Date;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-
 @Model(adaptables = Resource.class)
 public class ScriptImpl implements Script {
 
-	private final String path;
+  private final String path;
 
-	@Inject
-	@Named(JcrConstants.JCR_CONTENT)
-	private ScriptContent scriptContent;
+  @Inject
+  @Named(JcrConstants.JCR_CONTENT)
+  private ScriptContent scriptContent;
 
-	@Inject
-	@Named(JcrConstants.JCR_CREATED_BY)
-	@Optional
-	private String author;
+  @Inject
+  @Named(JcrConstants.JCR_CREATED_BY)
+  @Optional
+  private String author;
 
-	protected final Checksum checksum;
+  @Getter
+  @Setter
+  private ApmContext apm;
 
-	public ScriptImpl(Resource resource) {
-		this.checksum = new Checksum(resource.getName());
-		this.path = resource.getPath();
-	}
+  protected final Checksum checksum;
 
-	@Override
-	public boolean isDryRunExecuted() {
-		return scriptContent.getDryRunSuccessful() != null;
-	}
+  public ScriptImpl(Resource resource) {
+    this.checksum = new Checksum(resource.getName());
+    this.path = resource.getPath();
+  }
 
-	@Override
-	public boolean isDryRunSuccessful() {
-		return BooleanUtils.toBoolean(scriptContent.getDryRunSuccessful());
-	}
+  @Override
+  public boolean isDryRunExecuted() {
+    return scriptContent.getDryRunSuccessful() != null;
+  }
 
-	@Override
-	public boolean isValid() {
-		return BooleanUtils.toBoolean(scriptContent.getVerified());
-	}
+  @Override
+  public boolean isDryRunSuccessful() {
+    return BooleanUtils.toBoolean(scriptContent.getDryRunSuccessful());
+  }
 
-	@Override
-	public ExecutionMode getExecutionMode() {
-		return (scriptContent.getExecutionMode() == null) ?
-				ExecutionMode.ON_DEMAND :
-				ExecutionMode.valueOf(scriptContent.getExecutionMode());
-	}
+  @Override
+  public boolean isValid() {
+    return BooleanUtils.toBoolean(scriptContent.getVerified());
+  }
 
-	@Override
-	public Date getExecutionSchedule() {
-		return scriptContent.getExecutionSchedule();
-	}
+  @Override
+  public ExecutionMode getExecutionMode() {
+    return (scriptContent.getExecutionMode() == null) ?
+        ExecutionMode.ON_DEMAND :
+        ExecutionMode.valueOf(scriptContent.getExecutionMode());
+  }
 
-	@Override
-	public boolean isExecutionEnabled() {
-		return BooleanUtils.isNotFalse(scriptContent.getExecutionEnabled());
-	}
+  @Override
+  public Date getExecutionSchedule() {
+    return scriptContent.getExecutionSchedule();
+  }
 
-	@Override
-	public Date getExecutionLast() {
-		return scriptContent.getExecutionLast();
-	}
+  @Override
+  public boolean isExecutionEnabled() {
+    return BooleanUtils.isNotFalse(scriptContent.getExecutionEnabled());
+  }
 
-	@Override
-	public boolean isPublishRun() {
-		return BooleanUtils.toBoolean(scriptContent.getPublishRun());
-	}
+  @Override
+  public Date getExecutionLast() {
+    return scriptContent.getExecutionLast();
+  }
 
-	@Override
-	public boolean isContentModified(ResourceResolver resolver) {
-		Resource resource = resolver.getResource(getPath());
-		final String currentChecksum = checksum.calculate(resource);
-		final String oldChecksum = checksum.load(resolver);
+  @Override
+  public boolean isPublishRun() {
+    return BooleanUtils.toBoolean(scriptContent.getPublishRun());
+  }
 
-		return oldChecksum == null || !currentChecksum.equals(oldChecksum);
-	}
+  @Override
+  public boolean isContentModified(ResourceResolver resolver) {
+    Resource resource = resolver.getResource(getPath());
+    final String currentChecksum = checksum.calculate(resource);
+    final String oldChecksum = checksum.load(resolver);
 
-	@Override
-	public String getPath() {
-		return path;
-	}
+    return oldChecksum == null || !currentChecksum.equals(oldChecksum);
+  }
 
-	@Override
-	public Checksum getChecksum() {
-		return checksum;
-	}
+  @Override
+  public String getPath() {
+    return path;
+  }
 
-	@Override
-	public String getAuthor() {
-		return author;
-	}
+  @Override
+  public Checksum getChecksum() {
+    return checksum;
+  }
 
-	@Override
-	public Date getLastModified() {
-		return scriptContent.getLastModified();
-	}
+  @Override
+  public String getAuthor() {
+    return author;
+  }
 
-	@Override
-	public String getData() {
-		return scriptContent.getData();
-	}
+  @Override
+  public Date getLastModified() {
+    return scriptContent.getLastModified();
+  }
+
+  @Override
+  public String getData() {
+    return scriptContent.getData();
+  }
 }

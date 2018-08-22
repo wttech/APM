@@ -19,7 +19,7 @@
  */
 package com.cognifide.cq.cqsm.api.exceptions;
 
-public class ExecutionException extends Exception {
+public class ExecutionException extends RuntimeException {
 
 	private static final long serialVersionUID = -6238146921748809870L;
 
