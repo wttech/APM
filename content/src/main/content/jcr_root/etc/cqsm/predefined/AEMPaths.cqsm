@@ -1,0 +1,31 @@
+# Modules
+DEFINE Websites               '/libs/wcm/core/content/siteadmin'
+DEFINE DigitalAssets          '/libs/wcm/core/content/damadmin'
+DEFINE Communities            '/libs/collab/core/content/admin'
+DEFINE Campaigns              '/libs/mcm/content/admin'
+DEFINE Inbox                  '/libs/cq/workflow/content/inbox'
+DEFINE Users                  '/libs/cq/security/content/admin'
+DEFINE Tools                  '/libs/wcm/core/content/misc'
+DEFINE Tagging                '/libs/cq/tagging/content/tagadmin'
+
+# Resources
+DEFINE CloudServices          '/libs/cq/core/content/welcome/resources/cloudservices'
+DEFINE Workflows              '/libs/cq/core/content/welcome/resources/workflows'
+DEFINE TaskManagement         '/libs/cq/core/content/welcome/resources/taskmanager'
+DEFINE Replication            '/libs/cq/core/content/welcome/resources/replication'
+DEFINE Reports                '/libs/cq/core/content/welcome/resources/reports'
+DEFINE Publications           '/libs/cq/core/content/welcome/resources/publishingadmin'
+DEFINE Manuscripts            '/libs/cq/core/content/welcome/resources/manuscriptsadmin'
+
+# Docs
+DEFINE Documentation          '/libs/cq/core/content/welcome/docs/docs'
+DEFINE DeveloperResources     '/libs/cq/core/content/welcome/docs/dev'
+
+# Features
+DEFINE CRXDELite              '/libs/cq/core/content/welcome/features/crxde'
+DEFINE Packages               '/libs/cq/core/content/welcome/features/packages'
+DEFINE PackageShare           '/libs/cq/core/content/welcome/features/share'
+DEFINE Clustering             '/libs/cq/core/content/welcome/features/cluster'
+DEFINE Backup                 '/libs/cq/core/content/welcome/features/backup'
+DEFINE OSGiConsole            '/libs/cq/core/content/welcome/features/config'
+DEFINE OSGiConsoleStatusDump  '/libs/cq/core/content/welcome/features/statusdump'

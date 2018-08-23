@@ -88,6 +88,8 @@ public class ScriptRunner {
       String variableName = ctx.IDENTIFIER().toString();
       ApmType variableValue = parameterResolver.resolve(ctx.parameter());
       variableHolder.put(variableName, variableValue);
+      info("define",
+          format("Defined variable: %s = %s", variableName, variableValue.toString()));
       return null;
     }
 
