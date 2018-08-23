@@ -22,7 +22,6 @@ package com.cognifide.cq.cqsm.core.servlets;
 
 import com.adobe.granite.ui.components.ds.DataSource;
 import com.adobe.granite.ui.components.ds.SimpleDataSource;
-import com.cognifide.cq.cqsm.core.Cqsm;
 import com.cognifide.cq.cqsm.core.Property;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +40,7 @@ import org.osgi.service.component.annotations.Component;
         Property.RESOURCE_TYPE + "apm/scripts",
         Property.METHOD + "GET",
         Property.DESCRIPTION + "APM Scripts Data Source Servlet",
-        Property.VENDOR + Cqsm.VENDOR_NAME
+        Property.VENDOR
     }
 )
 public class ScriptsDatasourceServlet extends SlingSafeMethodsServlet {

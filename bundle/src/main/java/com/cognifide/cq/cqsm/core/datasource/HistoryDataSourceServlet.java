@@ -22,7 +22,6 @@ package com.cognifide.cq.cqsm.core.datasource;
 import com.adobe.granite.ui.components.ds.DataSource;
 import com.adobe.granite.ui.components.ds.SimpleDataSource;
 import com.cognifide.cq.cqsm.api.history.History;
-import com.cognifide.cq.cqsm.core.Cqsm;
 import com.cognifide.cq.cqsm.core.Property;
 import javax.servlet.Servlet;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -37,7 +36,7 @@ import org.osgi.service.component.annotations.Reference;
 		property = {
 				Property.RESOURCE_TYPE + "apm/datasource/history",
 				Property.DESCRIPTION + "Provides data source for history page",
-				Property.VENDOR + Cqsm.VENDOR_NAME
+				Property.VENDOR
 		}
 )
 public class HistoryDataSourceServlet extends SlingSafeMethodsServlet {
