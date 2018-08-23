@@ -35,7 +35,7 @@
                 $.ajax({
                     type: "GET",
                     url: "/apps/apm/summary/jcr:content/summary.html"
-                    + scriptPath,
+                        + scriptPath,
                     dataType: "html",
                     success: function (data) {
 
@@ -43,7 +43,8 @@
                             self.summaryDialog.remove();
                         }
                         self.summaryDialog = $.parseHTML($.trim(data))[0]; // trick to remove problematic spaces created by sightly tags
-                        self.summaryDialog.on("coral-overlay:close", function () {
+                        self.summaryDialog.on("coral-overlay:close",
+                            function () {
                                 this.remove();
                             });
                         self.$rootElement.append(self.summaryDialog);

@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,8 +18,6 @@
  * =========================LICENSE_END==================================
  */
 package com.cognifide.cq.cqsm.core.scripts;
-
-import com.google.common.collect.Maps;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
@@ -46,8 +44,22 @@ import com.cognifide.cq.cqsm.core.actions.executor.ActionExecutor;
 import com.cognifide.cq.cqsm.core.progress.ProgressImpl;
 import com.cognifide.cq.cqsm.core.sessions.SessionSavingMode;
 import com.cognifide.cq.cqsm.core.sessions.SessionSavingPolicy;
-
+import com.google.common.collect.Maps;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.felix.scr.annotations.Component;
@@ -61,22 +73,6 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.framework.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
 
 @Component
 @Service
@@ -175,7 +171,7 @@ public class ScriptManagerImpl implements ScriptManager {
 			modifiableScript.setValid(success);
 		}
 
-		if (Mode.DRY_RUN.equals(mode)){
+		if (Mode.DRY_RUN.equals(mode)) {
 			modifiableScript.setDryRunExecution(new Date());
 		}
 	}

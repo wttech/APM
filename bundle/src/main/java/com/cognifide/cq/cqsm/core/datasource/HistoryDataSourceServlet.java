@@ -21,8 +21,8 @@ package com.cognifide.cq.cqsm.core.datasource;
 
 import com.adobe.granite.ui.components.ds.DataSource;
 import com.adobe.granite.ui.components.ds.SimpleDataSource;
-import com.cognifide.cq.cqsm.core.history.History;
 import com.cognifide.cq.cqsm.core.Cqsm;
+import com.cognifide.cq.cqsm.core.history.History;
 import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.util.List;
@@ -54,7 +54,7 @@ public class HistoryDataSourceServlet extends SlingSafeMethodsServlet {
 		final List<Resource> allHistoryResources = Lists.newArrayList();
 
 		final List<Resource> allRawHistoryResources = history.findAllResource(request.getResourceResolver());
-		for (Resource rawHistoryResource:allRawHistoryResources) {
+		for (Resource rawHistoryResource : allRawHistoryResources) {
 			allHistoryResources.add(new ResourceTypeWrapper(rawHistoryResource));
 		}
 		DataSource dataSource = new SimpleDataSource(allHistoryResources.iterator());
@@ -63,7 +63,7 @@ public class HistoryDataSourceServlet extends SlingSafeMethodsServlet {
 
 	private class ResourceTypeWrapper extends ResourceWrapper {
 
-		ResourceTypeWrapper(Resource resource){
+		ResourceTypeWrapper(Resource resource) {
 			super(resource);
 		}
 

@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
 @Component
 @Service
 @Properties({@Property(name = Constants.SERVICE_DESCRIPTION, value = "Storage accessor for scripts"),
-	@Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)})
+		@Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)})
 
 public class ScriptStorageImpl implements ScriptStorage {
 
@@ -86,7 +86,7 @@ public class ScriptStorageImpl implements ScriptStorage {
 
 	@Override
 	public Script save(String fileName, InputStream input, boolean overwrite, ResourceResolver resolver)
-		throws RepositoryException, PersistenceException {
+			throws RepositoryException, PersistenceException {
 		final Script script = saveScript(resolver, fileName, input, overwrite);
 		scriptManager.process(script, Mode.VALIDATION, resolver);
 		scriptManager.getEventManager().trigger(Event.AFTER_SAVE, script);
@@ -100,7 +100,7 @@ public class ScriptStorageImpl implements ScriptStorage {
 
 	@Override
 	public List<Script> saveAll(Map<String, InputStream> files, boolean overwrite, ResourceResolver resolver)
-		throws RepositoryException, PersistenceException {
+			throws RepositoryException, PersistenceException {
 		final List<Script> scripts = Lists.newArrayList();
 		for (Map.Entry<String, InputStream> entry : files.entrySet()) {
 			scripts.add(saveScript(resolver, entry.getKey(), entry.getValue(), overwrite));
@@ -113,7 +113,7 @@ public class ScriptStorageImpl implements ScriptStorage {
 	}
 
 	private Script saveScript(ResourceResolver resolver, final String fileName, final InputStream input,
-		final boolean overwrite) {
+			final boolean overwrite) {
 		Script result = null;
 		final Session session = resolver.adaptTo(Session.class);
 		final ValueFactory valueFactory;

@@ -26,12 +26,8 @@ import com.cognifide.cq.cqsm.core.scripts.ScriptImpl;
 import java.util.Date;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.factory.MissingElementsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class HistoryResourceAdapter {
-
-	private static final Logger LOG = LoggerFactory.getLogger(HistoryResourceAdapter.class);
 
 	private Resource resource;
 
@@ -40,13 +36,7 @@ public class HistoryResourceAdapter {
 	public HistoryResourceAdapter(Resource resource) {
 		this.resource = resource;
 		final Resource scriptResource = this.resource.getChild(SCRIPT_HISTORY_FILE_NAME);
-		try {
-			this.script = scriptResource.adaptTo(ScriptImpl.class);
-		} catch (MissingElementsException exception) {
-			LOG.error("HISTORY_RES_ADAPT_NO_SCRIPT",
-				String.format("Can't find script for resource: %s", resource.getPath()));
-			throw exception;
-		}
+		this.script = scriptResource.adaptTo(ScriptImpl.class);
 	}
 
 	public Date getLastModification() {
