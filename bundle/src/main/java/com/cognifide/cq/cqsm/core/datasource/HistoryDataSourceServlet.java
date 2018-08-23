@@ -21,44 +21,32 @@ package com.cognifide.cq.cqsm.core.datasource;
 
 import com.adobe.granite.ui.components.ds.DataSource;
 import com.adobe.granite.ui.components.ds.SimpleDataSource;
-import com.adobe.granite.ui.components.ds.ValueMapResource;
-import com.cognifide.cq.cqsm.api.history.Entry;
 import com.cognifide.cq.cqsm.api.history.History;
 import com.cognifide.cq.cqsm.core.Cqsm;
-import com.google.common.collect.Maps;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import javax.servlet.ServletException;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
-import org.apache.felix.scr.annotations.sling.SlingServlet;
+import com.cognifide.cq.cqsm.core.Property;
+import javax.servlet.Servlet;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
-import org.apache.sling.api.resource.ModifiableValueMap;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.SyntheticResource;
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
-import org.apache.sling.api.wrappers.ValueMapDecorator;
-import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
-@SlingServlet(resourceTypes = "apm/datasource/history")
-@Service
-@Properties({@Property(name = Constants.SERVICE_DESCRIPTION, value = "Provides data source for history page"),
-	@Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)})
+@Component(
+		immediate = true,
+		service = Servlet.class,
+		property = {
+				Property.RESOURCE_TYPE + "apm/datasource/history",
+				Property.DESCRIPTION + "Provides data source for history page",
+				Property.VENDOR + Cqsm.VENDOR_NAME
+		}
+)
 public class HistoryDataSourceServlet extends SlingSafeMethodsServlet {
 
 	@Reference
 	private History history;
 
 	@Override
-	protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response)
-		throws ServletException, IOException {
+	protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) {
 		DataSource dataSource = new SimpleDataSource(history.findAllResource(request.getResourceResolver()).iterator());
 		request.setAttribute(DataSource.class.getName(), dataSource);
 	}
