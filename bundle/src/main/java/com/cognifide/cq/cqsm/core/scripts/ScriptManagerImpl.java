@@ -167,7 +167,7 @@ public class ScriptManagerImpl implements ScriptManager {
 			modifiableScript.setDryRunStatus(success);
 		}
 
-		if (mode.equals(Mode.VALIDATION)) {
+		if (Mode.VALIDATION.equals(mode)) {
 			modifiableScript.setValid(success);
 		}
 
