@@ -93,7 +93,27 @@
                     <code>IMPORT AEMPaths.cqsm</code>
                 </td>
             </tr>
-            </tbody>
+            <tr>
+                <td colspan="2">
+                    IMPORT imports script in isolated variable context, that means variables defined in scripts are
+                    not visible to other script.
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    IMPORT INPLACE name
+                </td>
+                <td>
+                    <code>IMPORT INPLACE AEMPaths.cqsm</code>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    IMPORT INPLACE imports script in current variable context, that means all variables defined
+                    in imported script are available in importing script, and vice versa.<br>
+                    A good practise is to use IMPORT INPLACE, to import scripts which only define variables or macros.
+                </td>
+            </tr>
         </table>
     </div>
 

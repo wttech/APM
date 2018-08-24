@@ -69,16 +69,28 @@ public class ScriptRunner {
 
     @Override
     public Void visitScriptInclusion(ScriptInclusionContext ctx) {
+      if (ctx.INPLACE() == null) {
+        newContextScriptInclusion(ctx);
+      } else {
+        scriptInclusion(ctx);
+      }
+      return null;
+    }
+
+    private void newContextScriptInclusion(ScriptInclusionContext ctx) {
       VariableHolder variableHolder = scriptContext.getVariableHolder();
       try {
         variableHolder.createLocalContext();
-        String referencePath = ScriptInclusion.of(ctx).getPath();
-        ApmContext includedScript = scriptContext.getScriptTree().getIncludedScript(referencePath);
-        visit(includedScript);
+        scriptInclusion(ctx);
       } finally {
         variableHolder.removeLocalContext();
       }
-      return null;
+    }
+
+    private void scriptInclusion(ScriptInclusionContext ctx) {
+      String referencePath = ScriptInclusion.of(ctx).getPath();
+      ApmContext includedScript = scriptContext.getScriptTree().getIncludedScript(referencePath);
+      visit(includedScript);
     }
 
     @Override
