@@ -17,58 +17,56 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * =========================LICENSE_END==================================
- */package com.cognifide.cq.cqsm.core.servlets;
+ */
+package com.cognifide.cq.cqsm.core.servlets;
 
 import com.adobe.granite.ui.components.ds.DataSource;
 import com.adobe.granite.ui.components.ds.SimpleDataSource;
-import com.cognifide.cq.cqsm.core.Cqsm;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Service;
-import org.apache.felix.scr.annotations.sling.SlingServlet;
+import com.cognifide.cq.cqsm.core.Property;
+import java.util.ArrayList;
+import java.util.List;
+import javax.servlet.Servlet;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceWrapper;
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
-import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Component;
 
-import javax.servlet.ServletException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+@Component(
+    immediate = true,
+    service = Servlet.class,
+    property = {
+        Property.RESOURCE_TYPE + "apm/scripts",
+        Property.METHOD + "GET",
+        Property.DESCRIPTION + "APM Scripts Data Source Servlet",
+        Property.VENDOR
+    }
+)
+public class ScriptsDatasourceServlet extends SlingSafeMethodsServlet {
 
-@SlingServlet(resourceTypes = {"apm/scripts"}, methods = {"GET"})
-@Service
-@Properties({
-        @Property(name = Constants.SERVICE_DESCRIPTION, value = "APM Scripts Data Source Servlet"),
-        @Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)
-})
-public class ScriptsDatasourceServlet extends SlingSafeMethodsServlet{
+  @Override
+  protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) {
+    String path = request.getRequestPathInfo().getSuffix();
+    List<Resource> scripts = new ArrayList<>();
+    Resource resource = request.getResourceResolver().getResource(path);
+    for (Resource child : resource.getChildren()) {
+      scripts.add(new ResourceTypeWrapper(child));
+    }
+    DataSource dataSource = new SimpleDataSource(scripts.iterator());
+    request.setAttribute(DataSource.class.getName(), dataSource);
+  }
+
+  private class ResourceTypeWrapper extends ResourceWrapper {
+
+    ResourceTypeWrapper(Resource resource) {
+      super(resource);
+    }
 
     @Override
-    protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) throws ServletException, IOException {
-       String path =  request.getRequestPathInfo().getSuffix();
-        List<Resource> scripts = new ArrayList<>();
-        Resource resource = request.getResourceResolver().getResource(path);
-        for (Resource child : resource.getChildren()) {
-            scripts.add(new ResourceTypeWrapper(child));
-        }
-        DataSource dataSource = new SimpleDataSource(scripts.iterator());
-        request.setAttribute(DataSource.class.getName(), dataSource);
+    public String getResourceType() {
+      return "apm/components/dashboard/row";
     }
-
-    private class ResourceTypeWrapper extends ResourceWrapper {
-
-        ResourceTypeWrapper(Resource resource){
-            super(resource);
-        }
-
-        @Override
-        public String getResourceType() {
-            return "apm/components/dashboard/row";
-        }
-    }
+  }
 
 }
