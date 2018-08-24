@@ -25,6 +25,7 @@ import com.cognifide.cq.cqsm.api.logger.Message;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.logger.ProgressEntry;
 import com.cognifide.cq.cqsm.api.logger.Status;
+import com.cognifide.cq.cqsm.api.progress.ProgressHelper;
 import com.google.common.collect.Lists;
 import java.util.LinkedList;
 import java.util.List;
@@ -62,7 +63,7 @@ public class ProgressImpl implements Progress {
 
 	@Override
 	public boolean isSuccess() {
-		return ProgressHelper.calculateSuccess(entries);
+		return ProgressHelper.hasNoErrors(entries);
 	}
 
 	@Override

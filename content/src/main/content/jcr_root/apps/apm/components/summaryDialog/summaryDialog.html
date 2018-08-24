@@ -19,7 +19,8 @@
 */-->
 <sly data-sly-use.item="com.cognifide.cq.cqsm.core.models.ExecutionModel"/>
 <coral-dialog id="summaryDialog" variant="info">
-  <coral-dialog-header id="summaryDialogHeader">The result of ${item.entry.fileName} script by ${item.entry.executor} on
+  <coral-dialog-header id="summaryDialogHeader">The result of ${item.entry.fileName} script by
+    ${item.entry.executor} on
     ${item.entry.instanceType} instance
   </coral-dialog-header>
   <coral-dialog-content>
@@ -54,15 +55,7 @@
           <td is="coral-table-cell">${execution.actionName}</td>
           <td is="coral-table-cell">${execution.parameters}</td>
           <td is="coral-table-cell">
-            <sly data-sly-test="${execution.status == 'ERROR'}">
-              <img class="run-error"/>
-            </sly>
-            <sly data-sly-test="${execution.status == 'WARNING'}">
-              <img class="run-warning"/>
-            </sly>
-            <sly data-sly-test="${execution.status == 'SUCCESS'}">
-              <img class="run-success"/>
-            </sly>
+            <img class="run-${execution.status.toString.toLowerCase}"/>
           </td>
           <td is="coral-table-cell">
             <sly data-sly-list.message="${execution.messages}">
@@ -78,20 +71,23 @@
     </table>
   </coral-dialog-content>
   <coral-dialog-footer>
-    <form method="POST" action="/bin/cqsm/executionResultDownload">
+    <form method="POST" action="${item.resultDownloadActionPath}">
       <input type="hidden" name="filename" value="${item.entry.executionResultFileName}">
       <input type="hidden" name="content" value="${item.entry.executionSummaryJson}">
-      <button type="submit" is="coral-button" icon="download" iconsize="S" class="coral-Button coral-Button--secondary"
+      <button type="submit" is="coral-button" icon="download" iconsize="S"
+              class="coral-Button coral-Button--secondary"
               size="M"
               variant="secondary">
-        <coral-icon class="coral-Icon coral-Icon--sizeS coral-Icon--download" coral-close="" icon="download" size="S"
+        <coral-icon class="coral-Icon coral-Icon--sizeS coral-Icon--download" coral-close="" icon="download"
+                    size="S"
                     alt=""></coral-icon>
         <coral-button-label>
           Export to file
         </coral-button-label>
       </button>
     </form>
-    <button is="coral-button" variant="primary" coral-close="" class="coral-Button coral-Button--primary" size="M">
+    <button is="coral-button" variant="primary" coral-close="" class="coral-Button coral-Button--primary"
+            size="M">
       <coral-button-label>Ok</coral-button-label>
     </button>
   </coral-dialog-footer>

@@ -19,6 +19,8 @@
  */
 package com.cognifide.cq.cqsm.core.models;
 
+import static com.cognifide.cq.cqsm.core.servlets.ScriptResultServlet.EXECUTION_RESULT_SERVLET_PATH;
+
 import com.cognifide.cq.cqsm.api.history.Entry;
 import com.cognifide.cq.cqsm.core.history.History;
 import javax.inject.Inject;
@@ -38,4 +40,7 @@ public class ExecutionModel {
 		entry = history.find(request.getRequestPathInfo().getSuffix());
 	}
 
+	public String getResultDownloadActionPath() {
+		return EXECUTION_RESULT_SERVLET_PATH;
+	}
 }

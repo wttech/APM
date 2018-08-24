@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * AEM Permission Management
  * %%
- * Copyright (C) 2013 Cognifide Limited
+ * Copyright (C) 2018 Cognifide Limited
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.cq.cqsm.core.progress;
+package com.cognifide.cq.cqsm.api.progress;
 
 import com.cognifide.cq.cqsm.api.logger.ProgressEntry;
 import com.cognifide.cq.cqsm.api.logger.Status;
@@ -31,6 +31,8 @@ import java.util.List;
 public final class ProgressHelper {
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+
+	private static final IsErrorPredicate IS_ERROR_PREDICATE = new IsErrorPredicate();
 
 	private ProgressHelper() {
 	}
@@ -47,8 +49,8 @@ public final class ProgressHelper {
 		return GSON.toJson(entry);
 	}
 
-	public static boolean calculateSuccess(List<ProgressEntry> entries) {
-		return !Iterables.any(entries, new IsErrorPredicate());
+	public static boolean hasNoErrors(List<ProgressEntry> entries) {
+		return !Iterables.any(entries, IS_ERROR_PREDICATE);
 	}
 
 	private static class IsErrorPredicate implements Predicate<ProgressEntry> {

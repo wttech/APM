@@ -17,7 +17,7 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.cq.cqsm.core.history;
+package com.cognifide.cq.cqsm.api.history;
 
 import static com.cognifide.cq.cqsm.api.history.Entry.SCRIPT_HISTORY_FILE_NAME;
 
@@ -25,7 +25,6 @@ import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.core.scripts.ScriptImpl;
 import java.util.Date;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.models.factory.MissingElementsException;
 
 public class HistoryResourceAdapter {
 
