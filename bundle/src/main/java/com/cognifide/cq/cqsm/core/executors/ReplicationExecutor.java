@@ -77,7 +77,7 @@ public class ReplicationExecutor extends AbstractExecutor implements JobConsumer
 			logger.warn("Replicated script cannot be found by script manager: {}", searchPath);
 		} else if (ExecutionMode.ON_DEMAND.equals(script.getExecutionMode()) && script.isPublishRun()) {
 			try {
-				processScript(script, resolver, "Replication");
+				processScript(script, resolver, ExecutorType.REPLICATION);
 				result = JobResult.OK;
 			} catch (PersistenceException e) {
 				logger.error(e.getMessage(), e);

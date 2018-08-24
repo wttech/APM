@@ -56,8 +56,9 @@
             + mode,
             dataType: "html",
             success: function (data) {
-                const jobId = JSON.parse(data).id;
-                const jobMessage = JSON.parse(data).message;
+                const parsedJSON = JSON.parse(data);
+                const jobId = parsedJSON.id;
+                const jobMessage = parsedJSON.message;
 
                 (function checkStatus(jobId) {
                     $.ajax({

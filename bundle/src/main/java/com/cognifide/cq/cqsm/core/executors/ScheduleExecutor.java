@@ -59,7 +59,7 @@ public class ScheduleExecutor extends AbstractExecutor implements Runnable {
 			logger.info(MessagingUtils.describeScripts(scripts));
 		}
 		for (Script script : scripts) {
-			processScript(script, resolver, "Schedule");
+			processScript(script, resolver, ExecutorType.SCHEDULE);
 		}
 	}
 }

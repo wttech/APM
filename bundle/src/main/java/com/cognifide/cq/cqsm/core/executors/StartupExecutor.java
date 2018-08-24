@@ -57,12 +57,10 @@ public class StartupExecutor extends AbstractExecutor {
 	private void runOnStartup(ResourceResolver resolver) throws PersistenceException {
 		final List<Script> scripts = scriptFinder.findAll(filterOnStart(resolver), resolver);
 		if (!scripts.isEmpty()) {
-			if(logger.isInfoEnabled()) {
-				logger.info("Startup script executor is trying to execute scripts on startup: {}", scripts.size());
-				logger.info(MessagingUtils.describeScripts(scripts));
-			}
+			logger.info("Startup script executor is trying to execute scripts on startup: {}", scripts.size());
+			logger.info(MessagingUtils.describeScripts(scripts));
 			for (Script script : scripts) {
-				processScript(script, resolver,"Startup");
+				processScript(script, resolver, ExecutorType.STARTUP);
 			}
 		} else {
 			logger.info("Startup script executor has nothing to do");

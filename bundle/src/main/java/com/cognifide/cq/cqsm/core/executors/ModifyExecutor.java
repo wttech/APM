@@ -61,7 +61,7 @@ public class ModifyExecutor extends AbstractExecutor {
 			logger.info("Executor will try to run following scripts: {}", scripts.size());
 			logger.info(MessagingUtils.describeScripts(scripts));
 			for (Script script : scripts) {
-				processScript(script, resolver, "Modify");
+				processScript(script, resolver, ExecutorType.MODIFY);
 			}
 		} else {
 			logger.info("Executor has not detected any changes");

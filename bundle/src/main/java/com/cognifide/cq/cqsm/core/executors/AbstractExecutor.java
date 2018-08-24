@@ -35,7 +35,7 @@ import javax.jcr.RepositoryException;
 
 abstract class AbstractExecutor {
 
-    protected final Logger logger;
+    final Logger logger;
 
     @Reference
     private ScriptManager scriptManager;
@@ -50,7 +50,7 @@ abstract class AbstractExecutor {
         logger = LoggerFactory.getLogger(this.getClass());
     }
 
-    void processScript(Script script, ResourceResolver resolver, String executorType) throws PersistenceException {
+    void processScript(Script script, ResourceResolver resolver, ExecutorType executorType) throws PersistenceException {
         final String scriptPath = script.getPath();
         try {
             scriptManager.process(script, Mode.VALIDATION, resolver);
@@ -58,18 +58,18 @@ abstract class AbstractExecutor {
                 final Progress progress = scriptManager.process(script, Mode.AUTOMATIC_RUN, resolver);
                 logStatus(scriptPath, progress.isSuccess(), executorType);
             } else {
-                logger.warn("{} executor cannot execute script which is not valid: {}", executorType, scriptPath);
+                logger.warn("{} executor cannot execute script which is not valid: {}", executorType.toString(), scriptPath);
             }
         } catch (RepositoryException e) {
             logger.error("Script cannot be processed because of repository error: {}", scriptPath, e);
         }
     }
 
-    private void logStatus(String scriptPath, boolean success, String executorType) {
+    private void logStatus(String scriptPath, boolean success, ExecutorType executorType) {
         if (success) {
-            logger.info("{} script successfully executed: {}", executorType, scriptPath);
+            logger.info("{} script successfully executed: {}", executorType.toString(), scriptPath);
         } else {
-            logger.error("{} script cannot be executed properly: {}", executorType, scriptPath);
+            logger.error("{} script cannot be executed properly: {}", executorType.toString(), scriptPath);
         }
     }
 }
