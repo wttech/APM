@@ -39,9 +39,10 @@ import com.cognifide.cq.cqsm.core.antlr.type.ApmString;
 import com.cognifide.cq.cqsm.core.antlr.type.ApmType;
 import com.cognifide.cq.cqsm.core.antlr.type.ApmValue;
 import com.google.common.primitives.Ints;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import org.antlr.v4.runtime.tree.ParseTree;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class ParameterResolver {
 
@@ -66,15 +67,13 @@ public class ParameterResolver {
 
     @Override
     public ApmType visitArray(ArrayContext ctx) {
-      List<ApmValue> values = new ArrayList<>();
-      int n = ctx.getChildCount();
-      for (int i = 0; i < n; i++) {
-        ParseTree c = ctx.getChild(i);
-        ApmType result = c.accept(this);
-        if (result instanceof ApmValue) {
-          values.add((ApmValue) result);
-        }
-      }
+      List<ApmValue> values = Optional.ofNullable(ctx.children)
+          .orElse(Collections.emptyList())
+          .stream()
+          .map(child -> child.accept(this))
+          .filter(ApmValue.class::isInstance)
+          .map(ApmValue.class::cast)
+          .collect(Collectors.toList());
       return new ApmList(values);
     }
 
