@@ -85,7 +85,7 @@
     background: url(../img/loading.gif) no-repeat center center;
 }
 
-.dryRunFailed {
+.dryRunError {
     min-height:20px;
     text-align:center;
     background: url(../img/error.gif) no-repeat center center;

@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,16 +19,15 @@
  */
 package com.cognifide.cq.cqsm.core.models;
 
-import com.cognifide.cq.cqsm.api.history.Entry;
-import com.cognifide.cq.cqsm.api.history.History;
+import static com.cognifide.cq.cqsm.core.servlets.ScriptResultServlet.EXECUTION_RESULT_SERVLET_PATH;
 
+import com.cognifide.cq.cqsm.api.history.Entry;
+import com.cognifide.cq.cqsm.core.history.History;
+import javax.inject.Inject;
+import lombok.Getter;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.OSGiService;
-
-import javax.inject.Inject;
-
-import lombok.Getter;
 
 @Model(adaptables = SlingHttpServletRequest.class)
 public class ExecutionModel {
@@ -41,4 +40,7 @@ public class ExecutionModel {
 		entry = history.find(request.getRequestPathInfo().getSuffix());
 	}
 
+	public String getResultDownloadActionPath() {
+		return EXECUTION_RESULT_SERVLET_PATH;
+	}
 }

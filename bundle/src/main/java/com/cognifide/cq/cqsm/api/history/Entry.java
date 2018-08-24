@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,32 +19,35 @@
  */
 package com.cognifide.cq.cqsm.api.history;
 
-import com.google.common.collect.ComparisonChain;
 
 import com.cognifide.cq.cqsm.api.executors.Mode;
 import com.cognifide.cq.cqsm.api.logger.ProgressEntry;
-import com.cognifide.cq.cqsm.core.progress.ProgressHelper;
-
+import com.cognifide.cq.cqsm.api.progress.ProgressHelper;
+import com.google.common.collect.ComparisonChain;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Named;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Model;
 
-import java.util.Date;
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import lombok.Getter;
-
 @Model(adaptables = Resource.class, defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
+@EqualsAndHashCode
 public class Entry implements Comparable<Entry> {
 
+	public static final String SCRIPT_HISTORY_FILE_NAME = "script";
+
 	private static final String EXECUTION = "execution-result";
+
+	private static final String HISTORY_PAGE_DATE_FORMAT = "MMM dd, yyyy hh:mm:ss a";
 
 	@Inject
 	@Getter
@@ -53,6 +56,9 @@ public class Entry implements Comparable<Entry> {
 	@Inject
 	@Getter
 	private Date executionTime;
+
+	@Getter
+	private String executionTimeFormatted;
 
 	@Inject
 	@Getter
@@ -89,35 +95,29 @@ public class Entry implements Comparable<Entry> {
 	private final String path;
 
 	@Getter
-	private final String filePath;
+	private String filePath;
+
+	@Getter
+	private Date lastModified;
+
+	@Getter
+	private String lastModifiedTimeFormatted;
+
+	@Getter
+	private Boolean isRunSuccessful;
+
+	@Getter
+	private Boolean isDryRunSuccessful;
+
+	@Getter
+	private Date lastDryExecution;
+
+	@Getter
+	private String lastDryExecutionTimeFormatted;
 
 	public Entry(Resource resource) {
-		path = resource.getPath();
-		filePath = getFilePath(resource);
-	}
-
-	@PostConstruct
-	protected void init() {
-		executor = getExecutorValue();
-		//FIXME api->core relationship
-		executionSummary = ProgressHelper.fromJson(executionSummaryJson);
-	}
-
-	public String getExecutionResultFileName() {
-		return EXECUTION + "-" + StringUtils.replace(fileName, ".cqsm", ".txt");
-	}
-
-	private String getFilePath(Resource resource) {
-		String path = null;
-		if (resource.getChild("script") != null) {
-			path = resource.getPath() + "/script";
-		}
-		return path;
-	}
-
-	private String getExecutorValue() {
-		Mode modeType = Mode.fromString(mode, Mode.DRY_RUN);
-		return StringUtils.isNotBlank(executor) ? executor : modeType.getName();
+		this.path = resource.getPath();
+		processHistoryData(resource);
 	}
 
 	@Override
@@ -125,14 +125,42 @@ public class Entry implements Comparable<Entry> {
 		return ComparisonChain.start().compare(other.executionTime, this.executionTime).result();
 	}
 
-	//FIXME: could be fixed with lombok
-	@Override
-	public int hashCode() {
-		return HashCodeBuilder.reflectionHashCode(this);
+	public String getExecutionResultFileName() {
+		return EXECUTION + "-" + StringUtils.replace(fileName, ".cqsm", ".txt");
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		return EqualsBuilder.reflectionEquals(this, obj);
+	private String getExecutorValue() {
+		Mode modeType = Mode.fromString(mode, Mode.DRY_RUN);
+		return StringUtils.isNotBlank(executor) ? executor : modeType.getName();
+	}
+
+	private void processHistoryData(Resource resource) {
+		boolean isHistoryResource = resource.getChild(SCRIPT_HISTORY_FILE_NAME) != null;
+		if (isHistoryResource) {
+			final HistoryResourceAdapter historyResourceAdapter = new HistoryResourceAdapter(resource);
+
+			this.lastModified = historyResourceAdapter.getLastModification();
+			this.lastDryExecution = historyResourceAdapter.getLastDryRun();
+			this.isDryRunSuccessful = historyResourceAdapter.isLastDryRunSuccessful();
+			this.filePath = historyResourceAdapter.getFilePath();
+		}
+	}
+
+	@PostConstruct
+	protected void init() {
+		lastModifiedTimeFormatted = transferDateToHistoryFormat(lastModified);
+		lastDryExecutionTimeFormatted = transferDateToHistoryFormat(lastDryExecution);
+		executionTimeFormatted = transferDateToHistoryFormat(executionTime);
+
+		executor = getExecutorValue();
+
+		executionSummary = ProgressHelper.fromJson(executionSummaryJson);
+		this.isRunSuccessful = ProgressHelper.hasNoErrors(executionSummary);
+	}
+
+	private String transferDateToHistoryFormat(Date date) {
+		return Optional.ofNullable(date)
+				.map(dateVal -> DateFormatUtils.format(dateVal, HISTORY_PAGE_DATE_FORMAT, Locale.getDefault()))
+				.orElse(StringUtils.EMPTY);
 	}
 }

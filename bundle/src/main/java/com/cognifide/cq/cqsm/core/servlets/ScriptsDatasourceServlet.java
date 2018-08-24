@@ -19,9 +19,15 @@
  * =========================LICENSE_END==================================
  */package com.cognifide.cq.cqsm.core.servlets;
 
+import static com.cognifide.cq.cqsm.core.models.RowModel.ROW_MODEL_RESOURCE_TYPE;
+
 import com.adobe.granite.ui.components.ds.DataSource;
 import com.adobe.granite.ui.components.ds.SimpleDataSource;
 import com.cognifide.cq.cqsm.core.Cqsm;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import javax.servlet.ServletException;
 import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Service;
@@ -32,12 +38,6 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceWrapper;
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 import org.osgi.framework.Constants;
-
-import javax.servlet.ServletException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 @SlingServlet(resourceTypes = {"apm/scripts"}, methods = {"GET"})
 @Service
@@ -67,7 +67,7 @@ public class ScriptsDatasourceServlet extends SlingSafeMethodsServlet{
 
         @Override
         public String getResourceType() {
-            return "apm/components/dashboard/row";
+            return ROW_MODEL_RESOURCE_TYPE;
         }
     }
 

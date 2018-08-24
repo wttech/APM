@@ -2,7 +2,7 @@
 * ========================LICENSE_START=================================
 * AEM Permission Management
 * %%
-* Copyright (C) 2013 - 2016 Cognifide Limited
+* Copyright (C) 2013 - 2018 Cognifide Limited
 * %%
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -17,34 +17,49 @@
 * limitations under the License.
 * =========================LICENSE_END==================================
 */ -->
-<sly data-sly-use.model="com.cognifide.cq.cqsm.api.history.Entry"/>
-<tr class="foundation-collection-model foundation-collection-navigator"
-    data-foundation-collection-model-id="${resource.path}" data-path="${resource.path}"
-    data-timeline="true" is="coral-table-row" data-script-name="${model.fileName}">
-    <td is="coral-table-cell" coral-table-rowselect>
-    </td>
-    <td is="coral-table-cell" value="${model.fileName}">
-        ${model.fileName}
-    </td>
-    <td is="coral-table-cell" value="${model.author}">
-        ${model.author}
-    </td>
-    <td is="coral-table-cell" value="${model.uploadTime.timeInMillis || 0}">
-        <time datetime="${model.uploadTime.timeInMillis || 0}"
-              data-sly-use.modified="${'com.adobe.cq.xf.ui.DateFormatter' @ date=model.uploadTime, relativeFormat='r'}">
-            ${modified.uploadTime}
-        </time>
-    </td>
-    <td is="coral-table-cell" value="${model.executionTime.timeInMillis || 0}">
-        <time datetime="${model.executionTime.timeInMillis || 0}"
-              data-sly-use.modified="${'com.adobe.cq.xf.ui.DateFormatter' @ date=model.v, relativeFormat='r'}">
-            ${modified.executionTime}
-        </time>
-    </td>
-    <!--<td is="coral-table-cell" value="${model.lastDryRun.timeInMillis || 0}">-->
-        <!--<time datetime="${model.lastDryRun.timeInMillis || 0}"-->
-              <!--data-sly-use.modified="${'com.adobe.cq.xf.ui.DateFormatter' @ date=model.lastDryRun, relativeFormat='r'}">-->
-            <!--${modified.lastDryRun}-->
-        <!--</time>-->
-    <!--</td>-->
+<sly data-sly-use.item="com.cognifide.cq.cqsm.api.history.Entry"/>
+<tr class="foundation-collection-item foundation-collection-navigator"
+    data-foundation-collection-item-id="${resource.path}" data-path="${resource.path}"
+    data-timeline="true" is="coral-table-row" data-script-name="${item.fileName}">
+
+  <td is="coral-table-cell" coral-table-rowselect>
+    <coral-icon icon="fileKey" size="M">
+    </coral-icon>
+  </td>
+  <td is="coral-table-cell" value="${item.fileName}">
+    <a href="${item.filePath}" download="${item.fileName}">${item.fileName}</a>
+  </td>
+  <td is="coral-table-cell" value="${item.author}">
+    ${item.author}
+  </td>
+  <td is="coral-table-cell" value="${item.lastModified.time || 0}">
+    <time class="text-uppercase text-muted" data-sly-test="${item.lastModified}"
+          datetime="${item.lastModified.time || 0}">
+      ${item.lastModifiedTimeFormatted}
+    </time>
+  </td>
+  <td is="coral-table-cell" value="${item.executor}">
+    ${item.executor}
+  </td>
+  <td is="coral-table-cell" value="${item.executionTime.time || 0}">
+    <sly data-sly-test="${item.executionTime && item.instanceType}">
+      <img class="${item.isRunSuccessful ? 'run-success' : 'run-error'}"/>
+      <span class="last-execution-status">
+        <span class="instance">${item.instanceType}</span> <time datetime="${item.executionTime.time || 0}">${item.executionTimeFormatted}</time>
+      </span>
+      <button is="coral-button" class="execution-summary-button"
+              data-sly-attribute.scriptResourcePath="${item.path}">
+        <div class="icon summary">Show summary</div>
+      </button>
+    </sly>
+  </td>
+  <td is="coral-table-cell" value="${item.lastDryExecution.time || 0}">
+    <sly data-sly-test="${item.lastDryExecution && item.instanceType}">
+      <img class="${item.isDryRunSuccessful ? 'dry-run-success' : 'dry-run-error'}"/>
+      <span class="last-dry-execution-status">
+        <span class="instance">${item.instanceType}</span>
+        <time datetime="${item.lastDryExecution.time || 0}">${item.lastDryExecutionTimeFormatted}</time>
+      </span>
+    </sly>
+  </td>
 </tr>
