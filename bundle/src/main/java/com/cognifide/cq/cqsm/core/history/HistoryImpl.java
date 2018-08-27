@@ -41,16 +41,16 @@ import com.day.cq.wcm.api.Page;
 import com.day.cq.wcm.api.PageManager;
 import com.day.cq.wcm.api.WCMException;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import org.apache.commons.lang.StringUtils;
@@ -117,24 +117,30 @@ public class HistoryImpl implements History {
 		return SlingHelper.resolveDefault(resolverFactory, new ResolveCallback<List<Entry>>() {
 			@Override
 			public List<Entry> resolve(ResourceResolver resolver) {
-				List<Entry> result = new LinkedList<>();
-				Iterator<Resource> it = resolver.getResource(HistoryImpl.ENTRY_PATH).listChildren();
-				while (it.hasNext()) {
-					result.add(it.next().adaptTo(Entry.class));
-				}
-				return result;
+				return Optional.ofNullable(resolver.getResource(HistoryImpl.ENTRY_PATH)).map(resource -> {
+					List<Entry> result = Lists.newLinkedList();
+					resource.listChildren()
+							.forEachRemaining(child -> result.add(child.adaptTo(Entry.class)));
+					return result;
+				}).orElseGet(() -> {
+					LOG.warn("History resource can't be found at: {}", HistoryImpl.ENTRY_PATH);
+					return Lists.newLinkedList();
+				});
 			}
 		}, Collections.<Entry>emptyList());
 	}
 
 	@Override
 	public List<Resource> findAllResource(ResourceResolver resourceResolver) {
-		List<Resource> result = new LinkedList<>();
-		Iterator<Resource> it = resourceResolver.getResource(HistoryImpl.ENTRY_PATH).listChildren();
-		while (it.hasNext()) {
-			result.add(it.next());
-		}
-		return result;
+		return Optional.ofNullable(resourceResolver.getResource(HistoryImpl.ENTRY_PATH)).map(resource -> {
+			List<Resource> result = Lists.newLinkedList();
+			resource.listChildren()
+					.forEachRemaining(result::add);
+			return result;
+		}).orElseGet(() -> {
+			LOG.warn("History resource can't be found at: {}", HistoryImpl.ENTRY_PATH);
+			return Lists.newLinkedList();
+		});
 	}
 
 	@Override
