@@ -19,6 +19,8 @@
  */
 package com.cognifide.cq.cqsm.core.servlets;
 
+import static com.cognifide.cq.cqsm.core.servlets.ScriptResultServlet.EXECUTION_RESULT_SERVLET_PATH;
+
 import com.cognifide.cq.cqsm.core.Property;
 
 import org.apache.commons.io.IOUtils;
@@ -41,7 +43,7 @@ import javax.servlet.ServletException;
 		immediate = true,
 		service = Servlet.class,
 		property = {
-				Property.PATH + "/bin/cqsm/executionResultDownload",
+				Property.PATH + EXECUTION_RESULT_SERVLET_PATH,
 				Property.METHOD + "POST",
 				Property.DESCRIPTION + "Execution result Servlet",
 				Property.VENDOR
