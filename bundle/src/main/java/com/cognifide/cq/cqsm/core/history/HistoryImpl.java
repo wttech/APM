@@ -124,7 +124,7 @@ public class HistoryImpl implements History {
 					return result;
 				}).orElseGet(() -> {
 					LOG.warn("History resource can't be found at: {}", HistoryImpl.ENTRY_PATH);
-					return Lists.newLinkedList();
+					return Collections.emptyList();
 				});
 			}
 		}, Collections.<Entry>emptyList());
@@ -139,7 +139,7 @@ public class HistoryImpl implements History {
 			return result;
 		}).orElseGet(() -> {
 			LOG.warn("History resource can't be found at: {}", HistoryImpl.ENTRY_PATH);
-			return Lists.newLinkedList();
+			return Collections.emptyList();
 		});
 	}
 
