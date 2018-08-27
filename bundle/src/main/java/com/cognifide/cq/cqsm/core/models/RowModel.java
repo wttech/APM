@@ -22,83 +22,83 @@ package com.cognifide.cq.cqsm.core.models;
 import com.cognifide.cq.cqsm.core.scripts.ScriptImpl;
 import com.day.cq.commons.jcr.JcrConstants;
 import com.google.common.collect.ImmutableSet;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Optional;
+import java.util.Set;
+import javax.annotation.PostConstruct;
+import lombok.Getter;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
 
-import javax.annotation.PostConstruct;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Set;
-
-@Model(adaptables = SlingHttpServletRequest.class)
+@Model(adaptables = Resource.class)
 public class RowModel {
 
-    @Self
-    private SlingHttpServletRequest request;
+	private static final Set<String> FOLDER_TYPES = ImmutableSet
+			.of(JcrConstants.NT_FOLDER, "sling:OrderedFolder");
 
-    private ScriptImpl script;
+	public static final String ROW_MODEL_RESOURCE_TYPE = "apm/components/dashboard/row";
 
-    private String scriptName;
+	@Self
+	private Resource resource;
 
-    private boolean isFolder;
+	private ScriptImpl script;
 
-    private static final Set<String> FOLDER_TYPES = ImmutableSet.of(JcrConstants.NT_FOLDER, "sling:OrderedFolder");
+	@Getter
+	private String scriptName;
 
-    @PostConstruct
-    public void init() {
-        Resource resource = request.getResource();
-        script = resource.adaptTo(ScriptImpl.class);
-        scriptName = resource.getName();
-        isFolder = FOLDER_TYPES.contains(resource.getValueMap().get(JcrConstants.JCR_PRIMARYTYPE, StringUtils.EMPTY));
-    }
+	@Getter
+	private boolean isFolder;
 
-    public String getScriptName() {
-        return scriptName;
-    }
+	@Getter
+	private boolean isValid;
 
-    public String getAuthor() {
-        return script != null ? script.getAuthor() : "";
-    }
+	@Getter
+	private String author;
 
-    public Calendar getExecutionLast() {
-        return script != null ? asCalendar(script.getExecutionLast()) : null;
-    }
+	@Getter
+	private Calendar executionLast;
 
-    public Calendar getLastModified() {
-        return script != null ? asCalendar(script.getLastModified()) : null;
-    }
+	@Getter
+	private Calendar executionSchedule;
 
-    public Calendar getExecutionSchedule() {
-        return script != null ? asCalendar(script.getExecutionSchedule()) : null;
-    }
+	@Getter
+	private Calendar lastModified;
 
-    public Boolean isExecutionEnabled() {
-        return script != null ? script.isExecutionEnabled() : null;
-    }
+	@Getter
+	private boolean isExecutionEnabled;
 
-    public boolean isFolder() {
-        return isFolder;
-    }
 
-    public String getResourceType() {
-        return "apm/components/dashboard/row";
-    }
+	@PostConstruct
+	public void init() {
+		this.isFolder = FOLDER_TYPES
+				.contains(resource.getValueMap().get(JcrConstants.JCR_PRIMARYTYPE, StringUtils.EMPTY));
+		this.scriptName = resource.getName();
+		if (!isFolder) {
+			this.script = resource.adaptTo(ScriptImpl.class);
+			Optional.ofNullable(script).ifPresent(scriptVal -> {
+				this.author = scriptVal.getAuthor();
+				this.isValid = scriptVal.isValid();
+				this.executionLast = asCalendar(scriptVal.getExecutionLast());
+				this.executionSchedule = asCalendar(scriptVal.getExecutionSchedule());
+				this.lastModified = asCalendar(scriptVal.getLastModified());
+				this.isExecutionEnabled = scriptVal.isExecutionEnabled();
+			});
+		}
+	}
 
-    public Boolean isValid() {
-        return script != null ? script.isValid() : null;
-    }
+	public String getResourceType() {
+		return ROW_MODEL_RESOURCE_TYPE;
+	}
 
-    private Calendar asCalendar(Date date) {
-        if (date == null) {
-            return null;
-        }
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        return calendar;
-    }
-
+	private Calendar asCalendar(Date date) {
+		return Optional.ofNullable(date).map(dateVal -> {
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(date);
+			return calendar;
+		}).orElse(null);
+	}
 }

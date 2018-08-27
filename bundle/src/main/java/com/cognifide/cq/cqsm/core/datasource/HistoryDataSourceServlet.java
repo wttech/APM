@@ -21,11 +21,17 @@ package com.cognifide.cq.cqsm.core.datasource;
 
 import com.adobe.granite.ui.components.ds.DataSource;
 import com.adobe.granite.ui.components.ds.SimpleDataSource;
-import com.cognifide.cq.cqsm.api.history.History;
 import com.cognifide.cq.cqsm.core.Property;
 import javax.servlet.Servlet;
+import com.cognifide.cq.cqsm.core.history.History;
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.servlet.ServletException;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceWrapper;
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -45,8 +51,25 @@ public class HistoryDataSourceServlet extends SlingSafeMethodsServlet {
 	private History history;
 
 	@Override
-	protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) {
-		DataSource dataSource = new SimpleDataSource(history.findAllResource(request.getResourceResolver()).iterator());
+	protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response)
+			throws ServletException, IOException {
+		final List<Resource> allHistoryResources = history.findAllResource(request.getResourceResolver())
+				.stream()
+				.map(ResourceTypeWrapper::new)
+				.collect(Collectors.toList());
+		DataSource dataSource = new SimpleDataSource(allHistoryResources.iterator());
 		request.setAttribute(DataSource.class.getName(), dataSource);
+	}
+
+	private class ResourceTypeWrapper extends ResourceWrapper {
+
+		ResourceTypeWrapper(Resource resource) {
+			super(resource);
+		}
+
+		@Override
+		public String getResourceType() {
+			return "apm/components/historyRow";
+		}
 	}
 }

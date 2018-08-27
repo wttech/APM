@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,17 +20,13 @@
 package com.cognifide.cq.cqsm.core.scripts;
 
 import com.day.cq.commons.jcr.JcrConstants;
-
+import java.util.Date;
+import javax.inject.Inject;
+import javax.inject.Named;
+import lombok.Getter;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.Optional;
-
-import java.util.Date;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import lombok.Getter;
 
 @Model(adaptables = Resource.class)
 @Getter
@@ -51,6 +47,8 @@ public class ScriptContent {
 	public static final String CQSM_PUBLISH_RUN = "cqsm:publishRun";
 
 	public static final String CQSM_VERIFIED = "cqsm:verified";
+
+	public static final String CQSM_DRY_RUN_LAST = "cqsm:dryRunLast";
 
 	@Inject
 	@Named(CQSM_VERIFIED)
@@ -91,6 +89,11 @@ public class ScriptContent {
 	@Named(JcrConstants.JCR_LASTMODIFIED)
 	@Optional
 	private Date lastModified;
+
+	@Inject
+	@Named(CQSM_DRY_RUN_LAST)
+	@Optional
+	private Date dryRunLast;
 
 	@Inject
 	@Named(JcrConstants.JCR_DATA)

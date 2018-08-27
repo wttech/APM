@@ -20,7 +20,6 @@
 package com.cognifide.cq.cqsm.core.scripts.listeners;
 
 import com.cognifide.cq.cqsm.api.executors.Mode;
-import com.cognifide.cq.cqsm.api.history.History;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.scripts.Event;
 import com.cognifide.cq.cqsm.api.scripts.EventListener;
@@ -32,6 +31,7 @@ import com.cognifide.cq.cqsm.core.Property;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import com.cognifide.cq.cqsm.core.history.History;
 
 @Component(
 		immediate = true,

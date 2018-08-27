@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,17 +22,14 @@ package com.cognifide.cq.cqsm.core.scripts;
 import com.cognifide.cq.cqsm.api.scripts.ExecutionMode;
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.day.cq.commons.jcr.JcrConstants;
-
+import java.util.Date;
+import javax.inject.Inject;
+import javax.inject.Named;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.Optional;
-
-import java.util.Date;
-
-import javax.inject.Inject;
-import javax.inject.Named;
 
 @Model(adaptables = Resource.class)
 public class ScriptImpl implements Script {
@@ -129,5 +126,10 @@ public class ScriptImpl implements Script {
 	@Override
 	public String getData() {
 		return scriptContent.getData();
+	}
+
+	@Override
+	public Date getDryRunLast() {
+		return scriptContent.getDryRunLast();
 	}
 }

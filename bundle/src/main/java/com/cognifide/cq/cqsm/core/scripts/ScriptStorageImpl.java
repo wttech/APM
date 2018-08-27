@@ -136,6 +136,9 @@ public class ScriptStorageImpl implements ScriptStorage {
 
 			contentNode.setProperty(JcrConstants.JCR_DATA, binary);
 			contentNode.setProperty(JcrConstants.JCR_ENCODING, SCRIPT_ENCODING.name());
+			removeProp(contentNode, ScriptContent.CQSM_DRY_RUN_LAST);
+			removeProp(contentNode, ScriptContent.CQSM_DRY_RUN_SUCCESSFUL);
+			removeProp(contentNode, ScriptContent.CQSM_EXECUTION_LAST);
 			JcrUtils.setLastModified(contentNode, Calendar.getInstance());
 			session.save();
 			result = scriptFinder.find(fileNode.getPath(), resolver);
@@ -143,6 +146,12 @@ public class ScriptStorageImpl implements ScriptStorage {
 			LOG.error(e.getMessage(), e);
 		}
 		return result;
+	}
+
+	private void removeProp(Node contentNode, String propName) throws RepositoryException {
+		if (contentNode.hasProperty(propName)) {
+			contentNode.getProperty(propName).remove();
+		}
 	}
 
 	private String generateFileName(String fileName, Node saveNode) throws RepositoryException {

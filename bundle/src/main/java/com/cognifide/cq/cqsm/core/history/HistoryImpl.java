@@ -23,14 +23,13 @@ import com.cognifide.actions.api.ActionSendException;
 import com.cognifide.actions.api.ActionSubmitter;
 import com.cognifide.cq.cqsm.api.executors.Mode;
 import com.cognifide.cq.cqsm.api.history.Entry;
-import com.cognifide.cq.cqsm.api.history.History;
 import com.cognifide.cq.cqsm.api.history.InstanceDetails;
 import com.cognifide.cq.cqsm.api.history.ModifiableEntryBuilder;
 import com.cognifide.cq.cqsm.api.logger.Progress;
+import com.cognifide.cq.cqsm.api.progress.ProgressHelper;
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.utils.InstanceTypeProvider;
 import com.cognifide.cq.cqsm.core.Property;
-import com.cognifide.cq.cqsm.core.progress.ProgressHelper;
 import com.cognifide.cq.cqsm.core.scripts.ScriptContent;
 import com.cognifide.cq.cqsm.core.utils.sling.OperateCallback;
 import com.cognifide.cq.cqsm.core.utils.sling.ResolveCallback;
@@ -81,13 +80,13 @@ public class HistoryImpl implements History {
 
 	private static final Logger LOG = LoggerFactory.getLogger(HistoryImpl.class);
 
-	private static final String HISTORY_PATH = "/etc/cqsm/history";
+	private static final String HISTORY_PATH = "/conf/apm/history";
 
 	private static final String HISTORY_COMPONENT = "cqsmHistory";
 
 	private static final String HISTORY_COMPONENT_RESOURCE_TYPE = "cqsm/core/components/cqsmHistory";
 
-	private static final String ENTRY_PATH = "/etc/cqsm/history/jcr:content/cqsmHistory";
+	private static final String ENTRY_PATH = "/conf/apm/history/jcr:content/cqsmHistory";
 
 	public static final String REPLICATE_ACTION = "com/cognifide/actions/cqsm/history/replicate";
 
@@ -103,16 +102,16 @@ public class HistoryImpl implements History {
 	@Override
 	public Entry log(Script script, Mode mode, Progress progressLogger) {
 		InstanceDetails.InstanceType instanceDetails = instanceTypeProvider.isOnAuthor() ?
-			InstanceDetails.InstanceType.AUTHOR :
-			InstanceDetails.InstanceType.PUBLISH;
+				InstanceDetails.InstanceType.AUTHOR :
+				InstanceDetails.InstanceType.PUBLISH;
 		return log(script, mode, progressLogger, instanceDetails, getHostname(), Calendar.getInstance());
 	}
 
 	@Override
 	public Entry logRemote(Script script, Mode mode, Progress progressLogger, InstanceDetails instanceDetails,
-		Calendar executionTime) {
+			Calendar executionTime) {
 		return log(script, mode, progressLogger, instanceDetails.getInstanceType(),
-			instanceDetails.getHostname(), executionTime);
+				instanceDetails.getHostname(), executionTime);
 	}
 
 	@Override
@@ -144,7 +143,7 @@ public class HistoryImpl implements History {
 	public void replicate(final Entry entry, String userId) throws RepositoryException {
 		if (actionSubmitter == null) {
 			LOG.warn(String.format("History entry '%s' replication cannot be performed on author instance",
-				entry.getPath()));
+					entry.getPath()));
 			return;
 		}
 		SlingHelper.operateTraced(resolverFactory, userId, new OperateCallback() {
@@ -185,66 +184,69 @@ public class HistoryImpl implements History {
 	}
 
 	private Entry log(final Script script, final Mode mode, final Progress progressLogger,
-		final InstanceDetails.InstanceType instanceType, final String hostname,
-		final Calendar executionTime) {
-		return SlingHelper.resolveDefault(resolverFactory, progressLogger.getExecutor(), new ResolveCallback<Entry>() {
-			@Override
-			public Entry resolve(ResourceResolver resolver) {
-				Entry result = null;
-				Resource source = resolver.getResource(script.getPath());
-				ValueMap values = source.getValueMap();
-				try {
-					Page historyPage = getOrCreateLogDir(resolver);
-					Resource historyComponent = historyPage.getContentResource().getChild(HISTORY_COMPONENT);
-					if (historyComponent == null) {
-						historyComponent = createHistoryComponent(historyPage);
+			final InstanceDetails.InstanceType instanceType, final String hostname,
+			final Calendar executionTime) {
+		return SlingHelper
+				.resolveDefault(resolverFactory, progressLogger.getExecutor(), new ResolveCallback<Entry>() {
+					@Override
+					public Entry resolve(ResourceResolver resolver) {
+						Entry result = null;
+						Resource source = resolver.getResource(script.getPath());
+						ValueMap values = source.getValueMap();
+						try {
+							Page historyPage = getOrCreateLogDir(resolver);
+							Resource historyComponent = historyPage.getContentResource()
+									.getChild(HISTORY_COMPONENT);
+							if (historyComponent == null) {
+								historyComponent = createHistoryComponent(historyPage);
+							}
+							String uniqueName = ResourceUtil
+									.createUniqueChildName(historyComponent, source.getName());
+							Resource child = resolver
+									.create(historyComponent, uniqueName, new HashMap<String, Object>());
+
+							String executor = getExecutor(resolver, mode);
+							ModifiableEntryBuilder builder = new ModifiableEntryBuilder(child);
+							fillEntryProperties(//
+									builder, mode, progressLogger, instanceType, //
+									hostname, executionTime, source, values, executor//
+							);
+
+							//easier to use JCR API here due to jcr:uuid copy constraints
+							Node file = JcrUtil
+									.copy(source.adaptTo(Node.class), child.adaptTo(Node.class), "script");
+							file.addMixin(ScriptContent.CQSM_FILE);
+							resolver.commit();
+							result = resolver.getResource(child.getPath()).adaptTo(Entry.class);
+						} catch (RepositoryException | WCMException | PersistenceException e) {
+							LOG.error("Issues with saving to repository while logging script execution", e);
+						}
+
+						return result;
 					}
-					String uniqueName = ResourceUtil
-						.createUniqueChildName(historyComponent, source.getName());
-					Resource child = resolver
-						.create(historyComponent, uniqueName, new HashMap<String, Object>());
-
-					String executor = getExecutor(resolver, mode);
-					ModifiableEntryBuilder builder = new ModifiableEntryBuilder(child);
-					fillEntryProperties(//
-						builder, mode, progressLogger, instanceType, //
-						hostname, executionTime, source, values, executor//
-					);
-
-					//easier to use JCR API here due to jcr:uuid copy constraints
-					Node file = JcrUtil.copy(source.adaptTo(Node.class), child.adaptTo(Node.class), "script");
-					file.addMixin(ScriptContent.CQSM_FILE);
-					resolver.commit();
-					result = resolver.getResource(child.getPath()).adaptTo(Entry.class);
-				} catch (RepositoryException | WCMException | PersistenceException e) {
-					LOG.error("Issues with saving to repository while logging script execution", e);
-				}
-
-				return result;
-			}
 
 			private Resource createHistoryComponent(Page historyPage) throws PersistenceException {
 				ResourceResolver resourceResolver = historyPage.getContentResource().getResourceResolver();
 				Map<String, Object> props = ImmutableMap.<String, Object> builder()//
-							.put(ResourceResolver.PROPERTY_RESOURCE_TYPE, HISTORY_COMPONENT_RESOURCE_TYPE) //
-							.build();
+						.put(ResourceResolver.PROPERTY_RESOURCE_TYPE, HISTORY_COMPONENT_RESOURCE_TYPE) //
+						.build();
 				return resourceResolver.create(historyPage.getContentResource(), HISTORY_COMPONENT, props);
 			}
 		}, null);
 	}
 
 	private void fillEntryProperties(ModifiableEntryBuilder entryBuilder, Mode mode, Progress progressLogger,
-		InstanceDetails.InstanceType instanceType, String hostname, Calendar executionTime,
-		Resource source, ValueMap values, String executor) {
+			InstanceDetails.InstanceType instanceType, String hostname, Calendar executionTime,
+			Resource source, ValueMap values, String executor) {
 		entryBuilder.setFileName(source.getName()) //
-			.setFilePath(source.getPath()) //
-			.setMode(mode.toString()) //
-			.setProgressLog(ProgressHelper.toJson(progressLogger.getEntries())) //
-			.setExecutionTime(executionTime) //
-			.setAuthor(values.get(JcrConstants.JCR_CREATED_BY, StringUtils.EMPTY)) //
-			.setUploadTime(values.get(JcrConstants.JCR_CREATED, StringUtils.EMPTY)) //
-			.setInstanceType(instanceType.getInstanceName()) //
-			.setInstanceHostname(hostname);
+				.setFilePath(source.getPath()) //
+				.setMode(mode.toString()) //
+				.setProgressLog(ProgressHelper.toJson(progressLogger.getEntries())) //
+				.setExecutionTime(executionTime) //
+				.setAuthor(values.get(JcrConstants.JCR_CREATED_BY, StringUtils.EMPTY)) //
+				.setUploadTime(values.get(JcrConstants.JCR_CREATED, StringUtils.EMPTY)) //
+				.setInstanceType(instanceType.getInstanceName()) //
+				.setInstanceHostname(hostname);
 		if (StringUtils.isNotBlank(executor)) {
 			entryBuilder.setExecutor(executor);
 		}
@@ -257,8 +259,8 @@ public class HistoryImpl implements History {
 		if (historyPage == null) {
 			boolean autoCommit = true;
 			historyPage = pageManager
-				.create("/etc/cqsm", "history", "/apps/cqsm/core/templates/historyTemplate", "History",
-					autoCommit);
+					.create("/conf/apm", "history", "/apps/cqsm/core/templates/historyTemplate", "History",
+							autoCommit);
 		}
 		return historyPage;
 	}

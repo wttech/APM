@@ -53,6 +53,8 @@ public class ScriptResultServlet extends SlingAllMethodsServlet {
 
 	private static final int BYTES_DOWNLOAD = 1024;
 
+	public static final String EXECUTION_RESULT_SERVLET_PATH = "/bin/cqsm/executionResultDownload";
+
 	@Override
 	protected void doPost(final SlingHttpServletRequest request, final SlingHttpServletResponse response)
 			throws ServletException, IOException {

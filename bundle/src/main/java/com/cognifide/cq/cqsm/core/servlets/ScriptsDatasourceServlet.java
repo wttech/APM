@@ -20,6 +20,8 @@
  */
 package com.cognifide.cq.cqsm.core.servlets;
 
+import static com.cognifide.cq.cqsm.core.models.RowModel.ROW_MODEL_RESOURCE_TYPE;
+
 import com.adobe.granite.ui.components.ds.DataSource;
 import com.adobe.granite.ui.components.ds.SimpleDataSource;
 import com.cognifide.cq.cqsm.core.Property;
@@ -63,10 +65,10 @@ public class ScriptsDatasourceServlet extends SlingSafeMethodsServlet {
       super(resource);
     }
 
-    @Override
-    public String getResourceType() {
-      return "apm/components/dashboard/row";
+        @Override
+        public String getResourceType() {
+            return ROW_MODEL_RESOURCE_TYPE;
+        }
     }
-  }
 
 }
