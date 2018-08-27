@@ -117,7 +117,8 @@ public class HistoryImpl implements History {
 		return SlingHelper.resolveDefault(resolverFactory, new ResolveCallback<List<Entry>>() {
 			@Override
 			public List<Entry> resolve(ResourceResolver resolver) {
-				return Optional.ofNullable(resolver.getResource(HistoryImpl.ENTRY_PATH)).map(resource -> {
+				final Resource historyCatalogResource = resolver.getResource(HistoryImpl.ENTRY_PATH);
+				return Optional.ofNullable(historyCatalogResource).map(resource -> {
 					List<Entry> result = Lists.newLinkedList();
 					resource.listChildren()
 							.forEachRemaining(child -> result.add(child.adaptTo(Entry.class)));
@@ -132,7 +133,8 @@ public class HistoryImpl implements History {
 
 	@Override
 	public List<Resource> findAllResource(ResourceResolver resourceResolver) {
-		return Optional.ofNullable(resourceResolver.getResource(HistoryImpl.ENTRY_PATH)).map(resource -> {
+		final Resource historyCatalogResource = resourceResolver.getResource(HistoryImpl.ENTRY_PATH);
+		return Optional.ofNullable(historyCatalogResource).map(resource -> {
 			List<Resource> result = Lists.newLinkedList();
 			resource.listChildren()
 					.forEachRemaining(result::add);
