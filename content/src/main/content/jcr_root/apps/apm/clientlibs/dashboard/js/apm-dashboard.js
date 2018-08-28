@@ -22,6 +22,27 @@
     let uiHelper = $(window).adaptTo("foundation-ui");
 
     $(window).adaptTo("foundation-registry").register(
+        "foundation.collection.action.activecondition", {
+        name: "is-not-folder",
+        handler: function(name, el, config, collection, selections) {
+            return !isFolder(selections);
+        }
+    });
+
+    $(window).adaptTo("foundation-registry").register(
+        "foundation.collection.action.activecondition", {
+            name:"is-available",
+            handler: function(name, el, config, collection, selections) {
+                if (isFolder(selections)) {
+                    return false;
+                }
+
+                el.disabled = isScriptInvalidOrNonExecutable(selections);
+                return true;
+            }
+        });
+
+    $(window).adaptTo("foundation-registry").register(
         "foundation.collection.action.action", {
             name: "dashboard.dryrun",
             handler: function (name, el, config, collection, selections) {
@@ -113,6 +134,14 @@
                 uiHelper.alert('Run on publish wasn\'t executed successfully', data.responseJSON.message, 'error');
             }
         });
+    }
+    
+    function isFolder(selections) {
+        return selections[0].items._container.innerHTML.includes("folder");
+    }
+
+    function isScriptInvalidOrNonExecutable(selections) {
+        return selections[0].items._container.innerHTML.includes("close");
     }
 
 })(window, jQuery);
