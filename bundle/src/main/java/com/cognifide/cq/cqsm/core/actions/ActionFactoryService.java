@@ -111,17 +111,21 @@ public class ActionFactoryService implements ActionFactory {
 
     for (MapperDescriptor mapper : getMappers().values()) {
       for (MappingDescriptor mapping : mapper.getMappings()) {
-        Map<String, Object> reference = new HashMap<>();
-        reference.put("commands", mapper.getCommandName().toUpperCase());
-        reference.put("pattern", "");
-        reference.put("args", mapping.getAnnotation().args());
-        reference.put("reference", mapping.getAnnotation().reference());
-        references.add(reference);
+        references.add(createReference(mapper, mapping));
       }
     }
 
     sortReferences(references);
     return references;
+  }
+
+  private Map<String, Object> createReference(MapperDescriptor mapper, MappingDescriptor mapping) {
+    Map<String, Object> reference = new HashMap<>();
+    reference.put("commands", mapper.getCommandName().toUpperCase());
+    reference.put("pattern", "");
+    reference.put("args", mapping.getAnnotation().args());
+    reference.put("reference", mapping.getAnnotation().reference());
+    return reference;
   }
 
   private void sortReferences(List<Map<String, Object>> references) {

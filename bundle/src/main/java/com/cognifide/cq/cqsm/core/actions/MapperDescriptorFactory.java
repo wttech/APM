@@ -22,10 +22,10 @@ package com.cognifide.cq.cqsm.core.actions;
 
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
-import com.google.common.collect.ImmutableList;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,14 +50,15 @@ public final class MapperDescriptorFactory {
   }
 
   private static List<MappingDescriptor> getMappings(Object mapper) {
-    List<MappingDescriptor> result = new ArrayList<>();
-    for (Method method : mapper.getClass().getDeclaredMethods()) {
-      Mapping annotation = method.getDeclaredAnnotation(Mapping.class);
-      if (annotation != null) {
-        result.add(new MappingDescriptor(annotation, method));
-      }
-    }
-    result.sort(null);
-    return ImmutableList.copyOf(result);
+    return Arrays.stream(mapper.getClass().getDeclaredMethods())
+        .filter(method -> method.isAnnotationPresent(Mapping.class))
+        .map(MapperDescriptorFactory::createMappingDescriptor)
+        .sorted()
+        .collect(Collectors.toList());
+  }
+
+  private static MappingDescriptor createMappingDescriptor(Method method) {
+    Mapping annotation = method.getDeclaredAnnotation(Mapping.class);
+    return new MappingDescriptor(annotation, method);
   }
 }

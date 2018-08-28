@@ -19,13 +19,14 @@
  */
 package com.cognifide.cq.cqsm.core.scripts;
 
+import static com.cognifide.cq.cqsm.core.antlr.InvalidSyntaxMessageFactory.detailedSyntaxError;
+import static com.cognifide.cq.cqsm.core.antlr.InvalidSyntaxMessageFactory.generalSyntaxError;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
 import com.cognifide.cq.cqsm.api.actions.ActionFactory;
 import com.cognifide.cq.cqsm.api.actions.ActionResult;
 import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
-import com.cognifide.cq.cqsm.api.exceptions.ExecutionException;
 import com.cognifide.cq.cqsm.api.executors.Context;
 import com.cognifide.cq.cqsm.api.executors.Mode;
 import com.cognifide.cq.cqsm.api.logger.Message;
@@ -40,6 +41,7 @@ import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
 import com.cognifide.cq.cqsm.api.scripts.ScriptStorage;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.actions.executor.ActionExecutor;
+import com.cognifide.cq.cqsm.core.antlr.InvalidSyntaxException;
 import com.cognifide.cq.cqsm.core.antlr.ScriptContext;
 import com.cognifide.cq.cqsm.core.antlr.ScriptRunner;
 import com.cognifide.cq.cqsm.core.loader.ScriptTree;
@@ -49,10 +51,10 @@ import com.cognifide.cq.cqsm.core.macro.MacroRegistrar;
 import com.cognifide.cq.cqsm.core.progress.ProgressImpl;
 import com.cognifide.cq.cqsm.core.sessions.SessionSavingMode;
 import com.cognifide.cq.cqsm.core.sessions.SessionSavingPolicy;
+import com.google.common.collect.Lists;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.jcr.RepositoryException;
@@ -115,7 +117,10 @@ public class ScriptManagerImpl implements ScriptManager {
     try {
       progress = execute(script, mode, resolver);
 
-    } catch (ExecutionException e) {
+    } catch (InvalidSyntaxException e) {
+      progress = new ProgressImpl(resolver.getUserID());
+      progress.addEntry(generalSyntaxError(e), Message.getErrorMessage(detailedSyntaxError(e)), Status.ERROR);
+    } catch (RuntimeException e) {
       progress = new ProgressImpl(resolver.getUserID());
       progress.addEntry(Message.getErrorMessage(e.getMessage()), Status.ERROR);
     }
@@ -186,13 +191,10 @@ public class ScriptManagerImpl implements ScriptManager {
   }
 
   @Override
-  public List<Script> findIncludes(final Script script, final ResourceResolver resolver) throws ExecutionException {
-    final List<Script> includes = new ArrayList<>();
-
+  public List<Script> findIncludes(final Script script, final ResourceResolver resolver) {
     ScriptTreeLoader scriptTreeLoader = new ScriptTreeLoader(resolver, scriptFinder);
     ScriptTree scriptTree = scriptTreeLoader.loadScriptTree(script);
-
-    return includes;
+    return Lists.newArrayList(scriptTree.getIncludedScripts());
   }
 
   private ActionExecutor createExecutor(final Mode mode, final ResourceResolver resolver) throws RepositoryException {

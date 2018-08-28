@@ -46,6 +46,14 @@ public class CreateUserMapper {
   }
 
   @Mapping(
+      args = {"userId", "password"},
+      reference = REFERENCE
+  )
+  public Action mapAction(String id, String password) {
+    return mapAction(id, password, null, false);
+  }
+
+  @Mapping(
       args = {"userId"},
       reference = REFERENCE
   )

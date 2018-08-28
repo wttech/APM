@@ -20,30 +20,28 @@
 
 package com.cognifide.cq.cqsm.core.loader;
 
-import com.cognifide.apm.antlr.ApmLangParser.ApmContext;
+import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.google.common.collect.ImmutableMap;
 import java.util.Collection;
 import java.util.Map;
+import lombok.Getter;
 
-public class ScriptTree {
+public final class ScriptTree {
 
-  private final ApmContext root;
-  private final Map<String, ApmContext> includedScripts;
+  @Getter
+  private final Script root;
+  private final Map<String, Script> includedScripts;
 
-  public ScriptTree(ApmContext root, Map<String, ApmContext> includedScripts) {
+  public ScriptTree(Script root, Map<String, Script> includedScripts) {
     this.root = root;
     this.includedScripts = ImmutableMap.copyOf(includedScripts);
   }
 
-  public ApmContext getRoot() {
-    return root;
-  }
-
-  public ApmContext getIncludedScript(String path) {
+  public Script getIncludedScript(String path) {
     return includedScripts.get(path);
   }
 
-  public Collection<ApmContext> getIncludedScripts() {
+  public Collection<Script> getIncludedScripts() {
     return includedScripts.values();
   }
 }

@@ -28,10 +28,6 @@ booleanValue
     : BOOLEAN_VALUE
     ;
 
-nullValue
-    : NULL_VALUE
-    ;
-
 numberValue
     : NUMBER_LITERAL
     ;
@@ -47,15 +43,23 @@ stringConst
 value
     : variable
     | booleanValue
-    | nullValue
     | numberValue
     | stringValue
     | stringConst
     ;
 
+operator
+    : '+'
+    ;
+
+expression
+    : expression operator expression
+    | value
+    ;
+
 parameter
     : array
-    | value
+    | expression
     ;
 
 variableDefinition
@@ -161,10 +165,6 @@ BOOLEAN_VALUE
     | 'TRUE'
     | 'false'
     | 'FALSE'
-    ;
-NULL_VALUE
-    : 'null'
-    | 'NULL'
     ;
 IDENTIFIER
     : Letter LetterOrDigit*

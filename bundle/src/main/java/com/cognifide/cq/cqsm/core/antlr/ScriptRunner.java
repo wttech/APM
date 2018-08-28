@@ -23,7 +23,6 @@ package com.cognifide.cq.cqsm.core.antlr;
 import static java.lang.String.format;
 
 import com.cognifide.apm.antlr.ApmLangBaseVisitor;
-import com.cognifide.apm.antlr.ApmLangParser.ApmContext;
 import com.cognifide.apm.antlr.ApmLangParser.ForeachContext;
 import com.cognifide.apm.antlr.ApmLangParser.GenericCommandContext;
 import com.cognifide.apm.antlr.ApmLangParser.MacroDefinitionContext;
@@ -34,11 +33,13 @@ import com.cognifide.apm.antlr.ApmLangParser.VariableDefinitionContext;
 import com.cognifide.cq.cqsm.api.logger.Message;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.logger.Status;
+import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.core.antlr.parameter.ParameterResolver;
 import com.cognifide.cq.cqsm.core.antlr.parameter.Parameters;
 import com.cognifide.cq.cqsm.core.antlr.type.ApmType;
 import com.cognifide.cq.cqsm.core.antlr.type.ApmValue;
 import com.cognifide.cq.cqsm.core.loader.ScriptInclusion;
+import com.cognifide.cq.cqsm.core.loader.ScriptTree;
 import com.cognifide.cq.cqsm.core.macro.MacroDefinition;
 import com.cognifide.cq.cqsm.core.macro.MacroExecution;
 import java.util.Collections;
@@ -55,7 +56,8 @@ public class ScriptRunner {
 
   public Progress execute(ScriptContext scriptContext) {
     Executor executor = new Executor(scriptContext);
-    executor.visit(scriptContext.getScriptTree().getRoot());
+    ScriptTree scriptTree = scriptContext.getScriptTree();
+    executor.visit(scriptTree.getRoot().getApm());
     return scriptContext.getProgress();
   }
 
@@ -89,8 +91,10 @@ public class ScriptRunner {
 
     private void scriptInclusion(ScriptInclusionContext ctx) {
       String referencePath = ScriptInclusion.of(ctx).getPath();
-      ApmContext includedScript = scriptContext.getScriptTree().getIncludedScript(referencePath);
-      visit(includedScript);
+      Script includedScript = scriptContext.getScriptTree().getIncludedScript(referencePath);
+      info("import: begin", format("Import of script: %s", referencePath));
+      visit(includedScript.getApm());
+      info("import: end", format("Import of script: %s", referencePath));
     }
 
     @Override
@@ -144,7 +148,7 @@ public class ScriptRunner {
       ParameterResolver parameterResolver = scriptContext.getParameterResolver();
       VariableHolder variableHolder = scriptContext.getVariableHolder();
       try {
-        variableHolder.createLocalContext();
+        variableHolder.createIsolatedLocalContext();
         MacroExecution commandUseMacro = MacroExecution.of(ctx);
         MacroDefinition macroDefinition = scriptContext.getMacroRegister().get(commandUseMacro.getName());
         List<String> parametersNames = macroDefinition.getParametersNames();

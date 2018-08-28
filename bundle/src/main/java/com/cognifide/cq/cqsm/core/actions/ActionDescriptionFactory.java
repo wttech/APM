@@ -31,12 +31,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class ActionDescriptionFactory {
-
-  private static final Logger LOG = LoggerFactory.getLogger(ActionDescriptionFactory.class);
 
   public ActionDescriptor evaluate(MapperDescriptor mapper, String command, Parameters parameters)
       throws ActionCreationException {

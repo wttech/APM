@@ -23,6 +23,7 @@ package com.cognifide.cq.cqsm.core.loader;
 import com.cognifide.apm.antlr.ApmLangParser;
 import com.cognifide.apm.antlr.ApmLangParser.ApmContext;
 import com.cognifide.apm.antlr.ApmLangParser.ScriptInclusionContext;
+import com.cognifide.cq.cqsm.api.exceptions.ExecutionException;
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
 import com.cognifide.cq.cqsm.core.antlr.ApmLangParserFactory;
@@ -46,22 +47,32 @@ public class ScriptTreeLoader {
   public ScriptTree loadScriptTree(Script script) {
     ScriptInclusionFinder finder = new ScriptInclusionFinder();
     ApmContext root = ApmLangParserFactory.createParserForScript(script.getData()).apm();
-    Map<String, ApmContext> includedScripts = findIncludedScripts(finder, root);
-    return new ScriptTree(root, includedScripts);
+    script.setApm(root);
+    Map<String, Script> includedScripts = findIncludedScripts(finder, root);
+    return new ScriptTree(script, includedScripts);
   }
 
-  private Map<String, ApmContext> findIncludedScripts(ScriptInclusionFinder finder, ApmContext root) {
-    Map<String, ApmContext> references = new HashMap<>();
+  private Map<String, Script> findIncludedScripts(ScriptInclusionFinder finder, ApmContext root) {
+    Map<String, Script> references = new HashMap<>();
     List<ScriptInclusionContext> scriptInclusions = finder.visit(root);
     for (ScriptInclusionContext scriptInclusion : scriptInclusions) {
       String referencePath = ScriptInclusion.of(scriptInclusion).getPath();
-      if (referencePath != null) {
-        Script script = scriptFinder.find(referencePath, resourceResolver);
-        ApmLangParser includedScript = ApmLangParserFactory.createParserForScript(script.getData());
-        references.put(referencePath, includedScript.apm());
-      }
+      Script includedScript = findIncludedScript(referencePath);
+      references.put(referencePath, includedScript);
     }
     return references;
+  }
+
+  private Script findIncludedScript(String referencePath) {
+    if (referencePath != null) {
+      Script script = scriptFinder.find(referencePath, resourceResolver);
+      if (script != null) {
+        ApmLangParser includedScript = ApmLangParserFactory.createParserForScript(script.getData());
+        script.setApm(includedScript.apm());
+        return script;
+      }
+    }
+    throw new ExecutionException("Cannot find script: " + referencePath);
   }
 
   private static class ScriptInclusionFinder extends ListBaseVisitor<ScriptInclusionContext> {

@@ -30,21 +30,72 @@ import spock.lang.Specification
 
 class ParameterResolverTest extends Specification {
 
-    def "resolve parameters from new context"() {
+    def "resolve parameters from isolated local context"() {
         given:
         def variableHolder = VariableHolder.empty()
-        variableHolder.put("var1", new ApmString("val1"))
+        variableHolder.put("var1", new ApmString("val1")) // this is not accessible
+        variableHolder.createIsolatedLocalContext()
+        variableHolder.put("var2", new ApmString("val2"))
         variableHolder.createLocalContext()
-        variableHolder.put("var1", new ApmString("val3"))
+        variableHolder.put("var2", new ApmString("val3"))
+
         def parameterResolver = new ParameterResolver(variableHolder)
-        def parser = ApmLangParserHelper.createParserUsingScript("GENERIC \$var1 'val2'")
+        def parser = ApmLangParserHelper.createParserUsingScript("GENERIC \$var1 \$var2")
 
         when:
         def result = new ParameterVisitor(parameterResolver).visit(parser.apm())
 
         then:
-        result[0].getString() == "val3"
-        result[1].getString() == "val2"
+        result[0].getString() == null
+        result[1].getString() == "val3"
+    }
+
+    def "resolve parameters from local context"() {
+        given:
+        def variableHolder = VariableHolder.empty()
+        variableHolder.put("var1", new ApmString("val1"))
+        variableHolder.createLocalContext()
+        variableHolder.put("var2", new ApmString("val2"))
+        variableHolder.createLocalContext()
+        variableHolder.put("var2", new ApmString("val3"))
+
+        def parameterResolver = new ParameterResolver(variableHolder)
+        def parser = ApmLangParserHelper.createParserUsingScript("GENERIC \$var1 \$var2")
+
+        when:
+        def result = new ParameterVisitor(parameterResolver).visit(parser.apm())
+
+        then:
+        result[0].getString() == "val1"
+        result[1].getString() == "val3"
+    }
+
+    def "concatenation of strings"() {
+        given:
+        def variableHolder = VariableHolder.empty()
+        variableHolder.put("var1", new ApmString("val1"))
+        def parameterResolver = new ParameterResolver(variableHolder)
+        def parser = ApmLangParserHelper.createParserUsingScript("GENERIC \$var1 + 'val2'")
+
+        when:
+        def result = new ParameterVisitor(parameterResolver).visit(parser.apm())
+
+        then:
+        result[0].getString() == "val1val2"
+    }
+
+    def "concatenation of other types"() {
+        given:
+        def variableHolder = VariableHolder.empty()
+        variableHolder.put("var1", new ApmNumber(33L))
+        def parameterResolver = new ParameterResolver(variableHolder)
+        def parser = ApmLangParserHelper.createParserUsingScript("GENERIC \$var1+22+FALSE")
+
+        when:
+        def result = new ParameterVisitor(parameterResolver).visit(parser.apm())
+
+        then:
+        result[0].getString() == "3322false"
     }
 
     def "resolve boolean parameters"() {
@@ -60,22 +111,6 @@ class ParameterResolverTest extends Specification {
         then:
         result[0].getBoolean() == Boolean.TRUE
         result[1].getBoolean() == Boolean.FALSE
-    }
-
-    def "resolve null parameters"() {
-        given:
-        def variableHolder = VariableHolder.empty()
-        variableHolder.put("var1", new ApmString("val1"))
-        def parameterResolver = new ParameterResolver(variableHolder)
-        def parser = ApmLangParserHelper.createParserUsingScript("GENERIC \$var1 NULL 'val2'")
-
-        when:
-        def result = new ParameterVisitor(parameterResolver).visit(parser.apm())
-
-        then:
-        result[0].getString() == "val1"
-        result[1].getString() == null
-        result[2].getString() == "val2"
     }
 
     def "resolve number parameters"() {
