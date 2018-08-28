@@ -15,4 +15,5 @@
     <filter root="/rep:policy"/>
     <filter root="/var/classes/org/apache/jsp/apps/cqsm"/>
     <filter root="/libs/granite/ui/components/shell/collectionpagewithoutheader"/>
+    <filter root="/libs/cq/core/content/nav/tools/security"/>
 </workspaceFilter>
