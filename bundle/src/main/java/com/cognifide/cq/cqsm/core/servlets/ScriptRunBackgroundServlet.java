@@ -83,16 +83,10 @@ public class ScriptRunBackgroundServlet extends SlingAllMethodsServlet {
 		final boolean isValid = script.isValid();
 		final boolean isExecutable = script.isExecutionEnabled();
 
-		final boolean isRunnable = (isValid && isExecutable);
-
-		if (!isRunnable){
-			String message = "invalid and non-executable";
-
-			if (isValid || isExecutable) {
-				message = isValid ? "non-executable" : "invalid";
-			}
-
-			ServletUtils.writeMessage(response, ERROR_RESPONSE_TYPE, String.format("Script '%s' cannot be processed, because script is %s", searchPath, message));
+		if (!(isValid && isExecutable)){
+			ServletUtils.writeMessage(response, ERROR_RESPONSE_TYPE, String.format("Script '%s' cannot be processed. " +
+					"Script needs to be executable and valid. Actual script status: valid - %s, executable - %s",
+					searchPath, isValid, isExecutable));
 			return;
 		}
 

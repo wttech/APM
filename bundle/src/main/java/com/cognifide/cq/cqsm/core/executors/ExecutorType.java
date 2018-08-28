@@ -19,11 +19,13 @@
  */
 package com.cognifide.cq.cqsm.core.executors;
 
+import org.apache.commons.lang.WordUtils;
+
 enum ExecutorType {
     SCHEDULE, MODIFY, REPLICATION, STARTUP;
 
     @Override
     public String toString() {
-        return name().charAt(0) + name().substring(1).toLowerCase();
+        return WordUtils.capitalizeFully(name());
     }
 }
