@@ -71,7 +71,7 @@ public class ScriptRunner {
     public Void visitScriptInclusion(ScriptInclusionContext ctx) {
       VariableHolder variableHolder = scriptContext.getVariableHolder();
       try {
-        variableHolder.createLocalContext();
+        variableHolder.createIsolatedLocalContext();
         String referencePath = ScriptInclusion.of(ctx).getPath();
         ApmContext includedScript = scriptContext.getScriptTree().getIncludedScript(referencePath);
         visit(includedScript);
@@ -130,7 +130,7 @@ public class ScriptRunner {
       ParameterResolver parameterResolver = scriptContext.getParameterResolver();
       VariableHolder variableHolder = scriptContext.getVariableHolder();
       try {
-        variableHolder.createLocalContext();
+        variableHolder.createIsolatedLocalContext();
         MacroExecution commandUseMacro = MacroExecution.of(ctx);
         MacroDefinition macroDefinition = scriptContext.getMacroRegister().get(commandUseMacro.getName());
         List<String> parametersNames = macroDefinition.getParametersNames();
