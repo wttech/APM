@@ -17,7 +17,7 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-(function (window, $) {
+(function (window, document, $, Granite) {
 
     let uiHelper = $(window).adaptTo("foundation-ui");
 
@@ -144,4 +144,103 @@
         return selections[0].items._container.innerHTML.includes("close");
     }
 
-})(window, jQuery);
+    const COMMAND_URL = Granite.HTTP.externalize("/bin/wcmcommand");
+    const deleteText = "Delete";
+    const cancelText = "Cancel";
+
+    $(window).adaptTo("foundation-registry").register("foundation.collection.action.action", {
+        name: "dashboard.delete",
+        handler: function(name, el, config, collection, selections) {
+            const message = createEl("div");
+
+            const intro = createEl("p").appendTo(message);
+            if (selections.length === 1) {
+                intro.text(Granite.I18n.get("You are going to delete the following " + (isFolder(selections) ? "folder:" : "script:")));
+            } else {
+                intro.text(Granite.I18n.get("You are going to delete the following {0} items:", selections.length));
+            }
+
+            const list = [];
+            const maxCount = Math.min(selections.length, 12);
+            for (let i = 0, ln = maxCount; i < ln; i++) {
+                const title = selections[i].attributes["data-title"].value;
+                list.push(createEl("b").text(title).prop("outerHTML"));
+            }
+            if (selections.length > maxCount) {
+                list.push("&#8230;");
+            }
+
+            createEl("p").html(list.join("<br>")).appendTo(message);
+
+            uiHelper.prompt(deleteText, message.html(), "notice", [{
+                text: cancelText
+            }, {
+                text: deleteText,
+                warning: true,
+                handler: function() {
+                    const paths = selections.map(function(v) {
+                        return $(v).data("foundationCollectionItemId");
+                    });
+
+                    deletePages($(collection), paths, false, true);
+                }
+            }]);
+        }
+    });
+
+    function createEl(name) {
+        return $(document.createElement(name));
+    }
+
+    function deletePages(collection, paths, force, checkChildren) {
+        uiHelper.wait();
+
+        $.ajax({
+            url: COMMAND_URL,
+            type: "POST",
+            data: {
+                _charset_: "UTF-8",
+                cmd: "deletePage",
+                path: paths,
+                force: !!force,
+                checkChildren: !!checkChildren
+            },
+            success: function() {
+                uiHelper.clearWait();
+
+                const api = collection.adaptTo("foundation-collection");
+
+                if (api && "reload" in api) {
+                    api.reload();
+                    return;
+                }
+
+                const contentApi = $(".foundation-content").adaptTo("foundation-content");
+                if (contentApi) {
+                    contentApi.refresh();
+                }
+            },
+            error: function(xhr) {
+                uiHelper.clearWait();
+
+                const message = Granite.I18n.getVar($(xhr.responseText).find("#Message").html());
+
+                if (xhr.status === 412) {
+                    uiHelper.prompt(deleteText, message, "notice", [{
+                        text: cancelText
+                    }, {
+                        text: Granite.I18n.get("Force Delete"),
+                        warning: true,
+                        handler: function() {
+                            deletePages(collection, paths, true);
+                        }
+                    }]);
+                    return;
+                }
+
+                uiHelper.alert(Granite.I18n.get("Error"), message, "error");
+            }
+        });
+    }
+
+})(window, document, Granite.$, Granite);
