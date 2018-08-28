@@ -134,7 +134,7 @@ public class ScriptManagerImpl implements ScriptManager {
     } catch (InvalidSyntaxException e) {
       progress = new ProgressImpl(resolver.getUserID());
       progress.addEntry(generalSyntaxError(e), Message.getErrorMessage(detailedSyntaxError(e)), Status.ERROR);
-    } catch (ExecutionException | RuntimeException e) {
+    } catch (RuntimeException e) {
       progress = new ProgressImpl(resolver.getUserID());
       progress.addEntry(Message.getErrorMessage(e.getMessage()), Status.ERROR);
     }
