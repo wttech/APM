@@ -19,8 +19,6 @@
  */
 package com.cognifide.cq.cqsm.core.executors;
 
-import com.cognifide.cq.cqsm.api.executors.Mode;
-import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.scripts.ExecutionMode;
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.utils.InstanceTypeProvider;
@@ -29,7 +27,9 @@ import com.cognifide.cq.cqsm.core.scripts.ScriptContent;
 import com.cognifide.cq.cqsm.core.scripts.ScriptStorageImpl;
 import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper;
 import com.google.common.collect.ImmutableMap;
-
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.SlingConstants;
 import org.apache.sling.api.resource.PersistenceException;
@@ -41,12 +41,6 @@ import org.apache.sling.event.jobs.JobManager;
 import org.apache.sling.event.jobs.consumer.JobConsumer;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 @Component(
 		immediate = true,

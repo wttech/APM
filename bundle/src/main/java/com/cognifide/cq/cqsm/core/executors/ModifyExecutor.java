@@ -19,21 +19,19 @@
  */
 package com.cognifide.cq.cqsm.core.executors;
 
+import static com.cognifide.cq.cqsm.core.scripts.ScriptFilters.filterOnModify;
+
 import com.cognifide.cq.cqsm.api.scripts.EventListener;
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
 import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper;
-
+import java.util.List;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-
-import java.util.List;
-
-import static com.cognifide.cq.cqsm.core.scripts.ScriptFilters.filterOnModify;
 
 @Component(
 		immediate = true,

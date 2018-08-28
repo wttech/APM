@@ -19,28 +19,19 @@
  */
 package com.cognifide.cq.cqsm.core.executors;
 
+import static com.cognifide.cq.cqsm.core.scripts.ScriptFilters.filterOnStart;
+
 import com.cognifide.cq.cqsm.api.scripts.EventListener;
 import com.cognifide.cq.cqsm.api.scripts.Script;
-import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
-import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
 import com.cognifide.cq.cqsm.core.Property;
-import com.cognifide.cq.cqsm.core.Cqsm;
 import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
 import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper;
-
+import java.util.List;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.List;
-
-import javax.jcr.RepositoryException;
 
 @Component(
 		immediate = true,
@@ -50,8 +41,6 @@ import javax.jcr.RepositoryException;
 		}
 )
 public class StartupExecutor extends AbstractExecutor {
-
-	private static final Logger LOG = LoggerFactory.getLogger(StartupExecutor.class);
 
 	/**
 	 * Reference needed for proper event hook up on activation

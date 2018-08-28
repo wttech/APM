@@ -19,17 +19,19 @@
  */
 package com.cognifide.cq.cqsm.core.servlets;
 
+import com.cognifide.cq.cqsm.api.scriptrunnerjob.JobProgressOutput;
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
-import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import com.cognifide.cq.cqsm.api.scriptrunnerjob.JobProgressOutput;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.jobs.ScriptRunnerJobManager;
 import com.cognifide.cq.cqsm.core.utils.ServletUtils;
-
+import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import java.io.IOException;
+import java.util.Map;
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
@@ -38,12 +40,6 @@ import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.apache.sling.event.jobs.Job;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-
-import java.io.IOException;
-import java.util.Map;
-
-import javax.servlet.Servlet;
-import javax.servlet.ServletException;
 
 @Component(
 		immediate = true,
