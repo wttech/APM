@@ -19,6 +19,8 @@
  */
 package com.cognifide.cq.cqsm.core.servlets;
 
+import com.cognifide.cq.cqsm.api.scripts.Script;
+import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -35,6 +37,7 @@ import org.apache.felix.scr.annotations.Service;
 import org.apache.felix.scr.annotations.sling.SlingServlet;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.apache.sling.event.jobs.Job;
 import org.osgi.framework.Constants;
@@ -66,9 +69,27 @@ public class ScriptRunBackgroundServlet extends SlingAllMethodsServlet {
 	@Reference
 	private ScriptRunnerJobManager scriptRunnerJobManager;
 
+	@Reference
+	private ScriptFinder scriptFinder;
+
 	@Override
 	protected void doPost(final SlingHttpServletRequest request, final SlingHttpServletResponse response)
 			throws ServletException, IOException {
+
+		final String searchPath = request.getParameter(FILE_REQUEST_PARAMETER);
+		final ResourceResolver resolver = request.getResourceResolver();
+		final Script script = scriptFinder.find(searchPath, resolver);
+
+		final boolean isValid = script.isValid();
+		final boolean isExecutable = script.isExecutionEnabled();
+
+		if (!(isValid && isExecutable)){
+			ServletUtils.writeMessage(response, ERROR_RESPONSE_TYPE, String.format("Script '%s' cannot be processed. " +
+					"Script needs to be executable and valid. Actual script status: valid - %s, executable - %s",
+					searchPath, isValid, isExecutable));
+			return;
+		}
+
 		BackgroundJobParameters parameters = getParameters(request, response);
 		if (parameters == null) {
 			return;

@@ -383,6 +383,7 @@
                             <exclude>**/*.war</exclude>
                             <exclude>**/*.zip</exclude>
                             <exclude>**/*.xml</exclude>
+                            <exclude>**/*.jsp</exclude>
 
                             <!-- Documentation module -->
                             <exclude>**/documentation/*</exclude>

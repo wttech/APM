@@ -105,14 +105,14 @@
                                 jcr:primaryType="nt:unstructured"
                                 sling:resourceType="granite/ui/components/coral/foundation/collection/actionlink"
                                 action="foundation.link"
-                                href="/apps/apm/edit.html"
+                                href="/apm/edit.html"
                                 icon="fileAdd"
                                 relScope="collection"
                                 target=".cq-experience-fragments-admin-childpages"
                                 text="Create Script">
                             <data
                                     jcr:primaryType="nt:unstructured"
-                                    href.uritemplate="/apps/apm/edit.html{+id}"/>
+                                    href.uritemplate="/apm/edit.html{+id}"/>
                         </importscript>
                         <createfolder
                                 granite:id="cq-experiencefragments-admin-createfolder"
@@ -138,13 +138,17 @@
                         granite:class="foundation-collection-action"
                         jcr:primaryType="nt:unstructured"
                         sling:resourceType="granite/ui/components/coral/foundation/collection/action"
-                        action="dashboard.view"
+                        action="foundation.link"
                         activeSelectionCount="single"
                         icon="search"
                         relScope="item"
                         target=".cq-experience-fragments-admin-childpages"
                         text="View"
-                        variant="actionBar"/>
+                        variant="actionBar">
+                        <data
+                                jcr:primaryType="nt:unstructured"
+                                href.uritemplate="/apm/view.html{+item}"/>
+                </view>
                 <dryrun
                         granite:class="foundation-collection-action"
                         jcr:primaryType="nt:unstructured"
@@ -191,7 +195,7 @@
                         variant="actionBar">
                     <data
                             jcr:primaryType="nt:unstructured"
-                            href.uritemplate="/apps/apm/edit.html{+item}"/>
+                            href.uritemplate="/apm/edit.html{+item}"/>
                 </edit>
                 <deletepage
                         granite:class="foundation-collection-action"
