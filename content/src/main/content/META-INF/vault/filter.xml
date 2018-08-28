@@ -2,7 +2,6 @@
 <workspaceFilter version="1.0">
     <filter root="/apps/apm"/>
     <filter root="/conf/apm">
-        <include pattern="/conf/apm/scripts/samples(/.*)?"/>
         <exclude pattern="/conf/apm/samples(/.*)?"/>
         <exclude pattern="/conf/apm/history(/.*)?"/>
     </filter>
