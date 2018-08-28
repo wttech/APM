@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="nt:unstructured"
+    id="root">
+    <projects/>
+    <sites/>
+    <experiencefragments/>
+    <assets/>
+    <contentservices/>
+    <publications/>
+    <forms/>
+    <screens/>
+    <personalization/>
+    <commerce/>
+    <tools
+        jcr:primaryType="nt:unstructured"
+        jcr:title="Tools"
+        id="cq-tools"
+        order="{Long}200">
+        <general/>
+        <workflow/>
+        <operations/>
+        <sites/>
+        <assets/>
+        <resources/>
+        <deployment/>
+        <security
+            jcr:primaryType="nt:unstructured"
+            jcr:title="Security"
+            id="cq-tools-security">
+            <users/>
+            <groups/>
+            <oauth/>
+            <oauthtokens/>
+            <permissions/>
+            <apm
+                jcr:description="Manage and execute your APM scripts"
+                jcr:primaryType="nt:unstructured"
+                jcr:title="AEM Permission Management"
+                href="/apm/dashboard.html"
+                icon="login"
+                id="cq-tools-apm"
+                target="_blank"/>
+        </security>
+        <commerce/>
+        <communities/>
+    </tools>
+    <communities/>
+</jcr:root>

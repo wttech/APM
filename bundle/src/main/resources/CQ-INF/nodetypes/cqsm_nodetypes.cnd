@@ -27,5 +27,6 @@
   - cqsm:executionMode (string)
   - cqsm:executionSchedule (date)
   - cqsm:executionLast (date)
+  - cqsm:dryRunLast (date)
   - cqsm:executionEnabled (boolean)
   - cqsm:publishRun (boolean)
