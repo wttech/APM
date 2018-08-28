@@ -51,6 +51,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import org.apache.commons.lang.StringUtils;
@@ -117,16 +118,10 @@ public class HistoryImpl implements History {
 		return SlingHelper.resolveDefault(resolverFactory, new ResolveCallback<List<Entry>>() {
 			@Override
 			public List<Entry> resolve(ResourceResolver resolver) {
-				final Resource historyCatalogResource = resolver.getResource(HistoryImpl.ENTRY_PATH);
-				return Optional.ofNullable(historyCatalogResource).map(resource -> {
-					List<Entry> result = Lists.newLinkedList();
-					resource.listChildren()
-							.forEachRemaining(child -> result.add(child.adaptTo(Entry.class)));
-					return result;
-				}).orElseGet(() -> {
-					LOG.warn("History resource can't be found at: {}", HistoryImpl.ENTRY_PATH);
-					return Collections.emptyList();
-				});
+				return findAllResource(resolver)
+						.stream()
+						.map(resource -> resource.adaptTo(Entry.class))
+						.collect(Collectors.toList());
 			}
 		}, Collections.<Entry>emptyList());
 	}
