@@ -19,20 +19,13 @@
  */
 (function (window, $) {
 
-    $(window).adaptTo("foundation-registry").register(
-        "foundation.collection.action.action", {
-            name: "dashboard.view",
-            handler: function (name, el, config, collection, selections) {
-                var selected = selections[0].attributes['data-path'].value;
-                console.info('Implement Me: view CLICK ' + selected);
-            }
-        });
+    let uiHelper = $(window).adaptTo("foundation-ui");
 
     $(window).adaptTo("foundation-registry").register(
         "foundation.collection.action.action", {
             name: "dashboard.dryrun",
             handler: function (name, el, config, collection, selections) {
-                var selected = selections[0].attributes['data-path'].value;
+                const selected = selections[0].attributes['data-path'].value;
                 runOnAuthor(selected, "DRY_RUN");
             }
         });
@@ -41,7 +34,7 @@
         "foundation.collection.action.action", {
             name: "dashboard.runonauthor",
             handler: function (name, el, config, collection, selections) {
-                var selected = selections[0].attributes['data-path'].value;
+                const selected = selections[0].attributes['data-path'].value;
                 runOnAuthor(selected, "RUN");
             }
         });
@@ -50,7 +43,7 @@
         "foundation.collection.action.action", {
             name: "dashboard.runonpublish",
             handler: function (name, el, config, collection, selections) {
-                var selected = selections[0].attributes['data-path'].value;
+                const selected = selections[0].attributes['data-path'].value;
                 runOnPublish(selected);
             }
         });
@@ -63,7 +56,9 @@
             + mode,
             dataType: "html",
             success: function (data) {
-                var jobId = JSON.parse(data).id;
+                const parsedJSON = JSON.parse(data);
+                const jobId = parsedJSON.id;
+                const jobMessage = parsedJSON.message;
 
                 (function checkStatus(jobId) {
                     $.ajax({
@@ -71,18 +66,30 @@
                         url: "/bin/cqsm/run-background?id=" + jobId,
                         dataType: "html",
                         success: function (data) {
-                            var dataObject = JSON.parse(data);
+                            const dataObject = JSON.parse(data);
                             if (dataObject.type === 'running') {
                                 setTimeout(function () {
                                     checkStatus(jobId)
                                 }, 1000);
                             } else if (dataObject.type === 'finished') {
                                 console.log(scriptPath + " finished: " + JSON.stringify(dataObject.entries));
-                                console.log(
-                                    "Implement me: provide more sophisticated way of displaying results after finishing the script")
+                                switch(mode){
+                                    case 'DRY_RUN':
+                                        uiHelper.notify('info', 'Dry Run executed successfully', 'Info');
+                                        break;
+                                    case 'RUN':
+                                        uiHelper.notify('info', 'Run on author executed successfully', 'Info');
+                                        break;
+                                }
                             } else if (dataObject.type === 'unknown') {
-                                console.log(
-                                    "Implement me: handle \"unknown\" case");
+                                switch(mode) {
+                                    case 'DRY_RUN':
+                                        uiHelper.alert('Dry Run wasn\'t executed successfully', jobMessage, 'error');
+                                        break;
+                                    case 'RUN':
+                                        uiHelper.alert('Run on author wasn\'t executed successfully', jobMessage, 'error');
+                                        break;
+                                }
                             }
                         }
                     });
@@ -99,7 +106,11 @@
             dataType: "json",
             success: function (data) {
                 console.log("publish response: " + JSON.stringify(data));
-                console.log("Implement me: handle \'publish\' case");
+                uiHelper.notify('info', 'Run on publish executed successfully', 'info');
+            },
+            error: function (data) {
+                console.log("publish  response: " + JSON.stringify(data));
+                uiHelper.alert('Run on publish wasn\'t executed successfully', data.responseJSON.message, 'error');
             }
         });
     }

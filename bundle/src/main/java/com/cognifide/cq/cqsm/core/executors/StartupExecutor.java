@@ -19,17 +19,13 @@
  */
 package com.cognifide.cq.cqsm.core.executors;
 
-import static com.cognifide.cq.cqsm.core.scripts.ScriptFilters.filterOnStart;
-
-import com.cognifide.cq.cqsm.api.executors.Mode;
-import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.scripts.EventListener;
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
 import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
 import com.cognifide.cq.cqsm.core.Property;
+import com.cognifide.cq.cqsm.core.Cqsm;
 import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
-import com.cognifide.cq.cqsm.core.utils.sling.OperateCallback;
 import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper;
 
 import org.apache.sling.api.resource.PersistenceException;
@@ -53,7 +49,7 @@ import javax.jcr.RepositoryException;
 				Property.VENDOR
 		}
 )
-public class StartupExecutor {
+public class StartupExecutor extends AbstractExecutor {
 
 	private static final Logger LOG = LoggerFactory.getLogger(StartupExecutor.class);
 
@@ -63,60 +59,21 @@ public class StartupExecutor {
 	@Reference
 	private EventListener eventListener;
 
-	@Reference
-	private ScriptManager scriptManager;
-
-	@Reference
-	private ScriptFinder scriptFinder;
-
-	@Reference
-	private ResourceResolverFactory resolverFactory;
-
 	@Activate
-	private synchronized void activate(ComponentContext ctx) {
-		SlingHelper.operateTraced(resolverFactory, new OperateCallback() {
-			@Override
-			public void operate(ResourceResolver resolver) throws Exception {
-				runOnStartup(resolver);
-			}
-		});
+	private synchronized void activate() {
+		SlingHelper.operateTraced(resolverFactory, this::runOnStartup);
 	}
 
 	private void runOnStartup(ResourceResolver resolver) throws PersistenceException {
 		final List<Script> scripts = scriptFinder.findAll(filterOnStart(resolver), resolver);
-		if (scripts.size() > 0) {
-			LOG.info("Startup script executor is trying to execute scripts on startup: {}", scripts.size());
-			LOG.info(MessagingUtils.describeScripts(scripts));
-
+		if (!scripts.isEmpty()) {
+			logger.info("Startup script executor is trying to execute scripts on startup: {}", scripts.size());
+			logger.info(MessagingUtils.describeScripts(scripts));
 			for (Script script : scripts) {
-				runScript(resolver, script);
+				processScript(script, resolver, ExecutorType.STARTUP);
 			}
 		} else {
-			LOG.info("Startup script executor has nothing to do");
-		}
-	}
-
-	private void runScript(ResourceResolver resolver, Script script) throws PersistenceException {
-		final String scriptPath = script.getPath();
-
-		try {
-			scriptManager.process(script, Mode.VALIDATION, resolver);
-			if (script.isValid()) {
-				final Progress progress = scriptManager.process(script, Mode.AUTOMATIC_RUN, resolver);
-				logStatus(scriptPath, progress.isSuccess());
-			} else {
-				LOG.warn("Startup executor cannot execute script which is not valid: {}", scriptPath);
-			}
-		} catch (RepositoryException e) {
-			LOG.error("Script cannot be processed because of repository error: {}", e);
-		}
-	}
-
-	private void logStatus(String scriptPath, boolean success) {
-		if (success) {
-			LOG.info("Script successfully executed: {}", scriptPath);
-		} else {
-			LOG.error("Script cannot be executed properly: {}", scriptPath);
+			logger.info("Startup script executor has nothing to do");
 		}
 	}
 }

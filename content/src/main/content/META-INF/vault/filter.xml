@@ -2,7 +2,6 @@
 <workspaceFilter version="1.0">
     <filter root="/apps/apm"/>
     <filter root="/conf/apm">
-        <include pattern="/conf/apm/scripts/samples(/.*)?"/>
         <exclude pattern="/conf/apm/samples(/.*)?"/>
         <exclude pattern="/conf/apm/history(/.*)?"/>
     </filter>
@@ -18,5 +17,6 @@
     <filter root="/home/users/system/cqsm-system-user"/>
     <filter root="/rep:policy"/>
     <filter root="/var/classes/org/apache/jsp/apps/cqsm"/>
+    <filter root="/libs/granite/ui/components/shell/collectionpagewithoutheader"/>
     <filter root="/libs/cq/core/content/nav/tools/security"/>
 </workspaceFilter>
