@@ -71,19 +71,30 @@ public class ScriptRunner {
 
     @Override
     public Void visitScriptInclusion(ScriptInclusionContext ctx) {
+      if (ctx.INPLACE() == null) {
+        newContextScriptInclusion(ctx);
+      } else {
+        scriptInclusion(ctx);
+      }
+      return null;
+    }
+
+    private void newContextScriptInclusion(ScriptInclusionContext ctx) {
       VariableHolder variableHolder = scriptContext.getVariableHolder();
-      ScriptTree scriptTree = scriptContext.getScriptTree();
       try {
-        variableHolder.createIsolatedLocalContext();
-        String referencePath = ScriptInclusion.of(ctx).getPath();
-        Script includedScript = scriptTree.getIncludedScript(referencePath);
-        info("import: begin", format("Import of script: %s", referencePath));
-        visit(includedScript.getApm());
-        info("import: end", format("Import of script: %s", referencePath));
+        variableHolder.createLocalContext();
+        scriptInclusion(ctx);
       } finally {
         variableHolder.removeLocalContext();
       }
-      return null;
+    }
+
+    private void scriptInclusion(ScriptInclusionContext ctx) {
+      String referencePath = ScriptInclusion.of(ctx).getPath();
+      Script includedScript = scriptContext.getScriptTree().getIncludedScript(referencePath);
+      info("import: begin", format("Import of script: %s", referencePath));
+      visit(includedScript.getApm());
+      info("import: end", format("Import of script: %s", referencePath));
     }
 
     @Override
@@ -93,6 +104,8 @@ public class ScriptRunner {
       String variableName = ctx.IDENTIFIER().toString();
       ApmType variableValue = parameterResolver.resolve(ctx.parameter());
       variableHolder.put(variableName, variableValue);
+      info("define",
+          format("Defined variable: %s = %s", variableName, variableValue.toString()));
       return null;
     }
 
