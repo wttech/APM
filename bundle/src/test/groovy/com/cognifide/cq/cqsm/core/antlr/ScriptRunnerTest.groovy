@@ -24,6 +24,7 @@ import com.cognifide.cq.cqsm.ApmLangParserHelper
 import com.cognifide.cq.cqsm.api.logger.Message
 import com.cognifide.cq.cqsm.api.logger.Progress
 import com.cognifide.cq.cqsm.api.logger.Status
+import com.cognifide.cq.cqsm.api.scripts.Script
 import com.cognifide.cq.cqsm.core.antlr.parameter.Parameters
 import com.cognifide.cq.cqsm.core.loader.ScriptTree
 import com.cognifide.cq.cqsm.core.macro.MacroRegister
@@ -36,7 +37,9 @@ class ScriptRunnerTest extends Specification {
         given:
         def parser = ApmLangParserHelper.createParserUsingFile("/macros.apm")
         def scriptExecutor = new ScriptRunner(createActionInvoker())
-        def scriptTree = new ScriptTree(parser.apm(), Collections.emptyMap())
+        def script = Mock(Script)
+        script.apm >> parser.apm()
+        def scriptTree = new ScriptTree(script, Collections.emptyMap())
         def macroRegister = new MacroRegistrar().buildMacroRegister(scriptTree)
         def scriptContext = new ScriptContext("user", macroRegister, scriptTree)
 
@@ -60,7 +63,9 @@ class ScriptRunnerTest extends Specification {
         given:
         def parser = ApmLangParserHelper.createParserUsingFile("/example.cqsm")
         def scriptExecutor = new ScriptRunner(createActionInvoker())
-        def scriptTree = new ScriptTree(parser.apm(), Collections.emptyMap())
+        def script = Mock(Script)
+        script.apm >> parser.apm()
+        def scriptTree = new ScriptTree(script, Collections.emptyMap())
         def scriptContext = new ScriptContext("user", new MacroRegister(), scriptTree)
 
         when:
