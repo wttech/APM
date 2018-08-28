@@ -19,6 +19,9 @@
  */
 package com.cognifide.cq.cqsm.core.scripts;
 
+import static com.cognifide.cq.cqsm.core.antlr.InvalidSyntaxMessageFactory.detailedSyntaxError;
+import static com.cognifide.cq.cqsm.core.antlr.InvalidSyntaxMessageFactory.generalSyntaxError;
+
 import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
 import com.cognifide.cq.cqsm.api.actions.ActionFactory;
 import com.cognifide.cq.cqsm.api.actions.ActionResult;
@@ -38,6 +41,7 @@ import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
 import com.cognifide.cq.cqsm.api.scripts.ScriptStorage;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.actions.executor.ActionExecutor;
+import com.cognifide.cq.cqsm.core.antlr.InvalidSyntaxException;
 import com.cognifide.cq.cqsm.core.antlr.ScriptContext;
 import com.cognifide.cq.cqsm.core.antlr.ScriptRunner;
 import com.cognifide.cq.cqsm.core.loader.ScriptTree;
@@ -125,9 +129,12 @@ public class ScriptManagerImpl implements ScriptManager {
       ResourceResolver resolver) throws RepositoryException, PersistenceException {
     Progress progress;
     try {
-      progress = execute(script, mode, customDefinitions, resolver);
+      progress = execute(script, mode, resolver);
 
-    } catch (ExecutionException e) {
+    } catch (InvalidSyntaxException e) {
+      progress = new ProgressImpl(resolver.getUserID());
+      progress.addEntry(generalSyntaxError(e), Message.getErrorMessage(detailedSyntaxError(e)), Status.ERROR);
+    } catch (ExecutionException | RuntimeException e) {
       progress = new ProgressImpl(resolver.getUserID());
       progress.addEntry(Message.getErrorMessage(e.getMessage()), Status.ERROR);
     }
@@ -135,8 +142,8 @@ public class ScriptManagerImpl implements ScriptManager {
     return progress;
   }
 
-  private Progress execute(Script script, final Mode mode, Map<String, String> customDefinitions,
-      ResourceResolver resolver) throws ExecutionException, RepositoryException {
+  private Progress execute(Script script, final Mode mode, ResourceResolver resolver)
+      throws ExecutionException, RepositoryException {
     if (script == null) {
       throw new ExecutionException("Script is not specified");
     }
