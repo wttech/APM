@@ -21,34 +21,27 @@ package com.cognifide.cq.cqsm.api.logger;
 
 import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
 import com.cognifide.cq.cqsm.api.actions.ActionResult;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-
 import lombok.Getter;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 
 public class ProgressEntry {
 
 	@Getter
-	private String authorizable;
-
+	private final String authorizable;
 	@Getter
-	private String actionName;
-
+	private final String actionName;
 	@Getter
-	private String command;
-
+	private final String command;
 	@Getter
 	private final List<Message> messages;
-
 	@Getter
 	private final Status status;
-
 	@Getter
-	private String parameters;
+	private final String parameters;
 
 	public ProgressEntry(ActionDescriptor actionDescriptor, ActionResult actionResult) {
 		this.actionName = actionDescriptor.getAction().getClass().getSimpleName();
@@ -60,8 +53,20 @@ public class ProgressEntry {
 	}
 
 	public ProgressEntry(Message message, Status status) {
-		this.messages = new LinkedList<>();
-		this.messages.add(message);
+		this.actionName = "";
+		this.command = "";
+		this.parameters = "";
+		this.authorizable = "";
+		this.messages = Collections.singletonList(message);
+		this.status = status;
+	}
+
+	public ProgressEntry(String command, Message message, Status status) {
+		this.authorizable = "";
+		this.actionName = "";
+		this.parameters = "";
+		this.command = command;
+		this.messages = Collections.singletonList(message);
 		this.status = status;
 	}
 

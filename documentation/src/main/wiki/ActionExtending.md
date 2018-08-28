@@ -27,7 +27,7 @@ Adding new action, or it's variation means implementing new method that will ret
 
 ```java
 @Mapping(
-    value = {"ALLOW" + SPACE + PATH + SPACE + LIST},
+
     args = {"path", "permissions"},
     reference = REFERENCE
 )

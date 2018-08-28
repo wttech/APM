@@ -20,15 +20,14 @@
 package com.cognifide.cq.cqsm.core.actions.executor;
 
 import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
-import com.cognifide.cq.cqsm.api.actions.ActionFactory;
 import com.cognifide.cq.cqsm.api.actions.ActionResult;
 import com.cognifide.cq.cqsm.api.exceptions.ActionException;
 import com.cognifide.cq.cqsm.api.executors.Context;
 
 public final class ValidationActionExecutor extends AbstractActionExecutor {
 
-	public ValidationActionExecutor(Context context, ActionFactory actionFactory) {
-		super(context, actionFactory);
+	public ValidationActionExecutor(Context context) {
+		super(context);
 	}
 
 	@Override

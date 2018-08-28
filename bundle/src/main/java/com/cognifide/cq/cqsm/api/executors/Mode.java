@@ -19,22 +19,19 @@
  */
 package com.cognifide.cq.cqsm.api.executors;
 
-import com.cognifide.cq.cqsm.api.actions.ActionFactory;
 import com.cognifide.cq.cqsm.core.actions.executor.ActionExecutor;
 import com.cognifide.cq.cqsm.core.actions.executor.DryRunActionExecutor;
 import com.cognifide.cq.cqsm.core.actions.executor.RunActionExecutor;
 import com.cognifide.cq.cqsm.core.actions.executor.ValidationActionExecutor;
-
-import org.apache.commons.lang.StringUtils;
-
 import java.io.Serializable;
+import org.apache.commons.lang.StringUtils;
 
 public enum Mode implements Serializable {
 
 	RUN {
 		@Override
-		public ActionExecutor getExecutor(Context context, ActionFactory actionFactory) {
-			return new RunActionExecutor(context, actionFactory);
+    public ActionExecutor getExecutor(Context context) {
+      return new RunActionExecutor(context);
 		}
 
 		@Override
@@ -49,8 +46,8 @@ public enum Mode implements Serializable {
 	},
 	AUTOMATIC_RUN {
 		@Override
-		public ActionExecutor getExecutor(Context context, ActionFactory actionFactory) {
-			return RUN.getExecutor(context, actionFactory);
+    public ActionExecutor getExecutor(Context context) {
+      return RUN.getExecutor(context);
 		}
 
 		@Override
@@ -65,8 +62,8 @@ public enum Mode implements Serializable {
 	},
 	DRY_RUN {
 		@Override
-		public ActionExecutor getExecutor(Context context, ActionFactory actionFactory) {
-			return new DryRunActionExecutor(context, actionFactory);
+    public ActionExecutor getExecutor(Context context) {
+      return new DryRunActionExecutor(context);
 		}
 
 		@Override
@@ -76,8 +73,8 @@ public enum Mode implements Serializable {
 	},
 	VALIDATION {
 		@Override
-		public ValidationActionExecutor getExecutor(Context context, ActionFactory actionFactory) {
-			return new ValidationActionExecutor(context, actionFactory);
+    public ValidationActionExecutor getExecutor(Context context) {
+      return new ValidationActionExecutor(context);
 		}
 
 		@Override
@@ -90,7 +87,7 @@ public enum Mode implements Serializable {
 		return (StringUtils.isEmpty(modeName)) ? defaultMode : Mode.valueOf(modeName.toUpperCase());
 	}
 
-	public ActionExecutor getExecutor(Context context, ActionFactory actionFactory) {
+  public ActionExecutor getExecutor(Context context) {
 		throw new IllegalArgumentException("Cannot create action executor in mode: " + name());
 	}
 

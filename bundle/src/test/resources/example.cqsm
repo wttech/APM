@@ -1,0 +1,249 @@
+DEFINE cp_path '/home/groups/colpal'
+DEFINE group_path '/home/groups/projects'
+
+# Global groups names
+DEFINE group_dragonflyBase 'dragonfly-base'
+DEFINE group_dragonflyAuthors 'dragonfly-authors'
+DEFINE group_dragonflySuperAuthors 'dragonfly-super-authors'
+DEFINE group_dragonflyAdministrators 'dragonfly-administrators'
+DEFINE group_dragonflyPublishers 'dragonfly-publishers'
+DEFINE group_contentReviewers 'content-reviewers'
+
+# Global author group for all colgate sites
+CREATE_GROUP $group_dragonflyAuthors $cp_path IF_NOT_EXISTS
+FOR_GROUP $group_dragonflyAuthors
+	SET_PROPERTY	'profile/givenName' 'Dragonfly Authors'
+
+# Global super author group for all colgate sites
+CREATE_GROUP $group_dragonflySuperAuthors $cp_path IF_NOT_EXISTS
+FOR_GROUP $group_dragonflySuperAuthors
+	SET_PROPERTY	'profile/givenName' 'Dragonfly Super Authors'
+
+# Global administrators group for all colgate sites
+CREATE_GROUP $group_dragonflyAdministrators $cp_path IF_NOT_EXISTS
+FOR_GROUP $group_dragonflyAdministrators
+	SET_PROPERTY	'profile/givenName' 'Dragonfly Administrators'
+
+# Global administrators group for all colgate sites
+CREATE_GROUP $group_dragonflyPublishers $cp_path IF_NOT_EXISTS
+FOR_GROUP $group_dragonflyPublishers
+	SET_PROPERTY	'profile/givenName' 'Dragonfly Publishers'
+	
+# Global content reviewers group for all colgate sites
+CREATE_GROUP $group_contentReviewers $cp_path IF_NOT_EXISTS
+FOR_GROUP $group_contentReviewers
+	SET_PROPERTY	'profile/givenName' 'Content Reviewers'
+	
+# Global base group for all colgate sites
+CREATE_GROUP $group_dragonflyBase $cp_path IF_NOT_EXISTS
+FOR_GROUP $group_dragonflyBase
+	SET_PROPERTY	'profile/givenName' 'Dragonfly Base'
+	ADD_TO_GROUP 'workflow-users'
+	INCLUDE [$group_dragonflyAuthors, $group_dragonflySuperAuthors, $group_dragonflyAdministrators, $group_dragonflyPublishers, $group_contentReviewers]
+
+# Dragonfly Base Permissions
+FOR_GROUP $group_dragonflyBase
+	PURGE	'/'
+
+	ALLOW	'/apps'	[READ]
+	ALLOW	'/libs'	[READ]
+	ALLOW	'/tmp'	[READ]
+
+	# Allow to read basic content nodes
+	DENY	'/content'	[READ]	IF_EXISTS
+	ALLOW	'/content'	STRICT	[READ]
+	ALLOW	'/content'	'/jcr:primaryType'	[READ]
+
+	# Allow to read basic dam nodes
+	ALLOW	'/content/dam'	STRICT	[READ]
+	ALLOW	'/content/dam'	'/jcr:primaryType'	[READ]
+	
+	ALLOW	'/content/cp-sites'	[READ] IF_EXISTS
+	ALLOW	'/content/cp-sites-demo'	[READ] IF_EXISTS
+	ALLOW	'/content/dam/cp-sites'	[READ] IF_EXISTS
+	ALLOW	'/content/dam/cp-sites-demo'	[READ] IF_EXISTS
+
+	# Allow pim
+	ALLOW	'/conf/flexidocs'	[READ] IF_EXISTS
+	ALLOW	'/content/pim'	[READ,MODIFY,CREATE,DELETE] IF_EXISTS
+	ALLOW	'/content/dam/pim'	[READ,MODIFY,CREATE,DELETE] IF_EXISTS
+	
+	# Allow to read etc files
+	ALLOW	'/etc/designs'	[READ]
+	ALLOW	'/etc/variants/cp-sites'	[READ] IF_EXISTS
+	ALLOW	'/etc/tags'	[READ] IF_EXISTS
+
+	DENY	'/content/cp-api'	[ALL] IF_EXISTS
+	ALLOW	'/content/cp-api/common/user/loginStatus.flag'	[ALL] IF_EXISTS
+	ALLOW	'/content/cp-api/hills/dealers'	'/*'	[READ] IF_EXISTS
+	ALLOW	'/content/cp-api/hills/shelters'	'/*'	[READ] IF_EXISTS
+	ALLOW	'/content/cp-api/hills/user/createUser'	[READ] IF_EXISTS
+	ALLOW	'/content/cp-api/hills/user/resetPassword'	[READ] IF_EXISTS
+	ALLOW	'/content/cp-api/colgate/findADentist'	[READ] IF_EXISTS
+	ALLOW	'/content/cp-api/professional/generatePdf'	[READ] IF_EXISTS
+	ALLOW	'/content/cp-api/professional/sample'	'/*'	[READ] IF_EXISTS
+	ALLOW	'/content/cp-api/professional/user/createUser'	[READ] IF_EXISTS
+	ALLOW	'/content/cp-api/professional/user/resetPassword'	[READ] IF_EXISTS
+
+	# Carty usage
+	DENY	'/etc/carty'	[READ] IF_EXISTS
+
+	#Unwanted references report usage
+	DENY	'/apps/cq/core/content/nav/tools/reportGenerator'	[READ] IF_EXISTS
+	DENY	'/etc/cp-zg-extension/core/unwantedReferenceReportGenerator'	[ALL] IF_EXISTS
+
+# Dragonfly Authors Permissions 
+FOR_GROUP $group_dragonflyAuthors
+	PURGE	'/'
+
+	# Allow cp-sites and cp-sites-demo
+	ALLOW	'/content/cp-sites'	'/*/home'	[READ,MODIFY,CREATE,DELETE] IF_EXISTS
+	ALLOW	'/content/cp-sites'	'/*/home/*'	[READ,MODIFY,CREATE,DELETE] IF_EXISTS
+	ALLOW	'/content/cp-sites'	'/*/templates'	[READ,MODIFY,CREATE,DELETE] IF_EXISTS
+	ALLOW	'/content/cp-sites'	'/*/templates/*'	[READ,MODIFY,CREATE,DELETE] IF_EXISTS
+	ALLOW	'/content/cp-sites'	'/*/content'	[READ,MODIFY,CREATE,DELETE] IF_EXISTS
+	ALLOW	'/content/cp-sites'	'/*/content/*'	[READ,MODIFY,CREATE,DELETE] IF_EXISTS
+	# note - delete is required to upload asset with the same name
+	ALLOW	'/content/dam/cp-sites'	[READ,MODIFY,CREATE,DELETE] IF_EXISTS
+
+	ALLOW	'/content/cp-sites-demo'	'/*/home'	[READ,MODIFY,CREATE,DELETE] IF_EXISTS
+	ALLOW	'/content/cp-sites-demo'	'/*/home/*'	[READ,MODIFY,CREATE,DELETE] IF_EXISTS
+	ALLOW	'/content/cp-sites-demo'	'/*/templates'	[READ,MODIFY,CREATE,DELETE] IF_EXISTS
+	ALLOW	'/content/cp-sites-demo'	'/*/templates/*'	[READ,MODIFY,CREATE,DELETE] IF_EXISTS
+	ALLOW	'/content/cp-sites-demo'	'/*/content'	[READ,MODIFY,CREATE,DELETE] IF_EXISTS
+	ALLOW	'/content/cp-sites-demo'	'/*/content/*'	[READ,MODIFY,CREATE,DELETE] IF_EXISTS
+	ALLOW	'/content/dam/cp-sites-demo'	[READ,MODIFY,CREATE,DELETE] IF_EXISTS
+
+	# Allow to edit country selector configuration
+	ALLOW	'/content/cp-sites/global-country-selector-configuration'	[READ,MODIFY]	IF_EXISTS
+	ALLOW	'/content/cp-sites-demo/global-country-selector-configuration'	[READ,MODIFY]	IF_EXISTS
+	ALLOW	'/content/cp-sites' '/*/configuration/country-selector-configuration'	[READ,MODIFY]	IF_EXISTS
+	ALLOW	'/content/cp-sites-demo' '/*/configuration/country-selector-configuration'	[READ,MODIFY]	IF_EXISTS
+	
+	# Deny Zen Garden tools
+	DENY	'/apps/cq/core/content/nav/tools/zg'	[READ]
+	
+	# Disallow to see advanced tabs (Classic UI)
+
+	DENY	'/apps/zg/zenGarden/renderers/zenPageRenderer/dialog/items/tabPanel/items/advanced'	[READ]
+	DENY	'/apps/zg/zenGarden/renderers/zenPageRenderer/dialog/items/tabPanel/items/cssJsHtml'	[READ]
+	DENY	'/apps/zg/zenGarden/renderers/zenPageRenderer/dialog/items/tabPanel/items/cloudservices'	[READ]
+	DENY	'/apps/zg/zenGarden/renderers/zenPageRenderer/dialog/items/tabPanel/items/blueprint'	[READ]
+	DENY	'/apps/zg/zenGarden/renderers/zenPageRenderer/dialog/items/tabPanel/items/livecopy'	[READ]
+
+	# Disallow to see advanced tabs (Touch UI)
+
+	DENY	'/apps/zg/zenGarden/renderers/zenPageRenderer/cq:dialog/content/items/tabs/items/advanced'	[READ]
+	DENY	'/apps/zg/zenGarden/renderers/abstractZenRenderer/cq:dialog/content/items/tabs/items/advanced'	[READ]
+	DENY	'/libs/foundation/components/page/cq:dialog/content/items/tabs/items/advanced'	[READ]
+	DENY	'/libs/foundation/components/page/cq:dialog/content/items/tabs/items/cloudservices'	[READ]
+	DENY	'/libs/foundation/components/page/cq:dialog/content/items/tabs/items/blueprint'	[READ]
+	DENY	'/libs/foundation/components/page/cq:dialog/content/items/tabs/items/permissions'	[READ]
+	DENY	'/libs/foundation/components/page/cq:dialog/content/items/tabs/items/livecopy'	[READ]
+	DENY	'/libs/foundation/components/page/cq:dialog/content/items/tabs/items/personalization'	[READ]
+
+	# Disallow form handler dialogs
+	DENY	'/apps/cp-zg-extension/core/handlers/custom-url-handler'	[READ]
+	DENY	'/apps/cp-zg-extension/core/handlers/hills-pet-registration-handler'	[READ]
+	DENY	'/apps/cp-zg-extension/core/handlers/login-form-handler'	[READ]
+	DENY	'/apps/cp-zg-extension/core/handlers/reset-password-handler'	[READ]
+	DENY	'/apps/cp-zg-extension/core/handlers/vip_market_check_acc_handler'	[READ]
+
+FOR_GROUP $group_dragonflySuperAuthors
+	PURGE	'/'
+	
+	ALLOW	'/content/pim'	[ALL] IF_EXISTS
+	ALLOW	'/content/dam/pim'	[ALL] IF_EXISTS
+
+	# Allow cp-sites and cp-sites-demo
+	ALLOW	'/content/cp-sites'	'/*'	[ALL] IF_EXISTS
+	ALLOW	'/content/cp-sites-demo'	'/*'	[ALL] IF_EXISTS
+	ALLOW	'/content/dam/cp-sites'	[ALL,READ_ACL,MODIFY_ACL] IF_EXISTS
+	ALLOW	'/content/dam/cp-sites-demo'	[ALL] IF_EXISTS
+	ALLOW	'/content/dam/crawlers'	[ALL] IF_EXISTS
+
+	ALLOW	'/home/groups'	[READ]
+
+	# Deny site level configuration except country selector
+	DENY	'/content/cp-sites'	'/configuration'	[MODIFY,CREATE,DELETE,REPLICATE] IF_EXISTS
+	DENY	'/content/cp-sites'	'/layouts'	[MODIFY,CREATE,DELETE,REPLICATE] IF_EXISTS
+	ALLOW	'/content/cp-sites/global-country-selector-configuration'	[READ,MODIFY,REPLICATE]	IF_EXISTS
+	ALLOW	'/content/cp-sites-demo/global-country-selector-configuration'	[READ,MODIFY,REPLICATE]	IF_EXISTS
+	
+	# Allow to read and edit etc files
+	ALLOW	'/etc/designs'	[ALL] IF_EXISTS
+	ALLOW	'/etc/variants/cp-sites'	[ALL] IF_EXISTS
+	ALLOW	'/etc/tags'	[ALL] IF_EXISTS
+
+	# Enable statistic
+	ALLOW	'/etc/accelerator/statistics'	[READ,CREATE,MODIFY,DELETE] IF_EXISTS
+	ALLOW	'/etc/accelerator/statistics'	STRICT	[READ] IF_EXISTS
+	ALLOW	'/apps/cq/core/content/nav/tools/accelerator/statistics'	[READ,CREATE,MODIFY,DELETE] IF_EXISTS
+	
+	# Nomad-specific permissions
+	ALLOW	'/content/projects'	[ALL] IF_EXISTS
+	ALLOW	'/content/accelerated-migration'	[ALL] IF_EXISTS
+	ALLOW	'/content/dam/accelerated-migration'	[ALL] IF_EXISTS
+
+FOR_GROUP $group_dragonflyAdministrators
+	PURGE	'/'
+
+	# Allow pim
+	ALLOW	'/content/pim'	[ALL] IF_EXISTS
+	ALLOW	'/content/dam/pim'	[ALL] IF_EXISTS
+
+	# Allow cp-sites and cp-sites-demo
+	ALLOW	'/content/cp-sites'	[ALL] IF_EXISTS
+	ALLOW	'/content/cp-sites-demo'	[ALL] IF_EXISTS
+	ALLOW	'/content/dam/cp-sites'	[ALL,READ_ACL,MODIFY_ACL] IF_EXISTS
+	ALLOW	'/content/dam/cp-sites-demo'	[ALL,READ_ACL,MODIFY_ACL] IF_EXISTS
+	ALLOW	'/content/dam/crawlers'	[ALL] IF_EXISTS
+
+	ALLOW	'/home/groups'	[READ]
+
+	# Allow to read etc files
+	ALLOW	'/etc/designs'	[ALL]
+	ALLOW	'/etc/variants/cp-sites'	[ALL] IF_EXISTS
+	ALLOW	'/etc/tags'	[ALL] IF_EXISTS
+	ALLOW	'/etc/replication'	[ALL] IF_EXISTS
+
+	# Nomad-specific permissions
+	ALLOW	'/content/projects'	[ALL] IF_EXISTS
+	ALLOW	'/content/accelerated-migration'	[ALL] IF_EXISTS
+	ALLOW	'/content/dam/accelerated-migration'	[ALL] IF_EXISTS
+
+	#Unwanted references report usage
+	ALLOW	'/apps/cq/core/content/nav/tools/reportGenerator'	[ALL] IF_EXISTS
+	ALLOW	'/etc/cp-zg-extension/core/unwantedReferenceReportGenerator'	[ALL]	IF_EXISTS
+
+FOR_GROUP $group_dragonflyPublishers
+	PURGE	'/'
+
+	ALLOW	'/content/pim'	[REPLICATE] IF_EXISTS
+	ALLOW	'/content/dam/pim'	[REPLICATE] IF_EXISTS
+
+	# Allow cp-sites and cp-sites-demo
+	ALLOW	'/content/cp-sites'	'/*/home'	[REPLICATE] IF_EXISTS
+	ALLOW	'/content/cp-sites'	'/*/home/*'	[REPLICATE] IF_EXISTS
+	ALLOW	'/content/cp-sites'	'/*/templates'	[REPLICATE] IF_EXISTS
+	ALLOW	'/content/cp-sites'	'/*/templates/*'	[REPLICATE] IF_EXISTS
+	ALLOW	'/content/cp-sites'	'/*/content'	[REPLICATE] IF_EXISTS
+	ALLOW	'/content/cp-sites'	'/*/content/*'	[REPLICATE] IF_EXISTS
+	ALLOW	'/content/dam/cp-sites'	[REPLICATE] IF_EXISTS
+
+	ALLOW	'/content/cp-sites-demo'	'/*/home'	[READ,MODIFY,CREATE,DELETE] IF_EXISTS
+	ALLOW	'/content/cp-sites-demo'	'/*/home/*'	[READ,MODIFY,CREATE,DELETE] IF_EXISTS
+	ALLOW	'/content/cp-sites-demo'	'/*/templates'	[READ,MODIFY,CREATE,DELETE] IF_EXISTS
+	ALLOW	'/content/cp-sites-demo'	'/*/templates/*'	[READ,MODIFY,CREATE,DELETE] IF_EXISTS
+	ALLOW	'/content/cp-sites-demo'	'/*/content'	[READ,MODIFY,CREATE,DELETE] IF_EXISTS
+	ALLOW	'/content/cp-sites-demo'	'/*/content/*'	[READ,MODIFY,CREATE,DELETE] IF_EXISTS
+	ALLOW	'/content/dam/cp-sites-demo'	[READ,MODIFY,CREATE] IF_EXISTS
+
+	# Allow to edit country selector configuration
+	ALLOW	'/content/cp-sites/global-country-selector-configuration'	[REPLICATE]	IF_EXISTS
+	ALLOW	'/content/cp-sites-demo/global-country-selector-configuration'	[REPLICATE]	IF_EXISTS
+	ALLOW	'/content/cp-sites' '/*/configuration/country-selector-configuration'	[REPLICATE]	IF_EXISTS
+	ALLOW	'/content/cp-sites-demo' '/*/configuration/country-selector-configuration'	[REPLICATE]	IF_EXISTS
+
+FOR_GROUP $group_contentReviewers
+	PURGE	'/'

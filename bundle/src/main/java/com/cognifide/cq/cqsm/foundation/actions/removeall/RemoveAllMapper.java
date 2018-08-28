@@ -20,15 +20,14 @@
 package com.cognifide.cq.cqsm.foundation.actions.removeall;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.BasicActionMapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
 import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
 
-public final class RemoveAllMapper extends BasicActionMapper {
+public final class RemoveAllMapper {
 
 	@Mapping(
-			value = {"REMOVE" + DASH + "ALL" + SPACE + PATH},
-			args = {"path"},
+
+      args = {"path"},
 			reference = "Delete every permission applied for current authorizable on specified path."
 	)
 	public Action mapAction(final String path) throws ActionCreationException {

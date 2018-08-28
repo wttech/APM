@@ -37,7 +37,7 @@
 			<tr class="row">
 				<td>${peStatus.index + 1}</td>
 				<td>${pe.authorizable}</td>
-				<td>${pe.command}</td>
+				<td>${pe.command} ${pe.parameters}</td>
 				<td class="status">
 					<c:choose>
 						<c:when test="${pe.status eq 'ERROR'}">

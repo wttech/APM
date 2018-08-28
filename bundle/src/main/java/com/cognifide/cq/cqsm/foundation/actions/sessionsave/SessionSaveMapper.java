@@ -20,18 +20,17 @@
 package com.cognifide.cq.cqsm.foundation.actions.sessionsave;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.BasicActionMapper;
+import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
-import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
 
-public final class SessionSaveMapper extends BasicActionMapper {
+@Mapper("session_save")
+public final class SessionSaveMapper {
 
 	@Mapping(
-			value = {"SESSION" + DASH + "SAVE" + SPACE + STRING},
 			args = {"mode"},
 			reference = "Set session saving mode."
 	)
-	public Action mapAction(String mode) throws ActionCreationException {
+	public Action mapAction(String mode) {
 		return new SessionSave(mode);
 	}
 

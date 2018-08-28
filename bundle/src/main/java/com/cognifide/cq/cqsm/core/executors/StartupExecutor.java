@@ -19,27 +19,26 @@
  */
 package com.cognifide.cq.cqsm.core.executors;
 
+import static com.cognifide.cq.cqsm.core.scripts.ScriptFilters.filterOnStart;
+
 import com.cognifide.cq.cqsm.api.executors.Mode;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.scripts.EventListener;
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
 import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
-import com.cognifide.cq.cqsm.core.Cqsm;
+import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
 import com.cognifide.cq.cqsm.core.utils.sling.OperateCallback;
 import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper;
 
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.osgi.framework.Constants;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,11 +46,13 @@ import java.util.List;
 
 import javax.jcr.RepositoryException;
 
-import static com.cognifide.cq.cqsm.core.scripts.ScriptFilters.filterOnStart;
-
-@Component(immediate = true)
-@Properties({@Property(name = Constants.SERVICE_DESCRIPTION, value = "CQSM Startup Executor"),
-		@Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)})
+@Component(
+		immediate = true,
+		property = {
+				Property.DESCRIPTION + "CQSM Startup Executor",
+				Property.VENDOR
+		}
+)
 public class StartupExecutor {
 
 	private static final Logger LOG = LoggerFactory.getLogger(StartupExecutor.class);

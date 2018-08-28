@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,75 +20,53 @@
 package com.cognifide.cq.cqsm.foundation.actions.allow;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.BasicActionMapper;
+import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
-import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
-
-import java.util.Collections;
+import com.cognifide.cq.cqsm.foundation.actions.Flag;
 import java.util.List;
 
-public class AllowMapper extends BasicActionMapper {
+@Mapper("allow")
+public final class AllowMapper {
 
-	public static final String REFERENCE = "Add allow permissions for current authorizable on specified path.";
+  public static final String REFERENCE = "Add allow permissions for current authorizable on specified path.";
 
-	@Mapping(
-			value = {"ALLOW" + SPACE + PATH + SPACE + LIST},
-			args = {"path", "permissions"},
-			reference = REFERENCE
-	)
-	public Action mapAction(String path, List<String> permissions) throws ActionCreationException {
-		return mapAction(path, null, permissions, false);
-	}
+  @Mapping(
+      args = {"path", "glob", "permissions", Flag.IF_EXISTS},
+      reference = REFERENCE,
+      order = 1
+  )
+  public Action mapAction(String path, String glob, List<String> permissions, String flag) {
+    return mapAction(path, glob, permissions, Flag.isIfExists(flag));
+  }
 
-	@Mapping(
-			value = {"ALLOW" + SPACE + PATH + SPACE + STRING},
-			args = {"path", "permission"},
-			reference = REFERENCE
-	)
-	public Action mapAction(String path, String permission) throws ActionCreationException {
-		return mapAction(path, null, Collections.singletonList(permission), false);
-	}
+  @Mapping(
+      args = {"path", "glob", "permissions"},
+      reference = REFERENCE,
+      order = 2
+  )
+  public Action mapAction(String path, String glob, List<String> permissions) {
+    return mapAction(path, glob, permissions, false);
+  }
 
-	@Mapping(
-			value = {"ALLOW" + SPACE + PATH + SPACE + LIST + SPACE + ("IF" + DASH + "EXISTS")},
-			args = {"path", "permissions"},
-			reference = REFERENCE
-	)
-	public Action mapActionWithIfExists(String path, List<String> permissions) throws ActionCreationException {
-		return mapAction(path, null, permissions, true);
-	}
+  @Mapping(
+      args = {"path", "permissions", Flag.IF_EXISTS},
+      reference = REFERENCE,
+      order = 3
+  )
+  public Action mapAction(String path, List<String> permissions, String flag) {
+    return mapAction(path, null, permissions, Flag.isIfExists(flag));
+  }
 
-	@Mapping(
-			value = {"ALLOW" + SPACE + PATH + SPACE + GLOB + SPACE + LIST},
-			args = {"path", "glob", "permissions"},
-			reference = REFERENCE
-	)
-	public Action mapAction(String path, String glob, List<String> permissions)
-			throws ActionCreationException {
-		return mapAction(path, glob, permissions, false);
-	}
+  @Mapping(
+      args = {"path", "permissions"},
+      reference = REFERENCE,
+      order = 3
+  )
+  public Action mapAction(String path, List<String> permissions) {
+    return mapAction(path, null, permissions, false);
+  }
 
-	@Mapping(
-			value = {"ALLOW" + SPACE + PATH + SPACE + GLOB + SPACE + STRING},
-			args = {"path", "glob", "permission"},
-			reference = REFERENCE
-	)
-	public Action mapAction(String path, String glob, String permission)
-			throws ActionCreationException {
-		return mapAction(path, glob, Collections.singletonList(permission), false);
-	}
-
-	@Mapping(
-			value = {"ALLOW" + SPACE + PATH + SPACE + GLOB + SPACE + LIST + SPACE + ("IF" + DASH + "EXISTS")},
-			args = {"path", "glob", "permissions"},
-			reference = REFERENCE
-	)
-	public Action mapActionWithIfExists(String path, String glob, List<String> permissions) throws ActionCreationException {
-		return mapAction(path, glob, permissions, true);
-	}
-
-	private Action mapAction(String path, String glob, List<String> permissions, Boolean ifExists)
-			throws ActionCreationException {
-		return new Allow(path, glob, ifExists, permissions);
-	}
+  private Action mapAction(String path, String glob, List<String> permissions, Boolean ifExists) {
+    return new Allow(path, glob, ifExists, permissions);
+  }
 }

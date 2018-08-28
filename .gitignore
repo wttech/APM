@@ -3,6 +3,10 @@
 ### Java template
 *.class
 target/
+build/
+out/
+generated/
+.gradle/
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/

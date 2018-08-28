@@ -20,31 +20,29 @@
 package com.cognifide.cq.cqsm.foundation.actions.check.include;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.BasicActionMapper;
+import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
-
 import java.util.Collections;
 import java.util.List;
 
-public final class CheckIncludesMapper extends BasicActionMapper {
+@Mapper("check_includes")
+public final class CheckIncludesMapper {
 
-	public static final String REFERENCE = "Verify that provided group contains all listed authorizables.";
+  public static final String REFERENCE = "Verify that provided group contains all listed authorizables.";
 
-	@Mapping(
-			value = {"CHECK" + DASH + "INCLUDES" + SPACE + STRING + SPACE + STRING},
-			args = {"authorizableId", "groupId"},
-			reference = REFERENCE
-	)
-	public Action mapAction(final String id, final String group) {
-		return mapAction(id, Collections.singletonList(group));
-	}
+  @Mapping(
+      args = {"authorizableId", "groupId"},
+      reference = REFERENCE
+  )
+  public Action mapAction(final String id, final String group) {
+    return mapAction(id, Collections.singletonList(group));
+  }
 
-	@Mapping(
-			value = {"CHECK" + DASH + "INCLUDES" + SPACE + STRING + SPACE + LIST},
-			args = {"authorizableId", "groupIds"},
-			reference = REFERENCE
-	)
-	public Action mapAction(final String id, final List<String> groups) {
-		return new CheckIncludes(id, groups);
-	}
+  @Mapping(
+      args = {"authorizableId", "groupIds"},
+      reference = REFERENCE
+  )
+  public Action mapAction(final String id, final List<String> groups) {
+    return new CheckIncludes(id, groups);
+  }
 }

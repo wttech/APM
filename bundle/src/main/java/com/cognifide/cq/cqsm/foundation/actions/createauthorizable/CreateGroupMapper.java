@@ -20,16 +20,33 @@
 package com.cognifide.cq.cqsm.foundation.actions.createauthorizable;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.BasicActionMapper;
+import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
+import com.cognifide.cq.cqsm.foundation.actions.Flag;
 
-public class CreateGroupMapper extends BasicActionMapper {
+@Mapper("create_group")
+public class CreateGroupMapper {
 
 	public static final String REFERENCE = "Create a group.";
 
 	@Mapping(
-			value = {"CREATE" + DASH + "GROUP" + SPACE + STRING},
-			args = {"groupId"},
+			args = {"groupId", "path", Flag.IF_NOT_EXISTS},
+			reference = REFERENCE
+	)
+	public Action mapAction(String id, String path, String flag) {
+		return mapAction(id, path, Flag.isIfNotExists(flag));
+	}
+
+	@Mapping(
+			args = {"groupId", "path"},
+			reference = REFERENCE
+	)
+	public Action mapAction(String id, String path) {
+		return mapAction(id, path, true);
+	}
+
+	@Mapping(
+      args = {"groupId"},
 			reference = REFERENCE
 	)
 	public Action mapAction(String id) {
@@ -37,30 +54,12 @@ public class CreateGroupMapper extends BasicActionMapper {
 	}
 
 	@Mapping(
-			value = {"CREATE" + DASH + "GROUP" + SPACE + STRING + SPACE + PATH},
-			args = {"groupId", "path"},
-			reference = REFERENCE
-	)
-	public Action mapAction(String id, String path) {
-		return mapAction(id, path, false);
-	}
 
-	@Mapping(
-			value = {"CREATE" + DASH + "GROUP" + SPACE + STRING + SPACE + ("IF" + DASH + "NOT" + DASH + "EXISTS")},
-			args = {"groupId"},
+      args = {"groupId"},
 			reference = REFERENCE
 	)
 	public Action mapActionWithIfNotExists(String id) {
 		return mapAction(id, null, true);
-	}
-
-	@Mapping(
-			value = {"CREATE" + DASH + "GROUP" + SPACE + STRING + SPACE + PATH + SPACE + ("IF" + DASH + "NOT" + DASH + "EXISTS")},
-			args = {"groupId", "path"},
-			reference = REFERENCE
-	)
-	public Action mapActionWithIfNotExists(String id, String path) {
-		return mapAction(id, path, true);
 	}
 
 	private Action mapAction(String id, String path, Boolean ifNotExists) {

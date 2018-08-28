@@ -19,17 +19,15 @@
  */
 package com.cognifide.cq.cqsm.core.progress;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-
 import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
 import com.cognifide.cq.cqsm.api.actions.ActionResult;
 import com.cognifide.cq.cqsm.api.logger.Message;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.logger.ProgressEntry;
 import com.cognifide.cq.cqsm.api.logger.Status;
-
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -59,6 +57,11 @@ public class ProgressImpl implements Progress {
 	@Override
 	public void addEntry(ActionDescriptor descriptor, ActionResult result) {
 		this.entries.add(new ProgressEntry(descriptor, result));
+	}
+
+	@Override
+	public void addEntry(String commandName, Message message, Status status) {
+		this.entries.add(new ProgressEntry(commandName, message, status));
 	}
 
 	@Override

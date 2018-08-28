@@ -24,32 +24,35 @@ import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
 import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
-import com.cognifide.cq.cqsm.core.Cqsm;
+import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.progress.ProgressHelper;
 import com.cognifide.cq.cqsm.core.utils.ServletUtils;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
-import org.apache.felix.scr.annotations.sling.SlingServlet;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
-import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 import java.io.IOException;
 
 import javax.jcr.RepositoryException;
+import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
-@SlingServlet(paths = {"/bin/cqsm/run"}, methods = {"POST"})
-@Service
-@Properties({@Property(name = Constants.SERVICE_DESCRIPTION, value = "CQSM Run Servlet"),
-		@Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)})
+@Component(
+		immediate = true,
+		service = Servlet.class,
+		property = {
+				Property.PATH + "/bin/cqsm/run",
+				Property.METHOD + "POST",
+				Property.DESCRIPTION + "CQSM Run Servlet",
+				Property.VENDOR
+		}
+)
 public class ScriptRunServlet extends SlingAllMethodsServlet {
 
 	@Reference

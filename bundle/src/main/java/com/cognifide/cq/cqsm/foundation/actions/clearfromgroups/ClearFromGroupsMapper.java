@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,42 +20,32 @@
 package com.cognifide.cq.cqsm.foundation.actions.clearfromgroups;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.BasicActionMapper;
+import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
 
-public final class ClearFromGroupsMapper extends BasicActionMapper {
+@Mapper("clear_from_groups")
+public final class ClearFromGroupsMapper {
 
-	@Mapping(
-			value = {"CLEAR" + DASH + "FROM" + DASH + "GROUPS"},
-			reference = "This action removes all memberships of a given group."
-	)
-	public Action mapAction() {
-		return new ClearFromGroups(ClearFromGroupOperationTypes.ALL_PARENTS);
-	}
+  @Mapping(
+      reference = "This action removes all memberships of a given group."
+  )
+  public Action mapAction() {
+    return new ClearFromGroups(ClearFromGroupOperationTypes.ALL_PARENTS);
+  }
 
-	@Mapping(
-			value = {"CLEAR" + DASH + "FROM" + DASH + "GROUPS" + DASH + "ALL-CHILDREN"},
-			reference = "This action removes given group membership from child groups."
-	)
+  @Mapping(
+      args = {"mode"},
+      reference = "If mode equals all-children, it removes given group membership from child groups.\n"
+          + "Otherwise it removes all memberships of a given group."
+  )
+  public Action mapActionWithAllChildren(String mode) {
+    return new ClearFromGroups(toOperationType(mode));
+  }
 
-	public Action mapActionWithAllChildren() {
-		return new ClearFromGroups(ClearFromGroupOperationTypes.ALL_CHILDREN);
-	}
-
-	@Mapping(
-			value = {"CLEAR" + DASH + "FROM" + DASH + "GROUPS" + DASH + "ALL-PARENTS"},
-			reference = "This action removes all memberships of a given group."
-	)
-
-	public Action mapActionWithAllParents() {
-		return new ClearFromGroups(ClearFromGroupOperationTypes.ALL_PARENTS);
-	}
-
-	@Mapping(
-			value = {"CLEAR" + DASH + "GROUPS"},
-			reference = "This action removes all groups from a given group."
-	)
-	public Action mapActionForClearGroups() {
-		return new ClearFromGroups(ClearFromGroupOperationTypes.ALL_CHILDREN);
-	}
+  private ClearFromGroupOperationTypes toOperationType(String mode) {
+    if ("ALL-CHILDREN".equalsIgnoreCase(mode)) {
+      return ClearFromGroupOperationTypes.ALL_CHILDREN;
+    }
+    return ClearFromGroupOperationTypes.ALL_PARENTS;
+  }
 }

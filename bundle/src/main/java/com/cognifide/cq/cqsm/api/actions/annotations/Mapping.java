@@ -27,9 +27,10 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Mapping {
-	String[] value();
 
 	String[] args() default {};
 
 	String reference() default "";
+
+  int order() default 0;
 }

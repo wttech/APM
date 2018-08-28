@@ -29,15 +29,17 @@ import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
 import com.cognifide.cq.cqsm.api.utils.InstanceTypeProvider;
 
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Reference;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jcr.RepositoryException;
 
-@Component
+@Component(
+		immediate = true
+)
 public class HistoryReplicateListener implements EventListener {
 
 	private static final Logger LOG = LoggerFactory.getLogger(HistoryReplicateListener.class);

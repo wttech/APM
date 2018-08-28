@@ -19,14 +19,13 @@
  */
 package com.cognifide.cq.cqsm.core.history;
 
-import com.google.common.base.Preconditions;
+import static com.cognifide.cq.cqsm.core.history.HistoryImpl.REPLICATE_ACTION;
 
 import com.cognifide.actions.api.ActionReceiver;
 import com.cognifide.cq.cqsm.api.executors.Mode;
 import com.cognifide.cq.cqsm.api.history.History;
 import com.cognifide.cq.cqsm.api.history.InstanceDetails;
 import com.cognifide.cq.cqsm.api.history.ModifiableEntryBuilder;
-import com.cognifide.cq.cqsm.api.logger.Message;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.logger.ProgressEntry;
 import com.cognifide.cq.cqsm.api.scripts.Script;
@@ -37,22 +36,22 @@ import com.cognifide.cq.cqsm.core.scripts.ScriptImpl;
 import com.cognifide.cq.cqsm.core.utils.sling.OperateCallback;
 import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper;
 import com.day.cq.replication.ReplicationAction;
+import com.google.common.base.Preconditions;
 
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.api.resource.ValueMap;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 import java.util.Calendar;
 import java.util.List;
 
-import static com.cognifide.cq.cqsm.core.history.HistoryImpl.REPLICATE_ACTION;
-
-@Service
-@Component(immediate = true)
+@Component(
+		immediate = true,
+		service = ActionReceiver.class
+)
 public class RemoteScriptExecutionActionReceiver implements ActionReceiver {
 
 	@Reference
