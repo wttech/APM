@@ -9,7 +9,7 @@ apm
     ;
 
 line
-    : (command | variableDefinition | foreach | macroDefinition | scriptInclusion | comment)
+    : (command | macroDefinition | scriptInclusion)
     ;
 
 name
@@ -62,17 +62,11 @@ parameter
     | expression
     ;
 
-variableDefinition
-    : DEFINE IDENTIFIER parameter
-    ;
-
-comment
-    : COMMENT
-    ;
-
 command
     : EXECUTE_MACRO name parametersInvocation? # MacroExecution
-    | IDENTIFIER parameter+ # GenericCommand
+    | FOR_EACH IDENTIFIER IN parameter EOL? BLOCK_BEGIN EOL? body BLOCK_END # ForEach
+    | DEFINE IDENTIFIER parameter # VariableDefinition
+    | IDENTIFIER parameter* # GenericCommand
     ;
 
 parametersDefinition
@@ -97,10 +91,6 @@ scriptInclusion
 
 macroDefinition
     : DEFINE_MACRO name parametersDefinition? EOL? BLOCK_BEGIN EOL? body BLOCK_END
-    ;
-
-foreach
-    : FOR_EACH IDENTIFIER IN parameter EOL? BLOCK_BEGIN EOL? body BLOCK_END
     ;
 
 /*
@@ -166,7 +156,7 @@ IDENTIFIER
     : Letter LetterOrDigit*
     ;
 COMMENT
-    : '#' (~[\\\r\n] )*
+    : '#' (~[\\\r\n] )* -> skip
     ;
 
 fragment Digits

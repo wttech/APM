@@ -26,47 +26,86 @@ import com.cognifide.cq.cqsm.api.logger.Progress
 import com.cognifide.cq.cqsm.api.logger.Status
 import com.cognifide.cq.cqsm.api.scripts.Script
 import com.cognifide.cq.cqsm.core.antlr.parameter.Parameters
+import com.cognifide.cq.cqsm.core.antlr.type.ApmString
 import com.cognifide.cq.cqsm.core.loader.ScriptTree
-import com.cognifide.cq.cqsm.core.macro.MacroRegister
 import com.cognifide.cq.cqsm.core.macro.MacroRegistrar
 import spock.lang.Specification
 
 class ScriptRunnerTest extends Specification {
 
+    def scriptExecutor = new ScriptRunner(createActionInvoker())
+
     def "run macros"() {
         given:
-        def parser = ApmLangParserHelper.createParserUsingFile("/macros.apm")
-        def scriptExecutor = new ScriptRunner(createActionInvoker())
-        def script = Mock(Script)
-        script.apm >> parser.apm()
-        def scriptTree = new ScriptTree(script, Collections.emptyMap())
-        def macroRegister = new MacroRegistrar().buildMacroRegister(scriptTree)
-        def scriptContext = new ScriptContext("user", macroRegister, scriptTree)
+        ScriptContext scriptContext = createScriptContext("/macros.apm")
 
         when:
         def result = scriptExecutor.execute(scriptContext)
 
         then:
         def commands = result.entries.collect { it.command }
-        commands == ["Executing command ALLOW path001 WRITE",
-                     "Executing command ALLOW path002 WRITE",
-                     "Executing command ALLOW path3 WRITE",
-                     "Executing command ALLOW path001 READ",
-                     "Executing command DENY path2 READ",
-                     "Executing command ALLOW path3 READ",
-                     "Executing command ALLOW path001 DELETE",
-                     "Executing command ALLOW path002 DELETE",
-                     "Executing command DENY path003 DELETE"]
+        commands == ["Executing command ALLOW 'path001' 'WRITE'",
+                     "Executing command ALLOW 'path002' 'WRITE'",
+                     "Executing command ALLOW 'path3' 'WRITE'",
+                     "Executing command ALLOW 'path001' 'READ'",
+                     "Executing command DENY 'path2' 'READ'",
+                     "Executing command ALLOW 'path3' 'READ'",
+                     "Executing command ALLOW 'path001' 'DELETE'",
+                     "Executing command ALLOW 'path002' 'DELETE'",
+                     "Executing command DENY 'path003' 'DELETE'"]
+    }
+
+    def "run foreach"() {
+        given:
+        ScriptContext scriptContext = createScriptContext("/foreach.apm")
+
+        when:
+        def result = scriptExecutor.execute(scriptContext)
+
+        then:
+        def commands = result.entries
+                .collect { it.command }
+                .findAll { it.startsWith("Executing") }
+        commands == ["Executing command SHOW 'a/c'",
+                     "Executing command SHOW 'a/d'",
+                     "Executing command SHOW 'b/c'",
+                     "Executing command SHOW 'b/d'",
+                     "Executing command SEPARATE",
+                     "Executing command SHOW 'a/c'",
+                     "Executing command SHOW 'a/d'",
+                     "Executing command SHOW 'b/c'",
+                     "Executing command SHOW 'b/d'"]
+    }
+
+    def "run define"() {
+        given:
+        ScriptContext scriptContext = createScriptContext("/define.apm")
+
+        when:
+        def result = scriptExecutor.execute(scriptContext)
+
+        then:
+        def commands = result.entries
+                .collect { it.command }
+                .findAll { it.startsWith("Executing") }
+        commands == ["Executing command SHOW 'global'",
+                     "Executing command SHOW 'global'",
+                     "Executing command SHOW '1. foreach'",
+                     "Executing command SHOW '2. foreach'",
+                     "Executing command SHOW '1. foreach'",
+                     "Executing command SHOW 'global'",
+                     "Executing command SEPARATE",
+                     "Executing command SHOW 'null'",
+                     "Executing command SHOW '1. macro'",
+                     "Executing command SHOW '2. macro'",
+                     "Executing command SHOW '1. macro'",
+                     "Executing command SHOW 'null'",
+                     "Executing command SHOW 'global'"]
     }
 
     def "run example"() {
         given:
-        def parser = ApmLangParserHelper.createParserUsingFile("/example.cqsm")
-        def scriptExecutor = new ScriptRunner(createActionInvoker())
-        def script = Mock(Script)
-        script.apm >> parser.apm()
-        def scriptTree = new ScriptTree(script, Collections.emptyMap())
-        def scriptContext = new ScriptContext("user", new MacroRegister(), scriptTree)
+        ScriptContext scriptContext = createScriptContext("/example.cqsm")
 
         when:
         def result = scriptExecutor.execute(scriptContext)
@@ -75,13 +114,29 @@ class ScriptRunnerTest extends Specification {
         result != []
     }
 
-    def createActionInvoker() {
-        return new ActionInvoker() {
+    private ScriptContext createScriptContext(String file) {
+        def parser = ApmLangParserHelper.createParserUsingFile(file)
+        def script = Mock(Script)
+        script.apm >> parser.apm()
+        def scriptTree = new ScriptTree(script, Collections.emptyMap())
+        def macroRegister = new MacroRegistrar().buildMacroRegister(scriptTree)
+        def scriptContext = new ScriptContext("user", macroRegister, scriptTree)
+        scriptContext
+    }
+
+    private ActionInvoker createActionInvoker() {
+        new ActionInvoker() {
             @Override
             void runAction(Progress progress, String commandName, Parameters parameters) {
-                def command = String.format("Executing command %s %s %s", commandName,
-                        parameters.getString(0, ""), parameters.getString(1, ""))
-                progress.addEntry(command, Message.getInfoMessage(""), Status.SUCCESS)
+                def command = new StringBuilder("Executing command ")
+                command.append(commandName)
+                parameters.each {
+                    command.append(" ")
+                            .append("'")
+                            .append(it.getString())
+                            .append("'")
+                }
+                progress.addEntry(command.toString(), Message.getInfoMessage(""), Status.SUCCESS)
             }
         }
     }
