@@ -168,9 +168,12 @@ public class ScriptRunner {
     public Void visitGenericCommand(GenericCommandContext ctx) {
       String commandName = ctx.IDENTIFIER().toString().toUpperCase();
       ParameterResolver parameterResolver = scriptContext.getParameterResolver();
-      List<ApmType> parameters = ctx.parameter().stream()
-          .map(parameterResolver::resolve)
-          .collect(Collectors.toList());
+      List<ApmType> parameters = Collections.emptyList();
+      if (ctx.parametersInvocation() != null) {
+        parameters = ctx.parametersInvocation().parameter().stream()
+            .map(parameterResolver::resolve)
+            .collect(Collectors.toList());
+      }
       actionInvoker.runAction(scriptContext.getProgress(), commandName, new Parameters(parameters));
       return null;
     }

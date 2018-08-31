@@ -66,7 +66,7 @@ command
     : EXECUTE_MACRO name parametersInvocation? # MacroExecution
     | FOR_EACH IDENTIFIER IN parameter EOL? BLOCK_BEGIN EOL? body BLOCK_END # ForEach
     | DEFINE IDENTIFIER parameter # VariableDefinition
-    | IDENTIFIER parameter* # GenericCommand
+    | IDENTIFIER parametersInvocation? # GenericCommand
     ;
 
 parametersDefinition
