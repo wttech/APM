@@ -86,7 +86,7 @@ path
     ;
 
 scriptInclusion
-    : IMPORT_SCRIPT path
+    : IMPORT_SCRIPT INPLACE? path
     ;
 
 macroDefinition
@@ -123,6 +123,10 @@ EXECUTE_MACRO
 IMPORT_SCRIPT
     : 'import'
     | 'IMPORT'
+    ;
+INPLACE
+    : 'inplace'
+    | 'INPLACE'
     ;
 FOR_EACH
     : 'foreach'

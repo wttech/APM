@@ -21,12 +21,12 @@ package com.cognifide.cq.cqsm.core.scripts;
 
 import static com.cognifide.cq.cqsm.core.antlr.InvalidSyntaxMessageFactory.detailedSyntaxError;
 import static com.cognifide.cq.cqsm.core.antlr.InvalidSyntaxMessageFactory.generalSyntaxError;
+import static com.google.common.base.Preconditions.checkArgument;
 
 import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
 import com.cognifide.cq.cqsm.api.actions.ActionFactory;
 import com.cognifide.cq.cqsm.api.actions.ActionResult;
 import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
-import com.cognifide.cq.cqsm.api.exceptions.ExecutionException;
 import com.cognifide.cq.cqsm.api.executors.Context;
 import com.cognifide.cq.cqsm.api.executors.Mode;
 import com.cognifide.cq.cqsm.api.logger.Message;
@@ -52,15 +52,11 @@ import com.cognifide.cq.cqsm.core.progress.ProgressImpl;
 import com.cognifide.cq.cqsm.core.sessions.SessionSavingMode;
 import com.cognifide.cq.cqsm.core.sessions.SessionSavingPolicy;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import org.apache.jackrabbit.api.JackrabbitSession;
@@ -90,20 +86,12 @@ public class ScriptManagerImpl implements ScriptManager {
   @Reference
   private ScriptFinder scriptFinder;
 
-
   private EventManager eventManager = new EventManager();
 
-  private Map<String, String> predefinedDefinitions;
-
   @Override
-  public Progress evaluate(String scriptContent, Mode mode, ResourceResolver resolver)
+  public Progress evaluate(final String scriptContent, final Mode mode, final ResourceResolver resolver)
       throws RepositoryException, PersistenceException {
-    return evaluate(scriptContent, mode, Maps.<String, String>newHashMap(), resolver);
-  }
 
-  @Override
-  public Progress evaluate(String scriptContent, Mode mode, Map<String, String> customDefinitions,
-      ResourceResolver resolver) throws RepositoryException, PersistenceException {
     Script script = scriptFinder.find(ScriptManager.FILE_FOR_EVALUATION, false, resolver);
     if (script != null) {
       scriptStorage.remove(script, resolver);
@@ -112,21 +100,19 @@ public class ScriptManagerImpl implements ScriptManager {
     InputStream stream = new ByteArrayInputStream(scriptContent.getBytes(StandardCharsets.UTF_8));
     script = scriptStorage.save(FILE_FOR_EVALUATION, stream, true, resolver);
 
-    Progress progress = process(script, mode, customDefinitions, resolver);
+    Progress progress = process(script, mode, resolver);
     scriptStorage.remove(script, resolver);
 
     return progress;
   }
 
   @Override
-  public synchronized Progress process(final Script script, final Mode mode, ResourceResolver resolver)
+  public synchronized Progress process(final Script script, final Mode mode, final ResourceResolver resolver)
       throws RepositoryException, PersistenceException {
-    return process(script, mode, Maps.<String, String>newHashMap(), resolver);
-  }
 
-  @Override
-  public Progress process(Script script, final Mode mode, final Map<String, String> customDefinitions,
-      ResourceResolver resolver) throws RepositoryException, PersistenceException {
+    checkArgument(script != null, "Script is required");
+    checkArgument(mode != null, "Mode is required");
+
     Progress progress;
     try {
       progress = execute(script, mode, resolver);
@@ -142,19 +128,12 @@ public class ScriptManagerImpl implements ScriptManager {
     return progress;
   }
 
-  private Progress execute(Script script, final Mode mode, ResourceResolver resolver)
-      throws ExecutionException, RepositoryException {
-    if (script == null) {
-      throw new ExecutionException("Script is not specified");
-    }
-
-    if (mode == null) {
-      throw new ExecutionException("Execution mode is not specified");
-    }
+  private Progress execute(final Script script, final Mode mode, final ResourceResolver resolver)
+      throws RepositoryException {
 
     final String path = script.getPath();
 
-    LOG.info(String.format("Script execution started: %s [%s]", path, mode));
+    LOG.info("Script execution started: {} [{}]", path, mode);
     final ActionExecutor actionExecutor = createExecutor(mode, resolver);
     final Context context = actionExecutor.getContext();
     final SessionSavingPolicy savingPolicy = context.getSavingPolicy();
@@ -189,10 +168,10 @@ public class ScriptManagerImpl implements ScriptManager {
     return progress;
   }
 
-  private void process(final Script script, final Mode mode, final boolean success,
-      ResourceResolver resolver) throws PersistenceException {
-    final ModifiableScript modifiableScript = new ModifiableScriptWrapper(resolver, script);
+  private void process(final Script script, final Mode mode, final boolean success, final ResourceResolver resolver)
+      throws PersistenceException {
 
+    final ModifiableScript modifiableScript = new ModifiableScriptWrapper(resolver, script);
     if (Arrays.asList(Mode.RUN, Mode.AUTOMATIC_RUN).contains(mode)) {
       modifiableScript.setExecuted(true);
     }
@@ -207,27 +186,18 @@ public class ScriptManagerImpl implements ScriptManager {
   }
 
   @Override
-  public Map<String, String> getPredefinedDefinitions() {
-    if (predefinedDefinitions == null) {
-      predefinedDefinitions = Collections.synchronizedMap(new TreeMap<>());
-      eventManager.trigger(Event.INIT_DEFINITIONS);
-    }
-    return predefinedDefinitions;
-  }
-
-  @Override
   public EventManager getEventManager() {
     return eventManager;
   }
 
   @Override
-  public List<Script> findIncludes(Script script, ResourceResolver resolver) {
+  public List<Script> findIncludes(final Script script, final ResourceResolver resolver) {
     ScriptTreeLoader scriptTreeLoader = new ScriptTreeLoader(resolver, scriptFinder);
     ScriptTree scriptTree = scriptTreeLoader.loadScriptTree(script);
     return Lists.newArrayList(scriptTree.getIncludedScripts());
   }
 
-  private ActionExecutor createExecutor(Mode mode, ResourceResolver resolver) throws RepositoryException {
+  private ActionExecutor createExecutor(final Mode mode, final ResourceResolver resolver) throws RepositoryException {
     final Context context = new Context((JackrabbitSession) resolver.adaptTo(Session.class));
     return mode.getExecutor(context);
   }
