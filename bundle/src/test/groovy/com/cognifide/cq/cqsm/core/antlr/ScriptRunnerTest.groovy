@@ -26,7 +26,6 @@ import com.cognifide.cq.cqsm.api.logger.Progress
 import com.cognifide.cq.cqsm.api.logger.Status
 import com.cognifide.cq.cqsm.api.scripts.Script
 import com.cognifide.cq.cqsm.core.antlr.parameter.Parameters
-import com.cognifide.cq.cqsm.core.antlr.type.ApmString
 import com.cognifide.cq.cqsm.core.loader.ScriptTree
 import com.cognifide.cq.cqsm.core.macro.MacroRegistrar
 import spock.lang.Specification
@@ -101,17 +100,6 @@ class ScriptRunnerTest extends Specification {
                      "Executing command SHOW '1. macro'",
                      "Executing command SHOW 'null'",
                      "Executing command SHOW 'global'"]
-    }
-
-    def "run example"() {
-        given:
-        ScriptContext scriptContext = createScriptContext("/example.cqsm")
-
-        when:
-        def result = scriptExecutor.execute(scriptContext)
-
-        then:
-        result != []
     }
 
     private ScriptContext createScriptContext(String file) {
