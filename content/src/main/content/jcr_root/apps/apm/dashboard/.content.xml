@@ -23,7 +23,7 @@
             <clientlibs
                     jcr:primaryType="nt:unstructured"
                     sling:resourceType="granite/ui/components/coral/foundation/includeclientlibs"
-                    categories="[apm.dashboard,cq.common.wcm,cq.sites.collectionpage,cq.siteadmin.admin.page.row,cq.experiencefragments.components.experiencefragment]"/>
+                    categories="[apm.dashboard,cq.common.wcm,cq.sites.collectionpage,cq.siteadmin.admin.page.row,cq.experiencefragments.components.experiencefragment,cq.siteadmin.common]"/>
         </head>
         <views jcr:primaryType="nt:unstructured">
             <list
@@ -114,6 +114,14 @@
                                     jcr:primaryType="nt:unstructured"
                                     href.uritemplate="/apm/edit.html{+id}"/>
                         </importscript>
+                        <scriptupload
+                            jcr:primaryType="nt:unstructured"
+                            granite:id="dashboard-upload"
+                            sling:resourceType="granite/ui/components/coral/foundation/collection/actionlink"
+                            action="dashboard.upload"
+                            icon="upload"
+                            text="Upload Script">
+                        </scriptupload>
                         <createfolder
                                 granite:id="cq-experiencefragments-admin-createfolder"
                                 granite:rel="cq-siteadmin-admin-createfolder"
