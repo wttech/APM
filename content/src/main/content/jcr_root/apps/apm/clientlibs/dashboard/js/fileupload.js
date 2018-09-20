@@ -18,25 +18,25 @@
  * =========================LICENSE_END==================================
  */
 (function(window, $, Coral) {
-  "use strict";
+  'use strict';
 
   let dragCounter = 0,
       fileUploader;
 
   function init() {
     fileUploader = new Coral.FileUpload();
-    fileUploader.accept = ".cqsm,.apm";
-    fileUploader.action = "/bin/cqsm/fileUpload";
+    fileUploader.accept = '.cqsm,.apm';
+    fileUploader.action = '/bin/cqsm/fileUpload';
     fileUploader.async = true;
     fileUploader.multiple = true;
-    fileUploader.name = "file";
-    fileUploader._className = fileUploader._className + " coral-fileupload-dropzone";
+    fileUploader.name = 'file';
+    fileUploader._className = fileUploader._className + ' coral-fileupload-dropzone';
     fileUploader
-      .on("coral-fileupload:fileadded", null, function(event) {
+      .on('coral-fileupload:fileadded', null, function(event) {
         let filename = event.detail.item.file.name;
         fileUploader.upload(filename);
       }, true)
-      .on("coral-fileupload:load", null, function(event) {
+      .on('coral-fileupload:load', null, function(event) {
         fileUploader.uploadQueue.forEach(function(item, index) {
           let filename = event.detail.item.file.name;
           if (item.file.name === filename) {
@@ -48,22 +48,22 @@
         }
       }, true);
 
-    $("coral-shell-content")[0]
-      .on("drop", null, function(event) {
+    $('coral-shell-content')[0]
+      .on('drop', null, function(event) {
         dragCounter = 0;
         event.preventDefault();
         _dropZoneDrop();
         fileUploader._onInputChange(event);
       }, false)
-      .on("dragenter", null, function(event) {
+      .on('dragenter', null, function(event) {
         event.preventDefault();
         dragCounter++;
         _dropZoneDragEnter();
       }, false)
-      .on("dragover", null, function(event) {
+      .on('dragover', null, function(event) {
         event.preventDefault();
       }, false)
-      .on("dragleave", null, function() {
+      .on('dragleave', null, function() {
         dragCounter--;
         if (dragCounter === 0) {
           _dropZoneDragLeave();
@@ -76,7 +76,7 @@
   }
 
   function _dropZoneDragEnter() {
-    let message = Granite.I18n.get("Drag and drop to upload"),
+    let message = Granite.I18n.get('Drag and drop to upload'),
         dragAndDropMessage = $('<div class=\"drag-drop-message\" style="text-align: center;"><h1 > <span>{</span>' + message + '<span>}</span></h1></div>');
     $('.foundation-collection').overlayMask('show', dragAndDropMessage);
   }
@@ -89,14 +89,14 @@
     $('.foundation-collection').overlayMask('hide');
   }
 
-  $(window).adaptTo("foundation-registry").register("foundation.collection.action.action", {
-    name: "dashboard.upload",
+  $(window).adaptTo('foundation-registry').register('foundation.collection.action.action', {
+    name: 'dashboard.upload',
     handler: function() {
       fileUploader._showFileDialog();
     }
   });
 
-  $(document).on("foundation-contentloaded", function () {
+  $(document).on('foundation-contentloaded', function () {
     init();
   });
 
