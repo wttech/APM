@@ -110,10 +110,10 @@
                                 }
                                 switch (status) {
                                     case ERROR_STATUS:
-                                        uiHelper.alert(title, 'Executed with errors', 'error');
+                                        uiHelper.alert(title, 'Error ' + title + ' executed with errors', 'error');
                                         break;
                                     case WARNING_STATUS:
-                                        uiHelper.alert(title, 'Executed with warnings', 'notice');
+                                        uiHelper.alert(title, 'Warning ' + title + ' executed with warnings', 'notice');
                                         break;
                                     case SUCCESS_STATUS:
                                         uiHelper.notify(title, 'Executed successfully', 'success');
