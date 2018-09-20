@@ -20,8 +20,6 @@
 (function (window, $) {
   $(document).on('cui-contentloaded', function () {
 
-      const DASHBOARD_URL = '/apps/apm/dashboard.html';
-
       function Console($el) {
       this.$el = $el;
       this.$textArea = this.$el.find("#cqsm").eq(0);
@@ -67,7 +65,7 @@
 
       delegateEvents: function () {
          this.$backButton.click(function () {
-             window.location.href = DASHBOARD_URL;
+             window.location.href = document.referrer;
          });
       }
     };
