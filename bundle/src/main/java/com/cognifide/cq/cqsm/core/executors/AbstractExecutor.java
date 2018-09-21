@@ -24,6 +24,7 @@ import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
 import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
+import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -33,6 +34,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.jcr.RepositoryException;
 
+
+@Component(componentAbstract = true)
 abstract class AbstractExecutor {
 
     final Logger logger;

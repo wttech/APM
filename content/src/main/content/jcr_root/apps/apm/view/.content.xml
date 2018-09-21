@@ -22,11 +22,16 @@
             class="content-header grid-generator-header">
         <secondary jcr:primaryType="nt:unstructured">
             <cancel
-                    granite:id="backButton"
-                    granite:class="foundation-collection-action"
+                granite:id="backButton"
+                granite:class="foundation-collection-action"
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="granite/ui/components/coral/foundation/collection/action"
+                action="foundation.link"
+                text="Back">
+                <data
                     jcr:primaryType="nt:unstructured"
-                    sling:resourceType="granite/ui/components/coral/foundation/collection/action"
-                    text="Back" />
+                    href.uritemplate="${empty param.backHref ? (empty header.Referer ? granite:concat(&quot;/sites.htm&quot;, granite:encodeURIPath(granite:relativeParent(param.item, 1))) : header.Referer) : param.backHref}"/>
+            </cancel>
         </secondary>
     </actions>
     <views jcr:primaryType="nt:unstructured">
