@@ -37,14 +37,6 @@
                     icon="spellcheck"
                     text="Validate"
                     variant="actionBar" />
-            <save
-                    granite:id="saveButton"
-                    granite:class="foundation-collection-action"
-                    jcr:primaryType="nt:unstructured"
-                    sling:resourceType="granite/ui/components/coral/foundation/collection/action"
-                    icon="save"
-                    text="Save"
-                    variant="actionBar" />
         </primary>
         <secondary jcr:primaryType="nt:unstructured">
             <cancel
@@ -53,6 +45,13 @@
                     jcr:primaryType="nt:unstructured"
                     sling:resourceType="granite/ui/components/coral/foundation/collection/action"
                     text="Cancel" />
+            <save
+              granite:id="saveButton"
+              granite:class="foundation-collection-action"
+              jcr:primaryType="nt:unstructured"
+              sling:resourceType="granite/ui/components/coral/foundation/collection/action"
+              text="Save &#38; Close"
+              variant="primary" />
         </secondary>
     </actions>
     <views jcr:primaryType="nt:unstructured">
