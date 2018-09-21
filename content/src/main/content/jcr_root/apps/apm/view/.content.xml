@@ -30,7 +30,7 @@
                 text="Back">
                 <data
                     jcr:primaryType="nt:unstructured"
-                    href.uritemplate="${empty param.backHref ? (empty header.Referer ? granite:concat(&quot;/sites.htm&quot;, granite:encodeURIPath(granite:relativeParent(param.item, 1))) : header.Referer) : param.backHref}"/>
+                    href.uritemplate="${header.Referer}"/>
             </cancel>
         </secondary>
     </actions>
