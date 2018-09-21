@@ -100,7 +100,7 @@
                                 let status = getResponseStatus(dataObject),
                                     title;
 
-                                switch(mode){
+                                switch (mode) {
                                     case 'DRY_RUN':
                                         title = 'Dry Run';
                                         break;
