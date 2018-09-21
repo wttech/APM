@@ -30,7 +30,7 @@
                 text="Back">
                 <data
                     jcr:primaryType="nt:unstructured"
-                    href.uritemplate="${header.Referer}"/>
+                    href.uritemplate="${empty header.Referer ? &quot;/apm/dashboard.html&quot; : header.Referer}"/>
             </cancel>
         </secondary>
     </actions>
