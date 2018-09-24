@@ -21,7 +21,6 @@
   $(document).on('cui-contentloaded', function () {
 
     const SHOW_REFERENCES_URL = '/etc/cqsm/pages/reference.html';
-    const DASHBOARD_URL = '/apm/dashboard.html';
 
     function Console($el) {
       this.uiHelper = $(window).adaptTo("foundation-ui");
@@ -159,7 +158,7 @@
         });
 
         this.$cancelButton.click(function () {
-          window.location.href = DASHBOARD_URL;
+          window.location.href = document.referrer;
         });
 
         this.displayResponseFeedback = function (response) {
