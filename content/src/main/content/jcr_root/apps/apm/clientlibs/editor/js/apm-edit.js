@@ -33,6 +33,7 @@
       this.$showReference = this.$el.find('#showReference').eq(0);
       this.$validateButton = this.$el.find('#validateButton').eq(0);
       this.$saveButton = this.$el.find('#saveButton').eq(0);
+      this.$saveAndCloseButton = this.$el.find('#saveAndCloseButton').eq(0);
       this.$cancelButton = this.$el.find('#cancelButton').eq(0);
       this.$lastSavedOn = this.$el.find('.lastSavedOn').eq(0);
       this.initialValue = this.$textArea.val();
@@ -199,6 +200,11 @@
           self.fileUpload();
         });
 
+        this.$saveAndCloseButton.click(function () {
+          self.fileUpload();
+          window.location.href = DASHBOARD_URL;
+        });
+
         $(document).ready(function () {
           $(document).keydown(function (e) {
             const S_CHARACTER_CODE = 83;
@@ -217,7 +223,5 @@
         });
       }
     };
-
-    const console = new Console($('body'));
   });
 })(window, jQuery);
