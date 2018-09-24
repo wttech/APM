@@ -166,14 +166,14 @@
           const variant = isErrorMessage ? 'error' : 'success';
 
           let text = '';
-          if (response.error) {
-            text +=  '</br>' + response.error;
-          }
+
           if (isErrorMessage) {
-            self.uiHelper.alert(response.message, text, variant);
+            text = 'error';
+            response.message = response.message + '</br>' + response.error;
+            self.uiHelper.notify(text, response.message, variant);
           } else {
             text = 'info';
-            self.uiHelper.notify(text, response.message,  variant);
+            self.uiHelper.notify(text, response.message, variant);
           }
         };
 
