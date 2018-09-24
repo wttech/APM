@@ -222,5 +222,6 @@
         });
       }
     };
+    new Console($('body'));
   });
 })(window, jQuery);
