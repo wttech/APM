@@ -12,5 +12,3 @@ CREATE GROUP authors IF NOT EXISTS
 FOR GROUP authors
 	ALLOW ${path} [ALL]
 	DENY ${path}/foo/bar [MODIFY, DELETE]
-	
-allow
