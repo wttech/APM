@@ -202,7 +202,7 @@
 
         this.$saveAndCloseButton.click(function () {
           self.fileUpload();
-          window.location.href = DASHBOARD_URL;
+          window.location.href = document.referrer;
         });
 
         $(document).ready(function () {
