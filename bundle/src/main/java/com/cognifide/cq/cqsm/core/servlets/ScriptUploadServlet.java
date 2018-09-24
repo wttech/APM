@@ -19,7 +19,6 @@
  */
 package com.cognifide.cq.cqsm.core.servlets;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
 import com.cognifide.cq.cqsm.api.scripts.Script;
@@ -46,10 +45,8 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.jcr.RepositoryException;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
 @SlingServlet(paths = {"/bin/cqsm/fileUpload"}, methods = {"POST"})
@@ -61,11 +58,11 @@ public class ScriptUploadServlet extends SlingAllMethodsServlet {
 	private static final String REDIRECT_URL = "/etc/cqsm.html";
 
 	@Reference
-	private ScriptStorage scriptStorage;
+	private transient ScriptStorage scriptStorage;
 
 	@Override
 	protected void doPost(final SlingHttpServletRequest request, final SlingHttpServletResponse response)
-			throws ServletException, IOException {
+			throws IOException {
 		try {
 			final Map<String, InputStream> files = Maps.newHashMap();
 			for (RequestParameter file : request.getRequestParameters("file")) {

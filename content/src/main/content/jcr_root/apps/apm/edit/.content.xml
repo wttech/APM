@@ -47,7 +47,7 @@
                     variant="quiet"/>
             <save
               jcr:primaryType="nt:unstructured"
-              sling:resourceType="/apps/apm/components/saveandclose" />
+              sling:resourceType="/apps/apm/components/saveandclose"/>
         </secondary>
     </actions>
     <views jcr:primaryType="nt:unstructured">
