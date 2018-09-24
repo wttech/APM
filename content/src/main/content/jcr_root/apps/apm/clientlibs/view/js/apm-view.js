@@ -24,10 +24,8 @@
       this.$el = $el;
       this.$textArea = this.$el.find("#cqsm").eq(0);
       this.$fileName = this.$el.find('#fname').eq(0);
-      this.$backButton = this.$el.find('#backButton').eq(0);
       this.initialValue = this.$textArea.val();
       this.editor = this.initEditor();
-      this.delegateEvents();
     }
 
     Console.prototype = {
@@ -62,14 +60,7 @@
 
           return editor;
       },
-
-      delegateEvents: function () {
-         this.$backButton.click(function () {
-             window.location.href = document.referrer;
-         });
-      }
     };
 
-    const console = new Console($('body'));
   });
 })(window, jQuery);

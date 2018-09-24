@@ -18,7 +18,7 @@
             <clientlibs
                     jcr:primaryType="nt:unstructured"
                     sling:resourceType="granite/ui/components/coral/foundation/includeclientlibs"
-                    categories="[apm-history,apm-summary,cq.common.wcm,cq.sites.collectionpage,cq.siteadmin.admin.page.row,cq.experiencefragments.components.experiencefragment]"/>
+                    categories="[apm-dashboard,apm-history,apm-summary,cq.common.wcm,cq.sites.collectionpage,cq.siteadmin.admin.page.row,cq.experiencefragments.components.experiencefragment]"/>
         </head>
         <views jcr:primaryType="nt:unstructured">
             <list
@@ -87,16 +87,21 @@
         <actions jcr:primaryType="nt:unstructured">
             <selection jcr:primaryType="nt:unstructured">
                 <view
-                  granite:class="foundation-collection-action"
-                  jcr:primaryType="nt:unstructured"
-                  sling:resourceType="granite/ui/components/coral/foundation/collection/action"
-                  action="dashboard.view"
-                  activeSelectionCount="single"
-                  icon="search"
-                  relScope="item"
-                  target=".cq-experience-fragments-admin-childpages"
-                  text="View"
-                  variant="actionBar"/>
+                    granite:class="foundation-collection-action"
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="granite/ui/components/coral/foundation/collection/action"
+                    action="foundation.link"
+                    activeSelectionCount="single"
+                    activeCondition="is-not-folder"
+                    icon="search"
+                    relScope="item"
+                    target=".cq-experience-fragments-admin-childpages"
+                    text="View"
+                    variant="actionBar">
+                    <data
+                        jcr:primaryType="nt:unstructured"
+                        href.uritemplate="/apm/view.html{+item}"/>
+                </view>
             </selection>
         </actions>
     </jcr:content>
