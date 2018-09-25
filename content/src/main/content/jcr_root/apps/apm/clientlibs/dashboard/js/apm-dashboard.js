@@ -122,7 +122,7 @@
                             } else if (dataObject.type === 'unknown') {
                                 switch(mode) {
                                     case 'DRY_RUN':
-                                        uiHelper.notify('error', 'Dry Run wasn\'t executed successfully' + jobMessage, 'error');
+                                        uiHelper.notify('error', 'Dry Run wasn\'t executed successfully: ' + jobMessage, 'error');
                                         break;
                                     case 'RUN':
                                         uiHelper.notify('error','Run on author wasn\'t executed successfully: ' + jobMessage, 'error');
