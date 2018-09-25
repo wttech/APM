@@ -110,22 +110,22 @@
                                 }
                                 switch (status) {
                                     case ERROR_STATUS:
-                                        uiHelper.alert(title, 'Error ' + title + ' executed with errors', 'error');
+                                        uiHelper.notify('error', title + ' executed with errors', 'error');
                                         break;
                                     case WARNING_STATUS:
-                                        uiHelper.alert(title, 'Warning ' + title + ' executed with warnings', 'notice');
+                                        uiHelper.notify('warning', title + ' executed with warnings', 'notice');
                                         break;
                                     case SUCCESS_STATUS:
-                                        uiHelper.notify(title, 'Executed successfully', 'success');
+                                        uiHelper.notify('success', title + ' executed successfully', 'success');
                                         break;
                                 }
                             } else if (dataObject.type === 'unknown') {
                                 switch(mode) {
                                     case 'DRY_RUN':
-                                        uiHelper.alert('Dry Run wasn\'t executed successfully', jobMessage, 'error');
+                                        uiHelper.notify('error', 'Dry Run wasn\'t executed successfully' + jobMessage, 'error');
                                         break;
                                     case 'RUN':
-                                        uiHelper.alert('Run on author wasn\'t executed successfully', jobMessage, 'error');
+                                        uiHelper.notify('error','Run on author wasn\'t executed successfully: ' + jobMessage, 'error');
                                         break;
                                 }
                             }
@@ -148,7 +148,7 @@
             },
             error: function (data) {
                 console.log("publish  response: " + JSON.stringify(data));
-                uiHelper.alert('Run on publish wasn\'t executed successfully', data.responseJSON.message, 'error');
+                uiHelper.notify('error', 'Run on publish wasn\'t executed successfully: ' + data.responseJSON.message, 'error');
             }
         });
     }
