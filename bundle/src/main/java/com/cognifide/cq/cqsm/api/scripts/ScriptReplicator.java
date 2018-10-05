@@ -22,6 +22,7 @@ package com.cognifide.cq.cqsm.api.scripts;
 import com.cognifide.cq.cqsm.api.exceptions.ExecutionException;
 import com.day.cq.replication.ReplicationException;
 
+import javax.jcr.RepositoryException;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 
@@ -31,5 +32,5 @@ public interface ScriptReplicator {
 	 * Replicate script to all publish instances
 	 */
 	void replicate(Script script, ResourceResolver resolver)
-			throws ExecutionException, ReplicationException, PersistenceException;
+			throws ExecutionException, ReplicationException, PersistenceException, RepositoryException;
 }

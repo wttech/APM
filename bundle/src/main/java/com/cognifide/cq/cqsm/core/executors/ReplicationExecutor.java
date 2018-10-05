@@ -28,6 +28,7 @@ import com.cognifide.cq.cqsm.core.scripts.ScriptContent;
 import com.cognifide.cq.cqsm.core.scripts.ScriptStorageImpl;
 import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
@@ -56,7 +57,7 @@ import java.util.Set;
 })
 public class ReplicationExecutor extends AbstractExecutor implements JobConsumer, ResourceChangeListener {
 
-	static final String JOB_NAME = "com/cognifide/cq/cqsm/core/executors/replication/executor";
+	public static final String JOB_NAME = "com/cognifide/cq/cqsm/core/executors/replication/executor";
 
 	@Reference
 	private InstanceTypeProvider instanceTypeProvider;
@@ -67,7 +68,8 @@ public class ReplicationExecutor extends AbstractExecutor implements JobConsumer
 	@Override
 	public synchronized JobResult process(Job job) {
 		final String searchPath = job.getProperty(SlingConstants.PROPERTY_PATH).toString();
-		return SlingHelper.resolveDefault(resolverFactory, resolver -> runReplicated(resolver, searchPath), JobResult.FAILED);
+		final String userId = StringUtils.trimToNull(job.getProperty(SlingConstants.PROPERTY_USERID, (String) null));
+		return SlingHelper.resolveDefault(resolverFactory, userId, resolver -> runReplicated(resolver, searchPath), JobResult.FAILED);
 	}
 
 	private JobResult runReplicated(ResourceResolver resolver, String searchPath) {
