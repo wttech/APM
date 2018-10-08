@@ -86,7 +86,7 @@ public class RemoteScriptExecutionActionReceiver implements ActionReceiver {
 	}
 
 	private Mode getMode(ValueMap valueMap) {
-		return Mode.fromString(valueMap.get(ModifiableEntryBuilder.EXECUTOR_PROPERTY, String.class),
+		return Mode.fromString(valueMap.get(ModifiableEntryBuilder.MODE, String.class),
 				Mode.AUTOMATIC_RUN);
 	}
 
