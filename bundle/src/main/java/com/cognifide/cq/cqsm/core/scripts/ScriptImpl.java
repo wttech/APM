@@ -132,4 +132,10 @@ public class ScriptImpl implements Script {
 	public Date getDryRunLast() {
 		return scriptContent.getDryRunLast();
 	}
+
+	@Override
+	public String getReplicatedBy() {
+		return scriptContent.getReplicatedBy();
+	}
+
 }

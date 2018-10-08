@@ -90,6 +90,7 @@ public class ScriptReplicationServlet extends SlingSafeMethodsServlet {
 			final ModifiableScript modifiableScript = new ModifiableScriptWrapper(resolver, script);
 			if (PUBLISH_RUN.equals(run)) {
 				modifiableScript.setPublishRun(true);
+				modifiableScript.setReplicatedBy(resolver.getUserID());
 			}
 			scriptReplicator.replicate(script, resolver);
 

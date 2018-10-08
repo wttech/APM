@@ -19,51 +19,29 @@
  */
 package com.cognifide.cq.cqsm.core.executors;
 
-import com.google.common.collect.ImmutableMap;
-
 import com.cognifide.cq.cqsm.api.scripts.ExecutionMode;
 import com.cognifide.cq.cqsm.api.scripts.Script;
-import com.cognifide.cq.cqsm.api.utils.InstanceTypeProvider;
-import com.cognifide.cq.cqsm.core.scripts.ScriptContent;
-import com.cognifide.cq.cqsm.core.scripts.ScriptStorageImpl;
 import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
-import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.SlingConstants;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.observation.ResourceChange;
-import org.apache.sling.api.resource.observation.ResourceChangeListener;
 import org.apache.sling.event.jobs.Job;
-import org.apache.sling.event.jobs.JobManager;
 import org.apache.sling.event.jobs.consumer.JobConsumer;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-@Service({JobConsumer.class, ResourceChangeListener.class})
+@Service(JobConsumer.class)
 @Component(immediate = true, name = "CQSM Replication Event Handler")
 @Properties({
-		@Property(name = JobConsumer.PROPERTY_TOPICS, value = ReplicationExecutor.JOB_NAME),
-		@Property(name = ResourceChangeListener.PATHS, value = ScriptStorageImpl.SCRIPT_PATH),
-		@Property(name = ResourceChangeListener.CHANGES, value = {"ADDED", "CHANGED"})
+		@Property(name = JobConsumer.PROPERTY_TOPICS, value = ReplicationExecutor.JOB_NAME)
 })
-public class ReplicationExecutor extends AbstractExecutor implements JobConsumer, ResourceChangeListener {
+public class ReplicationExecutor extends AbstractExecutor implements JobConsumer {
 
 	public static final String JOB_NAME = "com/cognifide/cq/cqsm/core/executors/replication/executor";
-
-	@Reference
-	private InstanceTypeProvider instanceTypeProvider;
-
-	@Reference
-	private JobManager jobManager;
 
 	@Override
 	public synchronized JobResult process(Job job) {
@@ -88,50 +66,4 @@ public class ReplicationExecutor extends AbstractExecutor implements JobConsumer
 		return result;
 	}
 
-	@Override
-	public void onChange(List<ResourceChange> changes) {
-		for (ResourceChange change : changes) {
-			processChange(change);
-		}
-	}
-
-	private void processChange(ResourceChange change) {
-		String path = change.getPath();
-		if (isPublish() && (scriptAdded(change) || scriptChanged(change))) {
-			Map<String, Object> eventProperties = ImmutableMap.<String, Object>builder()
-					.put(SlingConstants.PROPERTY_PATH, path)
-					.build();
-			jobManager.addJob(JOB_NAME, eventProperties);
-		}
-	}
-
-	private boolean isPublish() {
-		return !instanceTypeProvider.isOnAuthor();
-	}
-
-	private boolean scriptAdded(ResourceChange change) {
-		return ResourceChange.ChangeType.ADDED.equals(change.getType()) && scriptVerified(change);
-	}
-
-	private boolean scriptVerified(ResourceChange change) {
-		Boolean result = false;
-		Set<String> addedPropertyNames = change.getAddedPropertyNames();
-		if (addedPropertyNames != null) {
-			result = addedPropertyNames.contains(ScriptContent.CQSM_VERIFIED);
-		}
-		return result;
-	}
-
-	private boolean scriptChanged(ResourceChange change) {
-		return ResourceChange.ChangeType.CHANGED.equals(change.getType()) && (fileReplaced(change));
-	}
-
-	private boolean fileReplaced(ResourceChange change) {
-		Boolean result = false;
-		Set<String> changedPropertyNames = change.getChangedPropertyNames();
-		if (changedPropertyNames != null) {
-			result = changedPropertyNames.contains(JcrConstants.JCR_UUID);
-		}
-		return result;
-	}
 }
