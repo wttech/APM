@@ -23,7 +23,6 @@ import com.cognifide.cq.cqsm.api.scripts.ExecutionMode;
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
@@ -45,17 +44,30 @@ public class ReplicationExecutor extends AbstractExecutor implements JobConsumer
 
 	@Override
 	public synchronized JobResult process(Job job) {
+		JobResult result = JobResult.FAILED;
 		final String searchPath = job.getProperty(SlingConstants.PROPERTY_PATH).toString();
-		final String userId = StringUtils.trimToNull(job.getProperty(SlingConstants.PROPERTY_USERID, (String) null));
-		return SlingHelper.resolveDefault(resolverFactory, userId, resolver -> runReplicated(resolver, searchPath), JobResult.FAILED);
+		final Script script = getScript(searchPath);
+		if (script != null) {
+			final String userId = getUserId(script);
+			result = SlingHelper.resolveDefault(resolverFactory, userId, resolver -> runReplicated(resolver, script), JobResult.FAILED);
+		} else {
+			logger.warn("Replicated script cannot be found by script manager: {}", searchPath);
+		}
+		return result;
 	}
 
-	private JobResult runReplicated(ResourceResolver resolver, String searchPath) {
+	private Script getScript(String searchPath) {
+		return SlingHelper.resolveDefault(resolverFactory, resolver -> scriptFinder.find(searchPath, resolver), null);
+	}
+
+	private String getUserId(Script script) {
+		return script.getReplicatedBy();
+	}
+
+	private JobResult runReplicated(ResourceResolver resolver, Script script) {
 		JobResult result = JobResult.FAILED;
-		final Script script = scriptFinder.find(searchPath, resolver);
-		if (script == null) {
-			logger.warn("Replicated script cannot be found by script manager: {}", searchPath);
-		} else if (ExecutionMode.ON_DEMAND.equals(script.getExecutionMode()) && script.isPublishRun()) {
+
+		if (ExecutionMode.ON_DEMAND.equals(script.getExecutionMode()) && script.isPublishRun()) {
 			try {
 				processScript(script, resolver, ExecutorType.REPLICATION);
 				result = JobResult.OK;
