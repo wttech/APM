@@ -19,40 +19,61 @@
  */
 package com.cognifide.cq.cqsm.core.scripts;
 
-import com.google.common.collect.ImmutableList;
-
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
 import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
 import com.cognifide.cq.cqsm.core.Cqsm;
 
+import java.util.Objects;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+import javax.jcr.query.Query;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
+import org.apache.felix.scr.annotations.PropertyUnbounded;
 import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.osgi.framework.Constants;
 
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
+import org.osgi.service.component.ComponentContext;
 
-@Component
+@Component(immediate = true, metatype = true, name = "APM Script Finder")
 @Service
-@Properties({@Property(name = Constants.SERVICE_DESCRIPTION, value = "CQSM Script Finder Service"),
+@Properties({@Property(name = Constants.SERVICE_DESCRIPTION, value = "APM Script Finder Service"),
 		@Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)})
 public class ScriptFinderImpl implements ScriptFinder {
 
-	private static final String ROOT_PATH = "/conf/apm/scripts";
+	private static final String QUERY = "SELECT * FROM [nt:file] WHERE ISDESCENDANTNODE([%s]) AND [jcr:path] LIKE '%%%s'";
 
-	private static final String SCRIPT_PATH = ROOT_PATH + "/cqsmImport";
+	private static final String SCRIPT_EXTENSION = "cqsm";
 
-	private static final String INCLUDE_PATH = ROOT_PATH + "/cqsmInclude";
+	private static final String ROOT_PATH = "/conf/apm";
+
+	private static final String SCRIPT_PATH = ROOT_PATH + "/scripts";
+
+	private static final String REPLICATION_PATH = ROOT_PATH + "/replication";
+
+	@Property(unbounded = PropertyUnbounded.ARRAY, label = "Paths to search for scripts", value = {SCRIPT_PATH, REPLICATION_PATH})
+	private static final String SEARCH_PATHS = "search.paths";
+
+	private String[] searchPaths = new String[]{};
+
+	@Activate
+	protected void activate(final ComponentContext componentContext) {
+		this.searchPaths = PropertiesUtil.toStringArray(componentContext.getProperties().get(SEARCH_PATHS), new String[]{});
+	}
 
 	@Override
 	public List<Script> findAll(Predicate filter, ResourceResolver resolver) {
@@ -63,19 +84,9 @@ public class ScriptFinderImpl implements ScriptFinder {
 
 	@Override
 	public List<Script> findAll(ResourceResolver resolver) {
-		return findAll(true, resolver);
-	}
-
-	private List<Script> findAll(boolean skipIgnored, ResourceResolver resourceResolver) {
-		List<Script> scripts = new LinkedList<>();
-		for (String path : getSearchPaths()) {
-			Resource root = resourceResolver.getResource(path);
-			if (root != null) {
-				Iterator<Resource> children = root.listChildren();
-				scripts.addAll(getScripts(children, skipIgnored));
-			}
-		}
-		return scripts;
+		return findScripts(SCRIPT_EXTENSION, resolver)
+				.map(resource -> resource.adaptTo(ScriptImpl.class))
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -84,21 +95,16 @@ public class ScriptFinderImpl implements ScriptFinder {
 	}
 
 	@Override
-	public Script find(String path, boolean skipIgnored, ResourceResolver resolver) {
+	public Script find(String scriptPath, boolean skipIgnored, ResourceResolver resolver) {
 		Script result = null;
-		if (StringUtils.isNotEmpty(path) && (!skipIgnored || isNotIgnoredPath(path))) {
-			Resource resource = null;
-			if (path.contains(ROOT_PATH)) {
-				resource = resolver.getResource(path);
-			}
-			if (resource == null) {
-				path = path.startsWith("/") ? path.substring(1) : path;
-				for (String searchPath : getSearchPaths()) {
-					resource = resolver.getResource(searchPath + "/" + path);
-					if (resource != null) {
-						break;
-					}
-				}
+		if (StringUtils.isNotEmpty(scriptPath) && (!skipIgnored || isNotIgnoredPath(scriptPath))) {
+			Resource resource;
+			if (isAbsolute(scriptPath)) {
+				resource = resolver.getResource(scriptPath);
+			} else {
+				resource = findScripts(scriptPath, resolver)
+						.findFirst()
+						.orElse(null);
 			}
 			if (resource != null) {
 				result = resource.adaptTo(ScriptImpl.class);
@@ -107,28 +113,20 @@ public class ScriptFinderImpl implements ScriptFinder {
 		return result;
 	}
 
-	private List<Script> getScripts(Iterator<Resource> scriptIterator, boolean skipIgnored) {
-		List<Script> scripts = new LinkedList<>();
-		while (scriptIterator.hasNext()) {
-			Resource resource = scriptIterator.next();
-			if (!skipIgnored || isNotIgnoredPath(resource.getPath())) {
-				Script script = resource.adaptTo(ScriptImpl.class);
-				if (script != null) {
-					scripts.add(script);
-				}
-			}
-		}
-		return scripts;
+	private Stream<Resource> findScripts(String scriptPath, ResourceResolver resolver) {
+		return Stream.of(searchPaths)
+				.map(searchPath -> String.format(QUERY, searchPath, scriptPath))
+				.map(query -> resolver.findResources(query, Query.JCR_SQL2))
+				.map(resourceIterator -> Spliterators.spliteratorUnknownSize(resourceIterator, Spliterator.ORDERED))
+				.flatMap(resourceSpliterator -> StreamSupport.stream(resourceSpliterator, false))
+				.filter(Objects::nonNull);
 	}
 
 	private boolean isNotIgnoredPath(String path) {
 		return !ScriptManager.FILE_FOR_EVALUATION.equals(FilenameUtils.getBaseName(path));
 	}
 
-	private List<String> getSearchPaths() {
-		return ImmutableList.<String>builder() //
-				.add(SCRIPT_PATH) //
-				.add(INCLUDE_PATH) //
-				.build();
+	private boolean isAbsolute(String path) {
+		return StringUtils.startsWith(path, "/");
 	}
 }
