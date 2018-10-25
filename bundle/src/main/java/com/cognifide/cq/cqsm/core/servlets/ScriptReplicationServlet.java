@@ -29,6 +29,7 @@ import com.cognifide.cq.cqsm.core.scripts.ModifiableScriptWrapper;
 import com.cognifide.cq.cqsm.core.utils.ServletUtils;
 import com.day.cq.replication.ReplicationException;
 
+import javax.jcr.RepositoryException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
@@ -89,12 +90,13 @@ public class ScriptReplicationServlet extends SlingSafeMethodsServlet {
 			final ModifiableScript modifiableScript = new ModifiableScriptWrapper(resolver, script);
 			if (PUBLISH_RUN.equals(run)) {
 				modifiableScript.setPublishRun(true);
+				modifiableScript.setReplicatedBy(resolver.getUserID());
 			}
 			scriptReplicator.replicate(script, resolver);
 
 			ServletUtils.writeMessage(response, "success",
 					String.format("Script '%s' replicated successfully", scriptPath));
-		} catch (PersistenceException e) {
+		} catch (PersistenceException|RepositoryException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			ServletUtils.writeMessage(response, "error",
 					String.format("Script '%s' cannot be processed because of repository error: %s",

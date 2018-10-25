@@ -99,4 +99,11 @@ public interface Script {
 	 * Return last dry run date
 	 */
 	Date getDryRunLast();
+
+	/**
+	 * Return user that replicated script
+	 * @return
+	 */
+	String getReplicatedBy();
+
 }
