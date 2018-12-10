@@ -38,7 +38,6 @@
                     src="/mnt/overlay/apm/history/jcr:content/views/list{.offset,limit}.html{+id}{?sortName,sortDir}"
                     stateId="xf.shell.collectionpage">
                 <columns jcr:primaryType="nt:unstructured">
-                            select="{Boolean}true"/>
                     <select
                       jcr:primaryType="nt:unstructured"
                       select="{Boolean}true"/>
@@ -58,9 +57,21 @@
                             jcr:primaryType="nt:unstructured"
                             jcr:title="Executor"
                             sortable="{Boolean}true"/>
+                    <runStatus
+                            jcr:primaryType="nt:unstructured"
+                            jcr:title="Run status"
+                            sortable="{Boolean}true"/>
                     <lastRunOn
                             jcr:primaryType="nt:unstructured"
                             jcr:title="Last run"
+                            sortable="{Boolean}true"/>
+                    <summary
+                            jcr:primaryType="nt:unstructured"
+                            jcr:title="Summary"
+                            sortable="{Boolean}true"/>
+                    <dryRunStatus
+                            jcr:primaryType="nt:unstructured"
+                            jcr:title="Dry Run status"
                             sortable="{Boolean}true"/>
                     <dryRunLastRun
                             jcr:primaryType="nt:unstructured"
