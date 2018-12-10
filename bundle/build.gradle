@@ -4,6 +4,9 @@ plugins {
     id 'java'
 }
 
+sourceCompatibility = "1.8"
+targetCompatibility = "1.8"
+
 description = 'AEM Permission Management :: Application Core'
 
 aem {
