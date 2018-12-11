@@ -19,16 +19,20 @@
  */
 package com.cognifide.cq.cqsm.core.servlets;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
-
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.scripts.ScriptStorage;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.scripts.ScriptUtils;
 import com.cognifide.cq.cqsm.core.utils.ServletUtils;
 import com.google.common.collect.Maps;
-
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.jcr.RepositoryException;
+import javax.servlet.Servlet;
+import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -37,18 +41,6 @@ import org.apache.sling.api.request.RequestParameter;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.jcr.RepositoryException;
-import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
 
 @Component(
 		immediate = true,
@@ -65,11 +57,11 @@ public class ScriptUploadServlet extends SlingAllMethodsServlet {
 	private static final String REDIRECT_URL = "/etc/cqsm.html";
 
 	@Reference
-	private ScriptStorage scriptStorage;
+	private transient ScriptStorage scriptStorage;
 
 	@Override
 	protected void doPost(final SlingHttpServletRequest request, final SlingHttpServletResponse response)
-			throws ServletException, IOException {
+			throws IOException {
 		try {
 			final Map<String, InputStream> files = Maps.newHashMap();
 			for (RequestParameter file : request.getRequestParameters("file")) {

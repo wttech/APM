@@ -74,6 +74,11 @@ public class ModifiableScriptWrapper implements ModifiableScript {
 		setProperty(ScriptContent.CQSM_DRY_RUN_LAST, executionDate);
 	}
 
+  @Override
+  public void setReplicatedBy(String userId) throws PersistenceException {
+    setProperty(ScriptContent.CQSM_REPLICATED_BY, userId);
+  }
+
 	@Override
 	public void setExecutionMode(ExecutionMode mode) throws PersistenceException {
 		setProperty(ScriptContent.CQSM_EXECUTION_MODE, mode.name());

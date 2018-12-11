@@ -21,32 +21,20 @@ package com.cognifide.cq.cqsm.core.executors;
 
 import com.cognifide.cq.cqsm.api.scripts.ExecutionMode;
 import com.cognifide.cq.cqsm.api.scripts.Script;
-import com.cognifide.cq.cqsm.api.utils.InstanceTypeProvider;
 import com.cognifide.cq.cqsm.core.Property;
-import com.cognifide.cq.cqsm.core.scripts.ScriptContent;
 import com.cognifide.cq.cqsm.core.scripts.ScriptStorageImpl;
 import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper;
-import com.google.common.collect.ImmutableMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.SlingConstants;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.observation.ResourceChange;
-import org.apache.sling.api.resource.observation.ResourceChangeListener;
 import org.apache.sling.event.jobs.Job;
-import org.apache.sling.event.jobs.JobManager;
 import org.apache.sling.event.jobs.consumer.JobConsumer;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 @Component(
 		immediate = true,
 		service = {
-				JobConsumer.class,
-				ResourceChangeListener.class
+				JobConsumer.class
 		},
 		property = {
 				Property.TOPIC + ReplicationExecutor.JOB_NAME,
@@ -57,28 +45,37 @@ import org.osgi.service.component.annotations.Reference;
 				Property.VENDOR
 		}
 )
-public class ReplicationExecutor extends AbstractExecutor implements JobConsumer, ResourceChangeListener {
+public class ReplicationExecutor extends AbstractExecutor implements JobConsumer {
 
-	static final String JOB_NAME = "com/cognifide/cq/cqsm/core/executors/replication/executor";
-
-	@Reference
-	private InstanceTypeProvider instanceTypeProvider;
-
-	@Reference
-	private JobManager jobManager;
+	public static final String JOB_NAME = "com/cognifide/cq/cqsm/core/executors/replication/executor";
 
 	@Override
 	public synchronized JobResult process(Job job) {
+		JobResult result = JobResult.FAILED;
 		final String searchPath = job.getProperty(SlingConstants.PROPERTY_PATH).toString();
-		return SlingHelper.resolveDefault(resolverFactory, resolver -> runReplicated(resolver, searchPath), JobResult.FAILED);
+		final Script script = getScript(searchPath);
+		if (script != null) {
+			final String userId = getUserId(script);
+			result = SlingHelper
+					.resolveDefault(resolverFactory, userId, resolver -> runReplicated(resolver, script), JobResult.FAILED);
+		} else {
+			logger.warn("Replicated script cannot be found by script manager: {}", searchPath);
+		}
+		return result;
 	}
 
-	private JobResult runReplicated(ResourceResolver resolver, String searchPath) {
+	private Script getScript(String searchPath) {
+		return SlingHelper.resolveDefault(resolverFactory, resolver -> scriptFinder.find(searchPath, resolver), null);
+	}
+
+	private String getUserId(Script script) {
+		return script.getReplicatedBy();
+	}
+
+	private JobResult runReplicated(ResourceResolver resolver, Script script) {
 		JobResult result = JobResult.FAILED;
-		final Script script = scriptFinder.find(searchPath, resolver);
-		if (script == null) {
-			logger.warn("Replicated script cannot be found by script manager: {}", searchPath);
-		} else if (ExecutionMode.ON_DEMAND.equals(script.getExecutionMode()) && script.isPublishRun()) {
+
+		if (ExecutionMode.ON_DEMAND.equals(script.getExecutionMode()) && script.isPublishRun()) {
 			try {
 				processScript(script, resolver, ExecutorType.REPLICATION);
 				result = JobResult.OK;
@@ -89,50 +86,4 @@ public class ReplicationExecutor extends AbstractExecutor implements JobConsumer
 		return result;
 	}
 
-	@Override
-	public void onChange(List<ResourceChange> changes) {
-		for (ResourceChange change : changes) {
-			processChange(change);
-		}
-	}
-
-	private void processChange(ResourceChange change) {
-		String path = change.getPath();
-		if (isPublish() && (scriptAdded(change) || scriptChanged(change))) {
-			Map<String, Object> eventProperties = ImmutableMap.<String, Object>builder()
-					.put(SlingConstants.PROPERTY_PATH, path)
-					.build();
-			jobManager.addJob(JOB_NAME, eventProperties);
-		}
-	}
-
-	private boolean isPublish() {
-		return !instanceTypeProvider.isOnAuthor();
-	}
-
-	private boolean scriptAdded(ResourceChange change) {
-		return ResourceChange.ChangeType.ADDED.equals(change.getType()) && scriptVerified(change);
-	}
-
-	private boolean scriptVerified(ResourceChange change) {
-		Boolean result = false;
-		Set<String> addedPropertyNames = change.getAddedPropertyNames();
-		if (addedPropertyNames != null) {
-			result = addedPropertyNames.contains(ScriptContent.CQSM_VERIFIED);
-		}
-		return result;
-	}
-
-	private boolean scriptChanged(ResourceChange change) {
-		return ResourceChange.ChangeType.CHANGED.equals(change.getType()) && (fileReplaced(change));
-	}
-
-	private boolean fileReplaced(ResourceChange change) {
-		Boolean result = false;
-		Set<String> changedPropertyNames = change.getChangedPropertyNames();
-		if (changedPropertyNames != null) {
-			result = changedPropertyNames.contains(JcrConstants.JCR_UUID);
-		}
-		return result;
-	}
 }

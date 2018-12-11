@@ -36,16 +36,14 @@ import com.cognifide.cq.cqsm.core.utils.sling.OperateCallback;
 import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper;
 import com.day.cq.replication.ReplicationAction;
 import com.google.common.base.Preconditions;
-
+import java.util.Calendar;
+import java.util.List;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.api.resource.ValueMap;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-
-import java.util.Calendar;
-import java.util.List;
 
 @Component(
 		immediate = true,
@@ -89,7 +87,7 @@ public class RemoteScriptExecutionActionReceiver implements ActionReceiver {
 	}
 
 	private Mode getMode(ValueMap valueMap) {
-		return Mode.fromString(valueMap.get(ModifiableEntryBuilder.EXECUTOR_PROPERTY, String.class),
+    return Mode.fromString(valueMap.get(ModifiableEntryBuilder.MODE, String.class),
 				Mode.AUTOMATIC_RUN);
 	}
 

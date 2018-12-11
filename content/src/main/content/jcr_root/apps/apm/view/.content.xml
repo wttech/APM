@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:granite="http://www.adobe.com/jcr/granite/1.0"
-          xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
-          xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
-          jcr:primaryType="nt:unstructured"
-          jcr:title="APM View"
-          sling:resourceType="granite/ui/components/shell/collectionpagewithoutheader"
-          granite:class="apm-view-script-page"
-          sling:vanityPath="/apm/view"
-          consoleId="apm-view"
-          contentPath="/content"
-          targetCollection=".apm-view-form">
+  xmlns:jcr="http://www.jcp.org/jcr/1.0"
+  xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+  jcr:primaryType="nt:unstructured"
+  jcr:title="APM View"
+  sling:resourceType="granite/ui/components/shell/collectionpagewithoutheader"
+  granite:class="apm-view-script-page"
+  sling:vanityPath="/apm/view"
+  consoleId="apm-view"
+  contentPath="/content"
+  targetCollection=".apm-view-form">
     <head jcr:primaryType="nt:unstructured">
         <clientlibs
                 jcr:primaryType="nt:unstructured"
@@ -22,11 +22,16 @@
             class="content-header grid-generator-header">
         <secondary jcr:primaryType="nt:unstructured">
             <cancel
-                    granite:id="backButton"
-                    granite:class="foundation-collection-action"
-                    jcr:primaryType="nt:unstructured"
-                    sling:resourceType="granite/ui/components/coral/foundation/collection/action"
-                    text="Back" />
+              granite:id="backButton"
+              granite:class="foundation-collection-action"
+              jcr:primaryType="nt:unstructured"
+              sling:resourceType="granite/ui/components/coral/foundation/collection/action"
+              action="foundation.link"
+              text="Back">
+              <data
+                jcr:primaryType="nt:unstructured"
+                href.uritemplate="${empty header.Referer ? &quot;/apm/dashboard.html&quot; : header.Referer}"/>
+            </cancel>
         </secondary>
     </actions>
     <views jcr:primaryType="nt:unstructured">

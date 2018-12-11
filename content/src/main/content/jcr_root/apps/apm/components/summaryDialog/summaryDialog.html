@@ -55,7 +55,8 @@
           <td is="coral-table-cell">${execution.actionName}</td>
           <td is="coral-table-cell">${execution.parameters}</td>
           <td is="coral-table-cell">
-            <img class="run-${execution.status.toString.toLowerCase}"/>
+            <coral-icon
+                icon="${execution.status.toString.toLowerCase == 'success' ? 'check' : (execution.status.toString.toLowerCase == 'error' ? 'close' : 'alert')}"/>
           </td>
           <td is="coral-table-cell">
             <sly data-sly-list.message="${execution.messages}">

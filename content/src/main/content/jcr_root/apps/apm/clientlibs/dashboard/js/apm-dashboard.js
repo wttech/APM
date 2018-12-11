@@ -19,7 +19,32 @@
  */
 (function (window, $) {
 
+  const ERROR_STATUS = "ERROR",
+      WARNING_STATUS = "WARNING",
+      SUCCESS_STATUS = "SUCCESS_STATUS";
+
     let uiHelper = $(window).adaptTo("foundation-ui");
+
+  $(window).adaptTo("foundation-registry").register(
+      "foundation.collection.action.activecondition", {
+        name: "is-not-folder",
+        handler: function (name, el, config, collection, selections) {
+          return !isFolder(selections);
+        }
+      });
+
+  $(window).adaptTo("foundation-registry").register(
+      "foundation.collection.action.activecondition", {
+        name: "is-available",
+        handler: function (name, el, config, collection, selections) {
+          if (isFolder(selections)) {
+            return false;
+          }
+
+          el.disabled = isScriptInvalidOrNonExecutable(selections);
+          return true;
+        }
+      });
 
     $(window).adaptTo("foundation-registry").register(
         "foundation.collection.action.action", {
@@ -72,22 +97,44 @@
                                     checkStatus(jobId)
                                 }, 1000);
                             } else if (dataObject.type === 'finished') {
-                                console.log(scriptPath + " finished: " + JSON.stringify(dataObject.entries));
-                                switch(mode){
+                              let status = getResponseStatus(dataObject),
+                                  title;
+
+                              switch (mode) {
                                     case 'DRY_RUN':
-                                        uiHelper.notify('info', 'Dry Run executed successfully', 'Info');
+                                      title = 'Dry Run';
                                         break;
                                     case 'RUN':
-                                        uiHelper.notify('info', 'Run on author executed successfully', 'Info');
+                                      title = 'Run on author';
+                                      break;
+                              }
+                              switch (status) {
+                                case ERROR_STATUS:
+                                  uiHelper.notify('error',
+                                      title + ' executed with errors', 'error');
+                                  break;
+                                case WARNING_STATUS:
+                                  uiHelper.notify('warning',
+                                      title + ' executed with warnings',
+                                      'notice');
+                                  break;
+                                case SUCCESS_STATUS:
+                                  uiHelper.notify('success',
+                                      title + ' executed successfully',
+                                      'success');
                                         break;
                                 }
                             } else if (dataObject.type === 'unknown') {
                                 switch(mode) {
                                     case 'DRY_RUN':
-                                        uiHelper.alert('Dry Run wasn\'t executed successfully', jobMessage, 'error');
+                                      uiHelper.notify('error',
+                                          'Dry Run wasn\'t executed successfully: '
+                                          + jobMessage, 'error');
                                         break;
                                     case 'RUN':
-                                        uiHelper.alert('Run on author wasn\'t executed successfully', jobMessage, 'error');
+                                      uiHelper.notify('error',
+                                          'Run on author wasn\'t executed successfully: '
+                                          + jobMessage, 'error');
                                         break;
                                 }
                             }
@@ -110,9 +157,33 @@
             },
             error: function (data) {
                 console.log("publish  response: " + JSON.stringify(data));
-                uiHelper.alert('Run on publish wasn\'t executed successfully', data.responseJSON.message, 'error');
+              uiHelper.notify('error',
+                  'Run on publish wasn\'t executed successfully: '
+                  + data.responseJSON.message, 'error');
             }
         });
     }
+
+  function getResponseStatus(data) {
+    let statuses = new Set(data.entries.map(entry = > entry.status)
+  ),
+    result;
+    if (statuses.has(ERROR_STATUS)) {
+      result = ERROR_STATUS;
+    } else if (statuses.has(WARNING_STATUS)) {
+      result = WARNING_STATUS;
+    } else {
+      result = SUCCESS_STATUS;
+    }
+    return result;
+  }
+
+  function isFolder(selections) {
+    return selections[0].items._container.innerHTML.includes("folder");
+  }
+
+  function isScriptInvalidOrNonExecutable(selections) {
+    return selections[0].items._container.innerHTML.includes("close");
+  }
 
 })(window, jQuery);

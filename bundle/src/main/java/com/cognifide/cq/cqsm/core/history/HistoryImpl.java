@@ -267,8 +267,7 @@ public class HistoryImpl implements History {
 
 	private String getExecutor(ResourceResolver resourceResolver, Mode mode) {
 		String executor = null;
-		if (Mode.RUN == mode) {
-			//FIXME
+    if (mode.isRun()) {
 			executor = resourceResolver.getUserID();
 		}
 		return executor;

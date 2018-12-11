@@ -21,7 +21,6 @@
   $(document).on('cui-contentloaded', function () {
 
     const SHOW_REFERENCES_URL = '/etc/cqsm/pages/reference.html';
-    const DASHBOARD_URL = '/apm/dashboard.html';
 
     function Console($el) {
       this.uiHelper = $(window).adaptTo("foundation-ui");
@@ -33,6 +32,7 @@
       this.$showReference = this.$el.find('#showReference').eq(0);
       this.$validateButton = this.$el.find('#validateButton').eq(0);
       this.$saveButton = this.$el.find('#saveButton').eq(0);
+      this.$saveAndCloseButton = this.$el.find('#saveAndCloseButton').eq(0);
       this.$cancelButton = this.$el.find('#cancelButton').eq(0);
       this.$lastSavedOn = this.$el.find('.lastSavedOn').eq(0);
       this.initialValue = this.$textArea.val();
@@ -158,22 +158,23 @@
         });
 
         this.$cancelButton.click(function () {
-          window.location.href = DASHBOARD_URL;
+          window.location.href = document.referrer;
         });
 
         this.displayResponseFeedback = function (response) {
+          this.$validateButton.blur()
           const isErrorMessage = response.type === 'error';
           const variant = isErrorMessage ? 'error' : 'success';
 
           let text = '';
-          if (response.error) {
-            text +=  '</br>' + response.error;
-          }
+
           if (isErrorMessage) {
-            self.uiHelper.alert(response.message, text, variant);
+            text = 'error';
+            response.message = response.message + '</br>' + response.error;
+            self.uiHelper.notify(text, response.message, variant);
           } else {
             text = 'info';
-            self.uiHelper.notify(text, response.message,  variant);
+            self.uiHelper.notify(text, response.message, variant);
           }
         };
 
@@ -198,6 +199,11 @@
           self.fileUpload();
         });
 
+        this.$saveAndCloseButton.click(function () {
+          self.fileUpload();
+          window.location.href = document.referrer;
+        });
+
         $(document).ready(function () {
           $(document).keydown(function (e) {
             const S_CHARACTER_CODE = 83;
@@ -216,7 +222,6 @@
         });
       }
     };
-
-    const console = new Console($('body'));
+    new Console($('body'));
   });
 })(window, jQuery);

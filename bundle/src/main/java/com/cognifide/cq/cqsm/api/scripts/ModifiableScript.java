@@ -64,4 +64,9 @@ public interface ModifiableScript {
 	 */
 	void setDryRunExecution(Date executionDate) throws PersistenceException;
 
+  /**
+   * Set replicated by user
+   */
+  void setReplicatedBy(String userId) throws PersistenceException;
+
 }

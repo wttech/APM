@@ -30,3 +30,4 @@
   - cqsm:dryRunLast (date)
   - cqsm:executionEnabled (boolean)
   - cqsm:publishRun (boolean)
+  - cqsm:replicatedBy (string)

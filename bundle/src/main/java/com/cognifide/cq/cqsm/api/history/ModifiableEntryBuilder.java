@@ -19,6 +19,7 @@
  */
 package com.cognifide.cq.cqsm.api.history;
 
+import java.util.Calendar;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
@@ -27,22 +28,19 @@ import org.apache.sling.models.annotations.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Calendar;
-
 @Model(adaptables = Resource.class)
 public class ModifiableEntryBuilder {
 
 	public static final String AUTHOR = "author";
-	public static final String FILE_PATH_PROPERTY = "filePath";
 	public static final String EXECUTOR_PROPERTY = "executor";
 	public static final String EXECUTION_TIME_PROPERTY = "executionTime";
-	public static final String PROGRESS_LOG_PROPERTY = "summaryJSON";
+  public static final String FILE_PATH_PROPERTY = "filePath";
+  public static final String INSTANCE_HOSTNAME_PROPERTY = "instanceHostname";
 	public static final String INSTANCE_TYPE_PROPERTY = "instanceType";
-	public static final String INSTANCE_HOSTNAME_PROPERTY = "instanceHostname";
+  public static final String MODE = "mode";
+  public static final String PROGRESS_LOG_PROPERTY = "summaryJSON";
 	private static final Logger LOG = LoggerFactory.getLogger(ModifiableEntryBuilder.class);
 	private static final String UPLOAD_TIME = "uploadTime";
-
-	private static final String MODE = "mode";
 
 	private static final String FILE_NAME = "fileName";
 

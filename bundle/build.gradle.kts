@@ -31,7 +31,7 @@ dependencies {
     compileOnly("com.google.guava:guava:15.0")
     compileOnly("com.google.code.gson:gson:2.3.1")
 
-    compileOnly("com.adobe.aem:uber-jar:6.3.0")
+    compileOnly(group = "com.adobe.aem", name = "uber-jar", version = "6.3.0", classifier = "apis")
     compileOnly("org.osgi:osgi.cmpn:6.0.0")
     compileOnly("org.osgi:org.osgi.core:6.0.0")
     compileOnly("org.osgi:org.osgi.service.component.annotations:1.3.0")
