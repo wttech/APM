@@ -33,7 +33,7 @@ tasks.create("aem") {
     dependsOn("aemDeploy")
 }
 tasks.getByName("aemCompose") {
-    val t: ComposeTask = this as ComposeTask
-    t.includeProject(":bundle")
-    t.includeProject(":content")
+    val aemCompose: ComposeTask = this as ComposeTask
+    aemCompose.includeProject(":bundle")
+    aemCompose.includeProject(":content")
 }
