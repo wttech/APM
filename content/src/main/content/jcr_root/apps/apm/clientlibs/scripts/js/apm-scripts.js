@@ -48,7 +48,7 @@
 
     $(window).adaptTo("foundation-registry").register(
         "foundation.collection.action.action", {
-            name: "dashboard.dryrun",
+            name: "scripts.dryrun",
             handler: function (name, el, config, collection, selections) {
                 const selected = selections[0].attributes['data-path'].value;
                 runOnAuthor(selected, "DRY_RUN");
@@ -57,7 +57,7 @@
 
     $(window).adaptTo("foundation-registry").register(
         "foundation.collection.action.action", {
-            name: "dashboard.runonauthor",
+            name: "scripts.runonauthor",
             handler: function (name, el, config, collection, selections) {
                 const selected = selections[0].attributes['data-path'].value;
                 runOnAuthor(selected, "RUN");
@@ -66,7 +66,7 @@
 
     $(window).adaptTo("foundation-registry").register(
         "foundation.collection.action.action", {
-            name: "dashboard.runonpublish",
+            name: "scripts.runonpublish",
             handler: function (name, el, config, collection, selections) {
                 const selected = selections[0].attributes['data-path'].value;
                 runOnPublish(selected);

@@ -40,7 +40,7 @@ public class RowModel {
 	private static final Set<String> FOLDER_TYPES = ImmutableSet
 			.of(JcrConstants.NT_FOLDER, "sling:OrderedFolder");
 
-	public static final String ROW_MODEL_RESOURCE_TYPE = "apm/components/dashboard/row";
+	public static final String ROW_MODEL_RESOURCE_TYPE = "apm/components/scripts/row";
 
 	@Self
 	private Resource resource;

@@ -18,7 +18,7 @@
             <clientlibs
                     jcr:primaryType="nt:unstructured"
                     sling:resourceType="granite/ui/components/coral/foundation/includeclientlibs"
-                    categories="[apm-dashboard,apm-history,apm-summary,cq.common.wcm,cq.sites.collectionpage,cq.siteadmin.admin.page.row,cq.experiencefragments.components.experiencefragment]"/>
+                    categories="[apm-scripts,apm-history,apm-summary,cq.common.wcm,cq.sites.collectionpage,cq.siteadmin.admin.page.row,cq.experiencefragments.components.experiencefragment]"/>
         </head>
         <views jcr:primaryType="nt:unstructured">
             <list

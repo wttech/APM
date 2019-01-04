@@ -90,7 +90,7 @@
   }
 
   $(window).adaptTo('foundation-registry').register('foundation.collection.action.action', {
-    name: 'dashboard.upload',
+    name: 'scripts.upload',
     handler: function() {
       fileUploader._showFileDialog();
     }

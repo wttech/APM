@@ -21,13 +21,13 @@
 <tr class="foundation-collection-item ${item.folder && 'foundation-collection-navigator'}"
     data-foundation-collection-item-id="${resource.path}" data-path="${resource.path}"
     data-type="${item.resourceType}"
-    data-foundation-collection-navigator-href="/apm/dashboard.html${resource.path}"
+    data-foundation-collection-navigator-href="/apm/scripts.html${resource.path}"
     data-timeline="true" is="coral-table-row" data-title="${item.scriptName}">
     <td is="coral-table-cell" coral-table-rowselect>
         <coral-icon class="foundation-collection-item-thumbnail" icon="${item.folder ? 'folder' : 'fileKey'}" role="img"/>
     </td>
     <td is="coral-table-cell" value="${item.scriptName}">
-        <a class="foundation-layout-table-cellwrapper" data-sly-test.link="${item.folder}" href="/apm/dashboard.html${resource.path}">${item.scriptName}</a>
+        <a class="foundation-layout-table-cellwrapper" data-sly-test.link="${item.folder}" href="/apm/scripts.html${resource.path}">${item.scriptName}</a>
         <sly data-sly-test="${!link}" >${item.scriptName}</sly>
     </td>
     <td is="coral-table-cell" value="${item.author}">
