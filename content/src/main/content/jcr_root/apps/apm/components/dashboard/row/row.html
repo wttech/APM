@@ -36,9 +36,6 @@
     <td is="coral-table-cell" value="${item.valid}">
         <coral-icon data-sly-test="${!item.folder}" class="foundation-collection-item-thumbnail" icon="${item.valid ? 'check' : 'close'}" role="img"/>
     </td>
-    <td is="coral-table-cell" value="${item.executionEnabled}">
-        <coral-icon data-sly-test="${!item.folder}" class="foundation-collection-item-thumbnail" icon="${item.executionEnabled ? 'check' : 'close'}" role="img"/>
-    </td>
     <td is="coral-table-cell" value="${item.lastModified.timeInMillis || 0}">
         <time data-sly-test="${item.lastModified}" datetime="${item.lastModified.timeInMillis || 0}"
               data-sly-use.lastMod="${'com.adobe.cq.xf.ui.DateFormatter' @ date=item.lastModified, relativeFormat='r'}">

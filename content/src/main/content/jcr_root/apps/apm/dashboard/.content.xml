@@ -59,10 +59,6 @@
                             jcr:primaryType="nt:unstructured"
                             jcr:title="Valid"
                             sortable="{Boolean}true"/>
-                    <executable
-                            jcr:primaryType="nt:unstructured"
-                            jcr:title="Executable"
-                            sortable="{Boolean}true"/>
                     <updated
                             jcr:primaryType="nt:unstructured"
                             jcr:title="Updated at"
