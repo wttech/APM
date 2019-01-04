@@ -90,7 +90,7 @@
                 sling:resourceType="wcm/commons/ui/shell/datasources/breadcrumbs"
                 path="${requestPathInfo.suffix}"
                 rootPath="/conf/apm/scripts"
-                rootTitle="Scripts Root"/>
+                rootTitle="APM Scripts"/>
         <actions jcr:primaryType="nt:unstructured">
             <secondary jcr:primaryType="nt:unstructured">
                 <create
