@@ -25,6 +25,12 @@
     <artifactId>cqsm-bundle</artifactId>
     <packaging>bundle</packaging>
     <dependencies>
+        <dependency>
+            <groupId>com.carrotsearch</groupId>
+            <artifactId>junit-benchmarks</artifactId>
+            <version>0.2.1</version>
+            <scope>test</scope>
+        </dependency>
         <!-- AEM API -->
         <dependency>
             <groupId>com.adobe.aem</groupId>
@@ -144,7 +150,7 @@
     <parent>
         <groupId>com.cognifide.cq</groupId>
         <artifactId>cqsm</artifactId>
-        <version>3.0.2</version>
+        <version>3.0.3-SNAPSHOT</version>
     </parent>
     <!-- Build Settings -->
     <build>
@@ -170,7 +176,7 @@
                         <Export-Package>
                             com.cognifide.cq.cqsm.foundation.actions.*;com.cognifide.cq.cqsm.api.*;com.cognifide.cq.cqsm.core.models.*;com.cognifide.cq.cqsm.core.automaticexecutor.*;version="${project.version}"
                         </Export-Package>
-                        <Import-Package>!sun.misc,*</Import-Package>
+                        <Import-Package>!sun.misc,apm.actionmapper;resolution:=optional,*</Import-Package>
                         <Bundle-Name>${project.name}</Bundle-Name>
                         <Bundle-SymbolicName>com.cognifide.cq.cqsm</Bundle-SymbolicName>
                         <Bundle-Vendor>${project.organization.name}</Bundle-Vendor>
