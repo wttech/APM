@@ -19,8 +19,6 @@
  */
 package com.cognifide.cq.cqsm.core.scripts;
 
-import com.google.common.collect.Maps;
-
 import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
 import com.cognifide.cq.cqsm.api.actions.ActionFactory;
@@ -46,7 +44,21 @@ import com.cognifide.cq.cqsm.core.actions.executor.ActionExecutor;
 import com.cognifide.cq.cqsm.core.progress.ProgressImpl;
 import com.cognifide.cq.cqsm.core.sessions.SessionSavingMode;
 import com.cognifide.cq.cqsm.core.sessions.SessionSavingPolicy;
-
+import com.google.common.collect.Maps;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.felix.scr.annotations.Component;
@@ -60,22 +72,6 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.framework.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
 
 @Component
 @Service
@@ -110,7 +106,6 @@ public class ScriptManagerImpl implements ScriptManager {
 
 		final String path = script.getPath();
 
-		actionFactory.update();
 		LOG.info(String.format("Script execution started: %s [%s]", path, mode));
 		Progress progress = new ProgressImpl(resolver.getUserID());
 		final List<ActionDescriptor> descriptors = parseAllDescriptors(script, customDefinitions, resolver);
