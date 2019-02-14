@@ -26,7 +26,9 @@ import com.cognifide.cq.cqsm.core.actions.scanner.AnnotatedClassRegistry;
 import com.cognifide.cq.cqsm.core.actions.scanner.RegistryChangedListener;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Deactivate;
@@ -52,7 +54,7 @@ public class ActionMapperRegistryImpl implements RegistryChangedListener, Action
 
   private AnnotatedClassRegistry registry;
 
-  private volatile List<Object> mappers = Lists.newCopyOnWriteArrayList();
+  private volatile AtomicReference<List<Object>> mappers = new AtomicReference<>(Collections.emptyList());
 
   @Activate
   public void activate(ComponentContext componentContext) {
@@ -70,13 +72,12 @@ public class ActionMapperRegistryImpl implements RegistryChangedListener, Action
 
   @Override
   public void registryChanged(List<Class<?>> registeredClasses) {
-    this.mappers.clear();
-    this.mappers.addAll(createActionMappers(registeredClasses));
+    this.mappers.set(ImmutableList.copyOf(createActionMappers(registeredClasses)));
   }
 
   @Override
   public List<Object> getMappers() {
-    return ImmutableList.copyOf(mappers);
+    return mappers.get();
   }
 
   private static List<Object> createActionMappers(List<Class<?>> classes) {

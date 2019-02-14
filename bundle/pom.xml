@@ -25,12 +25,6 @@
     <artifactId>cqsm-bundle</artifactId>
     <packaging>bundle</packaging>
     <dependencies>
-        <dependency>
-            <groupId>com.carrotsearch</groupId>
-            <artifactId>junit-benchmarks</artifactId>
-            <version>0.2.1</version>
-            <scope>test</scope>
-        </dependency>
         <!-- AEM API -->
         <dependency>
             <groupId>com.adobe.aem</groupId>

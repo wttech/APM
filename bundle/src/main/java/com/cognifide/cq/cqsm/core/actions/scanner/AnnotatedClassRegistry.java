@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * modified), then it is executed class scanner which looks for classes with prefixes specified in bundle
  * header
  */
-public class AnnotatedClassRegistry implements BundleTrackerCustomizer<Bundle> {
+public class AnnotatedClassRegistry {
 
   private static final Logger LOG = LoggerFactory.getLogger(AnnotatedClassRegistry.class);
 
@@ -56,36 +56,47 @@ public class AnnotatedClassRegistry implements BundleTrackerCustomizer<Bundle> {
 
   private final Set<RegistryChangedListener> listeners = new HashSet<>();
 
-  public AnnotatedClassRegistry(BundleContext bundleContext, String bundleHeader,
-      Class<? extends Annotation> annotationClass) {
+  public AnnotatedClassRegistry(final BundleContext bundleContext, final String bundleHeader,
+      final Class<? extends Annotation> annotationClass) {
     this.bundleContext = bundleContext;
     this.bundleHeader = bundleHeader;
     this.annotationClass = annotationClass;
 
-    this.tracker = new BundleTracker(bundleContext, Bundle.ACTIVE, this);
-  }
+    this.tracker = new BundleTracker(bundleContext, Bundle.ACTIVE, new BundleTrackerCustomizer<Bundle>() {
 
-  @Override
-  public Bundle addingBundle(Bundle bundle, BundleEvent event) {
-    if (null != bundle.getHeaders().get(bundleHeader)) {
-      registerClasses(bundle);
-      return bundle;
-    }
-    return null;
-  }
+      @Override
+      public Bundle addingBundle(Bundle bundle, BundleEvent bundleEvent) {
+        if (null != bundle.getHeaders().get(bundleHeader)) {
+          registerClasses(bundle);
+          return bundle;
+        }
+        return null;
+      }
 
-  @Override
-  public void modifiedBundle(Bundle bundle, BundleEvent event, Bundle object) {
-    // do nothing
-  }
+      @Override
+      public void modifiedBundle(Bundle bundle, BundleEvent bundleEvent, Bundle bundle2) {
+        //do nothing
+      }
 
-  @Override
-  public void removedBundle(Bundle bundle, BundleEvent event, Bundle object) {
-    unregisterClasses(bundle);
+      @Override
+      public void removedBundle(Bundle bundle, BundleEvent bundleEvent, Bundle bundle2) {
+        unregisterClasses(bundle);
+      }
+
+    });
   }
 
   public void addChangeListener(RegistryChangedListener changeListener) {
     this.listeners.add(changeListener);
+  }
+
+  public List<Class<?>> getClasses() {
+    List<Class<?>> flattened = new ArrayList<>();
+    for (Map.Entry<Long, List<Class<?>>> entry : classes.entrySet()) {
+      flattened.addAll(entry.getValue());
+    }
+
+    return ImmutableList.copyOf(flattened);
   }
 
   private void registerClasses(Bundle bundle) {
@@ -114,15 +125,6 @@ public class AnnotatedClassRegistry implements BundleTrackerCustomizer<Bundle> {
     for (RegistryChangedListener listener : listeners) {
       listener.registryChanged(classes);
     }
-  }
-
-  public List<Class<?>> getClasses() {
-    List<Class<?>> flattened = new ArrayList<>();
-    for (Map.Entry<Long, List<Class<?>>> entry : classes.entrySet()) {
-      flattened.addAll(entry.getValue());
-    }
-
-    return ImmutableList.copyOf(flattened);
   }
 
   public void open() {

@@ -74,7 +74,7 @@ public class ActionFactoryImpl implements ActionFactory {
   private ActionDescriptor tryToEvaluateCommand(Object mapper, String command) throws ActionCreationException {
     for (Method method : mapper.getClass().getDeclaredMethods()) {
       if (!method.isAnnotationPresent(Mapping.class)) {
-        return null;
+        continue;
       }
 
       final Mapping annotation = method.getAnnotation(Mapping.class);
