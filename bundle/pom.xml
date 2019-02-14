@@ -170,7 +170,7 @@
                         <Export-Package>
                             com.cognifide.cq.cqsm.foundation.actions.*;com.cognifide.cq.cqsm.api.*;com.cognifide.cq.cqsm.core.models.*;com.cognifide.cq.cqsm.core.automaticexecutor.*;version="${project.version}"
                         </Export-Package>
-                        <Import-Package>!sun.misc,apm.actionmapper;resolution:=optional,*</Import-Package>
+                        <Import-Package>!sun.misc,*</Import-Package>
                         <Bundle-Name>${project.name}</Bundle-Name>
                         <Bundle-SymbolicName>com.cognifide.cq.cqsm</Bundle-SymbolicName>
                         <Bundle-Vendor>${project.organization.name}</Bundle-Vendor>
