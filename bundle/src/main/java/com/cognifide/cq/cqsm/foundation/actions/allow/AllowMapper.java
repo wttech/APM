@@ -23,7 +23,6 @@ import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.BasicActionMapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
 import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
-
 import java.util.Collections;
 import java.util.List;
 
@@ -37,7 +36,17 @@ public class AllowMapper extends BasicActionMapper {
 			reference = REFERENCE
 	)
 	public Action mapAction(String path, List<String> permissions) throws ActionCreationException {
-		return mapAction(path, null, permissions, false);
+    return mapAction(path, null, null, permissions, false);
+  }
+
+  @Mapping(
+      value = {"ALLOW" + SPACE + PATH + SPACE + "ITEMS" + SPACE + LIST + SPACE + LIST},
+      args = {"path", "itemNames", "permissions"},
+      reference = REFERENCE
+  )
+  public Action mapAction(String path, List<String> itemNames, List<String> permissions)
+      throws ActionCreationException {
+    return mapAction(path, null, itemNames, permissions, false);
 	}
 
 	@Mapping(
@@ -46,7 +55,16 @@ public class AllowMapper extends BasicActionMapper {
 			reference = REFERENCE
 	)
 	public Action mapAction(String path, String permission) throws ActionCreationException {
-		return mapAction(path, null, Collections.singletonList(permission), false);
+    return mapAction(path, null, null, Collections.singletonList(permission), false);
+  }
+
+  @Mapping(
+      value = {"ALLOW" + SPACE + PATH + SPACE + "ITEMS" + SPACE + LIST + SPACE + STRING},
+      args = {"path", "itemNames", "permission"},
+      reference = REFERENCE
+  )
+  public Action mapAction(String path, List<String> itemNames, String permission) throws ActionCreationException {
+    return mapAction(path, null, itemNames, Collections.singletonList(permission), false);
 	}
 
 	@Mapping(
@@ -54,8 +72,17 @@ public class AllowMapper extends BasicActionMapper {
 			args = {"path", "permissions"},
 			reference = REFERENCE
 	)
-	public Action mapActionWithIfExists(String path, List<String> permissions) throws ActionCreationException {
-		return mapAction(path, null, permissions, true);
+  public Action mapActionWithIfExists(String path, List<String> permissions) {
+    return mapAction(path, null, null, permissions, true);
+  }
+
+  @Mapping(
+      value = {"ALLOW" + SPACE + PATH + SPACE + "ITEMS" + LIST + SPACE + LIST + SPACE + ("IF" + DASH + "EXISTS")},
+      args = {"path", "itemNames", "permissions"},
+      reference = REFERENCE
+  )
+  public Action mapActionWithIfExists(String path, List<String> itemNames, List<String> permissions) {
+    return mapAction(path, null, itemNames, permissions, true);
 	}
 
 	@Mapping(
@@ -65,7 +92,17 @@ public class AllowMapper extends BasicActionMapper {
 	)
 	public Action mapAction(String path, String glob, List<String> permissions)
 			throws ActionCreationException {
-		return mapAction(path, glob, permissions, false);
+    return mapAction(path, glob, null, permissions, false);
+  }
+
+  @Mapping(
+      value = {"ALLOW" + SPACE + PATH + SPACE + GLOB + SPACE + "ITEMS" + SPACE + LIST + SPACE + LIST},
+      args = {"path", "glob", "itemNames", "permissions"},
+      reference = REFERENCE
+  )
+  public Action mapAction(String path, String glob, List<String> itemNames, List<String> permissions)
+      throws ActionCreationException {
+    return mapAction(path, glob, itemNames, permissions, false);
 	}
 
 	@Mapping(
@@ -75,7 +112,17 @@ public class AllowMapper extends BasicActionMapper {
 	)
 	public Action mapAction(String path, String glob, String permission)
 			throws ActionCreationException {
-		return mapAction(path, glob, Collections.singletonList(permission), false);
+    return mapAction(path, glob, null, Collections.singletonList(permission), false);
+  }
+
+  @Mapping(
+      value = {"ALLOW" + SPACE + PATH + SPACE + GLOB + SPACE + "ITEMS" + LIST + SPACE + STRING},
+      args = {"path", "glob", "itemNames", "permission"},
+      reference = REFERENCE
+  )
+  public Action mapAction(String path, String glob, List<String> itemNames, String permission)
+      throws ActionCreationException {
+    return mapAction(path, glob, itemNames, Collections.singletonList(permission), false);
 	}
 
 	@Mapping(
@@ -83,12 +130,22 @@ public class AllowMapper extends BasicActionMapper {
 			args = {"path", "glob", "permissions"},
 			reference = REFERENCE
 	)
-	public Action mapActionWithIfExists(String path, String glob, List<String> permissions) throws ActionCreationException {
-		return mapAction(path, glob, permissions, true);
-	}
+  public Action mapActionWithIfExists(String path, String glob, List<String> permissions) {
+    return mapAction(path, glob, null, permissions, true);
+  }
 
-	private Action mapAction(String path, String glob, List<String> permissions, Boolean ifExists)
-			throws ActionCreationException {
-		return new Allow(path, glob, ifExists, permissions);
+  @Mapping(
+      value = {"ALLOW" + SPACE + PATH + SPACE + GLOB + SPACE + "ITEMS" + LIST + SPACE + LIST + SPACE + ("IF" + DASH
+          + "EXISTS")},
+      args = {"path", "glob", "itemNames", "permissions"},
+      reference = REFERENCE
+  )
+  public Action mapActionWithIfExists(String path, String glob, List<String> itemNames, List<String> permissions) {
+    return mapAction(path, glob, itemNames, permissions, true);
+  }
+
+  private Action mapAction(String path, String glob, List<String> itemNames, List<String> permissions,
+      Boolean ifExists) {
+    return new Allow(path, glob, itemNames, ifExists, permissions);
 	}
 }
