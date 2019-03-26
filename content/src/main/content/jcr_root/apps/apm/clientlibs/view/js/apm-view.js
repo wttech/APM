@@ -20,7 +20,7 @@
 (function (window, $) {
   $(document).on('cui-contentloaded', function () {
 
-      function Console($el) {
+    function Console($el) {
       this.$el = $el;
       this.$textArea = this.$el.find("#cqsm").eq(0);
       this.$fileName = this.$el.find('#fname').eq(0);
@@ -61,6 +61,6 @@
           return editor;
       },
     };
-
+    new Console($('body'));
   });
 })(window, jQuery);
