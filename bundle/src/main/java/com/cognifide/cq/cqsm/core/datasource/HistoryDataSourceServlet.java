@@ -49,8 +49,7 @@ public class HistoryDataSourceServlet extends SlingSafeMethodsServlet {
 	private History history;
 
 	@Override
-	protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response)
-			throws ServletException, IOException {
+	protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) {
 		final List<Resource> allHistoryResources = history.findAllResource(request.getResourceResolver())
 				.stream()
 				.map(ResourceTypeWrapper::new)

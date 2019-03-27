@@ -418,7 +418,7 @@
                         </goals>
                         <configuration>
                             <excludes>
-                                <exclude>**/clientlibs/editor/js/ace/**</exclude>
+                                <exclude>**/clientlibs/views/editor/js/ace/**</exclude>
                                 <exclude>**/clientlibs/js/json2.js</exclude>
                                 <exclude>**/global.jsp</exclude>
                             </excludes>

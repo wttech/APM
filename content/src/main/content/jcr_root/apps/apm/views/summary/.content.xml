@@ -7,6 +7,7 @@
     jcr:primaryType="nt:unstructured"
     jcr:title="APM Script Execution History"
     sling:resourceType="granite/ui/components/shell/collectionpage"
+    sling:vanityPath="/apm/summary"
     consoleId="cq-bridge-data-collections"
     currentView="${state[&quot;products.shell.collectionpage.layoutId&quot;].string}"
     modeGroup="cq-experience-fragments-admin-childpages"

@@ -1,0 +1,30 @@
+<!--
+  ~ ========================LICENSE_START=================================
+  ~ AEM Permission Management
+  ~ %%
+  ~ Copyright (C) 2013 Cognifide Limited
+  ~ %%
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~       http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  ~ =========================LICENSE_END==================================
+  -->
+<sly data-sly-use.model="com.cognifide.cq.cqsm.core.models.DashboardTileModel"/>
+<a href="${model.path}">
+  <coral-card fixedwidth assetwidth="200" assetheight="200">
+    <coral-card-asset>
+      <coral-icon icon="${model.icon}" class="center-text" size="XXL"></coral-icon>
+    </coral-card-asset>
+    <coral-card-content>
+      <coral-card-title>${model.title}</coral-card-title>
+    </coral-card-content>
+  </coral-card>
+</a>
