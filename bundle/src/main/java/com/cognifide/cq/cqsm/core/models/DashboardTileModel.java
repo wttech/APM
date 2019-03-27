@@ -24,18 +24,16 @@ import lombok.Getter;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 
+@Getter
 @Model(adaptables = Resource.class)
 public class DashboardTileModel {
 
-  @Getter
   @Inject
   private String icon;
 
-  @Getter
   @Inject
   private String path;
 
-  @Getter
   @Inject
   private String title;
 
