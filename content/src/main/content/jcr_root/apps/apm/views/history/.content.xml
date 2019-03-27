@@ -96,6 +96,14 @@
                 rootPath="/etc/bridge/collections"
                 rootTitle="Data Collections"/>
         <actions jcr:primaryType="nt:unstructured">
+            <primary jcr:primaryType="nt:unstructured">
+                <back jcr:primaryType="nt:unstructured"
+                      sling:resourceType="granite/ui/components/coral/foundation/anchorbutton"
+                      href="/apm/dashboard.html"
+                      icon="chevronLeft"
+                      text="Go back"
+                      variant="primary"/>
+            </primary>
             <selection jcr:primaryType="nt:unstructured">
                 <view
                     granite:class="foundation-collection-action"

@@ -88,6 +88,14 @@
                 rootPath="/conf/apm/scripts"
                 rootTitle="APM Scripts"/>
         <actions jcr:primaryType="nt:unstructured">
+            <primary jcr:primaryType="nt:unstructured">
+                <back jcr:primaryType="nt:unstructured"
+                      sling:resourceType="granite/ui/components/coral/foundation/anchorbutton"
+                      href="/apm/dashboard.html"
+                      icon="chevronLeft"
+                      text="Go back"
+                      variant="primary"/>
+            </primary>
             <secondary jcr:primaryType="nt:unstructured">
                 <create
                         granite:id="xf-create-pulldown"
