@@ -46,7 +46,7 @@
       initEditor: function () {
         let editor = null;
 
-        ace.config.set("basePath", "/apps/apm/clientlibs/editor/js/ace");
+        ace.config.set("basePath", "/apps/apm/clientlibs/externals/ace/js");
         this.$textArea.hide();
         editor = ace.edit("ace");
 

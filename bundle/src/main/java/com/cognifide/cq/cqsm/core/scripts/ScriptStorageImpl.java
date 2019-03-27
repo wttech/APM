@@ -40,6 +40,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.ValueFactory;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
@@ -57,109 +58,125 @@ import org.slf4j.LoggerFactory;
 @Component
 @Service
 @Properties({@Property(name = Constants.SERVICE_DESCRIPTION, value = "Storage accessor for scripts"),
-		@Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)})
+    @Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)})
 
 public class ScriptStorageImpl implements ScriptStorage {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ScriptStorageImpl.class);
+  private static final Logger LOG = LoggerFactory.getLogger(ScriptStorageImpl.class);
 
-	public static final String SCRIPT_PATH = "/conf/apm/scripts";
+  public static final String SCRIPT_PATH = "/conf/apm/scripts";
 
-	private static final Charset SCRIPT_ENCODING = StandardCharsets.UTF_8;
+  private static final Charset SCRIPT_ENCODING = StandardCharsets.UTF_8;
 
-	@Reference(cardinality = ReferenceCardinality.OPTIONAL_UNARY, policy = ReferencePolicy.DYNAMIC)
-	volatile private ScriptManager scriptManager;
+  @Reference(cardinality = ReferenceCardinality.OPTIONAL_UNARY, policy = ReferencePolicy.DYNAMIC)
+  volatile private ScriptManager scriptManager;
 
-	@Reference
-	private ScriptFinder scriptFinder;
+  @Reference
+  private ScriptFinder scriptFinder;
 
-	@Override
-	public void remove(final Script script, ResourceResolver resolver) throws RepositoryException {
-		scriptManager.getEventManager().trigger(Event.BEFORE_REMOVE, script);
-		final Session session = resolver.adaptTo(Session.class);
-		final String path = script.getPath();
-		if (path != null) {
-			session.removeItem(path);
-			session.save();
-		}
-	}
+  @Override
+  public void remove(final Script script, ResourceResolver resolver) throws RepositoryException {
+    scriptManager.getEventManager().trigger(Event.BEFORE_REMOVE, script);
+    final Session session = resolver.adaptTo(Session.class);
+    final String path = script.getPath();
+    if (path != null) {
+      session.removeItem(path);
+      session.save();
+    }
+  }
 
-	@Override
-	public Script save(String fileName, InputStream input, boolean overwrite, ResourceResolver resolver)
-			throws RepositoryException, PersistenceException {
-		final Script script = saveScript(resolver, fileName, input, overwrite);
-		scriptManager.process(script, Mode.VALIDATION, resolver);
-		scriptManager.getEventManager().trigger(Event.AFTER_SAVE, script);
-		return script;
-	}
+  @Override
+  public Script save(String fileName, InputStream input, boolean overwrite, ResourceResolver resolver)
+      throws RepositoryException, PersistenceException {
+    final Script script = saveScript(resolver, fileName, input, overwrite);
+    scriptManager.process(script, Mode.VALIDATION, resolver);
+    scriptManager.getEventManager().trigger(Event.AFTER_SAVE, script);
+    return script;
+  }
 
-	@Override
-	public String getSavePath() {
-		return SCRIPT_PATH;
-	}
+  @Override
+  public String getSavePath() {
+    return SCRIPT_PATH;
+  }
 
-	@Override
-	public List<Script> saveAll(Map<String, InputStream> files, boolean overwrite, ResourceResolver resolver)
-			throws RepositoryException, PersistenceException {
-		final List<Script> scripts = Lists.newArrayList();
-		for (Map.Entry<String, InputStream> entry : files.entrySet()) {
-			scripts.add(saveScript(resolver, entry.getKey(), entry.getValue(), overwrite));
-		}
-		for (Script script : scripts) {
-			scriptManager.process(script, Mode.VALIDATION, resolver);
-			scriptManager.getEventManager().trigger(Event.AFTER_SAVE, script);
-		}
-		return scripts;
-	}
+  @Override
+  public List<Script> saveAll(Map<String, InputStream> files, boolean overwrite, ResourceResolver resolver)
+      throws RepositoryException, PersistenceException {
+    final List<Script> scripts = Lists.newArrayList();
+    for (Map.Entry<String, InputStream> entry : files.entrySet()) {
+      scripts.add(saveScript(resolver, entry.getKey(), entry.getValue(), overwrite));
+    }
+    for (Script script : scripts) {
+      scriptManager.process(script, Mode.VALIDATION, resolver);
+      scriptManager.getEventManager().trigger(Event.AFTER_SAVE, script);
+    }
+    return scripts;
+  }
 
-	private Script saveScript(ResourceResolver resolver, final String fileName, final InputStream input,
-			final boolean overwrite) {
-		Script result = null;
-		final Session session = resolver.adaptTo(Session.class);
-		final ValueFactory valueFactory;
-		try {
-			valueFactory = session.getValueFactory();
-			final Binary binary = valueFactory.createBinary(input);
-			final Node saveNode = session.getNode(getSavePath());
+  private Script saveScript(ResourceResolver resolver, String fileName, final InputStream input,
+      final boolean overwrite) {
+    Script result = null;
+    final Session session = resolver.adaptTo(Session.class);
+    final ValueFactory valueFactory;
+    try {
+      String savePath = getSavePath(fileName);
+      if (fileName.contains("/")) {
+        fileName = StringUtils.substringAfterLast(fileName, "/");
+      }
+      valueFactory = session.getValueFactory();
+      final Binary binary = valueFactory.createBinary(input);
+      final Node saveNode = session.getNode(savePath);
 
-			final Node fileNode, contentNode;
-			if (overwrite && saveNode.hasNode(fileName)) {
-				fileNode = saveNode.getNode(fileName);
-				contentNode = fileNode.getNode(JcrConstants.JCR_CONTENT);
-			} else {
-				fileNode = saveNode.addNode(generateFileName(fileName, saveNode), JcrConstants.NT_FILE);
-				contentNode = fileNode.addNode(JcrConstants.JCR_CONTENT, JcrConstants.NT_RESOURCE);
-			}
+      final Node fileNode, contentNode;
+      if (overwrite && saveNode.hasNode(fileName)) {
+        fileNode = saveNode.getNode(fileName);
+        contentNode = fileNode.getNode(JcrConstants.JCR_CONTENT);
+      } else {
+        fileNode = saveNode.addNode(generateFileName(fileName, saveNode), JcrConstants.NT_FILE);
+        contentNode = fileNode.addNode(JcrConstants.JCR_CONTENT, JcrConstants.NT_RESOURCE);
+      }
 
-			contentNode.setProperty(JcrConstants.JCR_DATA, binary);
-			contentNode.setProperty(JcrConstants.JCR_ENCODING, SCRIPT_ENCODING.name());
-			removeProp(contentNode, ScriptContent.CQSM_DRY_RUN_LAST);
-			removeProp(contentNode, ScriptContent.CQSM_DRY_RUN_SUCCESSFUL);
-			removeProp(contentNode, ScriptContent.CQSM_EXECUTION_LAST);
-			JcrUtils.setLastModified(contentNode, Calendar.getInstance());
-			session.save();
-			result = scriptFinder.find(fileNode.getPath(), resolver);
-		} catch (RepositoryException e) {
-			LOG.error(e.getMessage(), e);
-		}
-		return result;
-	}
+      contentNode.setProperty(JcrConstants.JCR_DATA, binary);
+      contentNode.setProperty(JcrConstants.JCR_ENCODING, SCRIPT_ENCODING.name());
+      removeProp(contentNode, ScriptContent.CQSM_DRY_RUN_LAST);
+      removeProp(contentNode, ScriptContent.CQSM_DRY_RUN_SUCCESSFUL);
+      removeProp(contentNode, ScriptContent.CQSM_EXECUTION_LAST);
+      JcrUtils.setLastModified(contentNode, Calendar.getInstance());
+      session.save();
+      result = scriptFinder.find(fileNode.getPath(), resolver);
+    } catch (RepositoryException e) {
+      LOG.error(e.getMessage(), e);
+    }
+    return result;
+  }
 
-	private void removeProp(Node contentNode, String propName) throws RepositoryException {
-		if (contentNode.hasProperty(propName)) {
-			contentNode.getProperty(propName).remove();
-		}
-	}
+  private String getSavePath(String fileName) {
+    String savePath = getSavePath();
+    if (fileName.contains("/")) {
+      String subPath = StringUtils.substringBeforeLast(fileName, "/");
+      if (subPath.startsWith(getSavePath())) {
+        subPath = StringUtils.substringAfter(subPath, getSavePath());
+      }
+      savePath += subPath.startsWith("/") ? subPath : "/" + subPath;
+    }
+    return savePath;
+  }
 
-	private String generateFileName(String fileName, Node saveNode) throws RepositoryException {
-		String baseName = FilenameUtils.getBaseName(fileName);
-		int num = 1;
-		do {
-			fileName = baseName + ((num > 1) ? ("-" + num) : "") + Cqsm.FILE_EXT;
-			num++;
-		} while (saveNode.hasNode(fileName));
+  private void removeProp(Node contentNode, String propName) throws RepositoryException {
+    if (contentNode.hasProperty(propName)) {
+      contentNode.getProperty(propName).remove();
+    }
+  }
 
-		return fileName;
-	}
+  private String generateFileName(String fileName, Node saveNode) throws RepositoryException {
+    String baseName = FilenameUtils.getBaseName(fileName);
+    int num = 1;
+    do {
+      fileName = baseName + ((num > 1) ? ("-" + num) : "") + Cqsm.FILE_EXT;
+      num++;
+    } while (saveNode.hasNode(fileName));
+
+    return fileName;
+  }
 
 }

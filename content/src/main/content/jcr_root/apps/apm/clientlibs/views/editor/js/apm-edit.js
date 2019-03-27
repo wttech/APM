@@ -36,6 +36,7 @@
       this.$cancelButton = this.$el.find('#cancelButton').eq(0);
       this.$lastSavedOn = this.$el.find('.lastSavedOn').eq(0);
       this.initialValue = this.$textArea.val();
+      this.savePath = this.$el.find('#script-form').attr('action');
       this.editor = this.initEditor();
       this.delegateEvents();
     }
@@ -79,7 +80,11 @@
             content.push('--' + boundary);
 
             if (params[file].filename) {
-              mimeHeader += 'filename="' + params[file].filename + '";';
+              if (this.savePath.endsWith(`/${params[file].filename}`)) {
+                mimeHeader += `filename="${this.savePath}";`;
+              } else {
+                mimeHeader += `filename="${this.savePath}/${params[file].filename}";`;
+              }
             }
             content.push(mimeHeader);
 
@@ -108,6 +113,7 @@
                   self.changeFileName(scripts[0].name);
               }
               self.initialValue = value;
+              self.createMode = false;
               self.$lastSavedOn.text('Last saved on: ' + new Date().toLocaleString());
               self.displayResponseFeedback(data);
             } else {
@@ -125,7 +131,7 @@
       initEditor: function () {
         let editor = null;
 
-        ace.config.set("basePath", "/apps/apm/clientlibs/editor/js/ace");
+        ace.config.set("basePath", "/apps/apm/clientlibs/externals/ace/js");
         this.$textArea.hide();
         editor = ace.edit("ace");
 
