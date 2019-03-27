@@ -34,7 +34,7 @@
                 var self = this;
                 $.ajax({
                     type: "GET",
-                    url: "/apps/apm/summary/jcr:content/summary.html"
+                    url: "/apps/apm/views/summary/jcr:content/summary.html"
                         + scriptPath,
                     dataType: "html",
                     success: function (data) {

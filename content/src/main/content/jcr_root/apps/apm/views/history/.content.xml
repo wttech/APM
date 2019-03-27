@@ -101,8 +101,7 @@
                       sling:resourceType="granite/ui/components/coral/foundation/anchorbutton"
                       href="/apm/dashboard.html"
                       icon="chevronLeft"
-                      text="Go back"
-                      variant="primary"/>
+                      variant="quiet"/>
             </primary>
             <selection jcr:primaryType="nt:unstructured">
                 <view
