@@ -89,17 +89,14 @@
                         sortName="${param.sortName}"/>
             </list>
         </views>
-        <breadcrumbs
-                jcr:primaryType="nt:unstructured"
-                sling:resourceType="wcm/commons/ui/shell/datasources/breadcrumbs"
-                path="${requestPathInfo.suffix}"
-                rootPath="/etc/bridge/collections"
-                rootTitle="Data Collections"/>
+        <title jcr:primaryType="nt:unstructured"
+          sling:resourceType="granite/ui/components/shell/title"
+          jcr:title="APM History"/>
         <actions jcr:primaryType="nt:unstructured">
             <primary jcr:primaryType="nt:unstructured">
                 <back jcr:primaryType="nt:unstructured"
                       sling:resourceType="granite/ui/components/coral/foundation/anchorbutton"
-                      href="/apm/dashboard.html"
+                      href="/apm.html"
                       icon="chevronLeft"
                       variant="quiet"/>
             </primary>

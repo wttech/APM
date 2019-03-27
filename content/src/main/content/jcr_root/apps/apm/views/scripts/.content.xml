@@ -91,7 +91,7 @@
             <primary jcr:primaryType="nt:unstructured">
                 <back jcr:primaryType="nt:unstructured"
                       sling:resourceType="granite/ui/components/coral/foundation/anchorbutton"
-                      href="/apm/dashboard.html"
+                      href="/apm.html"
                       icon="chevronLeft"
                       variant="quiet"/>
             </primary>
