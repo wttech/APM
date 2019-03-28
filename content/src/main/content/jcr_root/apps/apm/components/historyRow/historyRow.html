@@ -54,10 +54,7 @@
     </sly>
   </td>
   <td is="coral-table-cell">
-    <button is="coral-button" class="execution-summary-button"
-            data-sly-attribute.scriptResourcePath="${item.path}">
-      <div class="icon summary">Show summary</div>
-    </button>
+    <a is="coral-anchorbutton" icon="search" iconsize="S" href="/apm/summary.html${item.path}"></a>
   </td>
   <td is="coral-table-cell">
     <sly data-sly-test="${item.lastDryExecution && item.instanceType}">

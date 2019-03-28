@@ -40,7 +40,7 @@ public class RowModel {
 	private static final Set<String> FOLDER_TYPES = ImmutableSet
 			.of(JcrConstants.NT_FOLDER, "sling:OrderedFolder");
 
-	public static final String ROW_MODEL_RESOURCE_TYPE = "apm/components/scripts/row";
+	public static final String ROW_MODEL_RESOURCE_TYPE = "apm/components/scriptsRow";
 
 	@Self
 	private Resource resource;
@@ -69,6 +69,9 @@ public class RowModel {
 	private Calendar lastModified;
 
 	@Getter
+	private String executionSummary;
+
+	@Getter
 	private boolean isExecutionEnabled;
 
 
@@ -85,6 +88,7 @@ public class RowModel {
 				this.executionLast = asCalendar(scriptVal.getExecutionLast());
 				this.executionSchedule = asCalendar(scriptVal.getExecutionSchedule());
 				this.lastModified = asCalendar(scriptVal.getLastModified());
+				this.executionSummary = scriptVal.getExecutionSummary();
 				this.isExecutionEnabled = scriptVal.isExecutionEnabled();
 			});
 		}

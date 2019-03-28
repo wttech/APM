@@ -40,6 +40,8 @@ public class ScriptContent {
 
 	public static final String CQSM_EXECUTION_LAST = "cqsm:executionLast";
 
+	public static final String CQSM_EXECUTION_SUMMARY = "cqsm:executionSummary";
+
 	public static final String CQSM_EXECUTION_ENABLED = "cqsm:executionEnabled";
 
 	public static final String CQSM_FILE = "cqsm:File";
@@ -76,6 +78,11 @@ public class ScriptContent {
 	@Named(CQSM_EXECUTION_SCHEDULE)
 	@Optional
 	private Date executionSchedule;
+
+	@Inject
+	@Named(CQSM_EXECUTION_SUMMARY)
+	@Optional
+	private String executionSummary;
 
 	@Inject
 	@Named(CQSM_EXECUTION_LAST)

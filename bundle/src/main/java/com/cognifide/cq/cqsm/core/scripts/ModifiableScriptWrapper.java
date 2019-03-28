@@ -55,6 +55,12 @@ public class ModifiableScriptWrapper implements ModifiableScript {
 	}
 
 	@Override
+	public void setExecutionSummary(String path) throws PersistenceException {
+		setProperty(ScriptContent.CQSM_EXECUTION_SUMMARY, path);
+		script.getChecksum().update(resolver, resolver.getResource(script.getPath()));
+	}
+
+	@Override
 	public void setExecutionEnabled(Boolean flag) throws PersistenceException {
 		setProperty(ScriptContent.CQSM_EXECUTION_ENABLED, flag);
 	}

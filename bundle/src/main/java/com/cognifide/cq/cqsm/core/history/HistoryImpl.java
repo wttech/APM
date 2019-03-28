@@ -30,18 +30,15 @@ import com.cognifide.cq.cqsm.api.progress.ProgressHelper;
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.utils.InstanceTypeProvider;
 import com.cognifide.cq.cqsm.core.Cqsm;
+import com.cognifide.cq.cqsm.core.scripts.ModifiableScriptWrapper;
 import com.cognifide.cq.cqsm.core.scripts.ScriptContent;
-import com.cognifide.cq.cqsm.core.utils.sling.OperateCallback;
 import com.cognifide.cq.cqsm.core.utils.sling.ResolveCallback;
 import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper;
 import com.day.cq.commons.jcr.JcrConstants;
 import com.day.cq.commons.jcr.JcrUtil;
 import com.day.cq.replication.ReplicationAction;
-import com.day.cq.wcm.api.Page;
-import com.day.cq.wcm.api.PageManager;
-import com.day.cq.wcm.api.WCMException;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
@@ -54,234 +51,194 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import org.apache.commons.lang.StringUtils;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
+import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.api.resource.ResourceUtil;
 import org.apache.sling.api.resource.ValueMap;
-import org.apache.sling.jcr.resource.JcrResourceConstants;
 import org.osgi.framework.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Component(immediate = true)
 @Service
-@Properties({@Property(name = Constants.SERVICE_DESCRIPTION, value = "CQSM History Service"),
-		@Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)})
+@Properties({
+    @Property(name = Constants.SERVICE_DESCRIPTION, value = "CQSM History Service"),
+    @Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)
+})
 public class HistoryImpl implements History {
 
-	private static final Logger LOG = LoggerFactory.getLogger(HistoryImpl.class);
+  private static final Logger LOG = LoggerFactory.getLogger(HistoryImpl.class);
 
-	private static final String HISTORY_PATH = "/conf/apm/history";
+  private static final String HISTORY_PATH = "/conf/apm/history";
 
-	private static final String HISTORY_COMPONENT = "cqsmHistory";
+  public static final String REPLICATE_ACTION = "com/cognifide/actions/cqsm/history/replicate";
 
-	private static final String HISTORY_COMPONENT_RESOURCE_TYPE = "cqsm/core/components/cqsmHistory";
+  @Reference
+  private ActionSubmitter actionSubmitter;
 
-	private static final String ENTRY_PATH = "/conf/apm/history/jcr:content/cqsmHistory";
+  @Reference
+  private ResourceResolverFactory resolverFactory;
 
-	public static final String REPLICATE_ACTION = "com/cognifide/actions/cqsm/history/replicate";
+  @Reference
+  private InstanceTypeProvider instanceTypeProvider;
 
-	@Reference
-	private ActionSubmitter actionSubmitter;
+  @Override
+  public Entry log(Script script, Mode mode, Progress progressLogger) {
+    InstanceDetails.InstanceType instanceDetails = instanceTypeProvider.isOnAuthor() ?
+        InstanceDetails.InstanceType.AUTHOR :
+        InstanceDetails.InstanceType.PUBLISH;
+    return log(script, mode, progressLogger, instanceDetails, getHostname(), Calendar.getInstance());
+  }
 
-	@Reference
-	private ResourceResolverFactory resolverFactory;
+  @Override
+  public Entry logRemote(Script script, Mode mode, Progress progressLogger, InstanceDetails instanceDetails,
+      Calendar executionTime) {
+    return log(script, mode, progressLogger, instanceDetails.getInstanceType(),
+        instanceDetails.getHostname(), executionTime);
+  }
 
-	@Reference
-	private InstanceTypeProvider instanceTypeProvider;
+  @Override
+  public List<Entry> findAll() {
+    return SlingHelper
+        .resolveDefault(resolverFactory, (ResolveCallback<List<Entry>>) resolver -> findAllResource(resolver)
+            .stream()
+            .map(resource -> resource.adaptTo(Entry.class))
+            .collect(Collectors.toList()), Collections.<Entry>emptyList());
+  }
 
-	@Override
-	public Entry log(Script script, Mode mode, Progress progressLogger) {
-		InstanceDetails.InstanceType instanceDetails = instanceTypeProvider.isOnAuthor() ?
-				InstanceDetails.InstanceType.AUTHOR :
-				InstanceDetails.InstanceType.PUBLISH;
-		return log(script, mode, progressLogger, instanceDetails, getHostname(), Calendar.getInstance());
-	}
+  @Override
+  public List<Resource> findAllResource(ResourceResolver resourceResolver) {
+    final Resource historyFolder = resourceResolver.getResource(HISTORY_PATH);
+    return Optional.ofNullable(historyFolder)
+        .map(resource -> resource.getChildren())
+        .map(elements -> (List<Resource>) ImmutableList.copyOf(elements))
+        .orElseGet(() -> {
+          LOG.warn("History resource can't be found at: {}", HISTORY_PATH);
+          return Collections.emptyList();
+        });
+  }
 
-	@Override
-	public Entry logRemote(Script script, Mode mode, Progress progressLogger, InstanceDetails instanceDetails,
-			Calendar executionTime) {
-		return log(script, mode, progressLogger, instanceDetails.getInstanceType(),
-				instanceDetails.getHostname(), executionTime);
-	}
+  @Override
+  public void replicate(final Entry entry, String userId) {
+    if (actionSubmitter == null) {
+      LOG.warn(String.format("History entry '%s' replication cannot be performed on author instance",
+          entry.getPath()));
+      return;
+    }
+    SlingHelper.operateTraced(resolverFactory, userId, resolver -> {
+      Resource resource = resolver.getResource(entry.getPath());
+      if (resource != null) {
+        try {
+          LOG.warn("Sending action {} to action submitter", REPLICATE_ACTION);
+          Map<String, Object> properties = new HashMap<>(resource.getValueMap());
+          properties.put(ReplicationAction.PROPERTY_USER_ID, resolver.getUserID());
+          actionSubmitter.sendAction(REPLICATE_ACTION, properties);
+          LOG.warn("Action {} was sent to action submitter", REPLICATE_ACTION);
+        } catch (ActionSendException e) {
+          LOG.info("Cannot send action", e);
+        }
+      }
+    });
+  }
 
-	@Override
-	public List<Entry> findAll() {
-		return SlingHelper.resolveDefault(resolverFactory, new ResolveCallback<List<Entry>>() {
-			@Override
-			public List<Entry> resolve(ResourceResolver resolver) {
-				return findAllResource(resolver)
-						.stream()
-						.map(resource -> resource.adaptTo(Entry.class))
-						.collect(Collectors.toList());
-			}
-		}, Collections.<Entry>emptyList());
-	}
+  @Override
+  public Entry find(final String path) {
+    return SlingHelper.resolveDefault(resolverFactory, (ResolveCallback<Entry>) resolver -> {
+      Entry result = null;
+      for (String resourcePath : Arrays.asList(path, path.replace("_cqsm", ".cqsm"))) {
+        Resource resource = resolver.getResource(resourcePath);
+        if (resource != null) {
+          result = resource.adaptTo(Entry.class);
+          break;
+        }
+      }
+      return result;
+    }, null);
+  }
 
-	@Override
-	public List<Resource> findAllResource(ResourceResolver resourceResolver) {
-		final Resource historyCatalogResource = resourceResolver.getResource(HistoryImpl.ENTRY_PATH);
-		return Optional.ofNullable(historyCatalogResource).map(resource -> {
-			List<Resource> result = Lists.newLinkedList();
-			resource.listChildren()
-					.forEachRemaining(result::add);
-			return result;
-		}).orElseGet(() -> {
-			LOG.warn("History resource can't be found at: {}", HistoryImpl.ENTRY_PATH);
-			return Collections.emptyList();
-		});
-	}
+  private Entry log(final Script script, final Mode mode, final Progress progressLogger,
+      final InstanceDetails.InstanceType instanceType, final String hostname,
+      final Calendar executionTime) {
+    return SlingHelper
+        .resolveDefault(resolverFactory, progressLogger.getExecutor(), (ResolveCallback<Entry>) resolver -> {
+          Entry result = null;
+          Resource source = resolver.getResource(script.getPath());
+          ValueMap values = source.getValueMap();
+          try {
+            Resource historyFolder = getOrCreateHistoryFolder(resolver);
+            String uniqueName = ResourceUtil.createUniqueChildName(historyFolder, source.getName());
+            Resource child = resolver
+                .create(historyFolder, uniqueName, ImmutableMap.of("jcr:primaryType", "nt:unstructured"));
 
-	@Override
-	public void replicate(final Entry entry, String userId) throws RepositoryException {
-		if (actionSubmitter == null) {
-			LOG.warn(String.format("History entry '%s' replication cannot be performed on author instance",
-					entry.getPath()));
-			return;
-		}
-		SlingHelper.operateTraced(resolverFactory, userId, new OperateCallback() {
-			@Override
-			public void operate(ResourceResolver resolver) throws Exception {
-				Resource resource = resolver.getResource(entry.getPath());
-				if (resource != null) {
-					try {
-						LOG.warn("Sending action {} to action submitter", REPLICATE_ACTION);
-						Map<String, Object> properties = new HashMap<>(resource.getValueMap());
-						properties.put(ReplicationAction.PROPERTY_USER_ID, resolver.getUserID());
-						actionSubmitter.sendAction(REPLICATE_ACTION, properties);
-						LOG.warn("Action {} was sent to action submitter", REPLICATE_ACTION);
-					} catch (ActionSendException e) {
-						LOG.info("Cannot send action", e);
-					}
-				}
-			}
-		});
-	}
+            String executor = getExecutor(resolver, mode);
+            ModifiableEntryBuilder builder = new ModifiableEntryBuilder(child);
+            fillEntryProperties(//
+                builder, mode, progressLogger, instanceType, //
+                hostname, executionTime, source, values, executor//
+            );
 
-	@Override
-	public Entry find(final String path) {
-		return SlingHelper.resolveDefault(resolverFactory, new ResolveCallback<Entry>() {
-			@Override
-			public Entry resolve(ResourceResolver resolver) {
-				Entry result = null;
-				for (String resourcePath : Arrays.asList(path, path.replace("_cqsm", ".cqsm"))) {
-					Resource resource = resolver.getResource(resourcePath);
-					if (resource != null) {
-						result = resource.adaptTo(Entry.class);
-						break;
-					}
-				}
-				return result;
-			}
-		}, null);
-	}
+            //easier to use JCR API here due to jcr:uuid copy constraints
+            Node file = JcrUtil.copy(source.adaptTo(Node.class), child.adaptTo(Node.class), "script");
+            file.addMixin(ScriptContent.CQSM_FILE);
+            new ModifiableScriptWrapper(resolver, script).setExecutionSummary(child.getPath());
+            resolver.commit();
+            result = resolver.getResource(child.getPath()).adaptTo(Entry.class);
+          } catch (RepositoryException | PersistenceException e) {
+            LOG.error("Issues with saving to repository while logging script execution", e);
+          }
 
-	private Entry log(final Script script, final Mode mode, final Progress progressLogger,
-			final InstanceDetails.InstanceType instanceType, final String hostname,
-			final Calendar executionTime) {
-		return SlingHelper
-				.resolveDefault(resolverFactory, progressLogger.getExecutor(), new ResolveCallback<Entry>() {
-					@Override
-					public Entry resolve(ResourceResolver resolver) {
-						Entry result = null;
-						Resource source = resolver.getResource(script.getPath());
-						ValueMap values = source.getValueMap();
-						try {
-							Page historyPage = getOrCreateLogDir(resolver);
-							Resource historyComponent = historyPage.getContentResource()
-									.getChild(HISTORY_COMPONENT);
-							if (historyComponent == null) {
-								historyComponent = createHistoryComponent(historyPage);
-							}
-							String uniqueName = ResourceUtil
-									.createUniqueChildName(historyComponent, source.getName());
-							Resource child = resolver
-									.create(historyComponent, uniqueName, new HashMap<String, Object>());
+          return result;
+        }, null);
+  }
 
-							String executor = getExecutor(resolver, mode);
-							ModifiableEntryBuilder builder = new ModifiableEntryBuilder(child);
-							fillEntryProperties(//
-									builder, mode, progressLogger, instanceType, //
-									hostname, executionTime, source, values, executor//
-							);
+  private void fillEntryProperties(ModifiableEntryBuilder entryBuilder, Mode mode, Progress progressLogger,
+      InstanceDetails.InstanceType instanceType, String hostname, Calendar executionTime,
+      Resource source, ValueMap values, String executor) {
+    entryBuilder.setFileName(source.getName()) //
+        .setFilePath(source.getPath()) //
+        .setMode(mode.toString()) //
+        .setProgressLog(ProgressHelper.toJson(progressLogger.getEntries())) //
+        .setExecutionTime(executionTime) //
+        .setAuthor(values.get(JcrConstants.JCR_CREATED_BY, StringUtils.EMPTY)) //
+        .setUploadTime(values.get(JcrConstants.JCR_CREATED, StringUtils.EMPTY)) //
+        .setInstanceType(instanceType.getInstanceName()) //
+        .setInstanceHostname(hostname);
+    if (StringUtils.isNotBlank(executor)) {
+      entryBuilder.setExecutor(executor);
+    }
+    entryBuilder.save();
+  }
 
-							//easier to use JCR API here due to jcr:uuid copy constraints
-							Node file = JcrUtil
-									.copy(source.adaptTo(Node.class), child.adaptTo(Node.class), "script");
-							file.addMixin(ScriptContent.CQSM_FILE);
-							resolver.commit();
-							result = resolver.getResource(child.getPath()).adaptTo(Entry.class);
-						} catch (RepositoryException | WCMException | PersistenceException e) {
-							LOG.error("Issues with saving to repository while logging script execution", e);
-						}
+  private Resource getOrCreateHistoryFolder(ResourceResolver resolver) throws RepositoryException {
+    Session session = resolver.adaptTo(Session.class);
+    Node node = JcrUtils.getOrCreateByPath(HISTORY_PATH, "sling:OrderedFolder", session);
+    session.save();
+    return resolver.getResource(node.getPath());
+  }
 
-						return result;
-					}
+  private String getExecutor(ResourceResolver resourceResolver, Mode mode) {
+    String executor = null;
+    if (mode.isRun()) {
+      executor = resourceResolver.getUserID();
+    }
+    return executor;
+  }
 
-					private Resource createHistoryComponent(Page historyPage) throws PersistenceException {
-						ResourceResolver resourceResolver = historyPage.getContentResource()
-								.getResourceResolver();
-						Map<String, Object> props = ImmutableMap.<String, Object>builder()//
-								.put(JcrResourceConstants.SLING_RESOURCE_TYPE_PROPERTY,
-										HISTORY_COMPONENT_RESOURCE_TYPE) //
-								.build();
-						return resourceResolver
-								.create(historyPage.getContentResource(), HISTORY_COMPONENT, props);
-					}
-				}, null);
-	}
-
-	private void fillEntryProperties(ModifiableEntryBuilder entryBuilder, Mode mode, Progress progressLogger,
-			InstanceDetails.InstanceType instanceType, String hostname, Calendar executionTime,
-			Resource source, ValueMap values, String executor) {
-		entryBuilder.setFileName(source.getName()) //
-				.setFilePath(source.getPath()) //
-				.setMode(mode.toString()) //
-				.setProgressLog(ProgressHelper.toJson(progressLogger.getEntries())) //
-				.setExecutionTime(executionTime) //
-				.setAuthor(values.get(JcrConstants.JCR_CREATED_BY, StringUtils.EMPTY)) //
-				.setUploadTime(values.get(JcrConstants.JCR_CREATED, StringUtils.EMPTY)) //
-				.setInstanceType(instanceType.getInstanceName()) //
-				.setInstanceHostname(hostname);
-		if (StringUtils.isNotBlank(executor)) {
-			entryBuilder.setExecutor(executor);
-		}
-		entryBuilder.save();
-	}
-
-	private Page getOrCreateLogDir(ResourceResolver resolver) throws WCMException {
-		PageManager pageManager = resolver.adaptTo(PageManager.class);
-		Page historyPage = pageManager.getPage(HISTORY_PATH);
-		if (historyPage == null) {
-			boolean autoCommit = true;
-			historyPage = pageManager
-					.create("/conf/apm", "history", "/apps/cqsm/core/templates/historyTemplate", "History",
-							autoCommit);
-		}
-		return historyPage;
-	}
-
-	private String getExecutor(ResourceResolver resourceResolver, Mode mode) {
-		String executor = null;
-		if (mode.isRun()) {
-			executor = resourceResolver.getUserID();
-		}
-		return executor;
-	}
-
-	private String getHostname() {
-		try {
-			return InetAddress.getLocalHost().getHostName();
-		} catch (UnknownHostException e) {
-			return null;
-		}
-	}
+  private String getHostname() {
+    try {
+      return InetAddress.getLocalHost().getHostName();
+    } catch (UnknownHostException e) {
+      return null;
+    }
+  }
 }

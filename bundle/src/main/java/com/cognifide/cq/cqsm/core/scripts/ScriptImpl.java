@@ -80,6 +80,11 @@ public class ScriptImpl implements Script {
 	}
 
 	@Override
+	public String getExecutionSummary() {
+		return scriptContent.getExecutionSummary();
+	}
+
+	@Override
 	public boolean isExecutionEnabled() {
 		return BooleanUtils.isNotFalse(scriptContent.getExecutionEnabled());
 	}

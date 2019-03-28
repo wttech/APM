@@ -34,6 +34,8 @@ public interface ModifiableScript {
 	 */
 	void setExecuted(Boolean flag) throws PersistenceException;
 
+	void setExecutionSummary(String path) throws PersistenceException;
+
 	/**
 	 * Enable or disable automatic execution
 	 */

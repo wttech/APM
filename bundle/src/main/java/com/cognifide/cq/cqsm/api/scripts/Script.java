@@ -45,6 +45,8 @@ public interface Script {
 	 */
 	Date getExecutionSchedule();
 
+	String getExecutionSummary();
+
 	/**
 	 * Get last execution date
 	 */
