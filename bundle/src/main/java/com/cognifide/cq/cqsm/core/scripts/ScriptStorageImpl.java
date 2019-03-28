@@ -119,7 +119,7 @@ public class ScriptStorageImpl implements ScriptStorage {
     final Session session = resolver.adaptTo(Session.class);
     final ValueFactory valueFactory;
     try {
-      String savePath = getSavePath(fileName);
+      String savePath = getSavePathForFileName(fileName);
       if (fileName.contains("/")) {
         fileName = StringUtils.substringAfterLast(fileName, "/");
       }
@@ -150,7 +150,7 @@ public class ScriptStorageImpl implements ScriptStorage {
     return result;
   }
 
-  private String getSavePath(String fileName) {
+  private String getSavePathForFileName(String fileName) {
     String savePath = getSavePath();
     if (fileName.contains("/")) {
       String subPath = StringUtils.substringBeforeLast(fileName, "/");
