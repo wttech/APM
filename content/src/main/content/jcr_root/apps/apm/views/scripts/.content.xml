@@ -41,7 +41,7 @@
                     selectionMode="row"
                     size="${empty requestPathInfo.selectors[1] ? &quot;40&quot; : requestPathInfo.selectors[1]}"
                     sortMode="remote"
-                    src="/mnt/overlay/apm/scripts/jcr:content/views/list{.offset,limit}.html{+id}{?sortName,sortDir}"
+                    src="/mnt/overlay/apm/views/scripts/jcr:content/views/list{.offset,limit}.html{+id}{?sortName,sortDir}"
                     stateId="xf.shell.collectionpage">
                 <columns jcr:primaryType="nt:unstructured">
                     <select
@@ -103,7 +103,7 @@
                         text="Create"
                         variant="primary">
                     <items jcr:primaryType="nt:unstructured">
-                        <importscript
+                        <createscript
                                 granite:rel="cq-experiencefragments-admin-create-xf"
                                 jcr:primaryType="nt:unstructured"
                                 sling:resourceType="granite/ui/components/coral/foundation/collection/actionlink"
@@ -116,15 +116,15 @@
                             <data
                                     jcr:primaryType="nt:unstructured"
                                     href.uritemplate="/apm/edit.html{+id}"/>
-                        </importscript>
-                        <scriptupload
+                        </createscript>
+                        <uploadscript
                             jcr:primaryType="nt:unstructured"
                             granite:id="scripts-upload"
                             sling:resourceType="granite/ui/components/coral/foundation/collection/actionlink"
                             action="scripts.upload"
                             icon="upload"
                             text="Upload Script">
-                        </scriptupload>
+                        </uploadscript>
                         <createfolder
                                 granite:id="cq-experiencefragments-admin-createfolder"
                                 granite:rel="cq-siteadmin-admin-createfolder"

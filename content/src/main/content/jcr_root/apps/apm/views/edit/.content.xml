@@ -47,7 +47,7 @@
                     variant="quiet"/>
             <save
               jcr:primaryType="nt:unstructured"
-              sling:resourceType="/apps/apm/components/saveandclose"/>
+              sling:resourceType="apm/components/saveAndCloseButton"/>
         </secondary>
     </actions>
     <views jcr:primaryType="nt:unstructured">
@@ -60,9 +60,10 @@
             <items jcr:primaryType="nt:unstructured">
                 <form
                         granite:class="cache-warmup-form"
+                        granite:id="script-form"
                         jcr:primaryType="nt:unstructured"
                         sling:resourceType="granite/ui/components/coral/foundation/form"
-                        action="${requestPathInfo.resourcePath}"
+                        action="${requestPathInfo.suffix}"
                         method="post"
                         style="vertical">
                     <items jcr:primaryType="nt:unstructured">

@@ -1,0 +1,7 @@
+#base=js
+ace.js
+token_tooltip.js
+snippets/cqsm.js
+ext-language_tools.js
+mode-cqsm.js
+theme-chrome.js
