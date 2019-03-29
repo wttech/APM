@@ -45,7 +45,15 @@ public interface Script {
 	 */
 	Date getExecutionSchedule();
 
+	/**
+	 * Get path to execution summary
+	 */
 	String getExecutionSummary();
+
+	/**
+	 * Get path to dry run summary
+	 */
+	String getDryRunSummary();
 
 	/**
 	 * Get last execution date

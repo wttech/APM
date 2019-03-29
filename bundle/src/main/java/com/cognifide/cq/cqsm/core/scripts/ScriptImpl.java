@@ -85,6 +85,11 @@ public class ScriptImpl implements Script {
 	}
 
 	@Override
+	public String getDryRunSummary() {
+		return scriptContent.getDryRunSummary();
+	}
+
+	@Override
 	public boolean isExecutionEnabled() {
 		return BooleanUtils.isNotFalse(scriptContent.getExecutionEnabled());
 	}

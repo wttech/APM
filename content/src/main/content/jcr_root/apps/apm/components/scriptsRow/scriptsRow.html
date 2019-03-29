@@ -50,10 +50,12 @@
             ${execLast.date}
         </time>
     </td>
-    <td is="coral-table-cell" value="${item.executionSchedule.timeInMillis || 0}">${item.executionSchedule}
-        <time data-sly-test="${item.executionSchedule}" datetime="${item.executionSchedule.timeInMillis || 0}"
-              data-sly-use.execSched="${'com.adobe.cq.xf.ui.DateFormatter' @ date=item.executionSchedule, relativeFormat='r'}">
-            ${execSched.date}
+    <td is="coral-table-cell" value="${item.dryRunLast.timeInMillis || 0}">
+        <a data-sly-test="${item.dryRunLast}" is="coral-anchorbutton" icon="search" iconsize="S"
+           href="/apm/summary.html${item.dryRunSummary}"></a>
+        <time data-sly-test="${item.dryRunLast}" datetime="${item.dryRunLast.timeInMillis || 0}"
+              data-sly-use.execLast="${'com.adobe.cq.xf.ui.DateFormatter' @ date=item.dryRunLast, relativeFormat='r'}">
+            ${execLast.date}
         </time>
     </td>
 </tr>

@@ -28,7 +28,6 @@ import java.util.Optional;
 import java.util.Set;
 import javax.annotation.PostConstruct;
 import lombok.Getter;
-import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
@@ -37,72 +36,80 @@ import org.apache.sling.models.annotations.injectorspecific.Self;
 @Model(adaptables = Resource.class)
 public class RowModel {
 
-	private static final Set<String> FOLDER_TYPES = ImmutableSet
-			.of(JcrConstants.NT_FOLDER, "sling:OrderedFolder");
+  private static final Set<String> FOLDER_TYPES = ImmutableSet
+      .of(JcrConstants.NT_FOLDER, "sling:OrderedFolder");
 
-	public static final String ROW_MODEL_RESOURCE_TYPE = "apm/components/scriptsRow";
+  public static final String ROW_MODEL_RESOURCE_TYPE = "apm/components/scriptsRow";
 
-	@Self
-	private Resource resource;
+  @Self
+  private Resource resource;
 
-	private ScriptImpl script;
+  private ScriptImpl script;
 
-	@Getter
-	private String scriptName;
+  @Getter
+  private String scriptName;
 
-	@Getter
-	private boolean isFolder;
+  @Getter
+  private boolean isFolder;
 
-	@Getter
-	private boolean isValid;
+  @Getter
+  private boolean isValid;
 
-	@Getter
-	private String author;
+  @Getter
+  private String author;
 
-	@Getter
-	private Calendar executionLast;
+  @Getter
+  private Calendar executionSchedule;
 
-	@Getter
-	private Calendar executionSchedule;
+  @Getter
+  private Calendar lastModified;
 
-	@Getter
-	private Calendar lastModified;
+  @Getter
+  private String executionSummary;
 
-	@Getter
-	private String executionSummary;
+  @Getter
+  private Calendar executionLast;
 
-	@Getter
-	private boolean isExecutionEnabled;
+  @Getter
+  private String dryRunSummary;
+
+  @Getter
+  private Calendar dryRunLast;
+
+  @Getter
+  private boolean isExecutionEnabled;
 
 
-	@PostConstruct
-	public void init() {
-		this.isFolder = FOLDER_TYPES
-				.contains(resource.getValueMap().get(JcrConstants.JCR_PRIMARYTYPE, StringUtils.EMPTY));
-		this.scriptName = resource.getName();
-		if (!isFolder) {
-			this.script = resource.adaptTo(ScriptImpl.class);
-			Optional.ofNullable(script).ifPresent(scriptVal -> {
-				this.author = scriptVal.getAuthor();
-				this.isValid = scriptVal.isValid();
-				this.executionLast = asCalendar(scriptVal.getExecutionLast());
-				this.executionSchedule = asCalendar(scriptVal.getExecutionSchedule());
-				this.lastModified = asCalendar(scriptVal.getLastModified());
-				this.executionSummary = scriptVal.getExecutionSummary();
-				this.isExecutionEnabled = scriptVal.isExecutionEnabled();
-			});
-		}
-	}
+  @PostConstruct
+  public void init() {
+    this.isFolder = FOLDER_TYPES
+        .contains(resource.getValueMap().get(JcrConstants.JCR_PRIMARYTYPE, StringUtils.EMPTY));
+    this.scriptName = resource.getName();
+    if (!isFolder) {
+      this.script = resource.adaptTo(ScriptImpl.class);
+      Optional.ofNullable(script).ifPresent(scriptVal -> {
+        this.author = scriptVal.getAuthor();
+        this.isValid = scriptVal.isValid();
+        this.executionLast = asCalendar(scriptVal.getExecutionLast());
+        this.executionSchedule = asCalendar(scriptVal.getExecutionSchedule());
+        this.lastModified = asCalendar(scriptVal.getLastModified());
+        this.executionSummary = scriptVal.getExecutionSummary();
+        this.dryRunSummary = scriptVal.getDryRunSummary();
+        this.dryRunLast = asCalendar(scriptVal.getDryRunLast());
+        this.isExecutionEnabled = scriptVal.isExecutionEnabled();
+      });
+    }
+  }
 
-	public String getResourceType() {
-		return ROW_MODEL_RESOURCE_TYPE;
-	}
+  public String getResourceType() {
+    return ROW_MODEL_RESOURCE_TYPE;
+  }
 
-	private Calendar asCalendar(Date date) {
-		return Optional.ofNullable(date).map(dateVal -> {
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTime(date);
-			return calendar;
-		}).orElse(null);
-	}
+  private Calendar asCalendar(Date date) {
+    return Optional.ofNullable(date).map(dateVal -> {
+      Calendar calendar = Calendar.getInstance();
+      calendar.setTime(date);
+      return calendar;
+    }).orElse(null);
+  }
 }

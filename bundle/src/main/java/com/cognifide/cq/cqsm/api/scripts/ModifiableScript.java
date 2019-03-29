@@ -34,6 +34,10 @@ public interface ModifiableScript {
 	 */
 	void setExecuted(Boolean flag) throws PersistenceException;
 
+	/**
+	 *
+	 * Set path to execution summary
+	 */
 	void setExecutionSummary(String path) throws PersistenceException;
 
 	/**
@@ -65,6 +69,11 @@ public interface ModifiableScript {
 	 * Set dry run execution date
 	 */
 	void setDryRunExecution(Date executionDate) throws PersistenceException;
+
+	/**
+	 * Set path to dry run summary
+	 */
+	void setDryRunSummary(String path) throws PersistenceException;
 
 	/**
 	 * Set replicated by user

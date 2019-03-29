@@ -41,9 +41,9 @@ public class ModifiableEntryBuilder {
 	public static final String MODE = "mode";
 	public static final String PROGRESS_LOG_PROPERTY = "summaryJSON";
 	private static final Logger LOG = LoggerFactory.getLogger(ModifiableEntryBuilder.class);
-	private static final String UPLOAD_TIME = "uploadTime";
+	public static final String UPLOAD_TIME = "uploadTime";
 
-	private static final String FILE_NAME = "fileName";
+	public static final String FILE_NAME = "fileName";
 
 	private final ValueMap valueMap;
 

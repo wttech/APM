@@ -54,6 +54,8 @@ public class ScriptContent {
 
 	public static final String CQSM_DRY_RUN_LAST = "cqsm:dryRunLast";
 
+	public static final String CQSM_DRY_RUN_SUMMARY = "cqsm:dryRunSummary";
+
 	@Inject
 	@Named(CQSM_VERIFIED)
 	@Optional
@@ -103,6 +105,11 @@ public class ScriptContent {
 	@Named(CQSM_DRY_RUN_LAST)
 	@Optional
 	private Date dryRunLast;
+
+	@Inject
+	@Named(CQSM_DRY_RUN_SUMMARY)
+	@Optional
+	private String dryRunSummary;
 
 	@Inject
 	@Named(JcrConstants.JCR_DATA)

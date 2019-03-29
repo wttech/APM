@@ -81,6 +81,11 @@ public class ModifiableScriptWrapper implements ModifiableScript {
 	}
 
 	@Override
+	public void setDryRunSummary(String path) throws PersistenceException {
+		setProperty(ScriptContent.CQSM_DRY_RUN_SUMMARY, path);
+	}
+
+	@Override
 	public void setReplicatedBy(String userId) throws PersistenceException {
 		setProperty(ScriptContent.CQSM_REPLICATED_BY, userId);
 	}
