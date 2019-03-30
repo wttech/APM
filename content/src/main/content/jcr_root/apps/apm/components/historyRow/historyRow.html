@@ -23,23 +23,29 @@
     data-timeline="true" is="coral-table-row" data-script-name="${item.fileName}">
 
   <td is="coral-table-cell" coral-table-rowselect>
-    <coral-icon icon="fileKey" size="M">
-    </coral-icon>
+    <coral-icon icon="fileKey" size="M"></coral-icon>
   </td>
   <td is="coral-table-cell" value="${item.fileName}">
     <a href="${item.filePath}" download="${item.fileName}" style="text-decoration:none">${item.fileName}</a>
   </td>
+  <td is="coral-table-cell" value="${item.lastModified.time || 0}">
+    <time datetime="${item.lastModified.time || 0}"
+          data-sly-test="${item.lastModified}"
+          data-sly-use.execLast="${'com.adobe.cq.xf.ui.DateFormatter' @ date=item.lastModifiedCalendar, relativeFormat='r'}">
+      ${execLast.date}
+    </time>
+  </td>
   <td is="coral-table-cell" value="${item.author}">
     ${item.author}
   </td>
-  <td is="coral-table-cell" value="${item.lastModified.time || 0}">
-    <time class="text-uppercase text-muted" data-sly-test="${item.lastModified}"
-          datetime="${item.lastModified.time || 0}">
-      ${item.lastModifiedTimeFormatted}
-    </time>
-  </td>
   <td is="coral-table-cell" value="${item.executor}">
     ${item.executor}
+  </td>
+  <td is="coral-table-cell" value="${item.mode}">
+    ${item.mode}
+  </td>
+  <td is="coral-table-cell" value="${item.instanceType}">
+    ${item.instanceType}
   </td>
   <td is="coral-table-cell">
     <sly data-sly-test="${item.executionTime && item.instanceType}">
@@ -47,26 +53,13 @@
     </sly>
   </td>
   <td is="coral-table-cell" value="${item.executionTime.time || 0}">
-    <sly data-sly-test="${item.executionTime && item.instanceType}">
-      <span class="last-execution-status">
-        <span class="instance">${item.instanceType}</span> <time datetime="${item.executionTime.time || 0}">${item.executionTimeFormatted}</time>
-      </span>
-    </sly>
+    <time datetime="${item.executionTime.time || 0}"
+          data-sly-test="${item.executionTime}"
+          data-sly-use.execLast="${'com.adobe.cq.xf.ui.DateFormatter' @ date=item.executionTimeCalendar, relativeFormat='r'}">
+      ${execLast.date}
+    </time>
   </td>
   <td is="coral-table-cell">
     <a is="coral-anchorbutton" icon="search" iconsize="S" href="/apm/summary.html${item.path}"></a>
-  </td>
-  <td is="coral-table-cell">
-    <sly data-sly-test="${item.lastDryExecution && item.instanceType}">
-      <coral-icon icon="${item.isDryRunSuccessful ? 'check' : 'close'}"/>
-    </sly>
-  </td>
-  <td is="coral-table-cell" value="${item.lastDryExecution.time || 0}">
-    <sly data-sly-test="${item.lastDryExecution && item.instanceType}">
-      <span class="last-dry-execution-status">
-        <span class="instance">${item.instanceType}</span>
-        <time datetime="${item.lastDryExecution.time || 0}">${item.lastDryExecutionTimeFormatted}</time>
-      </span>
-    </sly>
   </td>
 </tr>

@@ -45,17 +45,25 @@
                             jcr:primaryType="nt:unstructured"
                             jcr:title="Script"
                             sortable="{Boolean}true"/>
-                    <author
-                            jcr:primaryType="nt:unstructured"
-                            jcr:title="Author"
-                            sortable="{Boolean}true"/>
                     <updatedAt
                             jcr:primaryType="nt:unstructured"
                             jcr:title="Updated at"
                             sortable="{Boolean}true"/>
+                    <author
+                            jcr:primaryType="nt:unstructured"
+                            jcr:title="Author"
+                            sortable="{Boolean}true"/>
                     <executor
                             jcr:primaryType="nt:unstructured"
                             jcr:title="Executor"
+                            sortable="{Boolean}true"/>
+                    <mode
+                            jcr:primaryType="nt:unstructured"
+                            jcr:title="Mode"
+                            sortable="{Boolean}true"/>
+                    <instance
+                            jcr:primaryType="nt:unstructured"
+                            jcr:title="Instance"
                             sortable="{Boolean}true"/>
                     <runStatus
                             jcr:primaryType="nt:unstructured"
@@ -68,14 +76,6 @@
                     <summary
                             jcr:primaryType="nt:unstructured"
                             jcr:title="Summary"
-                            sortable="{Boolean}true"/>
-                    <dryRunStatus
-                            jcr:primaryType="nt:unstructured"
-                            jcr:title="Dry Run status"
-                            sortable="{Boolean}true"/>
-                    <dryRunLastRun
-                            jcr:primaryType="nt:unstructured"
-                            jcr:title="Last Dry Run"
                             sortable="{Boolean}true"/>
                 </columns>
                 <datasource

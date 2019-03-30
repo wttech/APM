@@ -44,14 +44,14 @@ public class DryRunHistoryLogStrategy implements HistoryLogStrategy {
     Resource historyLogResource = resolver.getResource(historyFolder, fileName);
     if (historyLogResource == null) {
       historyLogResource = resolver
-          .create(historyFolder, fileName, ImmutableMap.of("jcr:primaryType", "nt:unstructured"));
+          .create(historyFolder, "dryRun-" + fileName, ImmutableMap.of("jcr:primaryType", "nt:unstructured"));
     }
     return historyLogResource;
   }
 
   private Resource getOrCreateHistoryFolder(ResourceResolver resolver) throws RepositoryException {
     Session session = resolver.adaptTo(Session.class);
-    Node node = JcrUtils.getOrCreateByPath(historyPath + "/dryRuns", "sling:OrderedFolder", session);
+    Node node = JcrUtils.getOrCreateByPath(historyPath, "sling:OrderedFolder", session);
     session.save();
     return resolver.getResource(node.getPath());
   }

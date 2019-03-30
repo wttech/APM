@@ -24,17 +24,15 @@ import com.cognifide.cq.cqsm.api.executors.Mode;
 import com.cognifide.cq.cqsm.api.logger.ProgressEntry;
 import com.cognifide.cq.cqsm.api.progress.ProgressHelper;
 import com.google.common.collect.ComparisonChain;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Model;
@@ -43,124 +41,119 @@ import org.apache.sling.models.annotations.Model;
 @EqualsAndHashCode
 public class Entry implements Comparable<Entry> {
 
-	public static final String SCRIPT_HISTORY_FILE_NAME = "script";
+  public static final String SCRIPT_HISTORY_FILE_NAME = "script";
 
-	private static final String EXECUTION = "execution-result";
+  private static final String EXECUTION = "execution-result";
 
-	private static final String HISTORY_PAGE_DATE_FORMAT = "MMM dd, yyyy hh:mm:ss a";
+  @Inject
+  @Getter
+  private String fileName;
 
-	@Inject
-	@Getter
-	private String fileName;
+  @Inject
+  @Getter
+  private Date executionTime;
 
-	@Inject
-	@Getter
-	private Date executionTime;
+  @Getter
+  private Calendar executionTimeCalendar;
 
-	@Getter
-	private String executionTimeFormatted;
+  @Inject
+  @Getter
+  private String author;
 
-	@Inject
-	@Getter
-	private String author;
+  @Inject
+  @Getter
+  private Date uploadTime;
 
-	@Inject
-	@Getter
-	private Date uploadTime;
+  @Inject
+  @Getter
+  private String instanceType;
 
-	@Inject
-	@Getter
-	private String instanceType;
+  @Inject
+  @Getter
+  private String instanceHostname;
 
-	@Inject
-	@Getter
-	private String instanceHostname;
+  @Inject
+  @Getter
+  @Named(ModifiableEntryBuilder.PROGRESS_LOG_PROPERTY)
+  private transient String executionSummaryJson;
 
-	@Inject
-	@Getter
-	@Named(ModifiableEntryBuilder.PROGRESS_LOG_PROPERTY)
-	private transient String executionSummaryJson;
+  @Getter
+  @Inject
+  private String mode;
 
-	@Inject
-	private String mode;
+  @Getter
+  @Inject
+  private String executor;
 
-	@Getter
-	@Inject
-	private String executor;
+  @Getter
+  private List<ProgressEntry> executionSummary;
 
-	@Getter
-	private List<ProgressEntry> executionSummary;
+  @Getter
+  private final String path;
 
-	@Getter
-	private final String path;
+  @Getter
+  private String filePath;
 
-	@Getter
-	private String filePath;
+  @Getter
+  private Date lastModified;
 
-	@Getter
-	private Date lastModified;
+  @Getter
+  private Calendar lastModifiedCalendar;
 
-	@Getter
-	private String lastModifiedTimeFormatted;
+  @Getter
+  private Boolean isRunSuccessful;
 
-	@Getter
-	private Boolean isRunSuccessful;
+  @Getter
+  private Boolean isDryRunSuccessful;
 
-	@Getter
-	private Boolean isDryRunSuccessful;
+  @Getter
+  private Date lastDryExecution;
 
-	@Getter
-	private Date lastDryExecution;
+  public Entry(Resource resource) {
+    this.path = resource.getPath();
+    processHistoryData(resource);
+  }
 
-	@Getter
-	private String lastDryExecutionTimeFormatted;
+  @Override
+  public int compareTo(Entry other) {
+    return ComparisonChain.start().compare(other.executionTime, this.executionTime).result();
+  }
 
-	public Entry(Resource resource) {
-		this.path = resource.getPath();
-		processHistoryData(resource);
-	}
+  public String getExecutionResultFileName() {
+    return EXECUTION + "-" + StringUtils.replace(fileName, ".cqsm", ".txt");
+  }
 
-	@Override
-	public int compareTo(Entry other) {
-		return ComparisonChain.start().compare(other.executionTime, this.executionTime).result();
-	}
+  private String getExecutorValue() {
+    Mode modeType = Mode.fromString(mode, Mode.DRY_RUN);
+    return StringUtils.isNotBlank(executor) ? executor : modeType.getName();
+  }
 
-	public String getExecutionResultFileName() {
-		return EXECUTION + "-" + StringUtils.replace(fileName, ".cqsm", ".txt");
-	}
+  private void processHistoryData(Resource resource) {
+    boolean isHistoryResource = resource.getChild(SCRIPT_HISTORY_FILE_NAME) != null;
+    if (isHistoryResource) {
+      final HistoryResourceAdapter historyResourceAdapter = new HistoryResourceAdapter(resource);
 
-	private String getExecutorValue() {
-		Mode modeType = Mode.fromString(mode, Mode.DRY_RUN);
-		return StringUtils.isNotBlank(executor) ? executor : modeType.getName();
-	}
+      this.lastModified = historyResourceAdapter.getLastModification();
+      this.lastDryExecution = historyResourceAdapter.getLastDryRun();
+      this.isDryRunSuccessful = historyResourceAdapter.isLastDryRunSuccessful();
+      this.filePath = historyResourceAdapter.getFilePath();
+    }
+  }
 
-	private void processHistoryData(Resource resource) {
-		boolean isHistoryResource = resource.getChild(SCRIPT_HISTORY_FILE_NAME) != null;
-		if (isHistoryResource) {
-			final HistoryResourceAdapter historyResourceAdapter = new HistoryResourceAdapter(resource);
+  @PostConstruct
+  protected void init() {
+    lastModifiedCalendar = asCalendar(lastModified);
+    executionTimeCalendar = asCalendar(executionTime);
 
-			this.lastModified = historyResourceAdapter.getLastModification();
-			this.lastDryExecution = historyResourceAdapter.getLastDryRun();
-			this.isDryRunSuccessful = historyResourceAdapter.isLastDryRunSuccessful();
-			this.filePath = historyResourceAdapter.getFilePath();
-		}
-	}
+    executor = getExecutorValue();
 
-	@PostConstruct
-	protected void init() {
-		lastModifiedTimeFormatted = transferDateToHistoryFormat(lastModified);
-		lastDryExecutionTimeFormatted = transferDateToHistoryFormat(lastDryExecution);
-		executionTimeFormatted = transferDateToHistoryFormat(executionTime);
+    executionSummary = ProgressHelper.fromJson(executionSummaryJson);
+    this.isRunSuccessful = ProgressHelper.hasNoErrors(executionSummary);
+  }
 
-		executor = getExecutorValue();
-
-		executionSummary = ProgressHelper.fromJson(executionSummaryJson);
-		this.isRunSuccessful = ProgressHelper.hasNoErrors(executionSummary);
-	}
-
-	private String transferDateToHistoryFormat(Date date) {
-		return Optional.ofNullable(date)
-				.map(dateVal -> DateFormatUtils.format(dateVal, HISTORY_PAGE_DATE_FORMAT, Locale.getDefault()))
-				.orElse(StringUtils.EMPTY);
-	}
+  private Calendar asCalendar(Date date) {
+    Calendar instance = Calendar.getInstance();
+    instance.setTime(date);
+    return instance;
+  }
 }
