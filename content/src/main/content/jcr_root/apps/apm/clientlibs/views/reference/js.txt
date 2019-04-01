@@ -1,0 +1,6 @@
+#base=js
+/apps/apm/clientlibs/editor/js/ace/ace.js
+/apps/apm/clientlibs/editor/js/ace/token_tooltip.js
+/apps/apm/clientlibs/editor/js/ace/snippets/cqsm.js
+/apps/apm/clientlibs/editor/js/ace/ext-language_tools.js
+apm-reference.js
