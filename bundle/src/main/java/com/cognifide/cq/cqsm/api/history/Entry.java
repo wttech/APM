@@ -20,7 +20,6 @@
 package com.cognifide.cq.cqsm.api.history;
 
 
-import com.cognifide.cq.cqsm.api.executors.Mode;
 import com.cognifide.cq.cqsm.api.logger.ProgressEntry;
 import com.cognifide.cq.cqsm.api.progress.ProgressHelper;
 import com.google.common.collect.ComparisonChain;
@@ -32,86 +31,89 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Model;
+import org.apache.sling.models.annotations.injectorspecific.Self;
 
+@Getter
 @Model(adaptables = Resource.class, defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
 @EqualsAndHashCode
 public class Entry implements Comparable<Entry> {
 
-  public static final String SCRIPT_HISTORY_FILE_NAME = "script";
+  public static final String AUTHOR = "author";
+  public static final String EXECUTION_TIME = "executionTime";
+  public static final String EXECUTOR = "executor";
+  public static final String FILE_PATH = "filePath";
+  public static final String FILE_NAME = "fileName";
+  public static final String INSTANCE_HOSTNAME = "instanceHostname";
+  public static final String INSTANCE_TYPE = "instanceType";
+  public static final String IS_RUN_SUCCESSFUL = "isRunSuccessful";
+  public static final String MODE = "mode";
+  public static final String PROGRESS_LOG = "summaryJSON";
+  public static final String UPLOAD_TIME = "uploadTime";
 
-  private static final String EXECUTION = "execution-result";
+  @Self
+  private Resource resource;
 
   @Inject
-  @Getter
-  private String fileName;
-
-  @Inject
-  @Getter
-  private Date executionTime;
-
-  @Getter
-  private Calendar executionTimeCalendar;
-
-  @Inject
-  @Getter
+  @Named(AUTHOR)
   private String author;
 
   @Inject
-  @Getter
-  private Date uploadTime;
+  @Named(EXECUTION_TIME)
+  private Date executionTime;
 
   @Inject
-  @Getter
-  private String instanceType;
+  @Named(EXECUTOR)
+  private String executor;
 
   @Inject
-  @Getter
+  @Named(FILE_PATH)
+  private String filePath;
+
+  @Inject
+  @Named(FILE_NAME)
+  private String fileName;
+
+  @Inject
+  @Named(INSTANCE_HOSTNAME)
   private String instanceHostname;
 
   @Inject
-  @Getter
-  @Named(ModifiableEntryBuilder.PROGRESS_LOG_PROPERTY)
-  private transient String executionSummaryJson;
+  @Named(INSTANCE_TYPE)
+  private String instanceType;
 
-  @Getter
   @Inject
-  private String mode;
-
-  @Getter
-  @Inject
-  private String executor;
-
-  @Getter
-  private List<ProgressEntry> executionSummary;
-
-  @Getter
-  private final String path;
-
-  @Getter
-  private String filePath;
-
-  @Getter
-  private Date lastModified;
-
-  @Getter
-  private Calendar lastModifiedCalendar;
-
-  @Getter
+  @Named(IS_RUN_SUCCESSFUL)
   private Boolean isRunSuccessful;
 
-  @Getter
-  private Boolean isDryRunSuccessful;
+  @Inject
+  @Named(MODE)
+  private String mode;
 
-  @Getter
-  private Date lastDryExecution;
+  @Inject
+  @Named(UPLOAD_TIME)
+  private Date uploadTime;
 
-  public Entry(Resource resource) {
-    this.path = resource.getPath();
-    processHistoryData(resource);
+  @Inject
+  @Named(PROGRESS_LOG)
+  private String executionSummaryJson;
+
+  private Calendar executionTimeCalendar;
+
+  private List<ProgressEntry> executionSummary;
+
+
+  public String getPath() {
+    return resource.getPath();
+  }
+
+  public List<ProgressEntry> getExecutionSummary() {
+    if (this.executionSummary == null) {
+      this.executionSummary = ProgressHelper.fromJson(getExecutionSummaryJson());
+    }
+    return this.executionSummary;
   }
 
   @Override
@@ -119,39 +121,12 @@ public class Entry implements Comparable<Entry> {
     return ComparisonChain.start().compare(other.executionTime, this.executionTime).result();
   }
 
-  public String getExecutionResultFileName() {
-    return EXECUTION + "-" + StringUtils.replace(fileName, ".cqsm", ".txt");
-  }
-
-  private String getExecutorValue() {
-    Mode modeType = Mode.fromString(mode, Mode.DRY_RUN);
-    return StringUtils.isNotBlank(executor) ? executor : modeType.getName();
-  }
-
-  private void processHistoryData(Resource resource) {
-    boolean isHistoryResource = resource.getChild(SCRIPT_HISTORY_FILE_NAME) != null;
-    if (isHistoryResource) {
-      final HistoryResourceAdapter historyResourceAdapter = new HistoryResourceAdapter(resource);
-
-      this.lastModified = historyResourceAdapter.getLastModification();
-      this.lastDryExecution = historyResourceAdapter.getLastDryRun();
-      this.isDryRunSuccessful = historyResourceAdapter.isLastDryRunSuccessful();
-      this.filePath = historyResourceAdapter.getFilePath();
-    }
-  }
-
   @PostConstruct
   protected void init() {
-    lastModifiedCalendar = asCalendar(lastModified);
     executionTimeCalendar = asCalendar(executionTime);
-
-    executor = getExecutorValue();
-
-    executionSummary = ProgressHelper.fromJson(executionSummaryJson);
-    this.isRunSuccessful = ProgressHelper.hasNoErrors(executionSummary);
   }
 
-  private Calendar asCalendar(Date date) {
+  private static Calendar asCalendar(Date date) {
     Calendar instance = Calendar.getInstance();
     instance.setTime(date);
     return instance;

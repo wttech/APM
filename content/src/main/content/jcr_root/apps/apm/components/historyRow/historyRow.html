@@ -28,10 +28,10 @@
   <td is="coral-table-cell" value="${item.fileName}">
     <a href="${item.filePath}" download="${item.fileName}" style="text-decoration:none">${item.fileName}</a>
   </td>
-  <td is="coral-table-cell" value="${item.lastModified.time || 0}">
-    <time datetime="${item.lastModified.time || 0}"
-          data-sly-test="${item.lastModified}"
-          data-sly-use.execLast="${'com.adobe.cq.xf.ui.DateFormatter' @ date=item.lastModifiedCalendar, relativeFormat='r'}">
+  <td is="coral-table-cell" value="${item.executionTime.time || 0}">
+    <time datetime="${item.executionTime.time || 0}"
+          data-sly-test="${item.executionTime}"
+          data-sly-use.execLast="${'com.adobe.cq.xf.ui.DateFormatter' @ date=item.executionTimeCalendar, relativeFormat='r'}">
       ${execLast.date}
     </time>
   </td>
@@ -51,13 +51,6 @@
     <sly data-sly-test="${item.executionTime && item.instanceType}">
       <coral-icon icon="${item.isRunSuccessful ? 'check' : 'close'}"/>
     </sly>
-  </td>
-  <td is="coral-table-cell" value="${item.executionTime.time || 0}">
-    <time datetime="${item.executionTime.time || 0}"
-          data-sly-test="${item.executionTime}"
-          data-sly-use.execLast="${'com.adobe.cq.xf.ui.DateFormatter' @ date=item.executionTimeCalendar, relativeFormat='r'}">
-      ${execLast.date}
-    </time>
   </td>
   <td is="coral-table-cell">
     <a is="coral-anchorbutton" icon="search" iconsize="S" href="/apm/summary.html${item.path}"></a>

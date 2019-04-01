@@ -20,7 +20,7 @@
 
 package com.cognifide.cq.cqsm.core.history;
 
-import com.cognifide.cq.cqsm.api.history.ModifiableEntryBuilder;
+import com.cognifide.cq.cqsm.api.history.Entry;
 import java.util.Calendar;
 import lombok.Builder;
 import org.apache.commons.lang.StringUtils;
@@ -30,30 +30,30 @@ import org.apache.sling.api.resource.Resource;
 @Builder
 public class HistoryLogWriter {
 
+  private String author;
+  private Calendar executionTime;
+  private String executor;
   private String fileName;
   private String filePath;
-  private String author;
-  private String mode;
-  private String progressLog;
-  private String executor;
   private String instanceType;
   private String instanceHostname;
-  private String uploadTime;
-  private Calendar executionTime;
+  private Boolean isRunSuccessful;
+  private String mode;
+  private String progressLog;
 
   public void writeTo(Resource historyLogResource) {
     ModifiableValueMap valueMap = historyLogResource.adaptTo(ModifiableValueMap.class);
-    valueMap.put(ModifiableEntryBuilder.FILE_NAME, fileName);
-    valueMap.put(ModifiableEntryBuilder.FILE_PATH_PROPERTY, filePath);
-    valueMap.put(ModifiableEntryBuilder.AUTHOR, author);
-    valueMap.put(ModifiableEntryBuilder.MODE, mode);
-    valueMap.put(ModifiableEntryBuilder.PROGRESS_LOG_PROPERTY, progressLog);
-    valueMap.put(ModifiableEntryBuilder.INSTANCE_TYPE_PROPERTY, instanceType);
-    valueMap.put(ModifiableEntryBuilder.INSTANCE_HOSTNAME_PROPERTY, instanceHostname);
-    valueMap.put(ModifiableEntryBuilder.UPLOAD_TIME, uploadTime);
-    valueMap.put(ModifiableEntryBuilder.EXECUTION_TIME_PROPERTY, executionTime);
+    valueMap.put(Entry.FILE_NAME, fileName);
+    valueMap.put(Entry.FILE_PATH, filePath);
+    valueMap.put(Entry.AUTHOR, author);
+    valueMap.put(Entry.MODE, mode);
+    valueMap.put(Entry.PROGRESS_LOG, progressLog);
+    valueMap.put(Entry.INSTANCE_TYPE, instanceType);
+    valueMap.put(Entry.INSTANCE_HOSTNAME, instanceHostname);
+    valueMap.put(Entry.IS_RUN_SUCCESSFUL, isRunSuccessful);
+    valueMap.put(Entry.EXECUTION_TIME, executionTime);
     if (StringUtils.isNotBlank(executor)) {
-      valueMap.put(ModifiableEntryBuilder.EXECUTOR_PROPERTY, executor);
+      valueMap.put(Entry.EXECUTOR, executor);
     }
   }
 }

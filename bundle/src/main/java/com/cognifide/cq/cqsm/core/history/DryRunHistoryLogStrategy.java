@@ -41,7 +41,7 @@ public class DryRunHistoryLogStrategy implements HistoryLogStrategy {
   public Resource getHistoryLogResource(ResourceResolver resolver, String fileName)
       throws PersistenceException, RepositoryException {
     Resource historyFolder = getOrCreateHistoryFolder(resolver);
-    Resource historyLogResource = resolver.getResource(historyFolder, fileName);
+    Resource historyLogResource = resolver.getResource(historyFolder, "dryRun-" + fileName);
     if (historyLogResource == null) {
       historyLogResource = resolver
           .create(historyFolder, "dryRun-" + fileName, ImmutableMap.of("jcr:primaryType", "nt:unstructured"));

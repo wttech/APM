@@ -95,9 +95,9 @@ public class HistoryImpl implements History {
     InstanceType instanceDetails = instanceTypeProvider.isOnAuthor() ? InstanceType.AUTHOR : InstanceType.PUBLISH;
     return resolveDefault(resolverFactory, progressLogger.getExecutor(), (ResolveCallback<Entry>) resolver -> {
       final HistoryLogWriter historyLogWriter = createHistoryLogWriterBuilder(resolver, script, mode, progressLogger)
+          .executionTime(Calendar.getInstance())
           .instanceType(instanceDetails.getInstanceName())
           .instanceHostname(getHostname())
-          .executionTime(Calendar.getInstance())
           .build();
       return log(resolver, script, mode, historyLogWriter);
     }, null);
@@ -108,9 +108,9 @@ public class HistoryImpl implements History {
       Calendar executionTime) {
     return resolveDefault(resolverFactory, progressLogger.getExecutor(), (ResolveCallback<Entry>) resolver -> {
       final HistoryLogWriter historyLogWriter = createHistoryLogWriterBuilder(resolver, script, mode, progressLogger)
+          .executionTime(executionTime)
           .instanceType(instanceDetails.getInstanceType().getInstanceName())
           .instanceHostname(instanceDetails.getHostname())
-          .executionTime(executionTime)
           .build();
       return log(resolver, script, mode, historyLogWriter);
     }, null);
@@ -120,13 +120,13 @@ public class HistoryImpl implements History {
       Progress progressLogger) {
     Resource source = resolver.getResource(script.getPath());
     return HistoryLogWriter.builder()
+        .author(source.getValueMap().get(JcrConstants.JCR_CREATED_BY, StringUtils.EMPTY))
+        .executor(getExecutor(resolver, mode))
         .fileName(source.getName())
         .filePath(source.getPath())
+        .isRunSuccessful(progressLogger.isSuccess())
         .mode(mode.toString())
-        .author(source.getValueMap().get(JcrConstants.JCR_CREATED_BY, StringUtils.EMPTY))
-        .uploadTime(source.getValueMap().get(JcrConstants.JCR_CREATED, StringUtils.EMPTY))
-        .progressLog(ProgressHelper.toJson(progressLogger.getEntries()))
-        .executor(getExecutor(resolver, mode));
+        .progressLog(ProgressHelper.toJson(progressLogger.getEntries()));
   }
 
   @Override

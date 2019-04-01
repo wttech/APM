@@ -45,9 +45,9 @@
                             jcr:primaryType="nt:unstructured"
                             jcr:title="Script"
                             sortable="{Boolean}true"/>
-                    <updatedAt
+                    <lastRun
                             jcr:primaryType="nt:unstructured"
-                            jcr:title="Updated at"
+                            jcr:title="Last run"
                             sortable="{Boolean}true"/>
                     <author
                             jcr:primaryType="nt:unstructured"
@@ -68,10 +68,6 @@
                     <runStatus
                             jcr:primaryType="nt:unstructured"
                             jcr:title="Run status"
-                            sortable="{Boolean}true"/>
-                    <lastRunOn
-                            jcr:primaryType="nt:unstructured"
-                            jcr:title="Last run"
                             sortable="{Boolean}true"/>
                     <summary
                             jcr:primaryType="nt:unstructured"
