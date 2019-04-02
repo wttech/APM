@@ -33,7 +33,7 @@
             modeGroup="cq-experience-fragments-admin-childpages"
             omnisearchLocationPath="/libs/granite/omnisearch/content/metadata/experiencefragments"
             pageURITemplate="/apm.html"
-            targetCollection=".cq-experience-fragments-admin-childpages">
+            targetCollection=".foundation-collection-content">
         <head jcr:primaryType="nt:unstructured">
             <clientlibs
                     jcr:primaryType="nt:unstructured"
