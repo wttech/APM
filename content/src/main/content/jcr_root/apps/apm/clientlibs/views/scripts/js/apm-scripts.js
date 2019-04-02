@@ -19,159 +19,180 @@
  */
 (function (window, $) {
 
-    const ERROR_STATUS = "ERROR",
-        WARNING_STATUS = "WARNING",
-        SUCCESS_STATUS = "SUCCESS_STATUS";
+  const ERROR_STATUS = "ERROR",
+      WARNING_STATUS = "WARNING",
+      SUCCESS_STATUS = "SUCCESS_STATUS";
 
-    let uiHelper = $(window).adaptTo("foundation-ui");
+  let utilMessenger = $(window).adaptTo("foundation-util-messenger"),
+      uiHelper = $(window).adaptTo("foundation-ui");
 
-    $(window).adaptTo("foundation-registry").register(
-        "foundation.collection.action.activecondition", {
+  $(document).on('foundation-contentloaded', function () {
+    utilMessenger.promptAll();
+  });
+
+  $(window).adaptTo("foundation-registry").register(
+      "foundation.collection.action.activecondition", {
         name: "is-not-folder",
-        handler: function(name, el, config, collection, selections) {
-            return !isFolder(selections);
+        handler: function (name, el, config, collection, selections) {
+          return !isFolder(selections);
         }
-    });
+      });
 
-    $(window).adaptTo("foundation-registry").register(
-        "foundation.collection.action.activecondition", {
-            name:"is-available",
-            handler: function(name, el, config, collection, selections) {
-                if (isFolder(selections)) {
-                    return false;
-                }
+  $(window).adaptTo("foundation-registry").register(
+      "foundation.collection.action.activecondition", {
+        name: "is-available",
+        handler: function (name, el, config, collection, selections) {
+          if (isFolder(selections)) {
+            return false;
+          }
 
-                el.disabled = isScriptInvalidOrNonExecutable(selections);
-                return true;
-            }
-        });
+          el.disabled = isScriptInvalidOrNonExecutable(selections);
+          return true;
+        }
+      });
 
-    $(window).adaptTo("foundation-registry").register(
-        "foundation.collection.action.action", {
-            name: "scripts.dryrun",
-            handler: function (name, el, config, collection, selections) {
-                const selected = selections[0].attributes['data-path'].value;
-                runOnAuthor(selected, "DRY_RUN");
-            }
-        });
+  $(window).adaptTo("foundation-registry").register(
+      "foundation.collection.action.action", {
+        name: "scripts.dryrun",
+        handler: function (name, el, config, collection, selections) {
+          const selected = selections[0].attributes['data-path'].value;
+          runOnAuthor(selected, "DRY_RUN");
+        }
+      });
 
-    $(window).adaptTo("foundation-registry").register(
-        "foundation.collection.action.action", {
-            name: "scripts.runonauthor",
-            handler: function (name, el, config, collection, selections) {
-                const selected = selections[0].attributes['data-path'].value;
-                runOnAuthor(selected, "RUN");
-            }
-        });
+  $(window).adaptTo("foundation-registry").register(
+      "foundation.collection.action.action", {
+        name: "scripts.runonauthor",
+        handler: function (name, el, config, collection, selections) {
+          const selected = selections[0].attributes['data-path'].value;
+          runOnAuthor(selected, "RUN");
+        }
+      });
 
-    $(window).adaptTo("foundation-registry").register(
-        "foundation.collection.action.action", {
-            name: "scripts.runonpublish",
-            handler: function (name, el, config, collection, selections) {
-                const selected = selections[0].attributes['data-path'].value;
-                runOnPublish(selected);
-            }
-        });
+  $(window).adaptTo("foundation-registry").register(
+      "foundation.collection.action.action", {
+        name: "scripts.runonpublish",
+        handler: function (name, el, config, collection, selections) {
+          const selected = selections[0].attributes['data-path'].value;
+          runOnPublish(selected);
+        }
+      });
 
-    function runOnAuthor(scriptPath, mode) {
-
-        $.ajax({
-            type: "POST",
-            url: "/bin/cqsm/run-background?file=" + scriptPath + "&mode="
-            + mode,
-            dataType: "html",
-            success: function (data) {
-                const parsedJSON = JSON.parse(data);
-                const jobId = parsedJSON.id;
-                const jobMessage = parsedJSON.message;
-
-                (function checkStatus(jobId) {
-                    $.ajax({
-                        type: "GET",
-                        url: "/bin/cqsm/run-background?id=" + jobId,
-                        dataType: "html",
-                        success: function (data) {
-                            const dataObject = JSON.parse(data);
-                            if (dataObject.type === 'running') {
-                                setTimeout(function () {
-                                    checkStatus(jobId)
-                                }, 1000);
-                            } else if (dataObject.type === 'finished') {
-                                let status = getResponseStatus(dataObject),
-                                    title;
-
-                                switch (mode) {
-                                    case 'DRY_RUN':
-                                        title = 'Dry Run';
-                                        break;
-                                    case 'RUN':
-                                        title = 'Run on author';
-                                        break;
-                                }
-                                switch (status) {
-                                    case ERROR_STATUS:
-                                        uiHelper.notify('error', title + ' executed with errors', 'error');
-                                        break;
-                                    case WARNING_STATUS:
-                                        uiHelper.notify('warning', title + ' executed with warnings', 'notice');
-                                        break;
-                                    case SUCCESS_STATUS:
-                                        uiHelper.notify('success', title + ' executed successfully', 'success');
-                                        break;
-                                }
-                            } else if (dataObject.type === 'unknown') {
-                                switch(mode) {
-                                    case 'DRY_RUN':
-                                        uiHelper.notify('error', 'Dry Run wasn\'t executed successfully: ' + jobMessage, 'error');
-                                        break;
-                                    case 'RUN':
-                                        uiHelper.notify('error','Run on author wasn\'t executed successfully: ' + jobMessage, 'error');
-                                        break;
-                                }
-                            }
-                        }
-                    });
-                })(jobId);
-            }
-        });
-    }
-
-    function runOnPublish(fileName) {
-
-        $.ajax({
-            type: "GET",
-            url: "/bin/cqsm/replicate?run=publish&fileName=" + fileName,
-            dataType: "json",
-            success: function (data) {
-                console.log("publish response: " + JSON.stringify(data));
-                uiHelper.notify('info', 'Run on publish executed successfully', 'info');
-            },
-            error: function (data) {
-                console.log("publish  response: " + JSON.stringify(data));
-                uiHelper.notify('error', 'Run on publish wasn\'t executed successfully: ' + data.responseJSON.message, 'error');
-            }
-        });
-    }
-
-    function getResponseStatus(data) {
-      let statuses = new Set(data.entries.map(entry => entry.status)),
-          result;
-      if (statuses.has(ERROR_STATUS)) {
-          result = ERROR_STATUS;
-      } else if (statuses.has(WARNING_STATUS)) {
-          result = WARNING_STATUS;
-      } else {
-          result = SUCCESS_STATUS;
+  function runOnAuthor(scriptPath, mode) {
+    $.ajax({
+      type: "POST",
+      url: "/bin/cqsm/run-background?file=" + scriptPath + "&mode=" + mode,
+      dataType: "html",
+      success: function (data) {
+        const parsedJSON = JSON.parse(data);
+        const jobId = parsedJSON.id;
+        const jobMessage = parsedJSON.message;
+        checkStatus(jobId, jobMessage, mode);
       }
-      return result;
-    }
-    
-    function isFolder(selections) {
-        return selections[0].items._container.innerHTML.includes("folder");
+    });
+  }
+
+  function runOnPublish(fileName) {
+    $.ajax({
+      type: "GET",
+      url: "/bin/cqsm/replicate?run=publish&fileName=" + fileName,
+      dataType: "json",
+      success: function (data) {
+        console.log("publish response: " + JSON.stringify(data));
+        uiHelper.notify('info', 'Run on publish executed successfully', 'info');
+      },
+      error: function (data) {
+        console.log("publish  response: " + JSON.stringify(data));
+        uiHelper.notify('error', 'Run on publish wasn\'t executed successfully: '
+            + data.responseJSON.message, 'error');
+      }
+    });
+  }
+
+  function checkStatus(jobId, jobMessage, mode) {
+    $.ajax({
+      type: "GET",
+      url: "/bin/cqsm/run-background?id=" + jobId,
+      dataType: "html",
+      success: function (data) {
+        const dataObject = JSON.parse(data);
+        if (dataObject.type === 'running') {
+          setTimeout(function () {
+            checkStatus(jobId, jobMessage, mode)
+          }, 1000);
+        } else if (dataObject.type === 'finished') {
+          let status = getResponseStatus(dataObject);
+          showMessageOnFinished(mode, status);
+          reloadPage();
+        } else if (dataObject.type === 'unknown') {
+          showMessageOnUnknown(mode, jobMessage);
+          reloadPage();
+        }
+      }
+    });
+  }
+
+  function showMessageOnFinished(mode, status) {
+    let title;
+
+    switch (mode) {
+      case 'DRY_RUN':
+        title = 'Dry Run';
+        break;
+      case 'RUN':
+        title = 'Run on author';
+        break;
     }
 
-    function isScriptInvalidOrNonExecutable(selections) {
-        return selections[0].items._container.innerHTML.includes("close");
+    switch (status) {
+      case ERROR_STATUS:
+        utilMessenger.put('error', `${title} executed with errors`, 'error');
+        break;
+      case WARNING_STATUS:
+        utilMessenger.put('warning', `${title} executed with warnings`, 'notice');
+        break;
+      case SUCCESS_STATUS:
+        utilMessenger.put('success', `${title} executed successfully`, 'success');
+        break;
     }
+  }
+
+  function showMessageOnUnknown(mode, jobMessage) {
+    switch (mode) {
+      case 'DRY_RUN':
+        utilMessenger.put('error', `Dry Run wasn\'t executed successfully: ${jobMessage}`, 'error');
+        break;
+      case 'RUN':
+        utilMessenger.put('error', `Run on author wasn\'t executed successfully: ${jobMessage}`, 'error');
+        break;
+    }
+  }
+
+  function reloadPage() {
+    setTimeout(function () {
+      location.reload()
+    }, 500);
+  }
+
+  function getResponseStatus(data) {
+    let statuses = new Set(data.entries.map(entry => entry.status);),
+        result;
+    if (statuses.has(ERROR_STATUS)) {
+      result = ERROR_STATUS;
+    } else if (statuses.has(WARNING_STATUS)) {
+      result = WARNING_STATUS;
+    } else {
+      result = SUCCESS_STATUS;
+    }
+    return result;
+  }
+
+  function isFolder(selections) {
+    return selections[0].items._container.innerHTML.includes("folder");
+  }
+
+  function isScriptInvalidOrNonExecutable(selections) {
+    return selections[0].items._container.innerHTML.includes("script-is-invalid");
+  }
 
 })(window, jQuery);

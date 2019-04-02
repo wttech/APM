@@ -1,0 +1,73 @@
+<!--/*
+* ========================LICENSE_START=================================
+* AEM Permission Management
+* %%
+* Copyright (C) 2013 - 2018 Cognifide Limited
+* %%
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*      http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+* =========================LICENSE_END==================================
+*/-->
+<sly data-sly-use.item="com.cognifide.cq.cqsm.core.models.ExecutionModel"/>
+<div>
+  <coral-list>
+    <coral-list-item icon="file">Script: <strong>${item.entry.fileName}</strong></coral-list-item>
+    <coral-list-item icon="user">User: <strong>${item.entry.executor}</strong></coral-list-item>
+    <coral-list-item icon="servers">Instance: <strong>${item.entry.instanceType}</strong></coral-list-item>
+  </coral-list>
+  <table is="coral-table">
+    <thead is="coral-table-head">
+    <tr is="coral-table-row">
+      <th is="coral-table-headercell">
+        No
+      </th>
+      <th is="coral-table-headercell">
+        Authorizable
+      </th>
+      <th is="coral-table-headercell">
+        Action
+      </th>
+      <th is="coral-table-headercell">
+        Parameters
+      </th>
+      <th is="coral-table-headercell">
+        Status
+      </th>
+      <th is="coral-table-headercell">
+        Messages
+      </th>
+    </tr>
+    </thead>
+    <tbody is="coral-table-body">
+    <sly data-sly-list.execution="${item.entry.executionSummary}">
+      <tr is="coral-table-row">
+        <td is="coral-table-cell">${executionList.index}</td>
+        <td is="coral-table-cell">${execution.authorizable}</td>
+        <td is="coral-table-cell">${execution.actionName}</td>
+        <td is="coral-table-cell">${execution.parameters}</td>
+        <td is="coral-table-cell">
+          <coral-icon
+              icon="${execution.status.toString.toLowerCase == 'success' ? 'check' : (execution.status.toString.toLowerCase == 'error' ? 'close' : 'alert')}"/>
+        </td>
+        <td is="coral-table-cell">
+          <sly data-sly-list.message="${execution.messages}">
+            <span class="${message.info ? message.info : ''}">
+              ${message.text}
+            </span>
+            <br data-sly-test="${!messageList.last}"/>
+          </sly>
+        </td>
+      </tr>
+    </sly>
+    </tbody>
+  </table>
+</div>

@@ -21,7 +21,7 @@ package com.cognifide.cq.cqsm.core.models;
 
 import static com.cognifide.cq.cqsm.core.servlets.ScriptResultServlet.EXECUTION_RESULT_SERVLET_PATH;
 
-import com.cognifide.cq.cqsm.api.history.Entry;
+import com.cognifide.cq.cqsm.api.history.HistoryEntry;
 import com.cognifide.cq.cqsm.core.history.History;
 import javax.inject.Inject;
 import lombok.Getter;
@@ -33,7 +33,7 @@ import org.apache.sling.models.annotations.injectorspecific.OSGiService;
 public class ExecutionModel {
 
 	@Getter
-	private final Entry entry;
+	private final HistoryEntry entry;
 
 	@Inject
 	public ExecutionModel(@OSGiService History history, SlingHttpServletRequest request) {

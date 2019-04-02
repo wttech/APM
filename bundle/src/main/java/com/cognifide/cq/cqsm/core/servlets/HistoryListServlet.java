@@ -19,11 +19,13 @@
  */
 package com.cognifide.cq.cqsm.core.servlets;
 
-import com.cognifide.cq.cqsm.api.history.Entry;
+import com.cognifide.cq.cqsm.api.history.HistoryEntry;
 import com.cognifide.cq.cqsm.core.Cqsm;
 import com.cognifide.cq.cqsm.core.models.ExecutionHistoryModel;
 import com.cognifide.cq.cqsm.core.utils.ServletUtils;
-
+import java.io.IOException;
+import java.util.List;
+import javax.servlet.ServletException;
 import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Service;
@@ -32,11 +34,6 @@ import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.osgi.framework.Constants;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.servlet.ServletException;
 
 @SlingServlet(paths = {"/bin/cqsm/history"}, methods = {"GET"})
 @Service
@@ -47,7 +44,7 @@ public class HistoryListServlet extends SlingAllMethodsServlet {
 	@Override
 	protected void doGet(final SlingHttpServletRequest request, final SlingHttpServletResponse response)
 			throws ServletException, IOException {
-		List<Entry> executions = request.adaptTo(ExecutionHistoryModel.class).getExecutions();
+		List<HistoryEntry> executions = request.adaptTo(ExecutionHistoryModel.class).getExecutions();
 		ServletUtils.writeJson(response, executions);
 	}
 }

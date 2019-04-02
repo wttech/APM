@@ -21,12 +21,13 @@ package com.cognifide.cq.cqsm.core.datasource;
 
 import com.adobe.granite.ui.components.ds.DataSource;
 import com.adobe.granite.ui.components.ds.SimpleDataSource;
+import com.cognifide.cq.cqsm.api.history.HistoryEntry;
 import com.cognifide.cq.cqsm.core.Cqsm;
 import com.cognifide.cq.cqsm.core.history.History;
-import java.io.IOException;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.servlet.ServletException;
 import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Reference;
@@ -41,32 +42,39 @@ import org.osgi.framework.Constants;
 
 @SlingServlet(resourceTypes = "apm/datasource/history")
 @Service
-@Properties({@Property(name = Constants.SERVICE_DESCRIPTION, value = "Provides data source for history page"),
-		@Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)})
+@Properties({
+    @Property(name = Constants.SERVICE_DESCRIPTION, value = "Provides data source for history page"),
+    @Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)
+})
 public class HistoryDataSourceServlet extends SlingSafeMethodsServlet {
 
-	@Reference
-	private History history;
+  @Reference
+  private History history;
 
-	@Override
-	protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) {
-		final List<Resource> allHistoryResources = history.findAllResource(request.getResourceResolver())
-				.stream()
-				.map(ResourceTypeWrapper::new)
-				.collect(Collectors.toList());
-		DataSource dataSource = new SimpleDataSource(allHistoryResources.iterator());
-		request.setAttribute(DataSource.class.getName(), dataSource);
-	}
+  @Override
+  protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) {
+    final List<Resource> allHistoryResources = history.findAllResources(request.getResourceResolver())
+        .stream()
+        .sorted(Comparator.comparing(this::getExecutionTime, Comparator.reverseOrder()))
+        .map(ResourceTypeWrapper::new)
+        .collect(Collectors.toList());
+    DataSource dataSource = new SimpleDataSource(allHistoryResources.iterator());
+    request.setAttribute(DataSource.class.getName(), dataSource);
+  }
 
-	private class ResourceTypeWrapper extends ResourceWrapper {
+  private Date getExecutionTime(Resource resource) {
+    return resource.getValueMap().get(HistoryEntry.EXECUTION_TIME, Date.class);
+  }
 
-		ResourceTypeWrapper(Resource resource) {
-			super(resource);
-		}
+  private class ResourceTypeWrapper extends ResourceWrapper {
 
-		@Override
-		public String getResourceType() {
-			return "apm/components/historyRow";
-		}
-	}
+    ResourceTypeWrapper(Resource resource) {
+      super(resource);
+    }
+
+    @Override
+    public String getResourceType() {
+      return "apm/components/historyRow";
+    }
+  }
 }
