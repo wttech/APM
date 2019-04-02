@@ -22,7 +22,7 @@
 
     function Console($el) {
       this.$el = $el;
-      this.$textArea = this.$el.find("#cqsm").eq(0);
+      this.$textArea = this.$el.find('#cqsm').eq(0);
       this.$fileName = this.$el.find('#fname').eq(0);
       this.initialValue = this.$textArea.val();
       this.editor = this.initEditor();
@@ -37,7 +37,7 @@
         this.$fileName.attr('readonly','readonly');
       },
       getFileName: function () {
-        return this.$fileName.val() + ".cqsm";
+        return this.$fileName.val() + '.cqsm';
       },
       getOverwrite: function () {
         return this.isFileNameLocked() ? 'true' : 'false';
@@ -46,14 +46,14 @@
       initEditor: function () {
         let editor = null;
 
-        ace.config.set("basePath", "/apps/apm/clientlibs/externals/ace/js");
+        ace.config.set('basePath', '/apps/apm/clientlibs/externals/ace/js');
         this.$textArea.hide();
-        editor = ace.edit("ace");
+        editor = ace.edit('ace');
 
-        editor.setTheme("ace/theme/chrome");
-        editor.getSession().setMode("ace/mode/cqsm");
+        editor.setTheme('ace/theme/chrome');
+        editor.getSession().setMode('ace/mode/cqsm');
         editor.getSession().setValue(this.initialValue);
-        ace.require(["ace/token_tooltip"], function (o) {
+        ace.require(['ace/token_tooltip'], function (o) {
           editor.tokenTooltip = new o.TokenTooltip(editor);
         });
         editor.setReadOnly(true);

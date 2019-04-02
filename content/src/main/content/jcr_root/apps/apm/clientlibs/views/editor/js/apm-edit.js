@@ -23,9 +23,9 @@
     const SHOW_REFERENCES_URL = '/etc/cqsm/pages/reference.html';
 
     function Console($el) {
-      this.uiHelper = $(window).adaptTo("foundation-ui");
+      this.uiHelper = $(window).adaptTo('foundation-ui');
       this.$el = $el;
-      this.$textArea = this.$el.find("#cqsm").eq(0);
+      this.$textArea = this.$el.find('#cqsm').eq(0);
       this.$validationAlertContainer = $('<div class="validation-alert" />');
       this.$textArea.parent().append(this.$validationAlertContainer);
       this.$fileName = this.$el.find('#fname').eq(0);
@@ -53,7 +53,7 @@
         return this.initialValue !== this.$textArea.val();
       },
       getFileName: function () {
-        return this.$fileName.val() + ".cqsm";
+        return this.$fileName.val() + '.cqsm';
       },
       getOverwrite: function () {
         return this.isFileNameLocked() ? 'true' : 'false';
@@ -80,10 +80,10 @@
             content.push('--' + boundary);
 
             if (params[file].filename) {
-              if (this.savePath.endsWith(`/${params[file].filename}`)) {
-                mimeHeader += `filename="${this.savePath}";`;
+              if (this.savePath.endsWith('/' + params[file].filename)) {
+                mimeHeader += 'filename="' + this.savePath + '";';
               } else {
-                mimeHeader += `filename="${this.savePath}/${params[file].filename}";`;
+                mimeHeader += 'filename="' + this.savePath + '/' + params[file].filename + '";';
               }
             }
             content.push(mimeHeader);
@@ -99,10 +99,10 @@
         }
 
         $.ajax({
-          type: "POST",
+          type: 'POST',
           async: false,
-          url: "/bin/cqsm/fileUpload?overwrite=" + this.getOverwrite(),
-          dataType: "json",
+          url: '/bin/cqsm/fileUpload?overwrite=' + this.getOverwrite(),
+          dataType: 'json',
           processData: false,
           contentType: 'multipart/form-data; boundary=' + boundary,
           data: content.join('\r\n'),
@@ -131,18 +131,18 @@
       initEditor: function () {
         let editor = null;
 
-        ace.config.set("basePath", "/apps/apm/clientlibs/externals/ace/js");
+        ace.config.set('basePath', '/apps/apm/clientlibs/externals/ace/js');
         this.$textArea.hide();
-        editor = ace.edit("ace");
+        editor = ace.edit('ace');
 
-        editor.setTheme("ace/theme/chrome");
-        editor.getSession().setMode("ace/mode/cqsm");
+        editor.setTheme('ace/theme/chrome');
+        editor.getSession().setMode('ace/mode/cqsm');
         editor.getSession().setValue(this.initialValue);
-        ace.require(["ace/token_tooltip"], function (o) {
+        ace.require(['ace/token_tooltip'], function (o) {
           editor.tokenTooltip = new o.TokenTooltip(editor);
         });
 
-        ace.require(["ace/ext/language_tools"], function () {
+        ace.require(['ace/ext/language_tools'], function () {
           editor.setOptions({
             enableBasicAutocompletion: true,
             enableSnippets: true,
@@ -186,9 +186,9 @@
 
         this.$validateButton.click(function () {
           $.ajax({
-            type: "POST",
+            type: 'POST',
             async: false,
-            url: "/bin/cqsm/validate",
+            url: '/bin/cqsm/validate',
             data: {
               content: self.$textArea.val()
             },
@@ -222,7 +222,7 @@
 
           $(window).on('beforeunload', function () {
             if (self.hasChanged()) {
-              return "You have unsaved changes";
+              return 'You have unsaved changes';
             }
           });
         });

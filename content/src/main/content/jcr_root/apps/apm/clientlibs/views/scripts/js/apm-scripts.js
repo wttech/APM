@@ -19,28 +19,28 @@
  */
 (function (window, $) {
 
-  const ERROR_STATUS = "ERROR",
-      WARNING_STATUS = "WARNING",
-      SUCCESS_STATUS = "SUCCESS_STATUS";
+  const ERROR_STATUS = 'ERROR',
+      WARNING_STATUS = 'WARNING',
+      SUCCESS_STATUS = 'SUCCESS_STATUS';
 
-  let utilMessenger = $(window).adaptTo("foundation-util-messenger"),
-      uiHelper = $(window).adaptTo("foundation-ui");
+  let utilMessenger = $(window).adaptTo('foundation-util-messenger'),
+      uiHelper = $(window).adaptTo('foundation-ui');
 
   $(document).on('foundation-contentloaded', function () {
     utilMessenger.promptAll();
   });
 
-  $(window).adaptTo("foundation-registry").register(
-      "foundation.collection.action.activecondition", {
-        name: "is-not-folder",
+  $(window).adaptTo('foundation-registry').register(
+      'foundation.collection.action.activecondition', {
+        name: 'is-not-folder',
         handler: function (name, el, config, collection, selections) {
           return !isFolder(selections);
         }
       });
 
-  $(window).adaptTo("foundation-registry").register(
-      "foundation.collection.action.activecondition", {
-        name: "is-available",
+  $(window).adaptTo('foundation-registry').register(
+      'foundation.collection.action.activecondition', {
+        name: 'is-available',
         handler: function (name, el, config, collection, selections) {
           if (isFolder(selections)) {
             return false;
@@ -51,27 +51,27 @@
         }
       });
 
-  $(window).adaptTo("foundation-registry").register(
-      "foundation.collection.action.action", {
-        name: "scripts.dryrun",
+  $(window).adaptTo('foundation-registry').register(
+      'foundation.collection.action.action', {
+        name: 'scripts.dryrun',
         handler: function (name, el, config, collection, selections) {
           const selected = selections[0].attributes['data-path'].value;
-          runOnAuthor(selected, "DRY_RUN");
+          runOnAuthor(selected, 'DRY_RUN');
         }
       });
 
-  $(window).adaptTo("foundation-registry").register(
-      "foundation.collection.action.action", {
-        name: "scripts.runonauthor",
+  $(window).adaptTo('foundation-registry').register(
+      'foundation.collection.action.action', {
+        name: 'scripts.runonauthor',
         handler: function (name, el, config, collection, selections) {
           const selected = selections[0].attributes['data-path'].value;
-          runOnAuthor(selected, "RUN");
+          runOnAuthor(selected, 'RUN');
         }
       });
 
-  $(window).adaptTo("foundation-registry").register(
-      "foundation.collection.action.action", {
-        name: "scripts.runonpublish",
+  $(window).adaptTo('foundation-registry').register(
+      'foundation.collection.action.action', {
+        name: 'scripts.runonpublish',
         handler: function (name, el, config, collection, selections) {
           const selected = selections[0].attributes['data-path'].value;
           runOnPublish(selected);
@@ -80,9 +80,9 @@
 
   function runOnAuthor(scriptPath, mode) {
     $.ajax({
-      type: "POST",
-      url: "/bin/cqsm/run-background?file=" + scriptPath + "&mode=" + mode,
-      dataType: "html",
+      type: 'POST',
+      url: '/bin/cqsm/run-background?file=' + scriptPath + '&mode=' + mode,
+      dataType: 'html',
       success: function (data) {
         const parsedJSON = JSON.parse(data);
         const jobId = parsedJSON.id;
@@ -94,15 +94,15 @@
 
   function runOnPublish(fileName) {
     $.ajax({
-      type: "GET",
-      url: "/bin/cqsm/replicate?run=publish&fileName=" + fileName,
-      dataType: "json",
+      type: 'GET',
+      url: '/bin/cqsm/replicate?run=publish&fileName=' + fileName,
+      dataType: 'json',
       success: function (data) {
-        console.log("publish response: " + JSON.stringify(data));
+        console.log('publish response: ' + JSON.stringify(data));
         uiHelper.notify('info', 'Run on publish executed successfully', 'info');
       },
       error: function (data) {
-        console.log("publish  response: " + JSON.stringify(data));
+        console.log('publish  response: ' + JSON.stringify(data));
         uiHelper.notify('error', 'Run on publish wasn\'t executed successfully: '
             + data.responseJSON.message, 'error');
       }
@@ -111,9 +111,9 @@
 
   function checkStatus(jobId, jobMessage, mode) {
     $.ajax({
-      type: "GET",
-      url: "/bin/cqsm/run-background?id=" + jobId,
-      dataType: "html",
+      type: 'GET',
+      url: '/bin/cqsm/run-background?id=' + jobId,
+      dataType: 'html',
       success: function (data) {
         const dataObject = JSON.parse(data);
         if (dataObject.type === 'running') {
@@ -146,13 +146,13 @@
 
     switch (status) {
       case ERROR_STATUS:
-        utilMessenger.put('error', `${title} executed with errors`, 'error');
+        utilMessenger.put('error', title + ' executed with errors', 'error');
         break;
       case WARNING_STATUS:
-        utilMessenger.put('warning', `${title} executed with warnings`, 'notice');
+        utilMessenger.put('warning', title + ' executed with warnings', 'notice');
         break;
       case SUCCESS_STATUS:
-        utilMessenger.put('success', `${title} executed successfully`, 'success');
+        utilMessenger.put('success', title + ' executed successfully', 'success');
         break;
     }
   }
@@ -160,10 +160,10 @@
   function showMessageOnUnknown(mode, jobMessage) {
     switch (mode) {
       case 'DRY_RUN':
-        utilMessenger.put('error', `Dry Run wasn\'t executed successfully: ${jobMessage}`, 'error');
+        utilMessenger.put('error', 'Dry Run wasn\'t executed successfully: ' + jobMessage, 'error');
         break;
       case 'RUN':
-        utilMessenger.put('error', `Run on author wasn\'t executed successfully: ${jobMessage}`, 'error');
+        utilMessenger.put('error', 'Run on author wasn\'t executed successfully: ' + jobMessage, 'error');
         break;
     }
   }
@@ -175,7 +175,7 @@
   }
 
   function getResponseStatus(data) {
-    let statuses = new Set(data.entries.map(entry => entry.status);),
+    let statuses = new Set(data.entries.map(function(entry) {entry.status})),
         result;
     if (statuses.has(ERROR_STATUS)) {
       result = ERROR_STATUS;
@@ -188,11 +188,11 @@
   }
 
   function isFolder(selections) {
-    return selections[0].items._container.innerHTML.includes("folder");
+    return selections[0].items._container.innerHTML.includes('folder');
   }
 
   function isScriptInvalidOrNonExecutable(selections) {
-    return selections[0].items._container.innerHTML.includes("script-is-invalid");
+    return selections[0].items._container.innerHTML.includes('script-is-invalid');
   }
 
 })(window, jQuery);

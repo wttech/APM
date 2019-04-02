@@ -32,11 +32,11 @@
     fileUploader.name = 'file';
     fileUploader._className = fileUploader._className + ' coral-fileupload-dropzone';
     fileUploader
-      .on('coral-fileupload:fileadded', null, function(event) {
+      .on('coral-fileupload:fileadded', function(event) {
         let filename = event.detail.item.file.name;
         fileUploader.upload(filename);
-      }, true)
-      .on('coral-fileupload:load', null, function(event) {
+      })
+      .on('coral-fileupload:load', function(event) {
         fileUploader.uploadQueue.forEach(function(item, index) {
           let filename = event.detail.item.file.name;
           if (item.file.name === filename) {
@@ -46,29 +46,29 @@
         if (fileUploader.uploadQueue.length === 0) {
           _reload();
         }
-      }, true);
+      });
 
-    $('coral-shell-content')[0]
-      .on('drop', null, function(event) {
-        dragCounter = 0;
-        event.preventDefault();
-        _dropZoneDrop();
-        fileUploader._onInputChange(event);
-      }, false)
-      .on('dragenter', null, function(event) {
-        event.preventDefault();
-        dragCounter++;
-        _dropZoneDragEnter();
-      }, false)
-      .on('dragover', null, function(event) {
-        event.preventDefault();
-      }, false)
-      .on('dragleave', null, function() {
-        dragCounter--;
-        if (dragCounter === 0) {
-          _dropZoneDragLeave();
-        }
-      }, false);
+    const coralShell = $('coral-shell-content').get(0);
+    coralShell.addEventListener('drop', function(event) {
+      dragCounter = 0;
+      event.preventDefault();
+      _dropZoneDrop();
+      fileUploader._onInputChange(event);
+    }, false);
+    coralShell.addEventListener('dragenter', function(event) {
+      event.preventDefault();
+      dragCounter++;
+      _dropZoneDragEnter();
+    }, false);
+    coralShell.addEventListener('dragover', function(event) {
+      event.preventDefault();
+    }, false);
+    coralShell.addEventListener('dragleave', function() {
+      dragCounter--;
+      if (dragCounter === 0) {
+        _dropZoneDragLeave();
+      }
+    }, false);
   }
 
   function _reload() {
@@ -99,7 +99,5 @@
   $(document).on('foundation-contentloaded', function () {
     init();
   });
-
-
 
 })(window, Granite.$, Coral);
