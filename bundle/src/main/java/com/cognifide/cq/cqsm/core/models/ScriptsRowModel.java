@@ -22,8 +22,10 @@ package com.cognifide.cq.cqsm.core.models;
 import com.cognifide.cq.cqsm.core.scripts.ScriptImpl;
 import com.day.cq.commons.jcr.JcrConstants;
 import com.google.common.collect.ImmutableSet;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.PostConstruct;
@@ -34,7 +36,7 @@ import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
 
 @Model(adaptables = Resource.class)
-public class RowModel {
+public class ScriptsRowModel {
 
   private static final Set<String> FOLDER_TYPES = ImmutableSet
       .of(JcrConstants.NT_FOLDER, "sling:OrderedFolder");
@@ -43,8 +45,6 @@ public class RowModel {
 
   @Self
   private Resource resource;
-
-  private ScriptImpl script;
 
   @Getter
   private String scriptName;
@@ -59,26 +59,13 @@ public class RowModel {
   private String author;
 
   @Getter
-  private Calendar executionSchedule;
-
-  @Getter
   private Calendar lastModified;
 
   @Getter
-  private String executionSummary;
-
-  @Getter
-  private Calendar executionLast;
-
-  @Getter
-  private String dryRunSummary;
-
-  @Getter
-  private Calendar dryRunLast;
+  private List<ScriptRun> runs = new ArrayList<>();
 
   @Getter
   private boolean isExecutionEnabled;
-
 
   @PostConstruct
   public void init() {
@@ -86,17 +73,14 @@ public class RowModel {
         .contains(resource.getValueMap().get(JcrConstants.JCR_PRIMARYTYPE, StringUtils.EMPTY));
     this.scriptName = resource.getName();
     if (!isFolder) {
-      this.script = resource.adaptTo(ScriptImpl.class);
-      Optional.ofNullable(script).ifPresent(scriptVal -> {
-        this.author = scriptVal.getAuthor();
-        this.isValid = scriptVal.isValid();
-        this.executionLast = asCalendar(scriptVal.getExecutionLast());
-        this.executionSchedule = asCalendar(scriptVal.getExecutionSchedule());
-        this.lastModified = asCalendar(scriptVal.getLastModified());
-        this.executionSummary = scriptVal.getExecutionSummary();
-        this.dryRunSummary = scriptVal.getDryRunSummary();
-        this.dryRunLast = asCalendar(scriptVal.getDryRunLast());
-        this.isExecutionEnabled = scriptVal.isExecutionEnabled();
+      Optional.ofNullable(resource.adaptTo(ScriptImpl.class)).ifPresent(script -> {
+        this.author = script.getAuthor();
+        this.isValid = script.isValid();
+        this.lastModified = asCalendar(script.getLastModified());
+        this.runs.add(new ScriptRun(script.getRunSummary(), script.isRunSuccessful(), script.getRunTime()));
+        this.runs.add(new ScriptRun(script.getRunOnPublishSummary(), script.isRunOnPublishSuccessful(), script.getRunOnPublishTime()));
+        this.runs.add(new ScriptRun(script.getDryRunSummary(), script.isDryRunSuccessful(), script.getDryRunTime()));
+        this.isExecutionEnabled = script.isExecutionEnabled();
       });
     }
   }
@@ -105,11 +89,28 @@ public class RowModel {
     return ROW_MODEL_RESOURCE_TYPE;
   }
 
-  private Calendar asCalendar(Date date) {
-    return Optional.ofNullable(date).map(dateVal -> {
-      Calendar calendar = Calendar.getInstance();
-      calendar.setTime(date);
-      return calendar;
-    }).orElse(null);
+  private static Calendar asCalendar(Date date) {
+    return Optional.ofNullable(date)
+        .map(dateValue -> {
+          Calendar calendar = Calendar.getInstance();
+          calendar.setTime(dateValue);
+          return calendar;
+        })
+        .orElse(null);
+  }
+
+  @Getter
+  public static class ScriptRun {
+
+    private final String summary;
+    private final boolean success;
+    private final Calendar time;
+
+    public ScriptRun(String summary, boolean success, Date time) {
+      this.summary = summary;
+      this.success = success;
+      this.time = asCalendar(time);
+    }
+
   }
 }

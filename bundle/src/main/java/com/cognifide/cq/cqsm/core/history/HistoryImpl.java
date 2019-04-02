@@ -24,7 +24,7 @@ import static com.cognifide.cq.cqsm.core.utils.sling.SlingHelper.resolveDefault;
 import com.cognifide.actions.api.ActionSendException;
 import com.cognifide.actions.api.ActionSubmitter;
 import com.cognifide.cq.cqsm.api.executors.Mode;
-import com.cognifide.cq.cqsm.api.history.Entry;
+import com.cognifide.cq.cqsm.api.history.HistoryEntry;
 import com.cognifide.cq.cqsm.api.history.InstanceDetails;
 import com.cognifide.cq.cqsm.api.history.InstanceDetails.InstanceType;
 import com.cognifide.cq.cqsm.api.logger.Progress;
@@ -32,7 +32,7 @@ import com.cognifide.cq.cqsm.api.progress.ProgressHelper;
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.utils.InstanceTypeProvider;
 import com.cognifide.cq.cqsm.core.Cqsm;
-import com.cognifide.cq.cqsm.core.history.HistoryLogWriter.HistoryLogWriterBuilder;
+import com.cognifide.cq.cqsm.core.history.HistoryEntryWriter.HistoryEntryWriterBuilder;
 import com.cognifide.cq.cqsm.core.scripts.ModifiableScriptWrapper;
 import com.cognifide.cq.cqsm.core.scripts.ScriptContent;
 import com.cognifide.cq.cqsm.core.utils.sling.ResolveCallback;
@@ -53,12 +53,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import org.apache.commons.lang.StringUtils;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
+import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -77,7 +79,7 @@ public class HistoryImpl implements History {
 
   private static final Logger LOG = LoggerFactory.getLogger(HistoryImpl.class);
 
-  private static final String HISTORY_PATH = "/conf/apm/history";
+  private static final String HISTORY_FOLDER = "/conf/apm/history";
 
   public static final String REPLICATE_ACTION = "com/cognifide/actions/cqsm/history/replicate";
 
@@ -91,37 +93,37 @@ public class HistoryImpl implements History {
   private InstanceTypeProvider instanceTypeProvider;
 
   @Override
-  public Entry log(Script script, Mode mode, Progress progressLogger) {
+  public HistoryEntry log(Script script, Mode mode, Progress progressLogger) {
     InstanceType instanceDetails = instanceTypeProvider.isOnAuthor() ? InstanceType.AUTHOR : InstanceType.PUBLISH;
-    return resolveDefault(resolverFactory, progressLogger.getExecutor(), (ResolveCallback<Entry>) resolver -> {
-      final HistoryLogWriter historyLogWriter = createHistoryLogWriterBuilder(resolver, script, mode, progressLogger)
+    return resolveDefault(resolverFactory, progressLogger.getExecutor(), (ResolveCallback<HistoryEntry>) resolver -> {
+      final HistoryEntryWriter historyEntryWriter = createBuilder(resolver, script, mode, progressLogger)
           .executionTime(Calendar.getInstance())
           .instanceType(instanceDetails.getInstanceName())
           .instanceHostname(getHostname())
           .build();
-      return log(resolver, script, mode, historyLogWriter);
+      return createHistoryEntry(resolver, script, mode, historyEntryWriter, false);
     }, null);
   }
 
   @Override
-  public Entry logRemote(Script script, Mode mode, Progress progressLogger, InstanceDetails instanceDetails,
+  public HistoryEntry logRemote(Script script, Mode mode, Progress progressLogger, InstanceDetails instanceDetails,
       Calendar executionTime) {
-    return resolveDefault(resolverFactory, progressLogger.getExecutor(), (ResolveCallback<Entry>) resolver -> {
-      final HistoryLogWriter historyLogWriter = createHistoryLogWriterBuilder(resolver, script, mode, progressLogger)
+    return resolveDefault(resolverFactory, progressLogger.getExecutor(), (ResolveCallback<HistoryEntry>) resolver -> {
+      final HistoryEntryWriter historyEntryWriter = createBuilder(resolver, script, mode, progressLogger)
           .executionTime(executionTime)
           .instanceType(instanceDetails.getInstanceType().getInstanceName())
           .instanceHostname(instanceDetails.getHostname())
           .build();
-      return log(resolver, script, mode, historyLogWriter);
+      return createHistoryEntry(resolver, script, mode, historyEntryWriter, true);
     }, null);
   }
 
-  private HistoryLogWriterBuilder createHistoryLogWriterBuilder(ResourceResolver resolver, Script script, Mode mode,
+  private HistoryEntryWriterBuilder createBuilder(ResourceResolver resolver, Script script, Mode mode,
       Progress progressLogger) {
     Resource source = resolver.getResource(script.getPath());
-    return HistoryLogWriter.builder()
+    return HistoryEntryWriter.builder()
         .author(source.getValueMap().get(JcrConstants.JCR_CREATED_BY, StringUtils.EMPTY))
-        .executor(getExecutor(resolver, mode))
+        .executor(resolver.getUserID())
         .fileName(source.getName())
         .filePath(source.getPath())
         .isRunSuccessful(progressLogger.isSuccess())
@@ -130,27 +132,27 @@ public class HistoryImpl implements History {
   }
 
   @Override
-  public List<Entry> findAll() {
-    return resolveDefault(resolverFactory, (ResolveCallback<List<Entry>>) resolver -> findAllResource(resolver)
+  public List<HistoryEntry> findAll() {
+    return resolveDefault(resolverFactory, (ResolveCallback<List<HistoryEntry>>) resolver -> findAllResources(resolver)
         .stream()
-        .map(resource -> resource.adaptTo(Entry.class))
-        .collect(Collectors.toList()), Collections.<Entry>emptyList());
+        .map(resource -> resource.adaptTo(HistoryEntry.class))
+        .collect(Collectors.toList()), Collections.emptyList());
   }
 
   @Override
-  public List<Resource> findAllResource(ResourceResolver resourceResolver) {
-    final Resource historyFolder = resourceResolver.getResource(HISTORY_PATH);
+  public List<Resource> findAllResources(ResourceResolver resourceResolver) {
+    final Resource historyFolder = resourceResolver.getResource(HISTORY_FOLDER);
     return Optional.ofNullable(historyFolder)
         .map(resource -> resource.getChildren())
         .map(elements -> (List<Resource>) ImmutableList.copyOf(elements))
         .orElseGet(() -> {
-          LOG.warn("History resource can't be found at: {}", HISTORY_PATH);
+          LOG.warn("History resource can't be found at: {}", HISTORY_FOLDER);
           return Collections.emptyList();
         });
   }
 
   @Override
-  public void replicate(final Entry entry, String userId) {
+  public void replicate(final HistoryEntry entry, String userId) {
     if (actionSubmitter == null) {
       LOG.warn(String.format("History entry '%s' replication cannot be performed on author instance",
           entry.getPath()));
@@ -173,13 +175,13 @@ public class HistoryImpl implements History {
   }
 
   @Override
-  public Entry find(final String path) {
-    return resolveDefault(resolverFactory, (ResolveCallback<Entry>) resolver -> {
-      Entry result = null;
+  public HistoryEntry find(final String path) {
+    return resolveDefault(resolverFactory, (ResolveCallback<HistoryEntry>) resolver -> {
+      HistoryEntry result = null;
       for (String resourcePath : Arrays.asList(path, path.replace("_cqsm", ".cqsm"))) {
         Resource resource = resolver.getResource(resourcePath);
         if (resource != null) {
-          result = resource.adaptTo(Entry.class);
+          result = resource.adaptTo(HistoryEntry.class);
           break;
         }
       }
@@ -187,31 +189,53 @@ public class HistoryImpl implements History {
     }, null);
   }
 
-  private Entry log(ResourceResolver resolver, Script script, Mode mode, HistoryLogWriter historyLogWriter) {
-    Entry result = null;
+  private HistoryEntry createHistoryEntry(ResourceResolver resolver, Script script, Mode mode,
+      HistoryEntryWriter historyEntryWriter, boolean remote) {
     try {
-      HistoryLogStrategy historyLogStrategy = createHistoryLogStrategy(mode);
-      Resource source = resolver.getResource(script.getPath());
-      Resource historyLogResource = historyLogStrategy.getHistoryLogResource(resolver, source.getName());
-      historyLogWriter.writeTo(historyLogResource);
-
-      copyScriptContent(source, historyLogResource);
-      updateScriptDetails(resolver, script, mode, historyLogResource);
-      resolver.commit();
-      result = resolver.getResource(historyLogResource.getPath()).adaptTo(Entry.class);
-    } catch (RepositoryException | PersistenceException e) {
+      HistoryEntry historyEntry = createHistoryEntry(resolver, script, mode, historyEntryWriter);
+      updateScriptDetails(resolver, script, mode, historyEntry, remote);
+      return historyEntry;
+    } catch (PersistenceException | RepositoryException e) {
       LOG.error("Issues with saving to repository while logging script execution", e);
+      return null;
     }
-    return result;
   }
 
-  private void updateScriptDetails(ResourceResolver resolver, Script script, Mode mode, Resource historyLogResource)
-      throws PersistenceException {
+  private HistoryEntry createHistoryEntry(ResourceResolver resolver, Script script, Mode mode,
+      HistoryEntryWriter historyEntryWriter) throws RepositoryException, PersistenceException {
+    Resource source = resolver.getResource(script.getPath());
+    Resource historyFolder = getOrCreateFolder(resolver);
+    HistoryEntryNamingStrategy historyEntryNamingStrategy = createStrategy(mode);
+    Resource entryResource = historyEntryNamingStrategy.getHistoryEntryResource(resolver, historyFolder, source.getName());
+    historyEntryWriter.writeTo(entryResource);
+
+    copyScriptContent(source, entryResource);
+    resolver.commit();
+    return resolver.getResource(entryResource.getPath()).adaptTo(HistoryEntry.class);
+  }
+
+  private Resource getOrCreateFolder(ResourceResolver resolver) throws RepositoryException {
+    Session session = resolver.adaptTo(Session.class);
+    Node node = JcrUtils.getOrCreateByPath(HISTORY_FOLDER, "sling:OrderedFolder", session);
+    session.save();
+    return resolver.getResource(node.getPath());
+  }
+
+  private void updateScriptDetails(ResourceResolver resolver, Script script, Mode mode, HistoryEntry historyEntry,
+      boolean remote) throws PersistenceException {
     ModifiableScriptWrapper scriptWrapper = new ModifiableScriptWrapper(resolver, script);
     if (mode == Mode.DRY_RUN) {
-      scriptWrapper.setDryRunSummary(historyLogResource.getPath());
+      scriptWrapper.setDryRunTime(historyEntry.getExecutionTime());
+      scriptWrapper.setDryRunSummary(historyEntry.getPath());
+      scriptWrapper.setDryRunStatus(historyEntry.getIsRunSuccessful());
+    } else if (remote) {
+      scriptWrapper.setRunOnPublishTime(historyEntry.getExecutionTime());
+      scriptWrapper.setRunOnPublishSummary(historyEntry.getPath());
+      scriptWrapper.setRunOnPublishStatus(historyEntry.getIsRunSuccessful());
     } else {
-      scriptWrapper.setExecutionSummary(historyLogResource.getPath());
+      scriptWrapper.setRunTime(historyEntry.getExecutionTime());
+      scriptWrapper.setRunSummary(historyEntry.getPath());
+      scriptWrapper.setRunStatus(historyEntry.getIsRunSuccessful());
     }
   }
 
@@ -220,17 +244,8 @@ public class HistoryImpl implements History {
     file.addMixin(ScriptContent.CQSM_FILE);
   }
 
-  private HistoryLogStrategy createHistoryLogStrategy(Mode mode) {
-    return mode == Mode.DRY_RUN ? new DryRunHistoryLogStrategy(HISTORY_PATH)
-        : new DefaultHistoryLogStrategy(HISTORY_PATH);
-  }
-
-  private String getExecutor(ResourceResolver resourceResolver, Mode mode) {
-    String executor = null;
-    if (mode.isRun()) {
-      executor = resourceResolver.getUserID();
-    }
-    return executor;
+  private HistoryEntryNamingStrategy createStrategy(Mode mode) {
+    return mode == Mode.DRY_RUN ? new DryRunHistoryEntryNamingStrategy() : new DefaultHistoryEntryNamingStrategy();
   }
 
   private String getHostname() {

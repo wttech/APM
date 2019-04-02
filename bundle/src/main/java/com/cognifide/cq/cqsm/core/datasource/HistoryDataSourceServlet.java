@@ -21,8 +21,11 @@ package com.cognifide.cq.cqsm.core.datasource;
 
 import com.adobe.granite.ui.components.ds.DataSource;
 import com.adobe.granite.ui.components.ds.SimpleDataSource;
+import com.cognifide.cq.cqsm.api.history.HistoryEntry;
 import com.cognifide.cq.cqsm.core.Cqsm;
 import com.cognifide.cq.cqsm.core.history.History;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.felix.scr.annotations.Properties;
@@ -50,12 +53,17 @@ public class HistoryDataSourceServlet extends SlingSafeMethodsServlet {
 
   @Override
   protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) {
-    final List<Resource> allHistoryResources = history.findAllResource(request.getResourceResolver())
+    final List<Resource> allHistoryResources = history.findAllResources(request.getResourceResolver())
         .stream()
+        .sorted(Comparator.comparing(this::getExecutionTime, Comparator.reverseOrder()))
         .map(ResourceTypeWrapper::new)
         .collect(Collectors.toList());
     DataSource dataSource = new SimpleDataSource(allHistoryResources.iterator());
     request.setAttribute(DataSource.class.getName(), dataSource);
+  }
+
+  private Date getExecutionTime(Resource resource) {
+    return resource.getValueMap().get(HistoryEntry.EXECUTION_TIME, Date.class);
   }
 
   private class ResourceTypeWrapper extends ResourceWrapper {

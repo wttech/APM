@@ -20,7 +20,7 @@
 
 package com.cognifide.cq.cqsm.core.history;
 
-import com.cognifide.cq.cqsm.api.history.Entry;
+import com.cognifide.cq.cqsm.api.history.HistoryEntry;
 import java.util.Calendar;
 import lombok.Builder;
 import org.apache.commons.lang.StringUtils;
@@ -28,7 +28,7 @@ import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.Resource;
 
 @Builder
-public class HistoryLogWriter {
+public class HistoryEntryWriter {
 
   private String author;
   private Calendar executionTime;
@@ -43,17 +43,17 @@ public class HistoryLogWriter {
 
   public void writeTo(Resource historyLogResource) {
     ModifiableValueMap valueMap = historyLogResource.adaptTo(ModifiableValueMap.class);
-    valueMap.put(Entry.FILE_NAME, fileName);
-    valueMap.put(Entry.FILE_PATH, filePath);
-    valueMap.put(Entry.AUTHOR, author);
-    valueMap.put(Entry.MODE, mode);
-    valueMap.put(Entry.PROGRESS_LOG, progressLog);
-    valueMap.put(Entry.INSTANCE_TYPE, instanceType);
-    valueMap.put(Entry.INSTANCE_HOSTNAME, instanceHostname);
-    valueMap.put(Entry.IS_RUN_SUCCESSFUL, isRunSuccessful);
-    valueMap.put(Entry.EXECUTION_TIME, executionTime);
+    valueMap.put(HistoryEntry.FILE_NAME, fileName);
+    valueMap.put(HistoryEntry.FILE_PATH, filePath);
+    valueMap.put(HistoryEntry.AUTHOR, author);
+    valueMap.put(HistoryEntry.MODE, mode);
+    valueMap.put(HistoryEntry.PROGRESS_LOG, progressLog);
+    valueMap.put(HistoryEntry.INSTANCE_TYPE, instanceType);
+    valueMap.put(HistoryEntry.INSTANCE_HOSTNAME, instanceHostname);
+    valueMap.put(HistoryEntry.IS_RUN_SUCCESSFUL, isRunSuccessful);
+    valueMap.put(HistoryEntry.EXECUTION_TIME, executionTime);
     if (StringUtils.isNotBlank(executor)) {
-      valueMap.put(Entry.EXECUTOR, executor);
+      valueMap.put(HistoryEntry.EXECUTOR, executor);
     }
   }
 }

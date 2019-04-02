@@ -39,7 +39,7 @@ import org.apache.sling.models.annotations.injectorspecific.Self;
 @Getter
 @Model(adaptables = Resource.class, defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
 @EqualsAndHashCode
-public class Entry implements Comparable<Entry> {
+public class HistoryEntry implements Comparable<HistoryEntry> {
 
   public static final String AUTHOR = "author";
   public static final String EXECUTION_TIME = "executionTime";
@@ -117,7 +117,7 @@ public class Entry implements Comparable<Entry> {
   }
 
   @Override
-  public int compareTo(Entry other) {
+  public int compareTo(HistoryEntry other) {
     return ComparisonChain.start().compare(other.executionTime, this.executionTime).result();
   }
 

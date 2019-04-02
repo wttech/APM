@@ -20,7 +20,7 @@
  */
 package com.cognifide.cq.cqsm.core.servlets;
 
-import static com.cognifide.cq.cqsm.core.models.RowModel.ROW_MODEL_RESOURCE_TYPE;
+import static com.cognifide.cq.cqsm.core.models.ScriptsRowModel.ROW_MODEL_RESOURCE_TYPE;
 
 import com.adobe.granite.ui.components.ds.DataSource;
 import com.adobe.granite.ui.components.ds.SimpleDataSource;

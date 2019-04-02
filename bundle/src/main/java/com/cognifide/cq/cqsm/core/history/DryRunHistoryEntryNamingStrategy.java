@@ -20,15 +20,25 @@
 
 package com.cognifide.cq.cqsm.core.history;
 
-import javax.jcr.RepositoryException;
+import static com.day.crx.JcrConstants.JCR_PRIMARYTYPE;
+import static com.day.crx.JcrConstants.NT_UNSTRUCTURED;
+
+import com.google.common.collect.ImmutableMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
-public interface HistoryLogStrategy {
+public class DryRunHistoryEntryNamingStrategy implements HistoryEntryNamingStrategy {
 
-  Resource getHistoryLogResource(ResourceResolver resolver, String fileName)
-      throws PersistenceException, RepositoryException;
-
+  @Override
+  public Resource getHistoryEntryResource(ResourceResolver resolver, Resource historyFolder, String fileName)
+      throws PersistenceException {
+    Resource historyLogResource = resolver.getResource(historyFolder, "dryRun-" + fileName);
+    if (historyLogResource == null) {
+      historyLogResource = resolver
+          .create(historyFolder, "dryRun-" + fileName, ImmutableMap.of(JCR_PRIMARYTYPE, NT_UNSTRUCTURED));
+    }
+    return historyLogResource;
+  }
 
 }

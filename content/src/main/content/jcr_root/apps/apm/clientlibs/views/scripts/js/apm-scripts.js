@@ -23,10 +23,11 @@
       WARNING_STATUS = "WARNING",
       SUCCESS_STATUS = "SUCCESS_STATUS";
 
-  let uiHelper = $(window).adaptTo("foundation-util-messenger");
+  let utilMessenger = $(window).adaptTo("foundation-util-messenger"),
+      uiHelper = $(window).adaptTo("foundation-ui");
 
   $(document).on('foundation-contentloaded', function () {
-    uiHelper.promptAll();
+    utilMessenger.promptAll();
   });
 
   $(window).adaptTo("foundation-registry").register(
@@ -98,11 +99,11 @@
       dataType: "json",
       success: function (data) {
         console.log("publish response: " + JSON.stringify(data));
-        uiHelper.put('info', 'Run on publish executed successfully', 'info');
+        uiHelper.notify('info', 'Run on publish executed successfully', 'info');
       },
       error: function (data) {
         console.log("publish  response: " + JSON.stringify(data));
-        uiHelper.put('error', 'Run on publish wasn\'t executed successfully: '
+        uiHelper.notify('error', 'Run on publish wasn\'t executed successfully: '
             + data.responseJSON.message, 'error');
       }
     });
@@ -145,13 +146,13 @@
 
     switch (status) {
       case ERROR_STATUS:
-        uiHelper.put('error', `${title} executed with errors`, 'error');
+        utilMessenger.put('error', `${title} executed with errors`, 'error');
         break;
       case WARNING_STATUS:
-        uiHelper.put('warning', `${title} executed with warnings`, 'notice');
+        utilMessenger.put('warning', `${title} executed with warnings`, 'notice');
         break;
       case SUCCESS_STATUS:
-        uiHelper.put('success', `${title} executed successfully`, 'success');
+        utilMessenger.put('success', `${title} executed successfully`, 'success');
         break;
     }
   }
@@ -159,10 +160,10 @@
   function showMessageOnUnknown(mode, jobMessage) {
     switch (mode) {
       case 'DRY_RUN':
-        uiHelper.put('error', `Dry Run wasn\'t executed successfully: ${jobMessage}`, 'error');
+        utilMessenger.put('error', `Dry Run wasn\'t executed successfully: ${jobMessage}`, 'error');
         break;
       case 'RUN':
-        uiHelper.put('error', `Run on author wasn\'t executed successfully: ${jobMessage}`, 'error');
+        utilMessenger.put('error', `Run on author wasn\'t executed successfully: ${jobMessage}`, 'error');
         break;
     }
   }
@@ -174,7 +175,7 @@
   }
 
   function getResponseStatus(data) {
-    let statuses = new Set(data.entries.map(entry => entry.status)),
+    let statuses = new Set(data.entries.map(entry => entry.status);),
         result;
     if (statuses.has(ERROR_STATUS)) {
       result = ERROR_STATUS;
@@ -191,7 +192,7 @@
   }
 
   function isScriptInvalidOrNonExecutable(selections) {
-    return selections[0].items._container.innerHTML.includes("close");
+    return selections[0].items._container.innerHTML.includes("script-is-invalid");
   }
 
 })(window, jQuery);

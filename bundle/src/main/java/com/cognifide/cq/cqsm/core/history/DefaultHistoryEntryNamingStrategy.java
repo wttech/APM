@@ -20,36 +20,21 @@
 
 package com.cognifide.cq.cqsm.core.history;
 
+import static com.day.crx.JcrConstants.JCR_PRIMARYTYPE;
+import static com.day.crx.JcrConstants.NT_UNSTRUCTURED;
+
 import com.google.common.collect.ImmutableMap;
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceUtil;
 
-public class DefaultHistoryLogStrategy implements HistoryLogStrategy {
-
-  private final String historyPath;
-
-  public DefaultHistoryLogStrategy(String historyPath) {
-    this.historyPath = historyPath;
-  }
+public class DefaultHistoryEntryNamingStrategy implements HistoryEntryNamingStrategy {
 
   @Override
-  public Resource getHistoryLogResource(ResourceResolver resolver, String fileName)
-      throws PersistenceException, RepositoryException {
-    Resource historyFolder = getOrCreateHistoryFolder(resolver);
+  public Resource getHistoryEntryResource(ResourceResolver resolver, Resource historyFolder, String fileName)
+      throws PersistenceException {
     String uniqueName = ResourceUtil.createUniqueChildName(historyFolder, fileName);
-    return resolver.create(historyFolder, uniqueName, ImmutableMap.of("jcr:primaryType", "nt:unstructured"));
-  }
-
-  private Resource getOrCreateHistoryFolder(ResourceResolver resolver) throws RepositoryException {
-    Session session = resolver.adaptTo(Session.class);
-    Node node = JcrUtils.getOrCreateByPath(historyPath, "sling:OrderedFolder", session);
-    session.save();
-    return resolver.getResource(node.getPath());
+    return resolver.create(historyFolder, uniqueName, ImmutableMap.of(JCR_PRIMARYTYPE, NT_UNSTRUCTURED));
   }
 }

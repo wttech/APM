@@ -64,9 +64,9 @@
                             jcr:primaryType="nt:unstructured"
                             jcr:title="Valid"
                             sortable="{Boolean}true"/>
-                    <lastrunonauthor
+                    <lastrun
                             jcr:primaryType="nt:unstructured"
-                            jcr:title="Last Run on Author"
+                            jcr:title="Last Run"
                             sortable="{Boolean}true"
                             sortType="date"/>
                     <lastrunonpublish

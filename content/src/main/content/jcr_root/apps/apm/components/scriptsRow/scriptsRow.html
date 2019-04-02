@@ -17,53 +17,44 @@
   ~ limitations under the License.
   ~ =========================LICENSE_END==================================
   -->
-<sly data-sly-use.item="com.cognifide.cq.cqsm.core.models.RowModel"/>
+<sly data-sly-use.item="com.cognifide.cq.cqsm.core.models.ScriptsRowModel"/>
 <tr class="foundation-collection-item ${item.folder && 'foundation-collection-navigator'}"
     data-foundation-collection-item-id="${resource.path}" data-path="${resource.path}"
     data-type="${item.resourceType}"
     data-foundation-collection-navigator-href="/apm/scripts.html${resource.path}"
     data-timeline="true" is="coral-table-row" data-title="${item.scriptName}">
-    <td is="coral-table-cell" coral-table-rowselect>
-        <coral-icon class="foundation-collection-item-thumbnail" icon="${item.folder ? 'folder' : 'fileKey'}" role="img"/>
-    </td>
-    <td is="coral-table-cell" value="${item.scriptName}">
-        <a class="foundation-layout-table-cellwrapper" data-sly-test.link="${item.folder}" href="/apm/scripts.html${resource.path}">${item.scriptName}</a>
-        <sly data-sly-test="${!link}" >${item.scriptName}</sly>
-    </td>
-    <td is="coral-table-cell" value="${item.lastModified.timeInMillis || 0}">
-        <time data-sly-test="${item.lastModified}" datetime="${item.lastModified.timeInMillis || 0}"
-              data-sly-use.lastMod="${'com.adobe.cq.xf.ui.DateFormatter' @ date=item.lastModified, relativeFormat='r'}">
-            ${lastMod.date}
-        </time>
-    </td>
-    <td is="coral-table-cell" value="${item.author}">
-        ${item.author}
-    </td>
-    <td is="coral-table-cell" value="${item.valid}">
-        <coral-icon data-sly-test="${!item.folder}" class="foundation-collection-item-thumbnail" icon="${item.valid ? 'check' : 'close'}" role="img"/>
-    </td>
-    <td is="coral-table-cell" value="${item.executionLast.timeInMillis || 0}">
-        <a data-sly-test="${item.executionLast}" is="coral-anchorbutton" icon="search" iconsize="S"
-           href="/apm/summary.html${item.executionSummary}"></a>
-        <time data-sly-test="${item.executionLast}" datetime="${item.executionLast.timeInMillis || 0}"
-              data-sly-use.execLast="${'com.adobe.cq.xf.ui.DateFormatter' @ date=item.executionLast, relativeFormat='r'}">
-            ${execLast.date}
-        </time>
-    </td>
-    <td is="coral-table-cell" value="${item.executionLast.timeInMillis || 0}">
-        <a data-sly-test="${item.executionLast}" is="coral-anchorbutton" icon="search" iconsize="S"
-           href="/apm/summary.html${item.executionSummary}"></a>
-        <time data-sly-test="${item.executionLast}" datetime="${item.executionLast.timeInMillis || 0}"
-              data-sly-use.execLast="${'com.adobe.cq.xf.ui.DateFormatter' @ date=item.executionLast, relativeFormat='r'}">
-            ${execLast.date}
-        </time>
-    </td>
-    <td is="coral-table-cell" value="${item.dryRunLast.timeInMillis || 0}">
-        <a data-sly-test="${item.dryRunLast}" is="coral-anchorbutton" icon="search" iconsize="S"
-           href="/apm/summary.html${item.dryRunSummary}"></a>
-        <time data-sly-test="${item.dryRunLast}" datetime="${item.dryRunLast.timeInMillis || 0}"
-              data-sly-use.execLast="${'com.adobe.cq.xf.ui.DateFormatter' @ date=item.dryRunLast, relativeFormat='r'}">
-            ${execLast.date}
-        </time>
-    </td>
+  <td is="coral-table-cell" coral-table-rowselect>
+    <coral-icon class="foundation-collection-item-thumbnail" icon="${item.folder ? 'folder' : 'fileKey'}" role="img"/>
+  </td>
+  <td is="coral-table-cell" value="${item.scriptName}">
+    <a class="foundation-layout-table-cellwrapper" data-sly-test.link="${item.folder}"
+       href="/apm/scripts.html${resource.path}">${item.scriptName}</a>
+    <sly data-sly-test="${!link}">${item.scriptName}</sly>
+  </td>
+  <td is="coral-table-cell" value="${item.lastModified.timeInMillis || 0}">
+    <time data-sly-test="${item.lastModified}" datetime="${item.lastModified.timeInMillis || 0}"
+          data-sly-use.lastMod="${'com.adobe.cq.xf.ui.DateFormatter' @ date=item.lastModified, relativeFormat='r'}">
+      ${lastMod.date}
+    </time>
+  </td>
+  <td is="coral-table-cell" value="${item.author}">
+    ${item.author}
+  </td>
+  <td is="coral-table-cell" value="${item.valid}">
+    <coral-icon data-sly-test="${!item.folder}" icon="${item.valid ? 'check' : 'close'}" role="img"
+                data-valid="${item.valid ? 'script-is-valid' : 'script-is-invalid'}"/>
+  </td>
+  <td data-sly-repeat.run="${item.runs}" is="coral-table-cell" value="${item.executionLast.timeInMillis || 0}">
+    <a data-sly-test="${run.time}" is="coral-anchorbutton" iconsize="S" icon="${run.success ? 'check' : 'close'}"
+       href="/apm/summary.html${run.summary}"></a>
+    <time data-sly-test="${run.time}" datetime="${run.timr.timeInMillis || 0}"
+          data-sly-use.runTime="${'com.adobe.cq.xf.ui.DateFormatter' @ date=run.time, relativeFormat='r'}">
+      ${runTime.date}
+    </time>
+  </td>
+  <sly data-sly-test="${item.runs.size == 0}">
+    <td is="coral-table-cell" value="0"> </td>
+    <td is="coral-table-cell" value="0"> </td>
+    <td is="coral-table-cell" value="0"> </td>
+  </sly>
 </tr>
