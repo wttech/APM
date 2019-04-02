@@ -23,7 +23,6 @@ package com.cognifide.cq.cqsm.core.history;
 import com.cognifide.cq.cqsm.api.history.HistoryEntry;
 import java.util.Calendar;
 import lombok.Builder;
-import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.Resource;
 
@@ -52,8 +51,6 @@ public class HistoryEntryWriter {
     valueMap.put(HistoryEntry.INSTANCE_HOSTNAME, instanceHostname);
     valueMap.put(HistoryEntry.IS_RUN_SUCCESSFUL, isRunSuccessful);
     valueMap.put(HistoryEntry.EXECUTION_TIME, executionTime);
-    if (StringUtils.isNotBlank(executor)) {
-      valueMap.put(HistoryEntry.EXECUTOR, executor);
-    }
+    valueMap.put(HistoryEntry.EXECUTOR, executor);
   }
 }

@@ -22,6 +22,7 @@ package com.cognifide.cq.cqsm.api.history;
 
 import com.cognifide.cq.cqsm.api.logger.ProgressEntry;
 import com.cognifide.cq.cqsm.api.progress.ProgressHelper;
+import com.cognifide.cq.cqsm.core.utils.CalendarUtils;
 import com.google.common.collect.ComparisonChain;
 import java.util.Calendar;
 import java.util.Date;
@@ -34,7 +35,6 @@ import lombok.Getter;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Model;
-import org.apache.sling.models.annotations.injectorspecific.Self;
 
 @Getter
 @Model(adaptables = Resource.class, defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
@@ -52,9 +52,6 @@ public class HistoryEntry implements Comparable<HistoryEntry> {
   public static final String MODE = "mode";
   public static final String PROGRESS_LOG = "summaryJSON";
   public static final String UPLOAD_TIME = "uploadTime";
-
-  @Self
-  private Resource resource;
 
   @Inject
   @Named(AUTHOR)
@@ -100,13 +97,14 @@ public class HistoryEntry implements Comparable<HistoryEntry> {
   @Named(PROGRESS_LOG)
   private String executionSummaryJson;
 
+  private String path;
+
   private Calendar executionTimeCalendar;
 
   private List<ProgressEntry> executionSummary;
 
-
-  public String getPath() {
-    return resource.getPath();
+  public HistoryEntry(Resource resource) {
+    this.path = resource.getPath();
   }
 
   public List<ProgressEntry> getExecutionSummary() {
@@ -123,12 +121,6 @@ public class HistoryEntry implements Comparable<HistoryEntry> {
 
   @PostConstruct
   protected void init() {
-    executionTimeCalendar = asCalendar(executionTime);
-  }
-
-  private static Calendar asCalendar(Date date) {
-    Calendar instance = Calendar.getInstance();
-    instance.setTime(date);
-    return instance;
+    executionTimeCalendar = CalendarUtils.asCalendar(executionTime);
   }
 }

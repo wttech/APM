@@ -20,7 +20,7 @@
  */
 package com.cognifide.cq.cqsm.core.servlets;
 
-import static com.cognifide.cq.cqsm.core.models.ScriptsRowModel.ROW_MODEL_RESOURCE_TYPE;
+import static com.cognifide.cq.cqsm.core.models.ScriptsRowModel.SCRIPTS_ROW_RESOURCE_TYPE;
 
 import com.adobe.granite.ui.components.ds.DataSource;
 import com.adobe.granite.ui.components.ds.SimpleDataSource;
@@ -66,7 +66,7 @@ public class ScriptsDatasourceServlet extends SlingSafeMethodsServlet {
 
     @Override
     public String getResourceType() {
-      return ROW_MODEL_RESOURCE_TYPE;
+      return SCRIPTS_ROW_RESOURCE_TYPE;
     }
   }
 

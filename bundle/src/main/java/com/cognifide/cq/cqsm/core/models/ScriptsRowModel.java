@@ -20,6 +20,7 @@
 package com.cognifide.cq.cqsm.core.models;
 
 import com.cognifide.cq.cqsm.core.scripts.ScriptImpl;
+import com.cognifide.cq.cqsm.core.utils.CalendarUtils;
 import com.day.cq.commons.jcr.JcrConstants;
 import com.google.common.collect.ImmutableSet;
 import java.util.ArrayList;
@@ -28,12 +29,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import javax.annotation.PostConstruct;
 import lombok.Getter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
-import org.apache.sling.models.annotations.injectorspecific.Self;
 
 @Model(adaptables = Resource.class)
 public class ScriptsRowModel {
@@ -41,10 +40,7 @@ public class ScriptsRowModel {
   private static final Set<String> FOLDER_TYPES = ImmutableSet
       .of(JcrConstants.NT_FOLDER, "sling:OrderedFolder");
 
-  public static final String ROW_MODEL_RESOURCE_TYPE = "apm/components/scriptsRow";
-
-  @Self
-  private Resource resource;
+  public static final String SCRIPTS_ROW_RESOURCE_TYPE = "apm/components/scriptsRow";
 
   @Getter
   private String scriptName;
@@ -67,8 +63,7 @@ public class ScriptsRowModel {
   @Getter
   private boolean isExecutionEnabled;
 
-  @PostConstruct
-  public void init() {
+  public ScriptsRowModel(Resource resource) {
     this.isFolder = FOLDER_TYPES
         .contains(resource.getValueMap().get(JcrConstants.JCR_PRIMARYTYPE, StringUtils.EMPTY));
     this.scriptName = resource.getName();
@@ -76,7 +71,7 @@ public class ScriptsRowModel {
       Optional.ofNullable(resource.adaptTo(ScriptImpl.class)).ifPresent(script -> {
         this.author = script.getAuthor();
         this.isValid = script.isValid();
-        this.lastModified = asCalendar(script.getLastModified());
+        this.lastModified = CalendarUtils.asCalendar(script.getLastModified());
         this.runs.add(new ScriptRun(script.getRunSummary(), script.isRunSuccessful(), script.getRunTime()));
         this.runs.add(new ScriptRun(script.getRunOnPublishSummary(), script.isRunOnPublishSuccessful(), script.getRunOnPublishTime()));
         this.runs.add(new ScriptRun(script.getDryRunSummary(), script.isDryRunSuccessful(), script.getDryRunTime()));
@@ -86,17 +81,7 @@ public class ScriptsRowModel {
   }
 
   public String getResourceType() {
-    return ROW_MODEL_RESOURCE_TYPE;
-  }
-
-  private static Calendar asCalendar(Date date) {
-    return Optional.ofNullable(date)
-        .map(dateValue -> {
-          Calendar calendar = Calendar.getInstance();
-          calendar.setTime(dateValue);
-          return calendar;
-        })
-        .orElse(null);
+    return SCRIPTS_ROW_RESOURCE_TYPE;
   }
 
   @Getter
@@ -109,7 +94,7 @@ public class ScriptsRowModel {
     public ScriptRun(String summary, boolean success, Date time) {
       this.summary = summary;
       this.success = success;
-      this.time = asCalendar(time);
+      this.time = CalendarUtils.asCalendar(time);
     }
 
   }
