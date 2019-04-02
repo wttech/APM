@@ -14,7 +14,7 @@
     modeGroup="cq-experience-fragments-admin-childpages"
     omnisearchLocationPath="/libs/granite/omnisearch/content/metadata/experiencefragments"
     pageURITemplate="/apm/summary.html{+id}"
-    targetCollection=".cq-experience-fragments-admin-childpages">
+    targetCollection=".foundation-collection-content">
     <views jcr:primaryType="nt:unstructured">
       <summary
         jcr:primaryType="nt:unstructured"
