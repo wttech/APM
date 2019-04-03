@@ -33,7 +33,7 @@
         <sly data-sly-repeat="${map}">
           <tr is="coral-table-row">
             <sly data-sly-test="${item=='commands'}">
-              <td is="coral-table-cell">${map[item]}</td>
+              <td is="coral-table-cell">${map[item] @ join='<br> ', context='html'}</td>
               <td is="coral-table-cell">${map["args"] @ join=', '}</td>
               <td is="coral-table-cell">${map["reference"]}</td>
             </sly>

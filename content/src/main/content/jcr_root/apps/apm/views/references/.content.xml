@@ -5,7 +5,7 @@
   jcr:primaryType="cq:Page">
   <jcr:content
     jcr:primaryType="nt:unstructured"
-    jcr:title="Reference"
+    jcr:title="References"
     sling:resourceType="granite/ui/components/shell/collectionpage"
     sling:vanityPath="/apm/references"
     consoleId="cq-bridge-data-collections"
