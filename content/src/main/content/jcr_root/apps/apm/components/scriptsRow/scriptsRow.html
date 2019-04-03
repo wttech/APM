@@ -26,7 +26,7 @@
   <td is="coral-table-cell" coral-table-rowselect>
     <coral-icon class="foundation-collection-item-thumbnail" icon="${item.folder ? 'folder' : 'fileKey'}" role="img"/>
   </td>
-  <td is="coral-table-cell" value="${item.scriptName}">
+  <td is="coral-table-cell" value="${item.scriptName}" class="foundation-collection-item-title">
     <a class="foundation-layout-table-cellwrapper" data-sly-test.link="${item.folder}"
        href="/apm/scripts.html${resource.path}">${item.scriptName}</a>
     <sly data-sly-test="${!link}">${item.scriptName}</sly>
