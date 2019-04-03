@@ -41,7 +41,7 @@
                     selectionMode="row"
                     size="${empty requestPathInfo.selectors[1] ? &quot;40&quot; : requestPathInfo.selectors[1]}"
                     sortMode="remote"
-                    src="/mnt/overlay/apm/scripts/jcr:content/views/list{.offset,limit}.html{+id}{?sortName,sortDir}"
+                    src="/mnt/overlay/apm/views/scripts/jcr:content/views/list{.offset,limit}.html{+id}{?sortName,sortDir}"
                     stateId="xf.shell.collectionpage">
                 <columns jcr:primaryType="nt:unstructured">
                     <select
@@ -51,6 +51,11 @@
                             jcr:primaryType="nt:unstructured"
                             jcr:title="Script"
                             sortable="{Boolean}true"/>
+                    <updated
+                            jcr:primaryType="nt:unstructured"
+                            jcr:title="Updated at"
+                            sortable="{Boolean}true"
+                            sortType="date"/>
                     <author
                             jcr:primaryType="nt:unstructured"
                             jcr:title="Author"
@@ -59,14 +64,14 @@
                             jcr:primaryType="nt:unstructured"
                             jcr:title="Valid"
                             sortable="{Boolean}true"/>
-                    <updated
-                            jcr:primaryType="nt:unstructured"
-                            jcr:title="Updated at"
-                            sortable="{Boolean}true"
-                            sortType="date"/>
                     <lastrun
                             jcr:primaryType="nt:unstructured"
                             jcr:title="Last Run"
+                            sortable="{Boolean}true"
+                            sortType="date"/>
+                    <lastrunonpublish
+                            jcr:primaryType="nt:unstructured"
+                            jcr:title="Last Run on Publish"
                             sortable="{Boolean}true"
                             sortType="date"/>
                     <lastdryrun
@@ -78,7 +83,7 @@
                 <datasource
                         jcr:primaryType="nt:unstructured"
                         sling:resourceType="apm/scripts"
-                        itemResourceType="apm/components/scripts/row"/>
+                        itemResourceType="apm/components/scriptsRow"/>
             </list>
         </views>
         <breadcrumbs
@@ -103,7 +108,7 @@
                         text="Create"
                         variant="primary">
                     <items jcr:primaryType="nt:unstructured">
-                        <importscript
+                        <createscript
                                 granite:rel="cq-experiencefragments-admin-create-xf"
                                 jcr:primaryType="nt:unstructured"
                                 sling:resourceType="granite/ui/components/coral/foundation/collection/actionlink"
@@ -116,15 +121,15 @@
                             <data
                                     jcr:primaryType="nt:unstructured"
                                     href.uritemplate="/apm/edit.html{+id}"/>
-                        </importscript>
-                        <scriptupload
+                        </createscript>
+                        <uploadscript
                             jcr:primaryType="nt:unstructured"
                             granite:id="scripts-upload"
                             sling:resourceType="granite/ui/components/coral/foundation/collection/actionlink"
                             action="scripts.upload"
                             icon="upload"
                             text="Upload Script">
-                        </scriptupload>
+                        </uploadscript>
                         <createfolder
                                 granite:id="cq-experiencefragments-admin-createfolder"
                                 granite:rel="cq-siteadmin-admin-createfolder"

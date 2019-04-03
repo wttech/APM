@@ -20,7 +20,7 @@
 package com.cognifide.cq.cqsm.core.history;
 
 import com.cognifide.cq.cqsm.api.executors.Mode;
-import com.cognifide.cq.cqsm.api.history.Entry;
+import com.cognifide.cq.cqsm.api.history.HistoryEntry;
 import com.cognifide.cq.cqsm.api.history.InstanceDetails;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.scripts.Script;
@@ -35,28 +35,28 @@ public interface History {
 	/**
 	 * Save detailed script execution on a remote host as entry
 	 */
-	Entry logRemote(Script script, Mode mode, Progress progressLogger, InstanceDetails instanceDetails,
+	HistoryEntry logRemote(Script script, Mode mode, Progress progressLogger, InstanceDetails instanceDetails,
 		Calendar executionTime);
 
 	/**
 	 * Save detailed script execution as entry
 	 */
-	Entry log(Script script, Mode mode, Progress progressLogger);
-
-	List<Resource> findAllResource(ResourceResolver resourceResolver);
+	HistoryEntry log(Script script, Mode mode, Progress progressLogger);
 
 	/**
 	 * Replicate log entry from publish to author instance
 	 */
-	void replicate(Entry entry, String executor) throws RepositoryException;
+	void replicate(HistoryEntry entry, String executor) throws RepositoryException;
 
 	/**
 	 * Get all logged entries
 	 */
-	List<Entry> findAll();
+	List<HistoryEntry> findAll();
+
+	List<Resource> findAllResources(ResourceResolver resourceResolver);
 
 	/**
 	 * Find entry by its unique file name
 	 */
-	Entry find(String path);
+	HistoryEntry find(String path);
 }

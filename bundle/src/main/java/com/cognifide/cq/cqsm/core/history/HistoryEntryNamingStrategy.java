@@ -1,4 +1,4 @@
-/*-
+/*
  * ========================LICENSE_START=================================
  * AEM Permission Management
  * %%
@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,26 +17,18 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-<cqsm='http://www.cognifide.com/cqsm/1.0'>
 
-[cqsm:File]
- mixin
-  - cqsm:fileId (string)
-  - cqsm:verified (string)
-  - cqsm:dryRunSuccessful (string)
-  - cqsm:executionMode (string)
-  - cqsm:executionSchedule (date)
-  - cqsm:executionLast (date)
-  - cqsm:executionSummary (string)
-  - cqsm:dryRunLast (date)
-  - cqsm:dryRunSummary (string)
-  - cqsm:executionEnabled (boolean)
-  - cqsm:publishRun (boolean)
-  - cqsm:replicatedBy (string)
-  - cqsm:dryRunTime (date)
-  - cqsm:runTime (date)
-  - cqsm:runSummary (string)
-  - cqsm:runSuccessful (string)
-  - cqsm:runOnPublishTime (date)
-  - cqsm:runOnPublishSummary (string)
-  - cqsm:runOnPublishSuccessful (string)
+package com.cognifide.cq.cqsm.core.history;
+
+import javax.jcr.RepositoryException;
+import org.apache.sling.api.resource.PersistenceException;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
+
+public interface HistoryEntryNamingStrategy {
+
+  Resource getHistoryEntryResource(ResourceResolver resolver, Resource historyFolder, String fileName)
+      throws PersistenceException, RepositoryException;
+
+
+}

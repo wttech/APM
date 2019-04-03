@@ -19,7 +19,7 @@
  */
 package com.cognifide.cq.cqsm.core.models;
 
-import com.cognifide.cq.cqsm.api.history.Entry;
+import com.cognifide.cq.cqsm.api.history.HistoryEntry;
 import com.cognifide.cq.cqsm.core.history.History;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,7 +35,7 @@ import org.apache.sling.models.annotations.injectorspecific.OSGiService;
 @Model(adaptables = SlingHttpServletRequest.class)
 public final class ExecutionHistoryModel {
 
-	private List<Entry> executions;
+	private List<HistoryEntry> executions;
 
 	private final String filter;
 
@@ -43,13 +43,13 @@ public final class ExecutionHistoryModel {
 	public ExecutionHistoryModel(@OSGiService History history, SlingHttpServletRequest request) {
 		this.filter = request.getParameter("filter");
 		executions = new ArrayList<>();
-		for (Entry entry : history.findAll()) {
+		for (HistoryEntry entry : history.findAll()) {
 			executions.add(entry);
 		}
 		Collections.sort(executions);
 	}
 
-	public List<Entry> getExecutions() {
+	public List<HistoryEntry> getExecutions() {
 		if (StringUtils.isNotBlank(filter)) {
 			CollectionUtils.filter(executions, new ExecutionHistoryFilter(filter));
 		}
@@ -72,7 +72,7 @@ public final class ExecutionHistoryModel {
 
 		@Override
 		public boolean evaluate(Object object) {
-			Entry executionModel = (Entry) object;
+			HistoryEntry executionModel = (HistoryEntry) object;
 			String value;
 			switch (filterType) {
 				case FILTER_AUTHOR:

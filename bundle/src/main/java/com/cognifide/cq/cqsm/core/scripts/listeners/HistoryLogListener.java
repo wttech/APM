@@ -39,29 +39,29 @@ import org.osgi.framework.Constants;
 @Component
 @Service
 @Properties({@Property(name = Constants.SERVICE_DESCRIPTION, value = "CQSM History Log Service"),
-		@Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)})
+    @Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)})
 public class HistoryLogListener implements EventListener {
 
-	@Reference
-	private ScriptManager scriptManager;
+  @Reference
+  private ScriptManager scriptManager;
 
-	@Reference
-	private InstanceTypeProvider instanceTypeProvider;
+  @Reference
+  private InstanceTypeProvider instanceTypeProvider;
 
-	@Reference
-	private History history;
+  @Reference
+  private History history;
 
-	@Activate
-	private void activate() {
-		if (instanceTypeProvider.isOnAuthor()) {
-			scriptManager.getEventManager().addListener(Event.AFTER_EXECUTE, this);
-		}
-	}
+  @Activate
+  private void activate() {
+    if (instanceTypeProvider.isOnAuthor()) {
+      scriptManager.getEventManager().addListener(Event.AFTER_EXECUTE, this);
+    }
+  }
 
-	@Override
-	public void handle(Script script, Mode mode, Progress progress) {
-		if (mode.isRun()) {
-			history.log(script, mode, progress);
-		}
-	}
+  @Override
+  public void handle(Script script, Mode mode, Progress progress) {
+    if (mode != Mode.VALIDATION) {
+      history.log(script, mode, progress);
+    }
+  }
 }

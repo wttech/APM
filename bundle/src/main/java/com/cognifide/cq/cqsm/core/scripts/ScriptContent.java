@@ -32,7 +32,6 @@ import org.apache.sling.models.annotations.Optional;
 @Getter
 public class ScriptContent {
 
-	public static final String CQSM_DRY_RUN_SUCCESSFUL = "cqsm:dryRunSuccessful";
 
 	public static final String CQSM_EXECUTION_MODE = "cqsm:executionMode";
 
@@ -50,17 +49,28 @@ public class ScriptContent {
 
 	public static final String CQSM_VERIFIED = "cqsm:verified";
 
-	public static final String CQSM_DRY_RUN_LAST = "cqsm:dryRunLast";
+	public static final String DRY_RUN_TIME = "cqsm:dryRunTime";
+
+	public static final String DRY_RUN_SUMMARY = "cqsm:dryRunSummary";
+
+	public static final String DRY_RUN_SUCCESSFUL = "cqsm:dryRunSuccessful";
+
+	public static final String RUN_TIME = "cqsm:runTime";
+
+	public static final String RUN_SUMMARY = "cqsm:runSummary";
+
+	public static final String RUN_SUCCESSFUL = "cqsm:runSuccessful";
+
+	public static final String RUN_ON_PUBLISH_TIME = "cqsm:runOnPublishTime";
+
+	public static final String RUN_ON_PUBLISH_SUMMARY = "cqsm:runOnPublishSummary";
+
+	public static final String RUN_ON_PUBLISH_SUCCESSFUL = "cqsm:runOnPublishSuccessful";
 
 	@Inject
 	@Named(CQSM_VERIFIED)
 	@Optional
 	private Boolean verified;
-
-	@Inject
-	@Named(CQSM_DRY_RUN_SUCCESSFUL)
-	@Optional
-	private Boolean dryRunSuccessful;
 
 	@Inject
 	@Named(CQSM_PUBLISH_RUN)
@@ -93,11 +103,6 @@ public class ScriptContent {
 	private Date lastModified;
 
 	@Inject
-	@Named(CQSM_DRY_RUN_LAST)
-	@Optional
-	private Date dryRunLast;
-
-	@Inject
 	@Named(JcrConstants.JCR_DATA)
 	@Optional
 	private String data; //FIXME lazy load would be better here
@@ -107,4 +112,48 @@ public class ScriptContent {
 	@Optional
 	private String replicatedBy;
 
+	@Inject
+	@Named(DRY_RUN_TIME)
+	@Optional
+	private Date dryRunTime;
+
+	@Inject
+	@Named(DRY_RUN_SUMMARY)
+	@Optional
+	private String dryRunSummary;
+
+	@Inject
+	@Named(DRY_RUN_SUCCESSFUL)
+	@Optional
+	private Boolean dryRunSuccessful;
+
+	@Inject
+	@Named(RUN_TIME)
+	@Optional
+	private Date runTime;
+
+	@Inject
+	@Named(RUN_SUMMARY)
+	@Optional
+	private String runSummary;
+
+	@Inject
+	@Named(RUN_SUCCESSFUL)
+	@Optional
+	private Boolean runSuccessful;
+
+	@Inject
+	@Named(RUN_ON_PUBLISH_TIME)
+	@Optional
+	private Date runOnPublishTime;
+
+	@Inject
+	@Named(RUN_ON_PUBLISH_SUMMARY)
+	@Optional
+	private String runOnPublishSummary;
+
+	@Inject
+	@Named(RUN_ON_PUBLISH_SUCCESSFUL)
+	@Optional
+	private Boolean runOnPublishSuccessful;
 }

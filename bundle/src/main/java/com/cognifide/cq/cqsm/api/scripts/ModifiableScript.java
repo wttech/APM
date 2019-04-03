@@ -24,50 +24,56 @@ import org.apache.sling.api.resource.PersistenceException;
 
 public interface ModifiableScript {
 
-	/**
-	 * Set validation status
-	 */
-	void setValid(Boolean flag) throws PersistenceException;
+  /**
+   * Set validation status
+   */
+  void setValid(Boolean flag) throws PersistenceException;
 
-	/**
-	 * Mark after execution
-	 */
-	void setExecuted(Boolean flag) throws PersistenceException;
+  /**
+   * Mark after execution
+   */
+  void setExecuted(Boolean flag) throws PersistenceException;
 
-	/**
-	 * Enable or disable automatic execution
-	 */
-	void setExecutionEnabled(Boolean flag) throws PersistenceException;
+  /**
+   * Enable or disable automatic execution
+   */
+  void setExecutionEnabled(Boolean flag) throws PersistenceException;
 
-	/**
-	 * Set mode related with automatic execution
-	 */
-	void setExecutionMode(ExecutionMode mode) throws PersistenceException;
+  /**
+   * Set mode related with automatic execution
+   */
+  void setExecutionMode(ExecutionMode mode) throws PersistenceException;
 
-	/**
-	 * Set date after which script will be executed by schedule executor
-	 */
-	void setExecutionSchedule(Date date) throws PersistenceException;
+  /**
+   * Set date after which script will be executed by schedule executor
+   */
+  void setExecutionSchedule(Date date) throws PersistenceException;
 
-	/**
-	 * Set dry run result
-	 */
-	void setDryRunStatus(Boolean flag) throws PersistenceException;
+  /**
+   * Set publish run
+   */
+  void setPublishRun(Boolean flag) throws PersistenceException;
 
-	/**
-	 * Set publish run
-	 */
-	void setPublishRun(Boolean flag) throws PersistenceException;
+  /**
+   * Set replicated by user
+   */
+  void setReplicatedBy(String userId) throws PersistenceException;
 
-	/**
-	 * Set dry run execution date
-	 */
-	void setDryRunExecution(Date executionDate) throws PersistenceException;
+  void setDryRunTime(Date executionDate) throws PersistenceException;
 
-	/**
-	 * Set replicated by user
-	 * @param userId
-	 */
-	void setReplicatedBy(String userId) throws PersistenceException;
+  void setDryRunSummary(String path) throws PersistenceException;
 
+  void setDryRunStatus(Boolean flag) throws PersistenceException;
+
+  void setRunTime(Date executionDate) throws PersistenceException;
+
+  void setRunSummary(String path) throws PersistenceException;
+
+  void setRunStatus(Boolean flag) throws PersistenceException;
+
+  void setRunOnPublishTime(Date executionDate) throws PersistenceException;
+
+  void setRunOnPublishSummary(String path) throws PersistenceException;
+
+  void setRunOnPublishStatus(Boolean flag) throws PersistenceException;
 }
