@@ -21,7 +21,7 @@
 
   const ERROR_STATUS = 'ERROR',
       WARNING_STATUS = 'WARNING',
-      SUCCESS_STATUS = 'SUCCESS_STATUS';
+      SUCCESS_STATUS = 'SUCCESS';
 
   let utilMessenger = $(window).adaptTo('foundation-util-messenger'),
       uiHelper = $(window).adaptTo('foundation-ui');
@@ -82,11 +82,10 @@
     $.ajax({
       type: 'POST',
       url: '/bin/cqsm/run-background?file=' + scriptPath + '&mode=' + mode,
-      dataType: 'html',
+      dataType: 'json',
       success: function (data) {
-        const parsedJSON = JSON.parse(data);
-        const jobId = parsedJSON.id;
-        const jobMessage = parsedJSON.message;
+        const jobId = data.id;
+        const jobMessage = data.message;
         checkStatus(jobId, jobMessage, mode);
       }
     });
@@ -113,18 +112,17 @@
     $.ajax({
       type: 'GET',
       url: '/bin/cqsm/run-background?id=' + jobId,
-      dataType: 'html',
+      dataType: 'json',
       success: function (data) {
-        const dataObject = JSON.parse(data);
-        if (dataObject.type === 'running') {
+        if (data.type === 'running') {
           setTimeout(function () {
             checkStatus(jobId, jobMessage, mode)
           }, 1000);
-        } else if (dataObject.type === 'finished') {
-          let status = getResponseStatus(dataObject);
+        } else if (data.type === 'finished') {
+          let status = getResponseStatus(data);
           showMessageOnFinished(mode, status);
           reloadPage();
-        } else if (dataObject.type === 'unknown') {
+        } else if (data.type === 'unknown') {
           showMessageOnUnknown(mode, jobMessage);
           reloadPage();
         }
@@ -175,7 +173,7 @@
   }
 
   function getResponseStatus(data) {
-    let statuses = new Set(data.entries.map(function(entry) {entry.status})),
+    let statuses = new Set(data.entries.map(function(entry) { return entry.status; })),
         result;
     if (statuses.has(ERROR_STATUS)) {
       result = ERROR_STATUS;
