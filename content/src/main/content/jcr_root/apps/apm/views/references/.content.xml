@@ -1,30 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:granite="http://www.adobe.com/jcr/granite/1.0"
-  xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
-  jcr:primaryType="nt:unstructured"
-  jcr:title="References"
-  sling:resourceType="granite/ui/components/shell/collectionpagewithoutheader"
-  granite:class="apm-reference-script-page"
-  sling:vanityPath="/apm/references"
-  consoleId="apm-references"
-  contentPath="/content">
-  <head jcr:primaryType="nt:unstructured">
-    <clientlibs
-      jcr:primaryType="nt:unstructured"
-      sling:resourceType="granite/ui/components/coral/foundation/includeclientlibs"
-      categories="[apm-reference]"/>
-  </head>
-  <views jcr:primaryType="nt:unstructured">
-    <list
-      granite:class="apm-reference-form"
-      granite:rel="apm-references"
-      jcr:primaryType="nt:unstructured"
-      sling:resourceType="granite/ui/components/coral/foundation/container"
-      margin="true">
-      <datasource
+  xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+  xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+  jcr:primaryType="cq:Page">
+  <jcr:content
+    jcr:primaryType="nt:unstructured"
+    jcr:title="Reference"
+    sling:resourceType="granite/ui/components/shell/collectionpage"
+    sling:vanityPath="/apm/references"
+    consoleId="cq-bridge-data-collections"
+    currentView="${state[&quot;products.shell.collectionpage.layoutId&quot;].string}"
+    modeGroup="cq-experience-fragments-admin-childpages"
+    omnisearchLocationPath="/libs/granite/omnisearch/content/metadata/experiencefragments"
+    targetCollection=".cq-experience-fragments-admin-childpages">
+    <views jcr:primaryType="nt:unstructured">
+      <references
         jcr:primaryType="nt:unstructured"
-        sling:resourceType="apm/references"
-        itemResourceType="apm/components/references/reference"/>
-    </list>
-  </views>
+        sling:resourceType="apm/components/reference"/>
+    </views>
+  </jcr:content>
 </jcr:root>

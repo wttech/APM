@@ -21,6 +21,7 @@
 package com.cognifide.cq.cqsm.core.models;
 
 import com.cognifide.cq.cqsm.api.actions.ActionFactory;
+import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
@@ -35,8 +36,11 @@ public class ReferencesModel {
 
   private List<Map<String, Object>> references;
 
+  private Map<String, String> definitions;
+
   @Inject
-  public ReferencesModel(@OSGiService ActionFactory actionFactory) {
+  public ReferencesModel(@OSGiService ActionFactory actionFactory, @OSGiService ScriptManager scriptManager) {
     this.references = actionFactory.refer();
+    this.definitions = scriptManager.getPredefinedDefinitions();
   }
 }
