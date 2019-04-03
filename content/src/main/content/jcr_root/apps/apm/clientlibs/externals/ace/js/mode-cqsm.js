@@ -17,7 +17,7 @@ ace.define("ace/mode/cqsm_highlight_rules",["require","exports","module","ace/li
 			return null;
 		}
 	}
-	var CqsmReference = loadJson("/etc/cqsm/pages/reference/jcr:content.action.json");
+	var CqsmReference = loadJson("/bin/cqsm/references");
 	
 	var CqsmHighlightRules = function() {
 		var actions = [];

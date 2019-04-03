@@ -43,7 +43,7 @@ FOR-USER test_user_2
 # "INCLUDE" action will add specified user to context group
 FOR-GROUP test_group_2
 	EXCLUDE test_user_3
-	INCLUDE tets_user_2
+	INCLUDE test_user_2
 
 # "REMOVE-USER" do not need context to work. We can delete specified users.
 REMOVE-USER [test_user_3 test_user_4]

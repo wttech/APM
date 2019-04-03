@@ -9,12 +9,6 @@ FOR-GROUP test_group
 # Purge will remove all permission for current context for whole subtree, starting from specified path as root
 	PURGE /content/dam
 	
-# Remove-all will remove all privileges for current context
-	REMOVE-ALL /content/site/en
-	REMOVE-ALL /content/site/fr
-	REMOVE-ALL /content/site/es
-	REMOVE-ALL /content/site/it
-
 # Allow and deny are common actions that can be used for setting privileges.
 	ALLOW	/apps [READ]
 	ALLOW	/libs [READ]

@@ -76,22 +76,22 @@
                         <embedded>
                             <groupId>${project.groupId}</groupId>
                             <artifactId>cqsm-bundle</artifactId>
-                            <target>/apps/cqsm/install</target>
+                            <target>/apps/apm/install</target>
                         </embedded>
                         <embedded>
                             <groupId>com.cognifide.cq.actions</groupId>
                             <artifactId>com.cognifide.cq.actions.api</artifactId>
-                            <target>/apps/cqsm/install</target>
+                            <target>/apps/apm/install</target>
                         </embedded>
                         <embedded>
                             <groupId>com.cognifide.cq.actions</groupId>
                             <artifactId>com.cognifide.cq.actions.core</artifactId>
-                            <target>/apps/cqsm/install</target>
+                            <target>/apps/apm/install</target>
                         </embedded>
                         <embedded>
                             <groupId>com.cognifide.cq.actions</groupId>
                             <artifactId>com.cognifide.cq.actions.msg.replication</artifactId>
-                            <target>/apps/cqsm/install</target>
+                            <target>/apps/apm/install</target>
                         </embedded>
                     </embeddeds>
                     <targetURL>http://${crx.host}:${crx.port}/crx/packmgr/service.jsp</targetURL>
