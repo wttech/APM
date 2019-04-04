@@ -1,0 +1,52 @@
+# This script provides example actions for authorizable manipulation.
+
+# With "DEFINE" action we can set constant value that can be used in whole script
+DEFINE profilePath profile
+
+# This action will create group. This action can be used with mandatory param "IF-NOT-EXISTS" and execute this action only if given group do not exists. We can specify path where group will be created.
+CREATE-GROUP test_group_1 IF-NOT-EXISTS
+
+CREATE-GROUP test_group_2
+
+CREATE-GROUP test_group_3 /home/groups/company/cognifide
+
+# This action will create user. Same "IF-NOT-EXISTS" param as in groups. We can also set password while creating user. We can specify path where user will be created.
+CREATE-USER test_user_1 IF-NOT-EXISTS
+
+CREATE-USER test_user_2
+
+CREATE-USER test_user_3 password3
+
+CREATE-USER test_user_4 /home/users/company/cognifide
+
+# For these actions we need context. To set context use "FOR-USER" or "FOR-GROUP" action.
+FOR-USER test_user_1
+	ADD-TO-GROUP [test_group_1 test_group_2]
+
+FOR-USER test_user_2
+	ADD-TO-GROUP [test_group_1]
+
+FOR-USER test_user_3
+	ADD-TO-GROUP [test_group_1 test_group_2]
+	REMOVE-FROM-GROUP test_group_1
+
+# We will use pre-defined value "profilePath"
+FOR-USER test_user_1
+	SET-PROPERTY ${profilePath}/firstName John
+	SET-PROPERTY ${profilePath}/familyName Doe
+
+FOR-USER test_user_2
+	SET-PASSWORD newPassword2
+
+# "EXLUDE" and "INCLUDE" actions work only with group context
+# "EXLUDE" action will remove specified user from context group
+# "INCLUDE" action will add specified user to context group
+FOR-GROUP test_group_2
+	EXCLUDE test_user_3
+	INCLUDE test_user_2
+
+# "REMOVE-USER" do not need context to work. We can delete specified users.
+REMOVE-USER [test_user_3 test_user_4]
+
+# "REMOVE-GROUP" do not need context to work. We can delete specified groups.
+REMOVE-GROUP [test_group_3 test_group_4]

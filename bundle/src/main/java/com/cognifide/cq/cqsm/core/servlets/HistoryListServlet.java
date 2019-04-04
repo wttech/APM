@@ -19,21 +19,23 @@
  */
 package com.cognifide.cq.cqsm.core.servlets;
 
-import com.cognifide.cq.cqsm.api.history.Entry;
 import com.cognifide.cq.cqsm.core.Property;
-import com.cognifide.cq.cqsm.core.models.ExecutionHistoryModel;
+import com.cognifide.cq.cqsm.core.history.History;
 import com.cognifide.cq.cqsm.core.utils.ServletUtils;
-
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import javax.servlet.Servlet;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.osgi.service.component.annotations.Component;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.servlet.Servlet;
-import javax.servlet.ServletException;
+import com.cognifide.cq.cqsm.api.history.HistoryEntry;
+import org.osgi.service.component.annotations.Reference;
 
 @Component(
 		immediate = true,
@@ -47,10 +49,55 @@ import javax.servlet.ServletException;
 )
 public class HistoryListServlet extends SlingAllMethodsServlet {
 
-	@Override
-	protected void doGet(final SlingHttpServletRequest request, final SlingHttpServletResponse response)
-			throws ServletException, IOException {
-		List<Entry> executions = request.adaptTo(ExecutionHistoryModel.class).getExecutions();
-		ServletUtils.writeJson(response, executions);
-	}
+  @Reference
+  private History history;
+
+  @Override
+  protected void doGet(final SlingHttpServletRequest request, final SlingHttpServletResponse response)
+      throws IOException {
+
+    String filter = request.getParameter("filter");
+    List<HistoryEntry> executions = new ArrayList<>(history.findAll());
+    Collections.sort(executions);
+    if (StringUtils.isNotBlank(filter)) {
+      CollectionUtils.filter(executions, new ExecutionHistoryFilter(filter));
+    }
+    ServletUtils.writeJson(response, executions);
+  }
+
+  private static class ExecutionHistoryFilter implements Predicate {
+
+    private static final String FILTER_AUTOMATIC_RUN = "automatic run";
+
+    private static final String FILTER_AUTHOR = "author";
+
+    private static final String FILTER_PUBLISH = "publish";
+
+    private final String filterType;
+
+    private ExecutionHistoryFilter(String filterType) {
+      this.filterType = filterType;
+    }
+
+    @Override
+    public boolean evaluate(Object object) {
+      HistoryEntry executionModel = (HistoryEntry) object;
+      String value;
+      switch (filterType) {
+        case FILTER_AUTHOR:
+        case FILTER_PUBLISH: {
+          value = executionModel.getInstanceType();
+        }
+        break;
+        case FILTER_AUTOMATIC_RUN: {
+          value = executionModel.getExecutor();
+        }
+        break;
+        default: {
+          value = null;
+        }
+      }
+      return filterType.equals(value);
+    }
+  }
 }

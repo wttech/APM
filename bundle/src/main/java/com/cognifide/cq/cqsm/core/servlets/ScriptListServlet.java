@@ -19,21 +19,19 @@
  */
 package com.cognifide.cq.cqsm.core.servlets;
 
+import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.models.FileModel;
-import com.cognifide.cq.cqsm.core.models.ImportInitModel;
 import com.cognifide.cq.cqsm.core.utils.ServletUtils;
-
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.servlet.Servlet;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.osgi.service.component.annotations.Component;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.servlet.Servlet;
-import javax.servlet.ServletException;
+import org.osgi.service.component.annotations.Reference;
 
 @Component(
 		immediate = true,
@@ -47,10 +45,16 @@ import javax.servlet.ServletException;
 )
 public class ScriptListServlet extends SlingAllMethodsServlet {
 
-	@Override
-	protected void doGet(final SlingHttpServletRequest request, final SlingHttpServletResponse response)
-			throws ServletException, IOException {
-		List<FileModel> files = request.adaptTo(ImportInitModel.class).getFiles();
-		ServletUtils.writeJson(response, files);
-	}
+  @Reference
+  private ScriptFinder scriptFinder;
+
+  @Override
+  protected void doGet(final SlingHttpServletRequest request, final SlingHttpServletResponse response)
+      throws IOException {
+    List<FileModel> files = scriptFinder.findAll(request.getResourceResolver()).stream()
+        .map(FileModel::new)
+        .sorted()
+        .collect(Collectors.toList());
+    ServletUtils.writeJson(response, files);
+  }
 }

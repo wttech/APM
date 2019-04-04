@@ -34,108 +34,142 @@ import org.apache.sling.models.annotations.Optional;
 @Model(adaptables = Resource.class)
 public class ScriptImpl implements Script {
 
-	private final String path;
+  private final String path;
 
-	@Inject
-	@Named(JcrConstants.JCR_CONTENT)
-	private ScriptContent scriptContent;
+  @Inject
+  @Named(JcrConstants.JCR_CONTENT)
+  private ScriptContent scriptContent;
 
-	@Inject
-	@Named(JcrConstants.JCR_CREATED_BY)
-	@Optional
-	private String author;
+  @Inject
+  @Named(JcrConstants.JCR_CREATED_BY)
+  @Optional
+  private String author;
 
-	protected final Checksum checksum;
+  protected final Checksum checksum;
 
-	public ScriptImpl(Resource resource) {
-		this.checksum = new Checksum(resource.getName());
-		this.path = resource.getPath();
-	}
+  public ScriptImpl(Resource resource) {
+    this.checksum = new Checksum(resource.getName());
+    this.path = resource.getPath();
+  }
 
-	@Override
-	public boolean isDryRunExecuted() {
-		return scriptContent.getDryRunSuccessful() != null;
-	}
+  @Override
+  public boolean isDryRunExecuted() {
+    return scriptContent.getDryRunSuccessful() != null;
+  }
 
-	@Override
-	public boolean isDryRunSuccessful() {
-		return BooleanUtils.toBoolean(scriptContent.getDryRunSuccessful());
-	}
+  @Override
+  public boolean isValid() {
+    return BooleanUtils.toBoolean(scriptContent.getVerified());
+  }
 
-	@Override
-	public boolean isValid() {
-		return BooleanUtils.toBoolean(scriptContent.getVerified());
-	}
+  @Override
+  public ExecutionMode getExecutionMode() {
+    return (scriptContent.getExecutionMode() == null) ?
+        ExecutionMode.ON_DEMAND :
+        ExecutionMode.valueOf(scriptContent.getExecutionMode());
+  }
 
-	@Override
-	public ExecutionMode getExecutionMode() {
-		return (scriptContent.getExecutionMode() == null) ?
-				ExecutionMode.ON_DEMAND :
-				ExecutionMode.valueOf(scriptContent.getExecutionMode());
-	}
+  @Override
+  public Date getExecutionSchedule() {
+    return scriptContent.getExecutionSchedule();
+  }
 
-	@Override
-	public Date getExecutionSchedule() {
-		return scriptContent.getExecutionSchedule();
-	}
+  @Override
+  public boolean isExecutionEnabled() {
+    return BooleanUtils.isNotFalse(scriptContent.getExecutionEnabled());
+  }
 
-	@Override
-	public boolean isExecutionEnabled() {
-		return BooleanUtils.isNotFalse(scriptContent.getExecutionEnabled());
-	}
+  @Override
+  public Date getExecutionLast() {
+    return scriptContent.getExecutionLast();
+  }
 
-	@Override
-	public Date getExecutionLast() {
-		return scriptContent.getExecutionLast();
-	}
+  @Override
+  public boolean isPublishRun() {
+    return BooleanUtils.toBoolean(scriptContent.getPublishRun());
+  }
 
-	@Override
-	public boolean isPublishRun() {
-		return BooleanUtils.toBoolean(scriptContent.getPublishRun());
-	}
+  @Override
+  public boolean isContentModified(ResourceResolver resolver) {
+    Resource resource = resolver.getResource(getPath());
+    final String currentChecksum = checksum.calculate(resource);
+    final String oldChecksum = checksum.load(resolver);
 
-	@Override
-	public boolean isContentModified(ResourceResolver resolver) {
-		Resource resource = resolver.getResource(getPath());
-		final String currentChecksum = checksum.calculate(resource);
-		final String oldChecksum = checksum.load(resolver);
+    return oldChecksum == null || !currentChecksum.equals(oldChecksum);
+  }
 
-		return oldChecksum == null || !currentChecksum.equals(oldChecksum);
-	}
+  @Override
+  public String getPath() {
+    return path;
+  }
 
-	@Override
-	public String getPath() {
-		return path;
-	}
+  @Override
+  public Checksum getChecksum() {
+    return checksum;
+  }
 
-	@Override
-	public Checksum getChecksum() {
-		return checksum;
-	}
+  @Override
+  public String getAuthor() {
+    return author;
+  }
 
-	@Override
-	public String getAuthor() {
-		return author;
-	}
+  @Override
+  public Date getLastModified() {
+    return scriptContent.getLastModified();
+  }
 
-	@Override
-	public Date getLastModified() {
-		return scriptContent.getLastModified();
-	}
-
-	@Override
-	public String getData() {
-		return scriptContent.getData();
-	}
-
-	@Override
-	public Date getDryRunLast() {
-		return scriptContent.getDryRunLast();
-	}
+  @Override
+  public String getData() {
+    return scriptContent.getData();
+  }
 
   @Override
   public String getReplicatedBy() {
     return scriptContent.getReplicatedBy();
   }
 
+  @Override
+  public Date getDryRunTime() {
+    return scriptContent.getDryRunTime();
+  }
+
+  @Override
+  public String getDryRunSummary() {
+    return scriptContent.getDryRunSummary();
+  }
+
+  @Override
+  public boolean isDryRunSuccessful() {
+    return BooleanUtils.toBoolean(scriptContent.getDryRunSuccessful());
+  }
+
+  @Override
+  public Date getRunTime() {
+    return scriptContent.getRunTime();
+  }
+
+  @Override
+  public String getRunSummary() {
+    return scriptContent.getRunSummary();
+  }
+
+  @Override
+  public boolean isRunSuccessful() {
+    return BooleanUtils.toBoolean(scriptContent.getRunSuccessful());
+  }
+
+  @Override
+  public Date getRunOnPublishTime() {
+    return scriptContent.getRunOnPublishTime();
+  }
+
+  @Override
+  public String getRunOnPublishSummary() {
+    return scriptContent.getRunOnPublishSummary();
+  }
+
+  @Override
+  public boolean isRunOnPublishSuccessful() {
+    return BooleanUtils.toBoolean(scriptContent.getRunOnPublishSuccessful());
+  }
 }

@@ -60,18 +60,53 @@ public class ModifiableScriptWrapper implements ModifiableScript {
 	}
 
 	@Override
-	public void setDryRunStatus(Boolean flag) throws PersistenceException {
-		setProperty(ScriptContent.CQSM_DRY_RUN_SUCCESSFUL, flag);
-	}
-
-	@Override
 	public void setPublishRun(Boolean flag) throws PersistenceException {
 		setProperty(ScriptContent.CQSM_PUBLISH_RUN, flag);
 	}
 
 	@Override
-	public void setDryRunExecution(Date executionDate) throws PersistenceException {
-		setProperty(ScriptContent.CQSM_DRY_RUN_LAST, executionDate);
+	public void setDryRunTime(Date executionDate) throws PersistenceException {
+		setProperty(ScriptContent.DRY_RUN_TIME, executionDate);
+	}
+
+	@Override
+	public void setDryRunSummary(String path) throws PersistenceException {
+		setProperty(ScriptContent.DRY_RUN_SUMMARY, path);
+	}
+
+	@Override
+	public void setDryRunStatus(Boolean flag) throws PersistenceException {
+		setProperty(ScriptContent.DRY_RUN_SUCCESSFUL, flag);
+	}
+
+	@Override
+	public void setRunTime(Date executionDate) throws PersistenceException {
+		setProperty(ScriptContent.RUN_TIME, executionDate);
+	}
+
+	@Override
+	public void setRunSummary(String path) throws PersistenceException {
+		setProperty(ScriptContent.RUN_SUMMARY, path);
+	}
+
+	@Override
+	public void setRunStatus(Boolean flag) throws PersistenceException {
+		setProperty(ScriptContent.RUN_SUCCESSFUL, flag);
+	}
+
+	@Override
+	public void setRunOnPublishTime(Date executionDate) throws PersistenceException {
+		setProperty(ScriptContent.RUN_ON_PUBLISH_TIME, executionDate);
+	}
+
+	@Override
+	public void setRunOnPublishSummary(String path) throws PersistenceException {
+		setProperty(ScriptContent.RUN_ON_PUBLISH_SUMMARY, path);
+	}
+
+	@Override
+	public void setRunOnPublishStatus(Boolean flag) throws PersistenceException {
+		setProperty(ScriptContent.RUN_ON_PUBLISH_SUCCESSFUL, flag);
 	}
 
   @Override

@@ -22,25 +22,19 @@ package com.cognifide.cq.cqsm.core.servlets;
 import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.utils.ServletUtils;
-
+import java.io.IOException;
+import javax.servlet.Servlet;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import java.io.IOException;
-
-import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-
 @Component(
 		immediate = true,
 		service = Servlet.class,
 		property = {
-				Property.RESOURCE_TYPE + "cqsm/core/renderers/definitionsRendere",
-				Property.SELECTOR + "action",
-				Property.EXTENSION + "json",
+				Property.PATH + "/bin/cqsm/definitions",
 				Property.DESCRIPTION + "CQSM Definitions Servlet",
 				Property.VENDOR
 		}
@@ -52,7 +46,7 @@ public class DefinitionsServlet extends SlingAllMethodsServlet {
 
 	@Override
 	protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response)
-			throws ServletException, IOException {
+			throws IOException {
 		ServletUtils.writeJson(response, scriptManager.getPredefinedDefinitions());
 	}
 }

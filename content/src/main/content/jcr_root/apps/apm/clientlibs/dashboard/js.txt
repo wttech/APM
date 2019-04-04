@@ -1,3 +1,0 @@
-#base=js
-apm-dashboard.js
-fileupload.js

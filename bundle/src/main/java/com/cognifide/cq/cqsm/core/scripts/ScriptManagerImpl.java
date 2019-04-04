@@ -139,7 +139,7 @@ public class ScriptManagerImpl implements ScriptManager {
 	@Override
 	public synchronized Progress process(final Script script, final Mode mode, ResourceResolver resolver)
 			throws RepositoryException, PersistenceException {
-		return process(script, mode, Maps.<String, String>newHashMap(), resolver);
+		return process(script, mode, Maps.newHashMap(), resolver);
 	}
 
 	@Override
@@ -174,14 +174,14 @@ public class ScriptManagerImpl implements ScriptManager {
 		}
 
 		if (Mode.DRY_RUN.equals(mode)) {
-			modifiableScript.setDryRunExecution(new Date());
+			modifiableScript.setDryRunTime(new Date());
 		}
 	}
 
 	@Override
 	public Progress evaluate(String scriptContent, Mode mode, ResourceResolver resolver)
 			throws RepositoryException, PersistenceException {
-		return evaluate(scriptContent, mode, Maps.<String, String>newHashMap(), resolver);
+		return evaluate(scriptContent, mode, Maps.newHashMap(), resolver);
 	}
 
 	@Override

@@ -61,11 +61,6 @@ public interface Script {
 	boolean isDryRunExecuted();
 
 	/**
-	 * Check dry run result
-	 */
-	boolean isDryRunSuccessful();
-
-	/**
 	 * Check run on publish
 	 */
 	boolean isPublishRun();
@@ -96,13 +91,54 @@ public interface Script {
 	String getData();
 
 	/**
+	 * Return user that replicated script
+	 * @return
+	 */
+	String getReplicatedBy();
+
+	/**
 	 * Return last dry run date
 	 */
-	Date getDryRunLast();
+	Date getDryRunTime();
 
-  /**
-   * Return user that replicated script
-   */
-  String getReplicatedBy();
+	/**
+	 * Get path to dry run summary
+	 */
+	String getDryRunSummary();
+
+	/**
+	 * Check dry run result
+	 */
+	boolean isDryRunSuccessful();
+
+	/**
+	 * Return date of last run on author.
+	 */
+	Date getRunTime();
+
+	/**
+	 * Get path to summary of last run on author.
+	 */
+	String getRunSummary();
+
+	/**
+	 * Return status of last run on author.
+	 */
+	boolean isRunSuccessful();
+
+	/**
+	 * Get path to summary of last run on publish
+	 */
+	String getRunOnPublishSummary();
+
+	/**
+	 * Return date of last run on publish.
+	 */
+	Date getRunOnPublishTime();
+
+	/**
+	 * Return status of last run on publish.
+	 */
+	boolean isRunOnPublishSuccessful();
 
 }

@@ -20,7 +20,7 @@
 package com.cognifide.cq.cqsm.core.scripts.listeners;
 
 import com.cognifide.cq.cqsm.api.executors.Mode;
-import com.cognifide.cq.cqsm.api.history.Entry;
+import com.cognifide.cq.cqsm.api.history.HistoryEntry;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.scripts.Event;
 import com.cognifide.cq.cqsm.api.scripts.EventListener;
@@ -63,7 +63,7 @@ public class HistoryReplicateListener implements EventListener {
 	public void handle(Script script, Mode mode, Progress progress) {
 		if (mode.isRun()) {
 			try {
-				Entry entry = history.log(script, mode, progress);
+				HistoryEntry entry = history.log(script, mode, progress);
 				history.replicate(entry, progress.getExecutor());
 			} catch (RepositoryException e) {
 				LOG.error("Repository error occurred while replicating script execution", e);
