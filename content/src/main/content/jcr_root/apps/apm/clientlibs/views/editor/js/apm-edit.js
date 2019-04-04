@@ -20,7 +20,7 @@
 (function (window, $) {
   $(document).on('cui-contentloaded', function () {
 
-    const SHOW_REFERENCES_URL = '/etc/cqsm/pages/reference.html';
+    const SHOW_REFERENCES_URL = '/apm/references.html';
 
     function Console($el) {
       this.uiHelper = $(window).adaptTo('foundation-ui');
