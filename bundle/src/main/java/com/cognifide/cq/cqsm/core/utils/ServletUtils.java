@@ -39,7 +39,7 @@ public class ServletUtils {
 	public static void writeJson(SlingHttpServletResponse response, String json) throws IOException {
 		response.setCharacterEncoding("UTF-8");
 		response.setContentType("application/json");
-		response.getWriter().write(json);
+		response.getWriter().print(json);
 		response.getWriter().flush();
 	}
 
