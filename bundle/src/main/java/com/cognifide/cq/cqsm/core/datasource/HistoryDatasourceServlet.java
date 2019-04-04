@@ -46,7 +46,7 @@ import org.osgi.framework.Constants;
     @Property(name = Constants.SERVICE_DESCRIPTION, value = "Provides data source for history page"),
     @Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)
 })
-public class NewHistoryDatasourceServlet extends SlingSafeMethodsServlet {
+public class HistoryDatasourceServlet extends SlingSafeMethodsServlet {
 
   @Reference
   private History history;
