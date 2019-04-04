@@ -30,15 +30,11 @@
       </thead>
       <tbody is="coral-table-body">
       <sly data-sly-repeat.map="${model.references}">
-        <sly data-sly-repeat="${map}">
-          <tr is="coral-table-row">
-            <sly data-sly-test="${item=='commands'}">
-              <td is="coral-table-cell">${map[item] @ join='<br> ', context='html'}</td>
-              <td is="coral-table-cell">${map["args"] @ join=', '}</td>
-              <td is="coral-table-cell">${map["reference"]}</td>
-            </sly>
-          </tr>
-        </sly>
+        <tr is="coral-table-row">
+          <td is="coral-table-cell">${map["commands"] @ join='<br> ', context='html'}</td>
+          <td is="coral-table-cell">${map["args"] @ join=', '}</td>
+          <td is="coral-table-cell">${map["reference"]}</td>
+        </tr>
       </sly>
       </tbody>
     </table>
@@ -122,13 +118,11 @@
       </tr>
       </thead>
       <tbody is="coral-table-body">
-      <sly data-sly-repeat.definitions="${model.definitions}">
-        <sly data-sly-repeat="${definitions}">
-          <tr is="coral-table-row">
-            <td is="coral-table-cell">${item}</td>
-            <td is="coral-table-cell">${model.definitions[item]}</td>
-          </tr>
-        </sly>
+      <sly data-sly-repeat="${model.definitions}">
+        <tr is="coral-table-row">
+          <td is="coral-table-cell">${item}</td>
+          <td is="coral-table-cell">${model.definitions[item]}</td>
+        </tr>
       </sly>
       </tbody>
     </table>
