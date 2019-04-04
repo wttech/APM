@@ -19,21 +19,28 @@
  */
 package com.cognifide.cq.cqsm.core.history;
 
+import static com.cognifide.cq.cqsm.core.utils.sling.SlingHelper.resolveDefault;
+
 import com.cognifide.actions.api.ActionSendException;
 import com.cognifide.actions.api.ActionSubmitter;
 import com.cognifide.cq.cqsm.api.executors.Mode;
+import com.cognifide.cq.cqsm.api.history.HistoryEntry;
 import com.cognifide.cq.cqsm.api.history.InstanceDetails;
+import com.cognifide.cq.cqsm.api.history.InstanceDetails.InstanceType;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.progress.ProgressHelper;
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.utils.InstanceTypeProvider;
 import com.cognifide.cq.cqsm.core.Property;
+import com.cognifide.cq.cqsm.core.history.HistoryEntryWriter.HistoryEntryWriterBuilder;
+import com.cognifide.cq.cqsm.core.scripts.ModifiableScriptWrapper;
 import com.cognifide.cq.cqsm.core.scripts.ScriptContent;
 import com.cognifide.cq.cqsm.core.utils.sling.ResolveCallback;
 import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper;
 import com.day.cq.commons.jcr.JcrConstants;
 import com.day.cq.commons.jcr.JcrUtil;
 import com.day.cq.replication.ReplicationAction;
+import com.google.common.collect.ImmutableList;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
@@ -59,12 +66,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Component(
-		immediate = true,
-		service = History.class,
-		property = {
-				Property.DESCRIPTION + "CQSM History Service",
-				Property.VENDOR
-		}
+    immediate = true,
+    service = History.class,
+    property = {
+        Property.DESCRIPTION + "CQSM History Service",
+        Property.VENDOR
+    }
 )
 public class HistoryImpl implements History {
 
@@ -197,7 +204,8 @@ public class HistoryImpl implements History {
     Resource source = resolver.getResource(script.getPath());
     Resource historyFolder = getOrCreateFolder(resolver);
     HistoryEntryNamingStrategy historyEntryNamingStrategy = createStrategy(mode);
-    Resource entryResource = historyEntryNamingStrategy.getHistoryEntryResource(resolver, historyFolder, source.getName());
+    Resource entryResource = historyEntryNamingStrategy
+        .getHistoryEntryResource(resolver, historyFolder, source.getName());
     historyEntryWriter.writeTo(entryResource);
 
     copyScriptContent(source, entryResource);
