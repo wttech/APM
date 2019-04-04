@@ -1,4 +1,3 @@
-
 /*-
  * ========================LICENSE_START=================================
  * AEM Permission Management
@@ -18,17 +17,20 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.cq.cqsm.core.servlets;
-
-import static com.cognifide.cq.cqsm.core.models.ScriptsRowModel.SCRIPTS_ROW_RESOURCE_TYPE;
+package com.cognifide.cq.cqsm.core.datasource;
 
 import com.adobe.granite.ui.components.ds.DataSource;
 import com.adobe.granite.ui.components.ds.SimpleDataSource;
+import com.cognifide.cq.cqsm.api.history.HistoryEntry;
 import com.cognifide.cq.cqsm.core.Cqsm;
-import java.util.ArrayList;
+import com.cognifide.cq.cqsm.core.history.History;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
+import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
 import org.apache.felix.scr.annotations.sling.SlingServlet;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -38,24 +40,30 @@ import org.apache.sling.api.resource.ResourceWrapper;
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 import org.osgi.framework.Constants;
 
-@SlingServlet(resourceTypes = {"apm/scripts"}, methods = {"GET"})
+@SlingServlet(resourceTypes = "apm/datasource/history")
 @Service
 @Properties({
-    @Property(name = Constants.SERVICE_DESCRIPTION, value = "APM Scripts Data Source Servlet"),
+    @Property(name = Constants.SERVICE_DESCRIPTION, value = "Provides data source for history page"),
     @Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)
 })
-public class ScriptsDatasourceServlet extends SlingSafeMethodsServlet {
+public class NewHistoryDatasourceServlet extends SlingSafeMethodsServlet {
+
+  @Reference
+  private History history;
 
   @Override
   protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) {
-    String path = request.getRequestPathInfo().getSuffix();
-    List<Resource> scripts = new ArrayList<>();
-    Resource resource = request.getResourceResolver().getResource(path);
-    for (Resource child : resource.getChildren()) {
-      scripts.add(new ResourceTypeWrapper(child));
-    }
-    DataSource dataSource = new SimpleDataSource(scripts.iterator());
+    final List<Resource> allHistoryResources = history.findAllResources(request.getResourceResolver())
+        .stream()
+        .sorted(Comparator.comparing(this::getExecutionTime, Comparator.reverseOrder()))
+        .map(ResourceTypeWrapper::new)
+        .collect(Collectors.toList());
+    DataSource dataSource = new SimpleDataSource(allHistoryResources.iterator());
     request.setAttribute(DataSource.class.getName(), dataSource);
+  }
+
+  private Date getExecutionTime(Resource resource) {
+    return resource.getValueMap().get(HistoryEntry.EXECUTION_TIME, Date.class);
   }
 
   private class ResourceTypeWrapper extends ResourceWrapper {
@@ -66,8 +74,7 @@ public class ScriptsDatasourceServlet extends SlingSafeMethodsServlet {
 
     @Override
     public String getResourceType() {
-      return SCRIPTS_ROW_RESOURCE_TYPE;
+      return "apm/components/historyRow";
     }
   }
-
 }

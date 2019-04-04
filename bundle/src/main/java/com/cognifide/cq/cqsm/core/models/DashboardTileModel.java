@@ -26,7 +26,7 @@ import org.apache.sling.models.annotations.Model;
 
 @Getter
 @Model(adaptables = Resource.class)
-public class DashboardTileModel {
+public final class DashboardTileModel {
 
   @Inject
   private String icon;

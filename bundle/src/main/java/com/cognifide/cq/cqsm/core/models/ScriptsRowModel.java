@@ -35,7 +35,7 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 
 @Model(adaptables = Resource.class)
-public class ScriptsRowModel {
+public final class ScriptsRowModel {
 
   private static final Set<String> FOLDER_TYPES = ImmutableSet
       .of(JcrConstants.NT_FOLDER, "sling:OrderedFolder");

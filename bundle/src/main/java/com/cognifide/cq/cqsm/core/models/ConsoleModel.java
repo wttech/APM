@@ -37,11 +37,11 @@ import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
 import lombok.Getter;
 
 @Model(adaptables = SlingHttpServletRequest.class)
-public final class NewScriptEditModel {
+public final class ConsoleModel {
 
 	public static final String PATH_PARAM = "path";
 
-	private static final Logger LOG = LoggerFactory.getLogger(NewScriptEditModel.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ConsoleModel.class);
 
 	private static final String FILE_NAME_DEFAULT = "filename";
 
@@ -59,7 +59,7 @@ public final class NewScriptEditModel {
 	private final String content;
 
 	@Inject
-	public NewScriptEditModel(SlingHttpServletRequest request, @OSGiService ScriptFinder scriptFinder) {
+	public ConsoleModel(SlingHttpServletRequest request, @OSGiService ScriptFinder scriptFinder) {
 		String scriptPath = request.getRequestPathInfo().getSuffix();
 		Script script = scriptFinder.find(scriptPath, request.getResourceResolver());
 		edit = script != null;
