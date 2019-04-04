@@ -22,7 +22,6 @@ package com.cognifide.cq.cqsm.foundation.actions.deny;
 import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.BasicActionMapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
-
 import java.util.Collections;
 import java.util.List;
 
@@ -37,7 +36,16 @@ public class DenyMapper extends BasicActionMapper {
 			reference = REFERENCE
 	)
 	public Action mapAction(String path, List<String> permissions) {
-		return mapAction(path, null, permissions, false);
+    return mapAction(path, null, null, permissions, false);
+  }
+
+  @Mapping(
+      value = {"DENY" + SPACE + PATH + SPACE + "ITEMS" + SPACE + LIST + SPACE + LIST},
+      args = {"path", "itemNames", "permissions"},
+      reference = REFERENCE
+  )
+  public Action mapAction(String path, List<String> itemNames, List<String> permissions) {
+    return mapAction(path, null, itemNames, permissions, false);
 	}
 
 	@Mapping(
@@ -46,7 +54,16 @@ public class DenyMapper extends BasicActionMapper {
 			reference = REFERENCE
 	)
 	public Action mapAction(String path, String permission) {
-		return mapAction(path, null, Collections.singletonList(permission), false);
+    return mapAction(path, null, null, Collections.singletonList(permission), false);
+  }
+
+  @Mapping(
+      value = {"DENY" + SPACE + PATH + SPACE + "ITEMS" + LIST + SPACE + STRING},
+      args = {"path", "itemNames", "permission"},
+      reference = REFERENCE
+  )
+  public Action mapAction(String path, List<String> itemNames, String permission) {
+    return mapAction(path, null, itemNames, Collections.singletonList(permission), false);
 	}
 
 	@Mapping(
@@ -55,7 +72,16 @@ public class DenyMapper extends BasicActionMapper {
 			reference = REFERENCE
 	)
 	public Action mapAction(String path, String glob, List<String> permissions) {
-		return mapAction(path, glob, permissions, false);
+    return mapAction(path, glob, null, permissions, false);
+  }
+
+  @Mapping(
+      value = {"DENY" + SPACE + PATH + SPACE + GLOB + SPACE + "ITEMS" + SPACE + LIST + SPACE + LIST},
+      args = {"path", "glob", "itemNames", "permissions"},
+      reference = REFERENCE
+  )
+  public Action mapAction(String path, String glob, List<String> itemNames, List<String> permissions) {
+    return mapAction(path, glob, itemNames, permissions, false);
 	}
 
 	@Mapping(
@@ -64,7 +90,16 @@ public class DenyMapper extends BasicActionMapper {
 			reference = REFERENCE
 	)
 	public Action mapAction(String path, String glob, String permission) {
-		return mapAction(path, glob, Collections.singletonList(permission), false);
+    return mapAction(path, glob, null, Collections.singletonList(permission), false);
+  }
+
+  @Mapping(
+      value = {"DENY" + SPACE + PATH + SPACE + GLOB + SPACE + "ITEMS" + SPACE + LIST + SPACE + STRING},
+      args = {"path", "glob", "itemNames", "permission"},
+      reference = REFERENCE
+  )
+  public Action mapAction(String path, String glob, List<String> itemNames, String permission) {
+    return mapAction(path, glob, itemNames, Collections.singletonList(permission), false);
 	}
 
 	@Mapping(
@@ -73,7 +108,16 @@ public class DenyMapper extends BasicActionMapper {
 			reference = REFERENCE
 	)
 	public Action mapActionWithIfExists(String path, List<String> permissions) {
-		return mapAction(path, null, permissions, true);
+    return mapAction(path, null, null, permissions, true);
+  }
+
+  @Mapping(
+      value = {"DENY" + SPACE + PATH + "ITEMS" + SPACE + LIST + SPACE + LIST + SPACE + ("IF" + DASH + "EXISTS")},
+      args = {"path", "itemNames", "permissions"},
+      reference = REFERENCE
+  )
+  public Action mapActionWithIfExists(String path, List<String> itemNames, List<String> permissions) {
+    return mapAction(path, null, itemNames, permissions, true);
 	}
 
 	@Mapping(
@@ -82,10 +126,21 @@ public class DenyMapper extends BasicActionMapper {
 			reference = REFERENCE
 	)
 	public Action mapActionWithIfExists(String path, String glob, List<String> permissions) {
-		return mapAction(path, glob, permissions, true);
-	}
+    return mapAction(path, glob, null, permissions, true);
+  }
 
-	private Action mapAction(String path, String glob, List<String> permissions, Boolean ifExists) {
-		return new Deny(path, glob, ifExists, permissions);
+  @Mapping(
+      value = {"DENY" + SPACE + PATH + SPACE + GLOB + SPACE + "ITEMS" + LIST + SPACE + LIST + SPACE + ("IF" + DASH
+          + "EXISTS")},
+      args = {"path", "glob", "itemNames", "permissions"},
+      reference = REFERENCE
+  )
+  public Action mapActionWithIfExists(String path, String glob, List<String> itemNames, List<String> permissions) {
+    return mapAction(path, glob, itemNames, permissions, true);
+  }
+
+  private Action mapAction(String path, String glob, List<String> itemNames, List<String> permissions,
+      Boolean ifExists) {
+    return new Deny(path, glob, itemNames, ifExists, permissions);
 	}
 }

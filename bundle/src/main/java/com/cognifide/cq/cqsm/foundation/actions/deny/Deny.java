@@ -26,17 +26,14 @@ import com.cognifide.cq.cqsm.api.executors.Context;
 import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
 import com.cognifide.cq.cqsm.foundation.permissions.PermissionActionHelper;
 import com.cognifide.cq.cqsm.foundation.permissions.exceptions.PermissionException;
-
+import java.util.ArrayList;
+import java.util.List;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.RepositoryException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.jcr.PathNotFoundException;
-import javax.jcr.RepositoryException;
 
 public class Deny implements Action {
 
@@ -46,14 +43,17 @@ public class Deny implements Action {
 
 	private final String glob;
 
+  private final List<String> itemNames;
+
 	private final boolean ignoreUnexistingPaths;
 
 	private final List<String> permissions;
 
-	public Deny(final String path, final String glob, final boolean ignoreUnexistingPaths,
+  public Deny(final String path, final String glob, final List<String> itemNames, final boolean ignoreUnexistingPaths,
 			final List<String> permissions) {
 		this.path = path;
 		this.glob = glob;
+    this.itemNames = itemNames;
 		this.ignoreUnexistingPaths = ignoreUnexistingPaths;
 		this.permissions = permissions;
 	}
@@ -75,7 +75,7 @@ public class Deny implements Action {
 			actionResult.setAuthorizable(authorizable.getID());
 			context.getSession().getNode(path);
 			final PermissionActionHelper permissionActionHelper = new PermissionActionHelper(
-					context.getValueFactory(), path, glob, permissions);
+          context.getValueFactory(), path, glob, itemNames, permissions);
 			LOGGER.info(String.format("Denying permissions %s for authorizable with id = %s for path = %s %s",
 					permissions.toString(), context.getCurrentAuthorizable().getID(), path,
 					StringUtils.isEmpty(glob) ? "" : ("glob = " + glob)));
@@ -97,7 +97,7 @@ public class Deny implements Action {
 						preparedGlob = StringUtils.substring(glob, 0, StringUtils.lastIndexOf(glob, '*'));
 					}
 				}
-				new Deny(path, preparedGlob + "*/jcr:content*", ignoreUnexistingPaths, globModifyPermission)
+        new Deny(path, preparedGlob + "*/jcr:content*", itemNames, ignoreUnexistingPaths, globModifyPermission)
 						.process(context, simulate);
 			}
 		} catch (final PathNotFoundException e) {
