@@ -1,5 +1,6 @@
 plugins {
     id("com.cognifide.aem.bundle")
+    id("io.franzbecker.gradle-lombok")
     groovy
     java
 }
@@ -7,31 +8,39 @@ plugins {
 description = "AEM Permission Management :: Application Core"
 
 aem {
-    bundle.apply {
-        this.attribute("Bundle-Category", "apm")
-        this.attribute("Bundle-Vendor", "Cognifide")
-        this.attribute("Sling-Model-Packages", "com.cognifide.cq.cqsm.core.models,com.cognifide.cq.cqsm.core.scripts,com.cognifide.cq.cqsm.api.history")
-        this.attribute("Export-Package", "com.cognifide.cq.cqsm.foundation.actions.*;com.cognifide.cq.cqsm.api.*;com.cognifide.cq.cqsm.core.models.*;com.cognifide.cq.cqsm.core.automaticexecutor.*")
-        this.attribute("Import-Package", "!sun.misc,*")
-        this.attribute("Sling-Nodetypes", "CQ-INF/nodetypes/cqsm_nodetypes.cnd")
-        this.attribute("CQ-Security-Management-Actions", "com.cognifide.cq.cqsm.foundation.actions")
+    tasks {
+        bundle {
+            installPath = "/apps/apm/install"
+            javaPackage = "com.cognifide.cq.cqsm"
+            displayName = "AEM Permission Management"
+            license = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+            vendor = "Cognifide Ltd."
+            embedPackage("com.google.code.gson", true, "com.google.code.gson:gson:2.3.1")
+            embedPackage("com.google.guava", true, "com.google.guava:guava:15.0")
+            exportPackage("com.cognifide.cq.cqsm.foundation.actions.*")
+            exportPackage("com.cognifide.cq.cqsm.api.*")
+            exportPackage("com.cognifide.cq.cqsm.core.models.*")
+            attribute("Sling-Model-Packages", "com.cognifide.cq.cqsm.core.models,com.cognifide.cq.cqsm.core.scripts,com.cognifide.cq.cqsm.api.history")
+            attribute("Sling-Nodetypes", "CQ-INF/nodetypes/cqsm_nodetypes.cnd")
+            attribute("CQ-Security-Management-Actions", "com.cognifide.cq.cqsm.foundation.actions")
+        }
     }
 }
 
 dependencies {
-    aemInstall("com.cognifide.cq.actions:com.cognifide.cq.actions.api:6.0.2")
-    aemInstall("com.cognifide.cq.actions:com.cognifide.cq.actions.core:6.0.2")
-    aemInstall("com.cognifide.cq.actions:com.cognifide.cq.actions.msg.replication:6.0.2")
+    testImplementation("junit:junit:4.10")
+    testImplementation("org.mockito:mockito-core:1.9.5")
+    testImplementation("org.codehaus.groovy:groovy-all:2.4.13")
+    testImplementation("org.spockframework:spock-core:1.1-groovy-2.4")
 
-    testCompile("junit:junit:4.10")
-    testCompile("org.mockito:mockito-core:1.9.5")
-    testCompile("org.codehaus.groovy:groovy-all:2.4.13")
-    testCompile("org.spockframework:spock-core:1.1-groovy-2.4")
+    compileOnly("com.cognifide.cq.actions:com.cognifide.cq.actions.api:6.0.2")
+    compileOnly("com.cognifide.cq.actions:com.cognifide.cq.actions.core:6.0.2")
+    compileOnly("com.cognifide.cq.actions:com.cognifide.cq.actions.msg.replication:6.0.2")
 
     compileOnly("com.google.guava:guava:15.0")
     compileOnly("com.google.code.gson:gson:2.3.1")
 
-    compileOnly(group = "com.adobe.aem", name = "uber-jar", version = "6.3.0", classifier = "apis")
+    compileOnly("com.adobe.aem:uber-jar:6.4.0:apis")
     compileOnly("org.osgi:osgi.cmpn:6.0.0")
     compileOnly("org.osgi:org.osgi.core:6.0.0")
     compileOnly("org.osgi:org.osgi.service.component.annotations:1.3.0")

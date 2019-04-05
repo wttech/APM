@@ -1,39 +1,24 @@
-import com.cognifide.gradle.aem.pkg.ComposeTask
-
 plugins {
-    id("com.cognifide.aem.package") version "5.1.3"
+    id("com.cognifide.aem.package")
 }
 
-buildscript {
-    repositories {
-        maven(url = "https://plugins.gradle.org/m2/")
-    }
-    dependencies {
-        classpath("io.franzbecker:gradle-lombok:1.14")
-    }
-}
+description = "AEM Permission Management :: Root"
 
 allprojects {
+    version = "4.0.0-SNAPSHOT"
     group = "com.cognifide.cq"
-    version = "3.1.0-SNAPSHOT"
+}
 
-    apply(plugin = "maven")
-    apply(plugin = "io.franzbecker.gradle-lombok")
-
-    repositories {
-        jcenter()
-        mavenCentral()
-        maven(url = "https://repo.adobe.com/nexus/content/groups/public/")
-        mavenLocal()
+aem {
+    tasks {
+        compose {
+            fromJar("com.cognifide.cq.actions:com.cognifide.cq.actions.api:6.0.2")
+            fromJar("com.cognifide.cq.actions:com.cognifide.cq.actions.core:6.0.2")
+            fromJar("com.cognifide.cq.actions:com.cognifide.cq.actions.msg.replication:6.0.2")
+            fromProject(":bundle")
+            fromProject(":content")
+        }
     }
 }
 
-defaultTasks(":aem")
-tasks.create("aem") {
-    dependsOn("aemDeploy")
-}
-tasks.getByName("aemCompose") {
-    val aemCompose: ComposeTask = this as ComposeTask
-    aemCompose.includeProject(":bundle")
-    aemCompose.includeProject(":content")
-}
+apply(from = "gradle/common.gradle.kts")

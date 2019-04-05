@@ -39,7 +39,7 @@ import org.osgi.service.component.annotations.Component;
     immediate = true,
     service = Servlet.class,
     property = {
-        Property.RESOURCE_TYPE + "apm/scripts",
+        Property.RESOURCE_TYPE + "apm/datasource/scripts",
         Property.METHOD + "GET",
         Property.DESCRIPTION + "APM Scripts Data Source Servlet",
         Property.VENDOR
