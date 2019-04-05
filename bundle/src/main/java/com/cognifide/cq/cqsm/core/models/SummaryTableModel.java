@@ -1,4 +1,4 @@
-/*
+/*-
  * ========================LICENSE_START=================================
  * AEM Permission Management
  * %%
@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,22 +19,28 @@
  */
 package com.cognifide.cq.cqsm.core.models;
 
+import static com.cognifide.cq.cqsm.core.servlets.ScriptResultServlet.EXECUTION_RESULT_SERVLET_PATH;
+
+import com.cognifide.cq.cqsm.api.history.HistoryEntry;
+import com.cognifide.cq.cqsm.core.history.History;
 import javax.inject.Inject;
 import lombok.Getter;
-import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.models.annotations.Model;
+import org.apache.sling.models.annotations.injectorspecific.OSGiService;
 
-@Getter
-@Model(adaptables = Resource.class)
-public final class DashboardTileModel {
+@Model(adaptables = SlingHttpServletRequest.class)
+public final class SummaryTableModel {
 
-  @Inject
-  private String icon;
+	@Getter
+	private final HistoryEntry entry;
 
-  @Inject
-  private String path;
+	@Inject
+	public SummaryTableModel(@OSGiService History history, SlingHttpServletRequest request) {
+		entry = history.find(request.getRequestPathInfo().getSuffix());
+	}
 
-  @Inject
-  private String title;
-
+	public String getResultDownloadActionPath() {
+		return EXECUTION_RESULT_SERVLET_PATH;
+	}
 }

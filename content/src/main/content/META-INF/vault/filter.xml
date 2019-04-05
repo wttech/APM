@@ -1,22 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <workspaceFilter version="1.0">
     <filter root="/apps/apm"/>
+    <filter root="/apps/cq/core/content/nav/tools/cqsm"/>
     <filter root="/conf/apm">
-        <exclude pattern="/conf/apm/samples(/.*)?"/>
+        <exclude pattern="/conf/apm/scripts(/.*)?"/>
         <exclude pattern="/conf/apm/history(/.*)?"/>
     </filter>
-    <filter root="/apps/cq/core/content/nav/tools/cqsm"/>
-    <filter root="/apps/cqsm"/>
-    <filter root="/apps/apm"/>
-    <filter root="/etc/cqsm">
-        <exclude pattern="/etc/cqsm/history/jcr:content/cqsmHistory(/.*)?"/>
-        <exclude pattern="/etc/cqsm/import/jcr:content/cqsmImport(/.*)?"/>
-        <exclude pattern="/etc/cqsm/import/jcr:content/cqsmInclude(/.*)?"/>
-    </filter>
-    <filter root="/etc/designs/cqsm"/>
     <filter root="/home/users/system/cqsm-system-user"/>
     <filter root="/rep:policy"/>
-    <filter root="/var/classes/org/apache/jsp/apps/cqsm"/>
-    <filter root="/libs/granite/ui/components/shell/collectionpagewithoutheader"/>
-    <filter root="/libs/cq/core/content/nav/tools/security"/>
+    <filter root="/var/classes/org/apache/jsp/apps/apm"/>
 </workspaceFilter>

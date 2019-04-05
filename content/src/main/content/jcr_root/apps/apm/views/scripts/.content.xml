@@ -82,7 +82,7 @@
                 </columns>
                 <datasource
                         jcr:primaryType="nt:unstructured"
-                        sling:resourceType="apm/scripts"
+                        sling:resourceType="apm/datasource/scripts"
                         itemResourceType="apm/components/scriptsRow"/>
             </list>
         </views>
