@@ -1,0 +1,130 @@
+<!--/*
+* ========================LICENSE_START=================================
+* AEM Permission Management
+* %%
+* Copyright (C) 2013 - 2016 Cognifide Limited
+* %%
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*      http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+* =========================LICENSE_END==================================
+*/-->
+<div style="margin: 3%">
+  <sly data-sly-use.model="com.cognifide.cq.cqsm.core.models.ReferencesModel">
+    <h3>Available commands</h3>
+    <table is="coral-table">
+      <thead is="coral-table-head">
+      <tr is="coral-table-row">
+        <th style="width: 35%;" is="coral-table-headercell">Command syntax</th>
+        <th style="width: 20%;" is="coral-table-headercell">Arguments</th>
+        <th style="width: 45%;" is="coral-table-headercell">Description</th>
+      </tr>
+      </thead>
+      <tbody is="coral-table-body">
+      <sly data-sly-repeat.map="${model.references}">
+        <tr is="coral-table-row">
+          <td is="coral-table-cell">${map["commands"] @ join='<br> ', context='html'}</td>
+          <td is="coral-table-cell">${map["args"] @ join=', '}</td>
+          <td is="coral-table-cell">${map["reference"]}</td>
+        </tr>
+      </sly>
+      </tbody>
+    </table>
+
+    <h3>Permissions</h3>
+    For commands: ALLOW, DENY you should specify an argument which is a list of
+    permissions.<br/><br/>
+    Possible values:
+    <ul class="permission-list">
+      <li>READ,</li>
+      <li>CREATE,</li>
+      <li>MODIFY,</li>
+      <li>MODIFY_PAGE,</li>
+      <li>DELETE,</li>
+      <li>DELETE_CHILD_NODES,</li>
+      <li>REPLICATE,</li>
+      <li>ALL.</li>
+    </ul>
+    You can also use jcr privileges identifiers:
+    <ul>
+      <li>jcr:readAccessControl,</li>
+      <li>jcr:versionManagement,</li>
+      <li>jcr:lockManagement,</li>
+      <li>jcr:nodeTypeManagement,</li>
+      <li>...</li>
+    </ul>
+    Wrap them into square brackets like in examples below.
+
+    <table style="width: 30%; margin-bottom: 1%; margin-top: 1%;" is="coral-table">
+      <tbody>
+      <tr is="coral-table-row">
+        <td is="coral-table-cell">FOR USER foo</td>
+      </tr>
+      <tr is="coral-table-row">
+        <td is="coral-table-cell">ALLOW /content [ALL]</td>
+      </tr>
+      <tr is="coral-table-row">
+        <td is="coral-table-cell">ALLOW /etc [READ]</td>
+      </tr>
+      <tr is="coral-table-row">
+        <td is="coral-table-cell">DENY /content/bar [MODIFY, DELETE]</td>
+      </tr>
+      <tr is="coral-table-row">
+        <td is="coral-table-cell">ALLOW /content/bar [jcr:nodeTypeManagement]</td>
+      </tr>
+      </tbody>
+    </table>
+
+    The default ACL effects the whole subtree of the target node, you can limit it by adding a
+    glob
+    parameter, which defines a pattern to restrict the subtree.
+    This affects performance so please use it carefully. Apply privileges directly on target
+    node
+    whenever you can.<br/><br/>
+    You can use STRICT keyword as a glob pattern to match a target node only. See examples
+    below:
+
+    <table style="width: 30%; margin-bottom: 1%; margin-top: 1%;" is="coral-table">
+      <tbody>
+      <tr is="coral-table-row">
+        <td is="coral-table-cell">FOR USER foo</td>
+      </tr>
+      <tr is="coral-table-row">
+        <td is="coral-table-cell">ALLOW /content bar [ALL]</td>
+      </tr>
+      <tr is="coral-table-row">
+        <td is="coral-table-cell">DENY /content bar [jcr:nodeTypeManagement]</td>
+      </tr>
+      <tr is="coral-table-row">
+        <td is="coral-table-cell">ALLOW /content/foo STRICT [ALL]</td>
+      </tr>
+      </tbody>
+    </table>
+
+    <h3>Predefined definitions</h3>
+    <table is="coral-table">
+      <thead is="coral-table-head">
+      <tr is="coral-table-row">
+        <th style="width: 50%;" is="coral-table-headercell">Name</th>
+        <th style="width: 50%;" is="coral-table-headercell">Value</th>
+      </tr>
+      </thead>
+      <tbody is="coral-table-body">
+      <sly data-sly-repeat="${model.definitions}">
+        <tr is="coral-table-row">
+          <td is="coral-table-cell">${item}</td>
+          <td is="coral-table-cell">${model.definitions[item]}</td>
+        </tr>
+      </sly>
+      </tbody>
+    </table>
+  </sly>
+</div>
