@@ -3,6 +3,7 @@ plugins {
     id("io.franzbecker.gradle-lombok")
     groovy
     java
+    `maven-publish`
 }
 
 description = "AEM Permission Management :: Application Core"
@@ -60,4 +61,30 @@ dependencies {
     compileOnly("javax.servlet:servlet-api:2.4")
     compileOnly("org.slf4j:slf4j-log4j12:1.7.7")
     compileOnly("org.projectlombok:lombok:1.16.10")
+}
+
+//tasks {
+//    register<Jar>("sourcesJar") {
+//        classifier = "sources"
+//        from(sourceSets.main.get().allJava)
+//    }
+//
+//    register<Jar>("javadocJar") {
+//        classifier = "javadoc"
+//        from(javadoc.get().destinationDir)
+//    }
+//}
+
+publishing {
+    publications {
+        create<MavenPublication>("apm") {
+            from(components["java"])
+//            artifact(tasks["sourcesJar"])
+//            artifact(tasks["javadocJar"])
+            afterEvaluate {
+                artifactId = "apm-bundle"
+                version = rootProject.version
+            }
+        }
+    }
 }

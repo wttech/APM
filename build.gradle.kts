@@ -1,12 +1,27 @@
+import com.cognifide.gradle.aem.pkg.tasks.Compose
+import pl.allegro.tech.build.axion.release.domain.TagNameSerializationConfig
+
 plugins {
+    id("pl.allegro.tech.build.axion-release") version "1.10.1"
     id("org.nosphere.apache.rat") version "0.4.0"
     id("com.cognifide.aem.package")
+    `maven-publish`
 }
 
 description = "AEM Permission Management :: Root"
 
+scmVersion {
+    useHighestVersion = true
+    ignoreUncommittedChanges = false
+    tag(closureOf<TagNameSerializationConfig> {
+        prefix = "apm"
+        versionSeparator = ""
+    })
+}
+
+project.version = scmVersion.version
+
 allprojects {
-    version = "4.0.0-SNAPSHOT"
     group = "com.cognifide.cq"
 }
 
@@ -18,6 +33,18 @@ aem {
             fromJar("com.cognifide.cq.actions:com.cognifide.cq.actions.msg.replication:6.0.2")
             fromProject(":bundle")
             fromProject(":content")
+        }
+    }
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("apm") {
+            val apmContent by tasks.named(Compose.NAME, Compose::class)
+            artifact(apmContent)
+            afterEvaluate {
+                artifactId = "apm-content"
+            }
         }
     }
 }
