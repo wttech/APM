@@ -31,15 +31,12 @@ import com.day.cq.replication.ReplicationException;
 import com.day.cq.replication.Replicator;
 import java.util.LinkedList;
 import java.util.List;
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Properties;
 import org.apache.felix.scr.annotations.Property;
 import org.apache.felix.scr.annotations.Reference;
 import org.apache.felix.scr.annotations.Service;
-import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.framework.Constants;
 
@@ -49,8 +46,6 @@ import org.osgi.framework.Constants;
 		@Property(name = Constants.SERVICE_DESCRIPTION, value = "CQSM Script Replicator Service"),
 		@Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)})
 public class ScriptReplicatorImpl implements ScriptReplicator {
-
-	private static final String ROOT_PATH = "/conf/apm";
 
 	@Reference
 	private Replicator replicator;
@@ -62,7 +57,7 @@ public class ScriptReplicatorImpl implements ScriptReplicator {
 
 	@Override
 	public void replicate(Script script, ResourceResolver resolver) throws ExecutionException,
-			ReplicationException, RepositoryException {
+			ReplicationException {
 
 		eventManager.trigger(Event.BEFORE_REPLICATE, script);
 
@@ -72,23 +67,10 @@ public class ScriptReplicatorImpl implements ScriptReplicator {
 
 		final Session session = resolver.adaptTo(Session.class);
 
-		createReplicationFolder(session);
-
 		for (final Script include : includes) {
 			replicator.replicate(session, ReplicationActionType.ACTIVATE, include.getPath());
 		}
 
 		eventManager.trigger(Event.AFTER_REPLICATE, script);
-	}
-
-	private void createReplicationFolder(Session session)
-			throws RepositoryException {
-		if (session != null) {
-			Node node = session.getNode(ROOT_PATH);
-			if (node != null) {
-				JcrUtils.getOrAddFolder(node, "replication");
-				session.save();
-			}
-		}
 	}
 }
