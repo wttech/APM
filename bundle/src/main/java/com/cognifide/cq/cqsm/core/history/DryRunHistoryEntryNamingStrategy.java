@@ -27,18 +27,17 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceUtil;
 
 public class DryRunHistoryEntryNamingStrategy implements HistoryEntryNamingStrategy {
 
   @Override
-  public Resource getHistoryEntryResource(ResourceResolver resolver, Resource historyFolder, String fileName)
+  public Resource getHistoryEntryResource(ResourceResolver resolver, Resource historyFolder, String fileName, String filePath)
       throws PersistenceException {
-    String uniqueName = ResourceUtil.createUniqueChildName(historyFolder, "dryRun-" + fileName);
-    Resource historyLogResource = resolver.getResource(historyFolder, uniqueName);
+    String uniqueFileName = "dryRun-" + filePath.replaceAll("/", "-");
+    Resource historyLogResource = resolver.getResource(historyFolder, uniqueFileName);
     if (historyLogResource == null) {
       historyLogResource = resolver
-          .create(historyFolder, uniqueName, ImmutableMap.of(JCR_PRIMARYTYPE, NT_UNSTRUCTURED));
+          .create(historyFolder, uniqueFileName, ImmutableMap.of(JCR_PRIMARYTYPE, NT_UNSTRUCTURED));
     }
     return historyLogResource;
   }
