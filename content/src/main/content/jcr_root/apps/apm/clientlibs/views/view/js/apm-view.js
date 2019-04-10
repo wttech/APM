@@ -18,6 +18,23 @@
  * =========================LICENSE_END==================================
  */
 (function (window, $) {
+
+  $(window).adaptTo('foundation-registry').register(
+      'foundation.collection.action.action', {
+        name: 'view.back',
+        handler: function (name, el, config, collection, selections) {
+          let url = window.location.href;
+          url = url.substring(url.indexOf('/apm/view.html'));
+          url = url.replace('/apm/view.html', '');
+          url = url.substring(0, url.lastIndexOf('/'));
+          if (url === '/conf/apm/history') {
+            window.location.href = '/apm/history.html';
+          } else {
+            window.location.href = '/apm/scripts.html' + url;
+          }
+        }
+      });
+
   $(document).on('cui-contentloaded', function () {
 
     function Console($el) {
