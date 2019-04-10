@@ -176,7 +176,13 @@
 
           if (isErrorMessage) {
             text = 'error';
-            response.message = response.message + '</br>' + response.error;
+            if (response.errors) {
+              response.message += '<ul>';
+              response.errors.forEach(function(error) {
+                response.message += '<li>' + error;
+              });
+              response.message += '</ul>';
+            }
             self.uiHelper.notify(text, response.message, variant);
           } else {
             text = 'info';
