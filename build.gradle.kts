@@ -37,6 +37,8 @@ aem {
     }
 }
 
+val apmRepositoryUsername : String? by extra
+val apmRepositoryPassword : String? by extra
 publishing {
     publications {
         create<MavenPublication>("apm") {
@@ -44,6 +46,19 @@ publishing {
             artifact(apmContent)
             afterEvaluate {
                 artifactId = "apm-content"
+            }
+        }
+    }
+    repositories {
+        maven {
+            name = "OSSSonatypeOrg"
+            url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
+            credentials {
+                username = apmRepositoryUsername
+                password = apmRepositoryPassword
+            }
+            authentication {
+                create<BasicAuthentication>("basic")
             }
         }
     }
