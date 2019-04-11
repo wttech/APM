@@ -1,7 +1,9 @@
 import com.cognifide.gradle.aem.pkg.tasks.Compose
 import pl.allegro.tech.build.axion.release.domain.TagNameSerializationConfig
+import pl.allegro.tech.build.axion.release.domain.scm.ScmPosition
 
 plugins {
+    id("nu.studer.credentials") version "1.0.7"
     id("pl.allegro.tech.build.axion-release") version "1.10.1"
     id("org.nosphere.apache.rat") version "0.4.0"
     id("com.cognifide.aem.package")
@@ -15,7 +17,14 @@ scmVersion {
     ignoreUncommittedChanges = false
     tag(closureOf<TagNameSerializationConfig> {
         prefix = "apm"
-        versionSeparator = ""
+        branchPrefix = mapOf(
+                "aem/6.3.0" to "aem630",
+                "aem/6.4.0" to "aem640",
+                "aem/6.5.0" to "aem650")
+        branchVersionCreator = mapOf(
+                "aem/.*" to KotlinClosure2({ version : String, position : ScmPosition -> version + "-" + position.branch.replace(Regex("\\/\\."),"")}),
+                ".*" to "simple"
+        )
     })
 }
 
@@ -37,8 +46,8 @@ aem {
     }
 }
 
-val apmRepositoryUsername : String? by extra
-val apmRepositoryPassword : String? by extra
+val apmRepositoryUsername: String? by extra
+val apmRepositoryPassword: String? by extra
 publishing {
     publications {
         create<MavenPublication>("apm") {
