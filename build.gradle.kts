@@ -22,9 +22,8 @@ scmVersion {
                 "aem/6.4.0" to "aem640",
                 "aem/6.5.0" to "aem650")
         branchVersionCreator = mapOf(
-                "aem/.*" to KotlinClosure2({ version: String, position: ScmPosition -> version + "-" + position.branch.replace("/", "").replace(".", "") }),
-                ".*" to "simple"
-        )
+                "aem/.*" to KotlinClosure2({ version: String, position: ScmPosition -> formatVersion(version, position) }),
+                ".*" to "simple")
     })
 }
 
@@ -116,3 +115,6 @@ tasks.rat {
 }
 
 apply(from = "gradle/common.gradle.kts")
+
+fun formatVersion(version: String, position: ScmPosition) =
+        version + "-" + position.branch.replace("/", "").replace(".", "")
