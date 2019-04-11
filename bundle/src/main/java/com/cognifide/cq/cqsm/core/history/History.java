@@ -55,6 +55,8 @@ public interface History {
 
 	List<Resource> findAllResources(ResourceResolver resourceResolver);
 
+	List<Resource> findResources(ResourceResolver resourceResolver, Pagination pagination);
+
 	/**
 	 * Find entry by its unique file name
 	 */
