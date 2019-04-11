@@ -31,12 +31,13 @@ import org.apache.sling.api.resource.ResourceResolver;
 public class DryRunHistoryEntryNamingStrategy implements HistoryEntryNamingStrategy {
 
   @Override
-  public Resource getHistoryEntryResource(ResourceResolver resolver, Resource historyFolder, String fileName)
+  public Resource getHistoryEntryResource(ResourceResolver resolver, Resource historyFolder, String fileName, String filePath)
       throws PersistenceException {
-    Resource historyLogResource = resolver.getResource(historyFolder, "dryRun-" + fileName);
+    String uniqueFileName = "dryRun-" + filePath.replaceAll("/", "-");
+    Resource historyLogResource = resolver.getResource(historyFolder, uniqueFileName);
     if (historyLogResource == null) {
       historyLogResource = resolver
-          .create(historyFolder, "dryRun-" + fileName, ImmutableMap.of(JCR_PRIMARYTYPE, NT_UNSTRUCTURED));
+          .create(historyFolder, uniqueFileName, ImmutableMap.of(JCR_PRIMARYTYPE, NT_UNSTRUCTURED));
     }
     return historyLogResource;
   }

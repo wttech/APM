@@ -206,7 +206,7 @@ public class HistoryImpl implements History {
     Resource source = resolver.getResource(script.getPath());
     Resource historyFolder = getOrCreateFolder(resolver);
     HistoryEntryNamingStrategy historyEntryNamingStrategy = createStrategy(mode);
-    Resource entryResource = historyEntryNamingStrategy.getHistoryEntryResource(resolver, historyFolder, source.getName());
+    Resource entryResource = historyEntryNamingStrategy.getHistoryEntryResource(resolver, historyFolder, source.getName(), source.getPath());
     historyEntryWriter.writeTo(entryResource);
 
     copyScriptContent(source, entryResource);

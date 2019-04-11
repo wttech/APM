@@ -27,7 +27,7 @@ import org.apache.sling.api.resource.ResourceResolver;
 
 public interface HistoryEntryNamingStrategy {
 
-  Resource getHistoryEntryResource(ResourceResolver resolver, Resource historyFolder, String fileName)
+  Resource getHistoryEntryResource(ResourceResolver resolver, Resource historyFolder, String fileName, String filePath)
       throws PersistenceException, RepositoryException;
 
 
