@@ -22,11 +22,13 @@ scmVersion {
                 "aem/6.4.0" to "aem640",
                 "aem/6.5.0" to "aem650")
         branchVersionCreator = mapOf(
-                "aem/.*" to KotlinClosure2({ version : String, position : ScmPosition -> version + "-" + position.branch.replace(Regex("\\/\\."),"")}),
+                "aem/.*" to KotlinClosure2({ version: String, position: ScmPosition -> version + "-" + position.branch.replace("/", "").replace(".", "") }),
                 ".*" to "simple"
         )
     })
 }
+
+
 
 project.version = scmVersion.version
 
