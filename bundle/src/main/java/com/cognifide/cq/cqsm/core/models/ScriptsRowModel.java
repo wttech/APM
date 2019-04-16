@@ -64,8 +64,7 @@ public final class ScriptsRowModel {
   private boolean isExecutionEnabled;
 
   public ScriptsRowModel(Resource resource) {
-    this.isFolder = FOLDER_TYPES
-        .contains(resource.getValueMap().get(JcrConstants.JCR_PRIMARYTYPE, StringUtils.EMPTY));
+    this.isFolder = isFolder(resource);
     this.scriptName = resource.getName();
     if (!isFolder) {
       Optional.ofNullable(resource.adaptTo(ScriptImpl.class)).ifPresent(script -> {
@@ -78,6 +77,10 @@ public final class ScriptsRowModel {
         this.isExecutionEnabled = script.isExecutionEnabled();
       });
     }
+  }
+
+  public static boolean isFolder(Resource resource) {
+    return FOLDER_TYPES.contains(resource.getValueMap().get(JcrConstants.JCR_PRIMARYTYPE, StringUtils.EMPTY));
   }
 
   public String getResourceType() {

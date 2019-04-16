@@ -40,12 +40,14 @@ import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper;
 import com.day.cq.commons.jcr.JcrConstants;
 import com.day.cq.commons.jcr.JcrUtil;
 import com.day.cq.replication.ReplicationAction;
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -142,13 +144,26 @@ public class HistoryImpl implements History {
   @Override
   public List<Resource> findAllResources(ResourceResolver resourceResolver) {
     final Resource historyFolder = resourceResolver.getResource(HISTORY_FOLDER);
-    return Optional.ofNullable(historyFolder)
+    List<Resource> historyEntries = Optional.ofNullable(historyFolder)
         .map(resource -> resource.getChildren())
-        .map(elements -> (List<Resource>) ImmutableList.copyOf(elements))
+        .map(elements -> (List<Resource>) Lists.newArrayList(elements))
         .orElseGet(() -> {
-          LOG.warn("History resource can't be found at: {}", HISTORY_FOLDER);
+          LOG.warn("History folder does not exist: {}", HISTORY_FOLDER);
           return Collections.emptyList();
         });
+    if (!historyEntries.isEmpty()) {
+      Collections.sort(historyEntries, Comparator.comparing(this::getExecutionTime, Comparator.reverseOrder()));
+    }
+    return historyEntries;
+  }
+
+  @Override
+  public List<Resource> findResources(ResourceResolver resourceResolver, Pagination pagination) {
+    return pagination.getPage(findAllResources(resourceResolver));
+  }
+
+  private Date getExecutionTime(Resource resource) {
+    return resource.getValueMap().get(HistoryEntry.EXECUTION_TIME, Date.class);
   }
 
   @Override
@@ -205,8 +220,9 @@ public class HistoryImpl implements History {
       HistoryEntryWriter historyEntryWriter) throws RepositoryException, PersistenceException {
     Resource source = resolver.getResource(script.getPath());
     Resource historyFolder = getOrCreateFolder(resolver);
-    HistoryEntryNamingStrategy historyEntryNamingStrategy = createStrategy(mode);
-    Resource entryResource = historyEntryNamingStrategy.getHistoryEntryResource(resolver, historyFolder, source.getName(), source.getPath());
+    HistoryEntryNamingStrategy namingStrategy = createStrategy(mode);
+    Resource entryResource = namingStrategy
+        .getHistoryEntryResource(resolver, historyFolder, source.getName(), source.getPath());
     historyEntryWriter.writeTo(entryResource);
 
     copyScriptContent(source, entryResource);

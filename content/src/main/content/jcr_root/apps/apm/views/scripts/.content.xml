@@ -33,14 +33,11 @@
                     sling:resourceType="granite/ui/components/coral/foundation/table"
                     icon="viewList"
                     layoutId="list"
-                    limit="{Long}40"
                     modeGroup="cq-experience-fragments-admin-childpages"
                     path="${requestPathInfo.suffix}"
                     rootPath="/conf/apm/scripts"
                     rowReorderAction=""
                     selectionMode="row"
-                    size="${empty requestPathInfo.selectors[1] ? &quot;40&quot; : requestPathInfo.selectors[1]}"
-                    src="/mnt/overlay/apm/views/scripts/jcr:content/views/list{.offset,limit}.html{+id}{?sortName,sortDir}"
                     stateId="xf.shell.collectionpage">
                 <columns jcr:primaryType="nt:unstructured">
                     <select
