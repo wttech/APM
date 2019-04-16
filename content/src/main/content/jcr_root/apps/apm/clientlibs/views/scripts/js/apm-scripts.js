@@ -117,8 +117,8 @@
     },
   }
 
-  var Row = function(scriptPath, mode, element) {
-    this.scriptPath = scriptPath;
+  var Row = function(mode, element) {
+    this.scriptPath = element.attributes['data-path'].value;
     this.mode = mode;
     this.type = mode === Mode.RUN ? 'runOnAuthor' : 'dryRun';
     this.status = RowStatus.NEW;
@@ -151,7 +151,7 @@
       'foundation.collection.action.activecondition', {
         name: 'is-not-folder',
         handler: function (name, el, config, collection, selections) {
-          return !isFolder(selections);
+          return selections.filter(isFolder).length === 0;
         }
       });
 
@@ -159,11 +159,12 @@
       'foundation.collection.action.activecondition', {
         name: 'is-available',
         handler: function (name, el, config, collection, selections) {
-          if (isFolder(selections)) {
+          if (selections.filter(isFolder).length > 0) {
             return false;
           }
-
-          el.disabled = isScriptInvalidOrNonExecutable(selections);
+          if (selections.filter(isScriptInvalidOrNonExecutable).length > 0) {
+            return false;
+          }
           return true;
         }
       });
@@ -172,8 +173,9 @@
       'foundation.collection.action.action', {
         name: 'scripts.dryrun',
         handler: function (name, el, config, collection, selections) {
-          const selected = selections[0].attributes['data-path'].value;
-          rowProcessor.addRow(new Row(selected, Mode.DRY_RUN, selections[0]));
+          selections.forEach(function (selection) {
+            rowProcessor.addRow(new Row(Mode.DRY_RUN, selection));
+          });
         }
       });
 
@@ -181,8 +183,9 @@
       'foundation.collection.action.action', {
         name: 'scripts.runonauthor',
         handler: function (name, el, config, collection, selections) {
-          const selected = selections[0].attributes['data-path'].value;
-          rowProcessor.addRow(new Row(selected, Mode.RUN, selections[0]));
+          selections.forEach(function (selection) {
+            rowProcessor.addRow(new Row(Mode.RUN, selection));
+          });
         }
       });
 
@@ -263,12 +266,12 @@
     return result;
   }
 
-  function isFolder(selections) {
-    return selections[0].items._container.innerHTML.includes('folder');
+  function isFolder(selection) {
+    return selection.items._container.innerHTML.includes('folder');
   }
 
-  function isScriptInvalidOrNonExecutable(selections) {
-    return selections[0].items._container.innerHTML.includes('script-is-invalid');
+  function isScriptInvalidOrNonExecutable(selection) {
+    return selection.items._container.innerHTML.includes('script-is-invalid');
   }
 
 })(window, jQuery);
