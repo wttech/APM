@@ -24,6 +24,8 @@ import com.adobe.granite.ui.components.ds.SimpleDataSource;
 import com.cognifide.cq.cqsm.api.history.HistoryEntry;
 import com.cognifide.cq.cqsm.core.Cqsm;
 import com.cognifide.cq.cqsm.core.history.History;
+import com.cognifide.cq.cqsm.core.history.Pagination;
+import com.google.common.primitives.Ints;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -48,22 +50,31 @@ import org.osgi.framework.Constants;
 })
 public class HistoryDatasourceServlet extends SlingSafeMethodsServlet {
 
+  private static final int DEFAULT_LIMIT = 10;
+
   @Reference
   private History history;
 
   @Override
   protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) {
-    final List<Resource> allHistoryResources = history.findAllResources(request.getResourceResolver())
+    Pagination pagination = createPagination(request);
+    List<Resource> allHistoryResources = history.findResources(request.getResourceResolver(), pagination)
         .stream()
-        .sorted(Comparator.comparing(this::getExecutionTime, Comparator.reverseOrder()))
         .map(ResourceTypeWrapper::new)
         .collect(Collectors.toList());
     DataSource dataSource = new SimpleDataSource(allHistoryResources.iterator());
     request.setAttribute(DataSource.class.getName(), dataSource);
   }
 
-  private Date getExecutionTime(Resource resource) {
-    return resource.getValueMap().get(HistoryEntry.EXECUTION_TIME, Date.class);
+  private Pagination createPagination(SlingHttpServletRequest request) {
+    String[] selectors = request.getRequestPathInfo().getSelectors();
+    if (selectors == null || selectors.length < 2) {
+      return new Pagination(0, DEFAULT_LIMIT + 1);
+    } else {
+      Integer offset = Ints.tryParse(selectors[0]);
+      Integer limit = Ints.tryParse(selectors[1]);
+      return new Pagination(offset, limit + 1);
+    }
   }
 
   private class ResourceTypeWrapper extends ResourceWrapper {
