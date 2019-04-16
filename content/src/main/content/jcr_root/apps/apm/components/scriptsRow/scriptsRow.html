@@ -40,7 +40,7 @@
   <td is="coral-table-cell" value="${item.author}">
     ${item.author}
   </td>
-  <td is="coral-table-cell" value="${item.valid}">
+  <td is="coral-table-cell" value="${item.valid ? 'valid' : 'invalid'}">
     <coral-icon data-sly-test="${!item.folder}" icon="${item.valid ? 'check' : 'close'}" role="img"
                 data-valid="${item.valid ? 'script-is-valid' : 'script-is-invalid'}"/>
   </td>

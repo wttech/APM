@@ -40,7 +40,6 @@
                     rowReorderAction=""
                     selectionMode="row"
                     size="${empty requestPathInfo.selectors[1] ? &quot;40&quot; : requestPathInfo.selectors[1]}"
-                    sortMode="remote"
                     src="/mnt/overlay/apm/views/scripts/jcr:content/views/list{.offset,limit}.html{+id}{?sortName,sortDir}"
                     stateId="xf.shell.collectionpage">
                 <columns jcr:primaryType="nt:unstructured">
@@ -193,7 +192,6 @@
                         jcr:primaryType="nt:unstructured"
                         sling:resourceType="granite/ui/components/coral/foundation/collection/action"
                         action="scripts.runonpublish"
-                        activeSelectionCount="single"
                         activeCondition="is-available"
                         icon="play"
                         relScope="item"

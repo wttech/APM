@@ -25,10 +25,10 @@
     SUCCESS: 'SUCCESS',
   };
 
-  const RowStatus = {
-    NEW: 'new',
-    RUNNING: 'running',
-    FINISHED: 'finished',
+  const ScriptStatus = {
+    NEW: 'NEW',
+    RUNNING: 'RUNNING',
+    FINISHED: 'FINISHED',
   };
 
   const Mode = {
@@ -38,18 +38,18 @@
 
   const Notifier = $(window).adaptTo('foundation-ui');
 
-  var RowProcessor = function () {
-    this.rows = [];
+  var ScriptProcessor = function () {
+    this.scripts = [];
   }
 
-  RowProcessor.prototype = {
-    addRow: function (row) {
+  ScriptProcessor.prototype = {
+    addScript: function (row) {
       function withScriptPath(item) {
         return item.scriptPath === row.scriptPath;
       }
 
-      if (this.rows.filter(withScriptPath).length === 0) {
-        this.rows.push(row);
+      if (this.scripts.filter(withScriptPath).length === 0) {
+        this.scripts.push(row);
         return true;
       } else {
         Notifier.notify('warning', 'Script is already running', 'warning');
@@ -57,95 +57,139 @@
       }
     },
 
-    removeFinishedRows: function () {
-      this.rows = this.rows.filter(function (row) {
-        return row.status !== RowStatus.FINISHED;
+    removeFinishedScripts: function () {
+      this.scripts = this.scripts.filter(function (row) {
+        return row.status !== ScriptStatus.FINISHED;
       });
     },
 
-    updateRows: function () {
-      const self = this;
-      this.rows.forEach(function(row) {
-        self.updateRow(row);
+    updateScripts: function () {
+      this.scripts.forEach(function(script) {
+        script.updateScript();
       });
-      this.removeFinishedRows();
+      this.removeFinishedScripts();
+    },
+  }
+
+  var LocalScript = function(mode, element) {
+    this.scriptPath = element.attributes['data-path'].value;
+    this.mode = mode;
+    this.status = ScriptStatus.NEW;
+    this.$element = $(element);
+    const type = mode === Mode.RUN ? 'runOnAuthor' : 'dryRun';
+    this.$cell = this.$element.find('[data-run-type="' + type + '"]')
+  }
+
+  LocalScript.prototype = {
+    showWait: function() {
+      this.$cell.html('<coral-wait/>');
     },
 
-    updateRow: function (row) {
-      if (row.status === RowStatus.NEW) {
-        this.runScript(row);
-      } else if(row.status === RowStatus.RUNNING) {
-        this.checkStatus(row);
+    showRunStatus: function(success, path) {
+      let icon = success ? 'check' : 'close';
+      let href = path && path.length && path.length > 0 ? '/apm/summary.html' + path : '/apm/history.html';
+      this.$cell.html('<a data-sly-test="${run.time}" '
+              + 'is="coral-anchorbutton" '
+              + 'iconsize="S" '
+              + 'icon="' + icon + '"'
+              + 'href="' + href + '"></a>'
+            + '<time>1 second ago</time>');
+    },
+
+    updateScript: function () {
+      if (this.status === ScriptStatus.NEW) {
+        this.runScript();
+      } else if(this.status === ScriptStatus.RUNNING) {
+        this.checkStatus();
       }
-      return this.status;
     },
 
-    runScript: function (row) {
-      row.status = RowStatus.RUNNING;
-      row.showWait();
+    runScript: function () {
+      const self = this;
+      this.status = ScriptStatus.RUNNING;
+      this.showWait();
       $.ajax({
         type: 'POST',
-        url: '/bin/cqsm/run-background?file=' + row.scriptPath + '&mode=' + row.mode,
+        url: '/bin/cqsm/run-background?file=' + this.scriptPath + '&mode=' + this.mode,
         dataType: 'json'
       })
       .done(function (data) {
-        row.job = {
+        self.job = {
           id: data.id,
           message: data.message,
         };
       });
     },
 
-    checkStatus: function (row) {
+    checkStatus: function () {
+      const self = this;
       $.ajax({
         type: 'GET',
-        url: '/bin/cqsm/run-background?id=' + row.job.id,
+        url: '/bin/cqsm/run-background?id=' + this.job.id,
         dataType: 'json'
       })
       .done(function (data) {
         if (data.type === 'finished') {
-          row.status = RowStatus.FINISHED;
+          self.status = ScriptStatus.FINISHED;
           const runStatus = getRunStatus(data);
-          showMessageOnFinished(row.mode, runStatus);
-          row.showRunStatus(runStatus !== RunStatus.ERROR, data.path);
+          showMessageOnFinished(self.mode, runStatus);
+          self.showRunStatus(runStatus !== RunStatus.ERROR, data.path);
         } else if (data.type === 'unknown') {
-          row.status = RowStatus.FINISHED;
-          showMessageOnUnknown(row.mode, row.job.message);
-          row.showRunStatus(false, '');
+          self.status = ScriptStatus.FINISHED;
+          showMessageOnUnknown(self.mode, self.job.message);
+          self.showRunStatus(false, '');
         }
       });
     },
   }
 
-  var Row = function(mode, element) {
+  var RemoteScript = function(element) {
     this.scriptPath = element.attributes['data-path'].value;
-    this.mode = mode;
-    this.type = mode === Mode.RUN ? 'runOnAuthor' : 'dryRun';
-    this.status = RowStatus.NEW;
+    this.status = ScriptStatus.NEW;
     this.$element = $(element);
+    this.$cell = this.$element.find('[data-run-type="runOnPublish"]');
   }
 
-  Row.prototype = {
+  RemoteScript.prototype = {
     showWait: function() {
-      this.$element.find('[data-run-type="' + this.type + '"]')
-        .html('<coral-wait/>');
+      this.$cell.html('<coral-wait/>');
     },
 
-    showRunStatus: function(success, path) {
-      let icon = success ? 'check' : 'close';
-      let href = path && path.length && path.length > 0 ? '/apm/summary.html' + path : '/apm/history.html';
-      this.$element.find('[data-run-type="' + this.type + '"]')
-        .html('<a data-sly-test="${run.time}" '
-              + 'is="coral-anchorbutton" '
-              + 'iconsize="S" '
-              + 'icon="' + icon + '"'
-              + 'href="' + href + '"></a>'
-            + '<time>1 second ago</time>');
-    }
+    showRunStatus: function() {
+      this.status = ScriptStatus.FINISHED;
+      this.$cell.html('Script started on publish 1 second ago');
+    },
+
+    updateScript: function () {
+      if (this.status === ScriptStatus.NEW) {
+        this.runScript();
+      }
+    },
+
+    runScript: function () {
+      const self = this;
+      this.status = ScriptStatus.RUNNING;
+      this.showWait();
+      $.ajax({
+        type: 'GET',
+        url: '/bin/cqsm/replicate?run=publish&fileName=' + this.scriptPath,
+        dataType: 'json'
+      })
+      .done(function (data) {
+        console.log('publish response: ' + JSON.stringify(data));
+        Notifier.notify('info', 'Script was successfully started on publish', 'info');
+        self.showRunStatus();
+      })
+      .fail(function (data) {
+        console.log('publish  response: ' + JSON.stringify(data));
+        Notifier.notify('error', 'Script wasn\'t started on publish: ' + data.responseJSON.message, 'error');
+        self.showRunStatus();
+      });
+    },
   }
 
-  const rowProcessor = new RowProcessor();
-  const rowsUpdater = setInterval(function() {rowProcessor.updateRows()}, 1000);
+  const scriptProcessor = new ScriptProcessor();
+  const scriptUpdater = setInterval(function() {scriptProcessor.updateScripts()}, 1000);
 
   $(window).adaptTo('foundation-registry').register(
       'foundation.collection.action.activecondition', {
@@ -174,7 +218,7 @@
         name: 'scripts.dryrun',
         handler: function (name, el, config, collection, selections) {
           selections.forEach(function (selection) {
-            rowProcessor.addRow(new Row(Mode.DRY_RUN, selection));
+            scriptProcessor.addScript(new LocalScript(Mode.DRY_RUN, selection));
           });
         }
       });
@@ -184,7 +228,7 @@
         name: 'scripts.runonauthor',
         handler: function (name, el, config, collection, selections) {
           selections.forEach(function (selection) {
-            rowProcessor.addRow(new Row(Mode.RUN, selection));
+            scriptProcessor.addScript(new LocalScript(Mode.RUN, selection));
           });
         }
       });
@@ -193,27 +237,11 @@
       'foundation.collection.action.action', {
         name: 'scripts.runonpublish',
         handler: function (name, el, config, collection, selections) {
-          const selected = selections[0].attributes['data-path'].value;
-          runOnPublish(selected);
+          selections.forEach(function (selection) {
+            scriptProcessor.addScript(new RemoteScript(selection));
+          });
         }
       });
-
-  function runOnPublish(fileName) {
-    $.ajax({
-      type: 'GET',
-      url: '/bin/cqsm/replicate?run=publish&fileName=' + fileName,
-      dataType: 'json'
-    })
-    .done(function (data) {
-      console.log('publish response: ' + JSON.stringify(data));
-      Notifier.notify('info', 'Run on publish executed successfully', 'info');
-    })
-    .fail(function (data) {
-      console.log('publish  response: ' + JSON.stringify(data));
-      Notifier.notify('error', 'Run on publish wasn\'t executed successfully: '
-          + data.responseJSON.message, 'error');
-    });
-  }
 
   function showMessageOnFinished(mode, status) {
     let title;
@@ -223,7 +251,7 @@
         title = 'Dry Run';
         break;
       case Mode.RUN:
-        title = 'Run on author';
+        title = 'Run on Author';
         break;
     }
 
@@ -243,10 +271,10 @@
   function showMessageOnUnknown(mode, jobMessage) {
     switch (mode) {
       case Mode.DRY_RUN:
-        Notifier.notify('error', 'Dry Run wasn\'t executed successfully: ' + jobMessage, 'error');
+        Notifier.notify('error', 'Dry Run finished with status: ' + jobMessage, 'error');
         break;
       case Mode.RUN:
-        Notifier.notify('error', 'Run on author wasn\'t executed successfully: ' + jobMessage, 'error');
+        Notifier.notify('error', 'Run on Author finished with status: ' + jobMessage, 'error');
         break;
     }
   }
