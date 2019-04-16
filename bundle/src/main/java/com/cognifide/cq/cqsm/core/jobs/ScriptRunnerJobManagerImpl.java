@@ -19,8 +19,13 @@
  */
 package com.cognifide.cq.cqsm.core.jobs;
 
+import static com.cognifide.cq.cqsm.core.jobs.ScriptRunnerJobStatus.FINISHED;
+import static com.cognifide.cq.cqsm.core.jobs.ScriptRunnerJobStatus.RUNNING;
+import static com.cognifide.cq.cqsm.core.jobs.ScriptRunnerJobStatus.UNKNOWN;
+
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.scriptrunnerjob.JobProgressOutput;
+import com.cognifide.cq.cqsm.core.jobs.JobResultsCache.ExecutionSummary;
 import com.cognifide.cq.cqsm.core.servlets.BackgroundJobParameters;
 import java.util.HashMap;
 import java.util.Map;
@@ -77,18 +82,18 @@ public class ScriptRunnerJobManagerImpl implements ScriptRunnerJobManager {
 
   private JobProgressOutput getJobProgressIfFinished(Job job) {
     if (isJobRunning(job)) {
-      return new JobProgressOutput(ScriptRunnerJobStatus.RUNNING);
+      return new JobProgressOutput(RUNNING);
     } else {
       return getJobProgress(job.getId());
     }
   }
 
   private JobProgressOutput getJobProgress(String id) {
-    Progress progress = jobResultsCache.get(id);
-    if (progress != null) {
-      return new JobProgressOutput(ScriptRunnerJobStatus.FINISHED, progress.getEntries());
+    ExecutionSummary executionSummary = jobResultsCache.get(id);
+    if (executionSummary != null) {
+      return new JobProgressOutput(FINISHED, executionSummary.getPath(), executionSummary.getProgress().getEntries());
     }
-    return new JobProgressOutput(ScriptRunnerJobStatus.UNKNOWN);
+    return new JobProgressOutput(UNKNOWN);
   }
 
   private boolean isJobRunning(Job job) {
