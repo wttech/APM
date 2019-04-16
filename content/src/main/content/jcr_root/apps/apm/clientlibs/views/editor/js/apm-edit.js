@@ -93,7 +93,7 @@
             }
 
             content.push('');
-            content.push(params[file].content || params[file]);
+            content.push(params[file].content);
             content.push('--' + boundary);
           }
         }
