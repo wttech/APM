@@ -16,7 +16,7 @@ aem {
             javaPackage = "com.cognifide.cq.cqsm"
             displayName = "AEM Permission Management"
             license = "http://www.apache.org/licenses/LICENSE-2.0.txt"
-            vendor = "Cognifid"
+            vendor = "Cognifide"
             embedPackage("com.google.code.gson", true, "com.google.code.gson:gson:2.3.1")
             embedPackage("com.google.guava", true, "com.google.guava:guava:15.0")
             exportPackage("com.cognifide.cq.cqsm.foundation.actions.*")
@@ -64,24 +64,24 @@ dependencies {
     compileOnly("org.projectlombok:lombok:1.16.10")
 }
 
-//tasks {
-//    register<Jar>("sourcesJar") {
-//        classifier = "sources"
-//        from(sourceSets.main.get().allJava)
-//    }
-//
-//    register<Jar>("javadocJar") {
-//        classifier = "javadoc"
-//        from(javadoc.get().destinationDir)
-//    }
-//}
+tasks {
+    register<org.gradle.jvm.tasks.Jar>("sourcesJar") {
+        classifier = "sources"
+        from(sourceSets.main.get().allJava)
+    }
+
+    register<org.gradle.jvm.tasks.Jar>("javadocJar") {
+        classifier = "javadoc"
+        from(javadoc.get().destinationDir)
+    }
+}
 
 publishing {
     publications {
         create<MavenPublication>("apm") {
             from(components["java"])
-//            artifact(tasks["sourcesJar"])
-//            artifact(tasks["javadocJar"])
+            artifact(tasks["sourcesJar"])
+            artifact(tasks["javadocJar"])
             afterEvaluate {
                 artifactId = "apm-bundle"
                 version = rootProject.version
