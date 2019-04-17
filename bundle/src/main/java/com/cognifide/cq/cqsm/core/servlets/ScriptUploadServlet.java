@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,22 +19,25 @@
  */
 package com.cognifide.cq.cqsm.core.servlets;
 
+import static com.cognifide.cq.cqsm.core.utils.ErrorMessage.errorMessage;
+import static com.cognifide.cq.cqsm.core.utils.ErrorMessage.errorMessageBuilder;
+import static com.cognifide.cq.cqsm.core.utils.ServletUtils.writeJson;
+import static com.cognifide.cq.cqsm.core.utils.SuccessMessage.successMessageBuilder;
+
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.scripts.ScriptStorage;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.scripts.ScriptUtils;
-import com.cognifide.cq.cqsm.core.utils.ServletUtils;
+import com.cognifide.cq.cqsm.core.scripts.ValidationException;
+import com.cognifide.cq.cqsm.core.utils.SuccessMessage;
 import com.google.common.collect.Maps;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.jcr.RepositoryException;
 import javax.servlet.Servlet;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.request.RequestParameter;
@@ -54,48 +57,37 @@ import org.osgi.service.component.annotations.Reference;
 )
 public class ScriptUploadServlet extends SlingAllMethodsServlet {
 
-	private static final String REDIRECT_URL = "/etc/cqsm.html";
+  @Reference
+  private transient ScriptStorage scriptStorage;
 
-	@Reference
-	private transient ScriptStorage scriptStorage;
+  @Override
+  protected void doPost(final SlingHttpServletRequest request, final SlingHttpServletResponse response)
+      throws IOException {
+    try {
+      Map<String, InputStream> files = getFiles(request);
+      List<Script> scripts = scriptStorage.saveAll(files, isOverwrite(request), request.getResourceResolver());
 
-	@Override
-	protected void doPost(final SlingHttpServletRequest request, final SlingHttpServletResponse response)
-			throws IOException {
-		try {
-			final Map<String, InputStream> files = Maps.newHashMap();
-			for (RequestParameter file : request.getRequestParameters("file")) {
-				files.put(file.getFileName(), file.getInputStream());
-			}
+      SuccessMessage successMessage = successMessageBuilder("File successfully saved")
+          .addProperty("uploadedScripts", ScriptUtils.convertToMaps(scripts)).build();
+      writeJson(response, successMessage);
+    } catch (ValidationException e) {
+      response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+      writeJson(response, errorMessageBuilder(e.getMessage()).addErrors(e.getValidationErrors()).build());
+    } catch (Exception e) {
+      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+      writeJson(response, errorMessage("Cannot save script in repository: " + e.getMessage()));
+    }
+  }
 
-			final List<Script> scripts = scriptStorage
-					.saveAll(files, isOverwrite(request), request.getResourceResolver());
+  private Map<String, InputStream> getFiles(SlingHttpServletRequest request) throws IOException {
+    final Map<String, InputStream> files = Maps.newHashMap();
+    for (RequestParameter file : request.getRequestParameters("file")) {
+      files.put(file.getFileName(), file.getInputStream());
+    }
+    return files;
+  }
 
-			if (shouldRedirect(request)) {
-				response.sendRedirect(getRedirectTo(request));
-			} else {
-				Map<String, Object> processingInfo = new HashMap<>();
-
-				processingInfo.put("uploadedScripts",
-						ScriptUtils.convertToMaps(scripts));
-				ServletUtils.writeMessage(response, "success",
-						"File successfully saved", processingInfo);
-			}
-		} catch (RepositoryException e) {
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			ServletUtils.writeMessage(response, "error", "Cannot save script in repository: " + e.getMessage());
-		}
-	}
-
-	private boolean shouldRedirect(SlingHttpServletRequest request) {
-		return BooleanUtils.toBoolean(request.getParameter("redirect"));
-	}
-
-	private boolean isOverwrite(SlingHttpServletRequest request) {
-		return BooleanUtils.toBoolean(request.getParameter("overwrite"));
-	}
-
-	private String getRedirectTo(SlingHttpServletRequest request) {
-		return StringUtils.defaultIfEmpty(request.getParameter("redirectTo"), REDIRECT_URL);
-	}
+  private boolean isOverwrite(SlingHttpServletRequest request) {
+    return BooleanUtils.toBoolean(request.getParameter("overwrite"));
+  }
 }

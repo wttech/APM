@@ -19,6 +19,9 @@
  */
 package com.cognifide.cq.cqsm.core.scripts;
 
+import static com.cognifide.cq.cqsm.core.scripts.FileDescriptor.createFileDescriptor;
+import static java.lang.String.format;
+
 import com.cognifide.cq.cqsm.api.executors.Mode;
 import com.cognifide.cq.cqsm.api.scripts.Event;
 import com.cognifide.cq.cqsm.api.scripts.Script;
@@ -28,20 +31,23 @@ import com.cognifide.cq.cqsm.api.scripts.ScriptStorage;
 import com.cognifide.cq.cqsm.core.Cqsm;
 import com.cognifide.cq.cqsm.core.Property;
 import com.day.cq.commons.jcr.JcrConstants;
-import com.google.common.collect.Lists;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import javax.jcr.Binary;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.ValueFactory;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -64,7 +70,11 @@ public class ScriptStorageImpl implements ScriptStorage {
 
   private static final Logger LOG = LoggerFactory.getLogger(ScriptStorageImpl.class);
 
-  public static final String SCRIPT_PATH = "/conf/apm/scripts";
+  private static final Pattern FILE_NAME_PATTERN = Pattern.compile("[\\da-zA-Z\\-]+\\.cqsm");
+
+  private static final Pattern PATH_PATTERN = Pattern.compile("/[\\da-zA-Z\\-/]+");
+
+  private static final String SCRIPT_PATH = "/conf/apm/scripts";
 
   private static final Charset SCRIPT_ENCODING = StandardCharsets.UTF_8;
 
@@ -88,24 +98,31 @@ public class ScriptStorageImpl implements ScriptStorage {
   @Override
   public Script save(String fileName, InputStream input, boolean overwrite, ResourceResolver resolver)
       throws RepositoryException, PersistenceException {
-    final Script script = saveScript(resolver, fileName, input, overwrite);
+
+    FileDescriptor fileDescriptor = createFileDescriptor(fileName, getSavePath(), input);
+
+    validate(Collections.singletonList(fileDescriptor));
+
+    Script script = saveScript(resolver, fileDescriptor, overwrite);
     scriptManager.process(script, Mode.VALIDATION, resolver);
     scriptManager.getEventManager().trigger(Event.AFTER_SAVE, script);
     return script;
   }
 
   @Override
-  public String getSavePath() {
-    return SCRIPT_PATH;
-  }
-
-  @Override
   public List<Script> saveAll(Map<String, InputStream> files, boolean overwrite, ResourceResolver resolver)
       throws RepositoryException, PersistenceException {
-    final List<Script> scripts = Lists.newArrayList();
-    for (Map.Entry<String, InputStream> entry : files.entrySet()) {
-      scripts.add(saveScript(resolver, entry.getKey(), entry.getValue(), overwrite));
-    }
+
+    List<FileDescriptor> fileDescriptors = files.entrySet().stream()
+        .map(entry -> createFileDescriptor(entry.getKey(), getSavePath(), entry.getValue()))
+        .collect(Collectors.toList());
+
+    validate(fileDescriptors);
+
+    List<Script> scripts = fileDescriptors.stream()
+        .map(fileDescriptor -> saveScript(resolver, fileDescriptor, overwrite))
+        .collect(Collectors.toList());
+
     for (Script script : scripts) {
       scriptManager.process(script, Mode.VALIDATION, resolver);
       scriptManager.getEventManager().trigger(Event.AFTER_SAVE, script);
@@ -113,26 +130,25 @@ public class ScriptStorageImpl implements ScriptStorage {
     return scripts;
   }
 
-  private Script saveScript(ResourceResolver resolver, String fileName, final InputStream input,
-      final boolean overwrite) {
+  @Override
+  public String getSavePath() {
+    return SCRIPT_PATH;
+  }
+
+  private Script saveScript(ResourceResolver resolver, FileDescriptor file, boolean overwrite) {
     Script result = null;
-    final Session session = resolver.adaptTo(Session.class);
-    final ValueFactory valueFactory;
     try {
-      String savePath = getSavePathForFileName(fileName);
-      if (fileName.contains("/")) {
-        fileName = StringUtils.substringAfterLast(fileName, "/");
-      }
-      valueFactory = session.getValueFactory();
-      final Binary binary = valueFactory.createBinary(input);
-      final Node saveNode = session.getNode(savePath);
+      final Session session = resolver.adaptTo(Session.class);
+      final ValueFactory valueFactory = session.getValueFactory();
+      final Binary binary = valueFactory.createBinary(file.getInputStream());
+      final Node saveNode = session.getNode(file.getPath());
 
       final Node fileNode, contentNode;
-      if (overwrite && saveNode.hasNode(fileName)) {
-        fileNode = saveNode.getNode(fileName);
+      if (overwrite && saveNode.hasNode(file.getName())) {
+        fileNode = saveNode.getNode(file.getName());
         contentNode = fileNode.getNode(JcrConstants.JCR_CONTENT);
       } else {
-        fileNode = saveNode.addNode(generateFileName(fileName, saveNode), JcrConstants.NT_FILE);
+        fileNode = saveNode.addNode(generateFileName(file.getName(), saveNode), JcrConstants.NT_FILE);
         contentNode = fileNode.addNode(JcrConstants.JCR_CONTENT, JcrConstants.NT_RESOURCE);
       }
 
@@ -149,18 +165,6 @@ public class ScriptStorageImpl implements ScriptStorage {
       LOG.error(e.getMessage(), e);
     }
     return result;
-  }
-
-  private String getSavePathForFileName(String fileName) {
-    String savePath = getSavePath();
-    if (fileName.contains("/")) {
-      String subPath = StringUtils.substringBeforeLast(fileName, "/");
-      if (subPath.startsWith(getSavePath())) {
-        subPath = StringUtils.substringAfter(subPath, getSavePath());
-      }
-      savePath += subPath.startsWith("/") ? subPath : "/" + subPath;
-    }
-    return savePath;
   }
 
   private void removeProp(Node contentNode, String propName) throws RepositoryException {
@@ -180,4 +184,26 @@ public class ScriptStorageImpl implements ScriptStorage {
     return fileName;
   }
 
+  private void validate(Collection<FileDescriptor> fileDescriptors) {
+    List<String> validationErrors = fileDescriptors.stream()
+        .flatMap(fileDescriptor -> validate(fileDescriptor).stream())
+        .collect(Collectors.toList());
+    if (!validationErrors.isEmpty()) {
+      throw new ValidationException("Validation errors", validationErrors);
+    }
+  }
+
+  private List<String> validate(FileDescriptor file) {
+    List<String> errors = new ArrayList<>();
+    ensurePropertyMatchesPattern(errors, "file name", file.getName(), FILE_NAME_PATTERN);
+    ensurePropertyMatchesPattern(errors, "file path", file.getPath(), PATH_PATTERN);
+    return errors;
+  }
+
+  private static void ensurePropertyMatchesPattern(List<String> errors, String property, String value,
+      Pattern pattern) {
+    if (!pattern.matcher(value).matches()) {
+      errors.add(format("Invalid %s: \"%s\"", property, value));
+    }
+  }
 }

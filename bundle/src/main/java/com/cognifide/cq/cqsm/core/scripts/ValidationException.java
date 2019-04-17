@@ -18,17 +18,18 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.cq.cqsm.core.history;
+package com.cognifide.cq.cqsm.core.scripts;
 
-import javax.jcr.RepositoryException;
-import org.apache.sling.api.resource.PersistenceException;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
+import java.util.List;
+import lombok.Getter;
 
-public interface HistoryEntryNamingStrategy {
+public class ValidationException extends RuntimeException {
 
-  Resource getHistoryEntryResource(ResourceResolver resolver, Resource historyFolder, String fileName, String filePath)
-      throws PersistenceException, RepositoryException;
+  @Getter
+  private final List<String> validationErrors;
 
-
+  public ValidationException(String message, List<String> validationErrors) {
+    super(message);
+    this.validationErrors = validationErrors;
+  }
 }

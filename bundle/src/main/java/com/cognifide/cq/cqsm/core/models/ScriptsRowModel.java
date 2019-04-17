@@ -64,20 +64,23 @@ public final class ScriptsRowModel {
   private boolean isExecutionEnabled;
 
   public ScriptsRowModel(Resource resource) {
-    this.isFolder = FOLDER_TYPES
-        .contains(resource.getValueMap().get(JcrConstants.JCR_PRIMARYTYPE, StringUtils.EMPTY));
+    this.isFolder = isFolder(resource);
     this.scriptName = resource.getName();
     if (!isFolder) {
       Optional.ofNullable(resource.adaptTo(ScriptImpl.class)).ifPresent(script -> {
         this.author = script.getAuthor();
         this.isValid = script.isValid();
         this.lastModified = CalendarUtils.asCalendar(script.getLastModified());
-        this.runs.add(new ScriptRun(script.getRunSummary(), script.isRunSuccessful(), script.getRunTime()));
-        this.runs.add(new ScriptRun(script.getRunOnPublishSummary(), script.isRunOnPublishSuccessful(), script.getRunOnPublishTime()));
-        this.runs.add(new ScriptRun(script.getDryRunSummary(), script.isDryRunSuccessful(), script.getDryRunTime()));
+        this.runs.add(new ScriptRun("runOnAuthor", script.getRunSummary(), script.isRunSuccessful(), script.getRunTime()));
+        this.runs.add(new ScriptRun("runOnPublish", script.getRunOnPublishSummary(), script.isRunOnPublishSuccessful(), script.getRunOnPublishTime()));
+        this.runs.add(new ScriptRun("dryRun", script.getDryRunSummary(), script.isDryRunSuccessful(), script.getDryRunTime()));
         this.isExecutionEnabled = script.isExecutionEnabled();
       });
     }
+  }
+
+  public static boolean isFolder(Resource resource) {
+    return FOLDER_TYPES.contains(resource.getValueMap().get(JcrConstants.JCR_PRIMARYTYPE, StringUtils.EMPTY));
   }
 
   public String getResourceType() {
@@ -87,11 +90,13 @@ public final class ScriptsRowModel {
   @Getter
   public static class ScriptRun {
 
+    private final String type;
     private final String summary;
     private final boolean success;
     private final Calendar time;
 
-    public ScriptRun(String summary, boolean success, Date time) {
+    public ScriptRun(String type, String summary, boolean success, Date time) {
+      this.type = type;
       this.summary = summary;
       this.success = success;
       this.time = CalendarUtils.asCalendar(time);

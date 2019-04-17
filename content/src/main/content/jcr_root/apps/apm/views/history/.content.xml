@@ -28,14 +28,13 @@
                     sling:resourceType="granite/ui/components/coral/foundation/table"
                     icon="viewList"
                     layoutId="list"
-                    limit="{Long}40"
+                    limit="{Long}10"
                     modeGroup="cq-experience-fragments-admin-childpages"
                     path="${requestPathInfo.suffix}"
-                    rootPath="/conf/apm/history/jcr:content/cqsmHistory"
                     selectionMode="row"
-                    size="${empty requestPathInfo.selectors[1] ? &quot;40&quot; : requestPathInfo.selectors[1]}"
+                    size="${empty requestPathInfo.selectors[1] ? &quot;10&quot; : requestPathInfo.selectors[1]}"
                     sortMode="remote"
-                    src="/mnt/overlay/apm/history/jcr:content/views/list{.offset,limit}.html{+id}{?sortName,sortDir}"
+                    src="/mnt/overlay/apm/views/history/jcr:content/views/list{.offset,limit}.html{+id}{?sortName,sortDir}"
                     stateId="xf.shell.collectionpage">
                 <columns jcr:primaryType="nt:unstructured">
                     <select
@@ -72,17 +71,12 @@
                     <summary
                             jcr:primaryType="nt:unstructured"
                             jcr:title="Summary"
-                            sortable="{Boolean}true"/>
+                            sortable="{Boolean}false"/>
                 </columns>
                 <datasource
                         jcr:primaryType="nt:unstructured"
                         sling:resourceType="apm/datasource/history"
-                        itemResourceType="apm/components/historyRow"
-                        limit="${empty requestPathInfo.selectors[1] ? &quot;41&quot; : requestPathInfo.selectors[1] + 1}"
-                        offset="${requestPathInfo.selectors[0]}"
-                        path="${requestPathInfo.suffix}"
-                        sortDir="${param.sortDir}"
-                        sortName="${param.sortName}"/>
+                        itemResourceType="apm/components/historyRow"/>
             </list>
         </views>
         <title jcr:primaryType="nt:unstructured"

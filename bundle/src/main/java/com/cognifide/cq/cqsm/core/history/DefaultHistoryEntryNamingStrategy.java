@@ -32,7 +32,7 @@ import org.apache.sling.api.resource.ResourceUtil;
 public class DefaultHistoryEntryNamingStrategy implements HistoryEntryNamingStrategy {
 
   @Override
-  public Resource getHistoryEntryResource(ResourceResolver resolver, Resource historyFolder, String fileName)
+  public Resource getHistoryEntryResource(ResourceResolver resolver, Resource historyFolder, String fileName, String filePath)
       throws PersistenceException {
     String uniqueName = ResourceUtil.createUniqueChildName(historyFolder, fileName);
     return resolver.create(historyFolder, uniqueName, ImmutableMap.of(JCR_PRIMARYTYPE, NT_UNSTRUCTURED));
