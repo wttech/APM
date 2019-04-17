@@ -22,7 +22,6 @@ package com.cognifide.cq.cqsm.core.executors;
 import com.cognifide.cq.cqsm.api.scripts.ExecutionMode;
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.core.Property;
-import com.cognifide.cq.cqsm.core.scripts.ScriptStorageImpl;
 import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper;
 import org.apache.sling.api.SlingConstants;
 import org.apache.sling.api.resource.PersistenceException;
@@ -38,10 +37,6 @@ import org.osgi.service.component.annotations.Component;
 		},
 		property = {
 				Property.TOPIC + ReplicationExecutor.JOB_NAME,
-				Property.RESOURCE_PATH + ScriptStorageImpl.SCRIPT_PATH,
-				Property.CHANGE_TYPE + "ADDED",
-				Property.CHANGE_TYPE + "CHANGED",
-				Property.DESCRIPTION + "CQSM Replication Event Handler",
 				Property.VENDOR
 		}
 )
@@ -56,8 +51,7 @@ public class ReplicationExecutor extends AbstractExecutor implements JobConsumer
 		final Script script = getScript(searchPath);
 		if (script != null) {
 			final String userId = getUserId(script);
-			result = SlingHelper
-					.resolveDefault(resolverFactory, userId, resolver -> runReplicated(resolver, script), JobResult.FAILED);
+			result = SlingHelper.resolveDefault(resolverFactory, userId, resolver -> runReplicated(resolver, script), JobResult.FAILED);
 		} else {
 			logger.warn("Replicated script cannot be found by script manager: {}", searchPath);
 		}
