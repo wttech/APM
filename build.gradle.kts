@@ -8,6 +8,7 @@ plugins {
     id("org.nosphere.apache.rat") version "0.4.0"
     id("com.cognifide.aem.package")
     `maven-publish`
+    signing
 }
 
 description = "AEM Permission Management :: Root"
@@ -17,17 +18,8 @@ scmVersion {
     ignoreUncommittedChanges = false
     tag(closureOf<TagNameSerializationConfig> {
         prefix = "apm"
-        branchPrefix = mapOf(
-                "aem/6.3.0" to "aem630",
-                "aem/6.4.0" to "aem640",
-                "aem/6.5.0" to "aem650")
-        branchVersionCreator = mapOf(
-                "aem/.*" to KotlinClosure2({ version: String, position: ScmPosition -> formatVersion(version, position) }),
-                ".*" to "simple")
     })
 }
-
-
 
 project.version = scmVersion.version
 
@@ -47,8 +39,6 @@ aem {
     }
 }
 
-val apmRepositoryUsername: String? by extra
-val apmRepositoryPassword: String? by extra
 publishing {
     publications {
         create<MavenPublication>("apm") {
@@ -56,19 +46,6 @@ publishing {
             artifact(apmContent)
             afterEvaluate {
                 artifactId = "apm-content"
-            }
-        }
-    }
-    repositories {
-        maven {
-            name = "OSSSonatypeOrg"
-            url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
-            credentials {
-                username = apmRepositoryUsername
-                password = apmRepositoryPassword
-            }
-            authentication {
-                create<BasicAuthentication>("basic")
             }
         }
     }

@@ -61,4 +61,60 @@ allprojects {
             }
         }
     }
+
+    afterEvaluate {
+        val apmRepositoryUsername: String? by extra
+        val apmRepositoryPassword: String? by extra
+        extensions.findByType(PublishingExtension::class)?.apply {
+            publications["apm"]?.apply {
+                if (this is MavenPublication) {
+                    pom {
+                        name.set("AEM Permission Management")
+                        description.set("AEM Permission Management is an AEM based tool focused on streamlining the permission configuration")
+                        url.set("https://github.com/Cognifide/APM")
+                        licenses {
+                            license {
+                                name.set("The Apache License, Version 2.0")
+                                url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                            }
+                        }
+                        developers {
+                            developer {
+                                name.set("Marcin Jędraszczyk")
+                                email.set("marcin.jedraszczyk@cognifide.com")
+                                organization.set("Cognifide")
+                                organizationUrl.set("https://www.cognifide.com")
+                            }
+                        }
+                        scm {
+                            connection.set("https://github.com/Cognifide/APM.git")
+                            developerConnection.set("https://github.com/Cognifide/APM.git")
+                            url.set("https://github.com/Cognifide/APM")
+                        }
+                    }
+                }
+            }
+            repositories {
+                maven {
+                    name = "OSSSonatypeOrg"
+                    url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
+                    credentials {
+                        username = apmRepositoryUsername
+                        password = apmRepositoryPassword
+                    }
+                    authentication {
+                        create<BasicAuthentication>("basic")
+                    }
+                }
+            }
+        }
+
+        extensions.findByType(SigningExtension::class)?.apply {
+            useGpgCmd()
+            val publication = extensions.findByType(PublishingExtension::class)?.publications?.get("apm")
+            if(publication != null) {
+                sign(publication)
+            }
+        }
+    }
 }

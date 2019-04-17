@@ -4,6 +4,7 @@ plugins {
     groovy
     java
     `maven-publish`
+    signing
 }
 
 description = "AEM Permission Management :: Application Core"
@@ -15,7 +16,7 @@ aem {
             javaPackage = "com.cognifide.cq.cqsm"
             displayName = "AEM Permission Management"
             license = "http://www.apache.org/licenses/LICENSE-2.0.txt"
-            vendor = "Cognifide Ltd."
+            vendor = "Cognifid"
             embedPackage("com.google.code.gson", true, "com.google.code.gson:gson:2.3.1")
             embedPackage("com.google.guava", true, "com.google.guava:guava:15.0")
             exportPackage("com.cognifide.cq.cqsm.foundation.actions.*")
@@ -85,6 +86,7 @@ publishing {
                 artifactId = "apm-bundle"
                 version = rootProject.version
             }
+            
         }
     }
 }
