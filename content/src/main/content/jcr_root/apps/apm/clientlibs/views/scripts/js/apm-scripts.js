@@ -295,11 +295,11 @@
   }
 
   function isFolder(selection) {
-    return selection.items._container.innerHTML.includes('folder');
+    return selection.items._container.innerHTML.indexOf('folder') > -1;
   }
 
   function isScriptInvalidOrNonExecutable(selection) {
-    return selection.items._container.innerHTML.includes('script-is-invalid');
+    return selection.items._container.innerHTML.indexOf('script-is-invalid') > -1;
   }
 
 })(window, jQuery);
