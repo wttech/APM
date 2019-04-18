@@ -66,7 +66,7 @@ allprojects {
         val apmRepositoryUsername: String? by extra
         val apmRepositoryPassword: String? by extra
         extensions.findByType(PublishingExtension::class)?.apply {
-            publications["apm"]?.apply {
+            publications?.findByName("apm")?.apply {
                 if (this is MavenPublication) {
                     pom {
                         name.set("AEM Permission Management")
@@ -80,8 +80,38 @@ allprojects {
                         }
                         developers {
                             developer {
+                                name.set("Katarzyna Wielgosz")
+                                email.set("katarzyna.wielgosz@cognifide.com")
+                                organization.set("Cognifide")
+                                organizationUrl.set("https://www.cognifide.com")
+                            }
+                            developer {
+                                name.set("Piotr Wilczyński")
+                                email.set("piotr.wilczynski@cognifide.com")
+                                organization.set("Cognifide")
+                                organizationUrl.set("https://www.cognifide.com")
+                            }
+                            developer {
                                 name.set("Marcin Jędraszczyk")
                                 email.set("marcin.jedraszczyk@cognifide.com")
+                                organization.set("Cognifide")
+                                organizationUrl.set("https://www.cognifide.com")
+                            }
+                            developer {
+                                name.set("Paweł Przystarz")
+                                email.set("pawel.przystarz@cognifide.com")
+                                organization.set("Cognifide")
+                                organizationUrl.set("https://www.cognifide.com")
+                            }
+                            developer {
+                                name.set("Urszula Gawłowska")
+                                email.set("urszula.gawlowska@cognifide.com")
+                                organization.set("Cognifide")
+                                organizationUrl.set("https://www.cognifide.com")
+                            }
+                            developer {
+                                name.set("Marek Krokosiński")
+                                email.set("marek.krokosinski@cognifide.com")
                                 organization.set("Cognifide")
                                 organizationUrl.set("https://www.cognifide.com")
                             }
@@ -111,7 +141,7 @@ allprojects {
 
         extensions.findByType(SigningExtension::class)?.apply {
             useGpgCmd()
-            val publication = extensions.findByType(PublishingExtension::class)?.publications?.get("apm")
+            val publication = extensions.findByType(PublishingExtension::class)?.publications?.findByName("apm")
             if(publication != null) {
                 sign(publication)
             }

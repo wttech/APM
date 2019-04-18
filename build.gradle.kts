@@ -1,16 +1,15 @@
-import com.cognifide.gradle.aem.pkg.tasks.Compose
 import pl.allegro.tech.build.axion.release.domain.TagNameSerializationConfig
 import pl.allegro.tech.build.axion.release.domain.scm.ScmPosition
 
 plugins {
-    id("nu.studer.credentials") version "1.0.7"
     id("pl.allegro.tech.build.axion-release") version "1.10.1"
     id("org.nosphere.apache.rat") version "0.4.0"
-    id("com.cognifide.aem.package")
+    id("com.cognifide.aem.instance")
     `maven-publish`
     signing
 }
 
+defaultTasks = listOf(":aemSatisfy", ":content:aemDeploy")
 description = "AEM Permission Management :: Root"
 
 scmVersion {
@@ -24,28 +23,18 @@ scmVersion {
 project.version = scmVersion.version
 
 allprojects {
-    group = "com.cognifide.cq"
+    group = "com.cognifide.aem"
 }
 
 aem {
     tasks {
-        compose {
-            fromJar("com.cognifide.cq.actions:com.cognifide.cq.actions.api:6.0.2")
-            fromJar("com.cognifide.cq.actions:com.cognifide.cq.actions.core:6.0.2")
-            fromJar("com.cognifide.cq.actions:com.cognifide.cq.actions.msg.replication:6.0.2")
-            fromProject(":bundle")
-            fromProject(":content")
-        }
-    }
-}
-
-publishing {
-    publications {
-        create<MavenPublication>("apm") {
-            val apmContent by tasks.named(Compose.NAME, Compose::class)
-            artifact(apmContent)
-            afterEvaluate {
-                artifactId = "apm-content"
+        satisfy {
+            packages {
+                group("default") {
+                    dependency("com.cognifide.cq.actions:com.cognifide.cq.actions.api:6.0.2")
+                    dependency("com.cognifide.cq.actions:com.cognifide.cq.actions.core:6.0.2")
+                    dependency("com.cognifide.cq.actions:com.cognifide.cq.actions.msg.replication:6.0.2")
+                }
             }
         }
     }
