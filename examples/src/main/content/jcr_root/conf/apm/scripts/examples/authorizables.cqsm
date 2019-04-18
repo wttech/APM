@@ -46,7 +46,7 @@ FOR-GROUP test_group_2
 	INCLUDE test_user_2
 
 # "REMOVE-USER" do not need context to work. We can delete specified users.
-REMOVE-USER [test_user_3 test_user_4]
+REMOVE-USER [test_user_1 test_user_2 test_user_3 test_user_4]
 
 # "REMOVE-GROUP" do not need context to work. We can delete specified groups.
-REMOVE-GROUP [test_group_3 test_group_4]
+REMOVE-GROUP [test_group_1 test_group_2 test_group_3]
