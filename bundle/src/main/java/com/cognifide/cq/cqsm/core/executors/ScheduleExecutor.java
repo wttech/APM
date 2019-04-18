@@ -22,6 +22,8 @@ package com.cognifide.cq.cqsm.core.executors;
 import static com.cognifide.cq.cqsm.core.scripts.ScriptFilters.filterOnSchedule;
 
 import com.cognifide.cq.cqsm.api.scripts.Script;
+import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
+import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
 import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper;
@@ -29,35 +31,51 @@ import java.util.Date;
 import java.util.List;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 @Component(
-		immediate = true,
-		service = Runnable.class,
-		property = {
-				Property.DESCRIPTION + "CQSM Schedule Executor",
-				Property.VENDOR,
-				Property.SCHEDULER + "0 * * * * ?"
-		}
+    immediate = true,
+    service = Runnable.class,
+    property = {
+        Property.DESCRIPTION + "CQSM Schedule Executor",
+        Property.VENDOR,
+        Property.SCHEDULER + "0 * * * * ?"
+    }
 )
 public class ScheduleExecutor extends AbstractExecutor implements Runnable {
 
-	@Override
-	public synchronized void run() {
-		SlingHelper.operateTraced(resolverFactory, this::runScheduled);
-	}
+  @Reference
+  private ScriptManager scriptManager;
 
-	private void runScheduled(ResourceResolver resolver) throws PersistenceException {
-		final List<Script> scripts = scriptFinder.findAll(filterOnSchedule(new Date()), resolver);
-		if (scripts.isEmpty()) {
-			return;
-		}
-		if(logger.isInfoEnabled()) {
-			logger.info(String.format("Schedule executor is trying to execute script(s): %d", scripts.size()));
-			logger.info(MessagingUtils.describeScripts(scripts));
-		}
-		for (Script script : scripts) {
-			processScript(script, resolver, ExecutorType.SCHEDULE);
-		}
-	}
+  @Reference
+  private ScriptFinder scriptFinder;
+
+  @Reference
+  private ResourceResolverFactory resolverFactory;
+
+  @Override
+  public synchronized void run() {
+    SlingHelper.operateTraced(resolverFactory, this::runScheduled);
+  }
+
+  private void runScheduled(ResourceResolver resolver) throws PersistenceException {
+    final List<Script> scripts = scriptFinder.findAll(filterOnSchedule(new Date()), resolver);
+    if (scripts.isEmpty()) {
+      return;
+    }
+    if (logger.isInfoEnabled()) {
+      logger.info(String.format("Schedule executor is trying to execute script(s): %d", scripts.size()));
+      logger.info(MessagingUtils.describeScripts(scripts));
+    }
+    for (Script script : scripts) {
+      processScript(script, resolver, ExecutorType.SCHEDULE);
+    }
+  }
+
+  @Override
+  public ScriptManager getScriptManager() {
+    return scriptManager;
+  }
 }

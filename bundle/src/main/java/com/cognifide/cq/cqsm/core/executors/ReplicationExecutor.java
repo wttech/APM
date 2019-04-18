@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,63 +21,81 @@ package com.cognifide.cq.cqsm.core.executors;
 
 import com.cognifide.cq.cqsm.api.scripts.ExecutionMode;
 import com.cognifide.cq.cqsm.api.scripts.Script;
+import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
+import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper;
 import org.apache.sling.api.SlingConstants;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.event.jobs.Job;
 import org.apache.sling.event.jobs.consumer.JobConsumer;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 @Component(
-		immediate = true,
-		service = {
-				JobConsumer.class
-		},
-		property = {
-				Property.TOPIC + ReplicationExecutor.JOB_NAME,
-				Property.VENDOR
-		}
+    immediate = true,
+    service = {
+        JobConsumer.class
+    },
+    property = {
+        Property.TOPIC + ReplicationExecutor.JOB_NAME,
+        Property.VENDOR
+    }
 )
 public class ReplicationExecutor extends AbstractExecutor implements JobConsumer {
 
-	public static final String JOB_NAME = "com/cognifide/cq/cqsm/core/executors/replication/executor";
+  public static final String JOB_NAME = "com/cognifide/cq/cqsm/core/executors/replication/executor";
 
-	@Override
-	public synchronized JobResult process(Job job) {
-		JobResult result = JobResult.FAILED;
-		final String searchPath = job.getProperty(SlingConstants.PROPERTY_PATH).toString();
-		final Script script = getScript(searchPath);
-		if (script != null) {
-			final String userId = getUserId(script);
-			result = SlingHelper.resolveDefault(resolverFactory, userId, resolver -> runReplicated(resolver, script), JobResult.FAILED);
-		} else {
-			logger.warn("Replicated script cannot be found by script manager: {}", searchPath);
-		}
-		return result;
-	}
+  @Reference
+  private ScriptManager scriptManager;
 
-	private Script getScript(String searchPath) {
-		return SlingHelper.resolveDefault(resolverFactory, resolver -> scriptFinder.find(searchPath, resolver), null);
-	}
+  @Reference
+  private ScriptFinder scriptFinder;
 
-	private String getUserId(Script script) {
-		return script.getReplicatedBy();
-	}
+  @Reference
+  private ResourceResolverFactory resolverFactory;
 
-	private JobResult runReplicated(ResourceResolver resolver, Script script) {
-		JobResult result = JobResult.FAILED;
+  @Override
+  public synchronized JobResult process(Job job) {
+    JobResult result = JobResult.FAILED;
+    final String searchPath = job.getProperty(SlingConstants.PROPERTY_PATH).toString();
+    final Script script = getScript(searchPath);
+    if (script != null) {
+      final String userId = getUserId(script);
+      result = SlingHelper
+          .resolveDefault(resolverFactory, userId, resolver -> runReplicated(resolver, script), JobResult.FAILED);
+    } else {
+      logger.warn("Replicated script cannot be found by script manager: {}", searchPath);
+    }
+    return result;
+  }
 
-		if (ExecutionMode.ON_DEMAND.equals(script.getExecutionMode()) && script.isPublishRun()) {
-			try {
-				processScript(script, resolver, ExecutorType.REPLICATION);
-				result = JobResult.OK;
-			} catch (PersistenceException e) {
-				logger.error(e.getMessage(), e);
-			}
-		}
-		return result;
-	}
+  private Script getScript(String searchPath) {
+    return SlingHelper.resolveDefault(resolverFactory, resolver -> scriptFinder.find(searchPath, resolver), null);
+  }
 
+  private String getUserId(Script script) {
+    return script.getReplicatedBy();
+  }
+
+  private JobResult runReplicated(ResourceResolver resolver, Script script) {
+    JobResult result = JobResult.FAILED;
+
+    if (ExecutionMode.ON_DEMAND.equals(script.getExecutionMode()) && script.isPublishRun()) {
+      try {
+        processScript(script, resolver, ExecutorType.REPLICATION);
+        result = JobResult.OK;
+      } catch (PersistenceException e) {
+        logger.error(e.getMessage(), e);
+      }
+    }
+    return result;
+  }
+
+  @Override
+  public ScriptManager getScriptManager() {
+    return scriptManager;
+  }
 }
