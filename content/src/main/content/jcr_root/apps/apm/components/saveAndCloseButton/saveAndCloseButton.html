@@ -1,0 +1,49 @@
+<!--/*
+* ========================LICENSE_START=================================
+* AEM Permission Management
+* %%
+* Copyright (C) 2013 - 2018 Cognifide Limited
+* %%
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*      http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+* =========================LICENSE_END==================================
+*/-->
+<coral-actionbar-item>
+  <coral-buttongroup class="betty-ActionBar-item granite-ActionGroup">
+    <button type="submit" is="coral-button" variant="primary" size="M" tabindex="0" id="saveAndCloseButton"
+            class="foundation-fixedanchor coral-Button coral-Button--primary coral-ButtonGroup-item">
+      <coral-button-label>Save &amp; Close</coral-button-label>
+    </button>
+    <button
+        class="granite-ActionGroup-icon coral-Button coral-Button--primary coral-ButtonGroup-item is-selected"
+        is="coral-button" icon="chevronDown" variant="primary" iconsize="xs" size="M" tabindex="-1">
+    </button>
+    <coral-popover placement="center" alignMy="right top" alignAt="right bottom" target="_prev">
+      <coral-popover-content>
+        <coral-buttonlist class="granite-ActionGroup-list">
+          <button id="saveButton" type="submit" is="coral-buttonlist-item"
+                  class="granite-ActionGroup-item coral-BasicList-item coral-ButtonList-item">
+            <coral-icon class="coral-Icon coral-BasicList-item-icon coral-Icon--sizeS" size="S"
+                        handle="icon">
+            </coral-icon>
+            <div class=" coral-BasicList-item-outerContainer" handle="outerContainer">
+              <div class=" coral-BasicList-item-contentContainer" handle="contentContainer">
+                <coral-list-item-content class="coral-BasicList-item-content">Save
+                </coral-list-item-content>
+              </div>
+            </div>
+          </button>
+        </coral-buttonlist>
+      </coral-popover-content>
+    </coral-popover>
+  </coral-buttongroup>
+</coral-actionbar-item>

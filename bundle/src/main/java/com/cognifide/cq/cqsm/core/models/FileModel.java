@@ -34,7 +34,7 @@ import java.util.Date;
 import lombok.Getter;
 
 //FIXME looks like ScriptImpl duplicate
-public class FileModel implements Comparable<FileModel> {
+public final class FileModel implements Comparable<FileModel> {
 
 	private static final Comparator<Date> DATE_DESCENDING_NULL_LAST_ORDERING = Ordering.natural().reverse()
 			.nullsLast();

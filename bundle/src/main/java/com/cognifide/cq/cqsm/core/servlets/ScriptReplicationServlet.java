@@ -24,33 +24,34 @@ import com.cognifide.cq.cqsm.api.scripts.ModifiableScript;
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
 import com.cognifide.cq.cqsm.api.scripts.ScriptReplicator;
-import com.cognifide.cq.cqsm.core.Cqsm;
+import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.scripts.ModifiableScriptWrapper;
 import com.cognifide.cq.cqsm.core.utils.ServletUtils;
 import com.day.cq.replication.ReplicationException;
-
+import java.io.IOException;
+import javax.jcr.RepositoryException;
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
-import org.apache.felix.scr.annotations.sling.SlingServlet;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
-import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
-import java.io.IOException;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
-
-@SlingServlet(paths = {"/bin/cqsm/replicate"}, methods = {"GET"})
-@Service
-@Properties({@Property(name = Constants.SERVICE_DESCRIPTION, value = "CQSM Replicate Servlet"),
-		@Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)})
+@Component(
+		immediate = true,
+		service = Servlet.class,
+		property = {
+				Property.PATH + "/bin/cqsm/replicate",
+				Property.METHOD + "GET",
+				Property.DESCRIPTION + "CQSM Replicate Servlet",
+				Property.VENDOR
+		}
+)
 public class ScriptReplicationServlet extends SlingSafeMethodsServlet {
 
 	private static final String PUBLISH_RUN = "publish";
@@ -89,16 +90,17 @@ public class ScriptReplicationServlet extends SlingSafeMethodsServlet {
 			final ModifiableScript modifiableScript = new ModifiableScriptWrapper(resolver, script);
 			if (PUBLISH_RUN.equals(run)) {
 				modifiableScript.setPublishRun(true);
+				modifiableScript.setReplicatedBy(resolver.getUserID());
 			}
 			scriptReplicator.replicate(script, resolver);
 
 			ServletUtils.writeMessage(response, "success",
 					String.format("Script '%s' replicated successfully", scriptPath));
-		} catch (PersistenceException e) {
+		} catch (PersistenceException | RepositoryException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			ServletUtils.writeMessage(response, "error",
-					String.format("Script '%s' cannot be processed because of" + " repository error: %s",
-							scriptPath, e.getMessage()));
+					String.format("Script '%s' cannot be processed because of repository error: %s",
+																		 scriptPath, e.getMessage()));
 		} catch (ExecutionException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			ServletUtils.writeMessage(response, "error",

@@ -24,13 +24,16 @@ import com.cognifide.cq.cqsm.foundation.permissions.exceptions.PermissionExcepti
 import com.cognifide.cq.cqsm.foundation.permissions.utils.JackrabbitAccessControlListUtil;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 import javax.jcr.ValueFactory;
+import javax.jcr.security.AccessControlException;
 import javax.jcr.ValueFormatException;
 import javax.jcr.security.AccessControlManager;
 import javax.jcr.security.Privilege;
@@ -140,9 +143,13 @@ public class PermissionActionHelper {
   private List<Privilege> createPrivileges(final AccessControlManager accessControlManager,
       final String permission) throws RepositoryException, PermissionException {
     try {
-      final PrivilegeList privilegeList = PrivilegeList.getFromTitle(permission);
-      return privilegeList.createPrivileges(accessControlManager);
-    } catch (IllegalArgumentException e) {
+      Optional<PrivilegeGroup> privilegeGroup = PrivilegeGroup.getFromTitle(permission);
+      if (privilegeGroup.isPresent()) {
+        return privilegeGroup.get().toPrivileges(accessControlManager);
+      } else {
+        return Collections.singletonList(accessControlManager.privilegeFromName(permission));
+      }
+    } catch (AccessControlException e) {
       throw new PermissionException("Unknown permission " + permission, e);
     }
   }
