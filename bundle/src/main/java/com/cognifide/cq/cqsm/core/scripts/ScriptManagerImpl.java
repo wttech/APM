@@ -109,7 +109,6 @@ public class ScriptManagerImpl implements ScriptManager {
 
 		final String path = script.getPath();
 
-		actionFactory.update();
 		LOG.info(String.format("Script execution started: %s [%s]", path, mode));
 		Progress progress = new ProgressImpl(resolver.getUserID());
 		final List<ActionDescriptor> descriptors = parseAllDescriptors(script, customDefinitions, resolver);
