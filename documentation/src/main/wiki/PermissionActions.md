@@ -40,7 +40,7 @@ FOR USER john-doe
 ```
 
 ### What are the available access control modifiers?
-Whenever an access modifier is required the one or many from the following list can be selected:
+APM allows to use every access modifier registered in AccessControlManager. Additionally, there are some predefined privilege groups:  
 
 | Modifier | JCR/AEM equivalent |
 | -------- | ------------ |
@@ -54,21 +54,6 @@ Whenever an access modifier is required the one or many from the following list 
 | READ_ACL | Privilege.JCR_READ_ACCESS_CONTROL |
 | MODIFY_ACL | Privilege.JCR_MODIFY_ACCESS_CONTROL |
 | DELETE_CHILD_NODES | Privilege.JCR_REMOVE_CHILD_NODES |
-| JCR_READ | Privilege.JCR_READ |
-| JCR_MODIFY_PROPERTIES | Privilege.JCR_MODIFY_PROPERTIES |
-| JCR_ADD_CHILD_NODES | Privilege.JCR_ADD_CHILD_NODES |
-| JCR_REMOVE_NODE | Privilege.JCR_REMOVE_NODE |
-| JCR_REMOVE_CHILD_NODES | Privilege.JCR_REMOVE_CHILD_NODES |
-| JCR_WRITE | Privilege.JCR_WRITE |
-| JCR_READ_ACCESS_CONTROL | Privilege.JCR_READ_ACCESS_CONTROL |
-| JCR_MODIFY_ACCESS_CONTROL | Privilege.JCR_MODIFY_ACCESS_CONTROL |
-| JCR_LOCK_MANAGEMENT | Privilege.JCR_LOCK_MANAGEMENT |
-| JCR_VERSION_MANAGEMENT | Privilege.JCR_VERSION_MANAGEMENT |
-| JCR_NODE_TYPE_MANAGEMENT | Privilege.JCR_NODE_TYPE_MANAGEMENT |
-| JCR_RETENTION_MANAGEMENT | Privilege.JCR_RETENTION_MANAGEMENT |
-| JCR_LIFECYCLE_MANAGEMENT | Privilege.JCR_LIFECYCLE_MANAGEMENT |
-| JCR_ALL | Privilege.JCR_ALL |
-| CRX_REPLICATE | "crx:replicate" |
 
 ### What are Glob patterns?
 The Access Control Entries (ACEs) can be either applied directly on the path selected or a `rep:glob` restriction can be used. This restriction does not take an immediate effect but rather uses a regexp pattern provided to match the target node. If the requested resource path matches the regexp and the resource is lying below the path where the regexp was configured, the actual modifier is effective.
