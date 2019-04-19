@@ -37,15 +37,16 @@ import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper;
 import com.day.cq.replication.ReplicationAction;
 import java.util.Calendar;
 import java.util.List;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.api.resource.ValueMap;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
-@Service
-@Component(immediate = true)
+@Component(
+		immediate = true,
+		service = ActionReceiver.class
+)
 public class RemoteScriptExecutionActionReceiver implements ActionReceiver {
 
 	@Reference

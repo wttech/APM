@@ -22,10 +22,10 @@ package com.cognifide.cq.cqsm.core.executors;
 import org.apache.commons.lang.WordUtils;
 
 enum ExecutorType {
-    SCHEDULE, MODIFY, REPLICATION, STARTUP;
+  SCHEDULE, MODIFY, REPLICATION, STARTUP;
 
-    @Override
-    public String toString() {
-        return WordUtils.capitalizeFully(name());
-    }
+  @Override
+  public String toString() {
+    return WordUtils.capitalizeFully(name());
+  }
 }

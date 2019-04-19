@@ -25,26 +25,25 @@ import com.cognifide.cq.cqsm.api.scripts.EventManager;
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
 import com.cognifide.cq.cqsm.api.scripts.ScriptReplicator;
-import com.cognifide.cq.cqsm.core.Cqsm;
+import com.cognifide.cq.cqsm.core.Property;
 import com.day.cq.replication.ReplicationActionType;
 import com.day.cq.replication.ReplicationException;
 import com.day.cq.replication.Replicator;
 import java.util.LinkedList;
 import java.util.List;
 import javax.jcr.Session;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
-@Component
-@Service
-@Properties({
-		@Property(name = Constants.SERVICE_DESCRIPTION, value = "CQSM Script Replicator Service"),
-		@Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)})
+@Component(
+		immediate = true,
+		service = ScriptReplicator.class,
+		property = {
+				Property.DESCRIPTION + "CQSM Script Replicator Service",
+				Property.VENDOR
+		}
+)
 public class ScriptReplicatorImpl implements ScriptReplicator {
 
 	@Reference

@@ -26,25 +26,28 @@ import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
 import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
+import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.jobs.JobResultsCache.ExecutionSummary;
 import com.cognifide.cq.cqsm.core.utils.sling.ResolveCallback;
 import javax.jcr.RepositoryException;
 import org.apache.commons.lang.StringUtils;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.event.jobs.Job;
 import org.apache.sling.event.jobs.consumer.JobConsumer;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Component(immediate = true)
-@Service
-@Property(name = JobConsumer.PROPERTY_TOPICS, value = ScriptRunnerJobManagerImpl.JOB_SCRIPT_RUN_TOPIC)
+@Component(
+		immediate = true,
+		service = JobConsumer.class,
+		property = {
+				Property.TOPIC + ScriptRunnerJobManagerImpl.JOB_SCRIPT_RUN_TOPIC
+		}
+)
 public class ScriptRunnerJobConsumer implements JobConsumer {
 
   private static final Logger LOG = LoggerFactory.getLogger(ScriptRunnerJobConsumer.class);

@@ -45,7 +45,7 @@ public class ScriptContent {
 
 	public static final String CQSM_PUBLISH_RUN = "cqsm:publishRun";
 
-	public static final String CQSM_REPLICATED_BY = "cqsm:replicatedBy";
+  public static final String CQSM_REPLICATED_BY = "cqsm:replicatedBy";
 
 	public static final String CQSM_VERIFIED = "cqsm:verified";
 
@@ -107,10 +107,10 @@ public class ScriptContent {
 	@Optional
 	private String data; //FIXME lazy load would be better here
 
-	@Inject
-	@Named(CQSM_REPLICATED_BY)
-	@Optional
-	private String replicatedBy;
+  @Inject
+  @Named(CQSM_REPLICATED_BY)
+  @Optional
+  private String replicatedBy;
 
 	@Inject
 	@Named(DRY_RUN_TIME)

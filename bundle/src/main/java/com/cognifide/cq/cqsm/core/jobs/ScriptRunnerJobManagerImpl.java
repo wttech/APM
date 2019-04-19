@@ -23,26 +23,25 @@ import static com.cognifide.cq.cqsm.core.jobs.ScriptRunnerJobStatus.FINISHED;
 import static com.cognifide.cq.cqsm.core.jobs.ScriptRunnerJobStatus.RUNNING;
 import static com.cognifide.cq.cqsm.core.jobs.ScriptRunnerJobStatus.UNKNOWN;
 
-import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.scriptrunnerjob.JobProgressOutput;
+import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.jobs.JobResultsCache.ExecutionSummary;
 import com.cognifide.cq.cqsm.core.servlets.BackgroundJobParameters;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.event.jobs.Job;
 import org.apache.sling.event.jobs.JobManager;
-import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
-@Component(immediate = true)
-@Service
-@Properties({
-    @Property(name = Constants.SERVICE_DESCRIPTION, value = "CQSM Service for running scripts in background and checking theirs status"),
-    @Property(name = Constants.SERVICE_VENDOR, value = "Cognifide Ltd")})
+@Component(
+    immediate = true,
+    service = ScriptRunnerJobManager.class,
+    property = {
+        Property.DESCRIPTION + "CQSM Service for running scripts in background and checking theirs status",
+        Property.VENDOR
+    }
+)
 public class ScriptRunnerJobManagerImpl implements ScriptRunnerJobManager {
 
   public static final String JOB_SCRIPT_RUN_TOPIC = "script/job/run";

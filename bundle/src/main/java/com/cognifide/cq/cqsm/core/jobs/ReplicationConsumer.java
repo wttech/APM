@@ -19,41 +19,45 @@
  */
 package com.cognifide.cq.cqsm.core.jobs;
 
+import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.executors.ReplicationExecutor;
 import com.day.cq.replication.ReplicationAction;
 import com.day.cq.replication.ReplicationEvent;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
 import org.apache.sling.api.SlingConstants;
 import org.apache.sling.event.jobs.JobManager;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
 
-@Component(immediate = true)
-@Service
-@Property(name = EventConstants.EVENT_TOPIC, value = ReplicationEvent.EVENT_TOPIC)
+@Component(
+    immediate = true,
+    service = EventHandler.class,
+    property = {
+        EventConstants.EVENT_TOPIC + "=" + ReplicationEvent.EVENT_TOPIC,
+        Property.VENDOR
+    }
+)
 public class ReplicationConsumer implements EventHandler {
 
-	@Reference
-	private JobManager jobManager;
+  @Reference
+  private JobManager jobManager;
 
-	@Override
-	public void handleEvent(Event event) {
-		ReplicationAction action = ReplicationEvent.fromEvent(event).getReplicationAction();
-		Arrays.stream(action.getPaths())
-				.filter(path -> path.startsWith("/conf/apm/scripts"))
-				.forEach(this::run);
-	}
+  @Override
+  public void handleEvent(Event event) {
+    ReplicationAction action = ReplicationEvent.fromEvent(event).getReplicationAction();
+    Arrays.stream(action.getPaths())
+        .filter(path -> path.startsWith("/conf/apm/scripts"))
+        .forEach(this::run);
+  }
 
-	public void run(String scriptPath) {
-		Map<String, Object> properties = Collections.singletonMap(SlingConstants.PROPERTY_PATH, scriptPath);
-		jobManager.addJob(ReplicationExecutor.JOB_NAME, properties);
-	}
+  public void run(String scriptPath) {
+    Map<String, Object> properties = Collections.singletonMap(SlingConstants.PROPERTY_PATH, scriptPath);
+    jobManager.addJob(ReplicationExecutor.JOB_NAME, properties);
+  }
 
 }

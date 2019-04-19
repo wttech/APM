@@ -27,25 +27,27 @@ import static com.cognifide.cq.cqsm.core.utils.SuccessMessage.successMessage;
 import com.cognifide.cq.cqsm.api.executors.Mode;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
-import com.cognifide.cq.cqsm.core.Cqsm;
+import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.utils.ErrorMessage.ErrorMessageBuilder;
 import java.io.IOException;
+import javax.servlet.Servlet;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
-import org.apache.felix.scr.annotations.sling.SlingServlet;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
-import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
-@SlingServlet(paths = {"/bin/cqsm/validate"})
-@Service
-@Properties({@Property(name = Constants.SERVICE_DESCRIPTION, value = "CQSM Validation Servlet"),
-    @Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)})
+@Component(
+		immediate = true,
+		service = Servlet.class,
+		property = {
+				Property.PATH + "/bin/cqsm/validate",
+				Property.DESCRIPTION + "CQSM Validation Servlet",
+				Property.VENDOR
+		}
+)
 public class ScriptValidationServlet extends SlingAllMethodsServlet {
 
   @Reference

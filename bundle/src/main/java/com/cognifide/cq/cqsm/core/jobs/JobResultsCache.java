@@ -19,27 +19,26 @@
  */
 package com.cognifide.cq.cqsm.core.jobs;
 
+import com.cognifide.cq.cqsm.api.logger.Progress;
+import com.cognifide.cq.cqsm.core.Property;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-
-import com.cognifide.cq.cqsm.api.logger.Progress;
-
 import java.io.Serializable;
+import java.util.concurrent.TimeUnit;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Service;
-import org.osgi.framework.Constants;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
 
-import java.util.concurrent.TimeUnit;
-
-@Component(label = "Job results holder service", description = "Job results holder service", metatype = true)
-@Service(JobResultsCache.class)
-@Properties({@Property(name = Constants.SERVICE_VENDOR, value = "Cognifide Ltd")})
+@Component(
+    immediate = true,
+    service = JobResultsCache.class,
+    property = {
+        Property.DESCRIPTION + "Job results holder service",
+        Property.VENDOR
+    }
+)
 public class JobResultsCache {
 
 	private static final long DEFAULT_EXPIRATION_TIME = 10;

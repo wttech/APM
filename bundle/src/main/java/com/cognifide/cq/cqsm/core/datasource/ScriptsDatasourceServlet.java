@@ -1,5 +1,5 @@
 
-/*
+/*-
  * ========================LICENSE_START=================================
  * AEM Permission Management
  * %%
@@ -9,7 +9,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,26 +24,27 @@ import static com.cognifide.cq.cqsm.core.models.ScriptsRowModel.SCRIPTS_ROW_RESO
 
 import com.adobe.granite.ui.components.ds.DataSource;
 import com.adobe.granite.ui.components.ds.SimpleDataSource;
-import com.cognifide.cq.cqsm.core.Cqsm;
+import com.cognifide.cq.cqsm.core.Property;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Service;
-import org.apache.felix.scr.annotations.sling.SlingServlet;
+import javax.servlet.Servlet;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceWrapper;
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
-import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Component;
 
-@SlingServlet(resourceTypes = {"apm/datasource/scripts"}, methods = {"GET"})
-@Service
-@Properties({
-    @Property(name = Constants.SERVICE_DESCRIPTION, value = "APM Scripts Data Source Servlet"),
-    @Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)
-})
+@Component(
+    immediate = true,
+    service = Servlet.class,
+    property = {
+        Property.RESOURCE_TYPE + "apm/datasource/scripts",
+        Property.METHOD + "GET",
+        Property.DESCRIPTION + "APM Scripts Data Source Servlet",
+        Property.VENDOR
+    }
+)
 public class ScriptsDatasourceServlet extends SlingSafeMethodsServlet {
 
   @Override

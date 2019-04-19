@@ -109,10 +109,10 @@ public class ModifiableScriptWrapper implements ModifiableScript {
 		setProperty(ScriptContent.RUN_ON_PUBLISH_SUCCESSFUL, flag);
 	}
 
-	@Override
-	public void setReplicatedBy(String userId) throws PersistenceException {
-		setProperty(ScriptContent.CQSM_REPLICATED_BY, userId);
-	}
+  @Override
+  public void setReplicatedBy(String userId) throws PersistenceException {
+    setProperty(ScriptContent.CQSM_REPLICATED_BY, userId);
+  }
 
 	@Override
 	public void setExecutionMode(ExecutionMode mode) throws PersistenceException {

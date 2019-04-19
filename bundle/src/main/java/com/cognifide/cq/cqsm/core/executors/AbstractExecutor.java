@@ -22,57 +22,43 @@ package com.cognifide.cq.cqsm.core.executors;
 import com.cognifide.cq.cqsm.api.executors.Mode;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.scripts.Script;
-import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
 import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Reference;
+import javax.jcr.RepositoryException;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jcr.RepositoryException;
-
-
-@Component(componentAbstract = true)
 abstract class AbstractExecutor {
 
-    final Logger logger;
+  protected final Logger logger;
 
-    @Reference
-    private ScriptManager scriptManager;
+  AbstractExecutor() {
+    logger = LoggerFactory.getLogger(this.getClass());
+  }
 
-    @Reference
-    ScriptFinder scriptFinder;
-
-    @Reference
-    ResourceResolverFactory resolverFactory;
-
-    AbstractExecutor() {
-        logger = LoggerFactory.getLogger(this.getClass());
+  void processScript(Script script, ResourceResolver resolver, ExecutorType executorType) throws PersistenceException {
+    final String scriptPath = script.getPath();
+    try {
+      getScriptManager().process(script, Mode.VALIDATION, resolver);
+      if (script.isValid()) {
+        final Progress progress = getScriptManager().process(script, Mode.AUTOMATIC_RUN, resolver);
+        logStatus(scriptPath, progress.isSuccess(), executorType);
+      } else {
+        logger.warn("{} executor cannot execute script which is not valid: {}", executorType.toString(), scriptPath);
+      }
+    } catch (RepositoryException e) {
+      logger.error("Script cannot be processed because of repository error: {}", scriptPath, e);
     }
+  }
 
-    void processScript(Script script, ResourceResolver resolver, ExecutorType executorType) throws PersistenceException {
-        final String scriptPath = script.getPath();
-        try {
-            scriptManager.process(script, Mode.VALIDATION, resolver);
-            if (script.isValid()) {
-                final Progress progress = scriptManager.process(script, Mode.AUTOMATIC_RUN, resolver);
-                logStatus(scriptPath, progress.isSuccess(), executorType);
-            } else {
-                logger.warn("{} executor cannot execute script which is not valid: {}", executorType.toString(), scriptPath);
-            }
-        } catch (RepositoryException e) {
-            logger.error("Script cannot be processed because of repository error: {}", scriptPath, e);
-        }
+  private void logStatus(String scriptPath, boolean success, ExecutorType executorType) {
+    if (success) {
+      logger.info("{} script successfully executed: {}", executorType.toString(), scriptPath);
+    } else {
+      logger.error("{} script cannot be executed properly: {}", executorType.toString(), scriptPath);
     }
+  }
 
-    private void logStatus(String scriptPath, boolean success, ExecutorType executorType) {
-        if (success) {
-            logger.info("{} script successfully executed: {}", executorType.toString(), scriptPath);
-        } else {
-            logger.error("{} script cannot be executed properly: {}", executorType.toString(), scriptPath);
-        }
-    }
+  protected abstract ScriptManager getScriptManager();
 }
