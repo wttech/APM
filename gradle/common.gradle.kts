@@ -115,6 +115,36 @@ allprojects {
                                 organization.set("Cognifide")
                                 organizationUrl.set("https://www.cognifide.com")
                             }
+                            developer {
+                                name.set("Szymon Owczarz")
+                                email.set("szymon.owczarz@cognifide.com")
+                                organization.set("Cognifide")
+                                organizationUrl.set("https://www.cognifide.com")
+                            }
+                            developer {
+                                name.set("Bartosz Wesołowski")
+                                email.set("bartosz.wesolowski@cognifide.com")
+                                organization.set("Cognifide")
+                                organizationUrl.set("https://www.cognifide.com")
+                            }
+                            developer {
+                                name.set("Artur Maćkowiak")
+                                email.set("artur.mackowiak@cognifide.com")
+                                organization.set("Cognifide")
+                                organizationUrl.set("https://www.cognifide.com")
+                            }
+                            developer {
+                                name.set("Tomasz Kaik")
+                                email.set("tomasz.kaik@cognifide.com")
+                                organization.set("Cognifide")
+                                organizationUrl.set("https://www.cognifide.com")
+                            }
+                            developer {
+                                name.set("Dominik Przybył")
+                                email.set("dominik.przybyl@cognifide.com")
+                                organization.set("Cognifide")
+                                organizationUrl.set("https://www.cognifide.com")
+                            }
                         }
                         scm {
                             connection.set("https://github.com/Cognifide/APM.git")
