@@ -23,6 +23,7 @@ import com.cognifide.gradle.aem.pkg.tasks.Compose
 plugins {
     id("com.cognifide.aem.package")
     `maven-publish`
+    signing
 }
 
 description = "AEM Permission Management :: Examples"
