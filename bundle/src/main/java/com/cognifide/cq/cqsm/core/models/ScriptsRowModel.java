@@ -19,6 +19,8 @@
  */
 package com.cognifide.cq.cqsm.core.models;
 
+import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
+
 import com.cognifide.cq.cqsm.core.scripts.ScriptContent;
 import com.cognifide.cq.cqsm.core.scripts.ScriptImpl;
 import com.cognifide.cq.cqsm.core.utils.CalendarUtils;
@@ -67,7 +69,7 @@ public final class ScriptsRowModel {
 
   public ScriptsRowModel(Resource resource) {
     this.isFolder = isFolder(resource);
-    this.scriptName = resource.getName();
+    this.scriptName = defaultIfEmpty(getProperty(resource, JcrConstants.JCR_TITLE), resource.getName());
     if (!isFolder) {
       Optional.ofNullable(resource.adaptTo(ScriptImpl.class)).ifPresent(script -> {
         this.author = script.getAuthor();
