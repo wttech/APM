@@ -19,7 +19,7 @@
 */-->
 <div data-sly-use.model="com.cognifide.cq.cqsm.core.models.ConsoleModel">
 
-    <input class="coral-Form-field coral-Textfield" type="text" value="${model.fileName}" name="fname" id="fname" readonly="${model.edit ? 'readonly' : ''}">
+    <input class="coral-Form-field coral-Textfield" type="text" value="${model.fileName}" name="fname" id="fname" data-sly-attribute.disabled="${model.edit ? 'disabled' : ''}">
     <input class="coral-Form-field coral-Textfield" type="text" value=".cqsm" disabled>
     <br/>
     <div id="ace"></div>
