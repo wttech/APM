@@ -19,10 +19,12 @@
  */
 package com.cognifide.cq.cqsm.core.models;
 
+import com.cognifide.cq.cqsm.core.scripts.ScriptContent;
 import com.cognifide.cq.cqsm.core.scripts.ScriptImpl;
 import com.cognifide.cq.cqsm.core.utils.CalendarUtils;
 import com.day.cq.commons.jcr.JcrConstants;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -38,7 +40,7 @@ import org.apache.sling.models.annotations.Model;
 public final class ScriptsRowModel {
 
   private static final Set<String> FOLDER_TYPES = ImmutableSet
-      .of(JcrConstants.NT_FOLDER, "sling:OrderedFolder");
+      .of(JcrConstants.NT_FOLDER, "sling:OrderedFolder", "sling:Folder");
 
   public static final String SCRIPTS_ROW_RESOURCE_TYPE = "apm/components/scriptsRow";
 
@@ -80,7 +82,21 @@ public final class ScriptsRowModel {
   }
 
   public static boolean isFolder(Resource resource) {
-    return FOLDER_TYPES.contains(resource.getValueMap().get(JcrConstants.JCR_PRIMARYTYPE, StringUtils.EMPTY));
+    return FOLDER_TYPES.contains(getProperty(resource, JcrConstants.JCR_PRIMARYTYPE));
+  }
+
+  public static boolean isScript(Resource resource) {
+    return Optional.ofNullable(resource.getChild(JcrConstants.JCR_CONTENT))
+        .map(child -> getArrayProperty(child, JcrConstants.JCR_MIXINTYPES).contains(ScriptContent.CQSM_FILE))
+        .orElse(false);
+  }
+
+  private static String getProperty(Resource resource, String name) {
+    return resource.getValueMap().get(name, StringUtils.EMPTY);
+  }
+
+  private static List<String> getArrayProperty(Resource resource, String name) {
+    return Lists.newArrayList(resource.getValueMap().get(name, new String[]{}));
   }
 
   public String getResourceType() {
