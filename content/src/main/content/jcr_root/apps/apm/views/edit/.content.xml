@@ -5,30 +5,31 @@
   jcr:primaryType="cq:Page">
   <jcr:content
     jcr:mixinTypes="[sling:VanityPath]"
-    jcr:primaryType="nt:unstructured"
+    jcr:primaryType="cq:PageContent"
     jcr:title="APM Edit"
     granite:class="apm-edit-script-page"
-    sling:resourceType="granite/ui/components/shell/collectionpage"
+    sling:resourceType="granite/ui/components/shell/page"
     sling:vanityPath="/apm/edit"
     consoleId="apm-edit"
-    omnisearchLocationPath="/libs/granite/omnisearch/content/metadata/experiencefragments"
-    targetCollection=".apm-edit-form">
+    omnisearchLocationPath="/libs/granite/omnisearch/content/metadata/experiencefragments">
     <head jcr:primaryType="nt:unstructured">
       <clientlibs
         jcr:primaryType="nt:unstructured"
         sling:resourceType="granite/ui/components/coral/foundation/includeclientlibs"
         categories="[apm-edit]"/>
     </head>
-    <actions
+    <title
       jcr:primaryType="nt:unstructured"
-      sling:resourceType="granite/ui/components/foundation/navigation"
-      class="content-header grid-generator-header">
+      sling:resourceType="granite/ui/components/coral/foundation/text"
+      text="APM Edit">
+    </title>
+    <actions jcr:primaryType="nt:unstructured">
       <primary jcr:primaryType="nt:unstructured">
         <showReferences
           granite:id="showReference"
           granite:class="foundation-collection-action"
           jcr:primaryType="nt:unstructured"
-          sling:resourceType="granite/ui/components/coral/foundation/collection/action"
+          sling:resourceType="granite/ui/components/coral/foundation/button"
           icon="file"
           text="Show References"
           variant="actionBar"/>
@@ -36,7 +37,7 @@
           granite:id="validateButton"
           granite:class="foundation-collection-action"
           jcr:primaryType="nt:unstructured"
-          sling:resourceType="granite/ui/components/coral/foundation/collection/action"
+          sling:resourceType="granite/ui/components/coral/foundation/button"
           icon="spellcheck"
           text="Validate"
           variant="actionBar"/>
@@ -46,7 +47,7 @@
           granite:id="cancelButton"
           granite:class="foundation-collection-action"
           jcr:primaryType="nt:unstructured"
-          sling:resourceType="granite/ui/components/coral/foundation/collection/action"
+          sling:resourceType="granite/ui/components/coral/foundation/button"
           text="Cancel"
           variant="quiet"/>
         <save
@@ -54,30 +55,28 @@
           sling:resourceType="apm/components/saveAndCloseButton"/>
       </secondary>
     </actions>
-    <views jcr:primaryType="nt:unstructured">
-      <list
-        granite:class="apm-edit-form"
-        granite:rel="apm-edit"
-        jcr:primaryType="nt:unstructured"
-        sling:resourceType="granite/ui/components/coral/foundation/container"
-        margin="true">
-        <items jcr:primaryType="nt:unstructured">
-          <form
-            granite:class="cache-warmup-form"
-            granite:id="script-form"
-            jcr:primaryType="nt:unstructured"
-            sling:resourceType="granite/ui/components/coral/foundation/form"
-            action="${requestPathInfo.suffix}"
-            method="post"
-            style="vertical">
-            <items jcr:primaryType="nt:unstructured">
-              <console
-                jcr:primaryType="nt:unstructured"
-                sling:resourceType="apm/components/console"/>
-            </items>
-          </form>
-        </items>
-      </list>
-    </views>
+    <content
+      granite:class="apm-edit-form"
+      granite:rel="apm-edit"
+      jcr:primaryType="nt:unstructured"
+      sling:resourceType="granite/ui/components/coral/foundation/container"
+      margin="true">
+      <items jcr:primaryType="nt:unstructured">
+        <form
+          granite:class="cache-warmup-form"
+          granite:id="script-form"
+          jcr:primaryType="nt:unstructured"
+          sling:resourceType="granite/ui/components/coral/foundation/form"
+          action="${requestPathInfo.suffix}"
+          method="post"
+          style="vertical">
+          <items jcr:primaryType="nt:unstructured">
+            <console
+              jcr:primaryType="nt:unstructured"
+              sling:resourceType="apm/components/console"/>
+          </items>
+        </form>
+      </items>
+    </content>
   </jcr:content>
 </jcr:root>

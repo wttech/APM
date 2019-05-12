@@ -19,7 +19,7 @@
  */
 .apm-view-form {
   margin: 30px auto 0 auto;
-  width: 60%;
+  width: 75%;
 
   @media screen and (max-width: 1080px) {
     width: 98%;
@@ -33,13 +33,20 @@
   height: 100%;
 }
 
-.apm-view-form .coral-Form-field.coral-Textfield {
-  display: inline-block;
+.apm-view-form .controls {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
 
-  &[value='.cqsm'] {
-    width: 15%;
+  .coral-Textfield {
+    display: inline-block;
   }
-  &[name='fname'] {
+
+  [name='fname'] {
     width: 80%;
+  }
+
+  [value='.cqsm'] {
+    width: 19%;
   }
 }
