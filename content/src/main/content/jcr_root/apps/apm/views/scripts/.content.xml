@@ -36,8 +36,9 @@
                     modeGroup="cq-experience-fragments-admin-childpages"
                     path="${requestPathInfo.suffix}"
                     rootPath="/conf/apm/scripts"
-                    rowReorderAction=""
                     selectionMode="row"
+                    size="1000"
+                    src="/mnt/overlay/apm/views/scripts/jcr:content/views/list.html{+id}"
                     stateId="xf.shell.collectionpage">
                 <columns jcr:primaryType="nt:unstructured">
                     <select
