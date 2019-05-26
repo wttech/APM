@@ -17,9 +17,23 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.cq.cqsm.core.servlets;
+package com.cognifide.cq.cqsm.core.servlets.run;
 
-public class BackgroundJobParameters {
+import com.cognifide.cq.cqsm.api.executors.Mode;
+import com.cognifide.cq.cqsm.core.models.ScriptsRowModel;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.sling.event.jobs.Job;
+
+public class ScriptRunParameters {
+
+	public static final String JOB_SCRIPT_RUN_TOPIC = "script/job/run";
+	public static final String SCRIPT_PATH_PROPERTY_NAME = "file";
+	public static final String MODE_NAME_PROPERTY_NAME = "mode";
+	public static final String USER_NAME_PROPERTY_NAME = "userName";
 
 	private String searchPath;
 
@@ -27,7 +41,7 @@ public class BackgroundJobParameters {
 
 	private String userName;
 
-	public BackgroundJobParameters(String searchPath, String modeName, String userName) {
+	public ScriptRunParameters(String searchPath, String modeName, String userName) {
 		this.searchPath = searchPath;
 		this.modeName = modeName;
 		this.userName = userName;
@@ -43,5 +57,18 @@ public class BackgroundJobParameters {
 
 	public String getUserName() {
 		return userName;
+	}
+
+	public boolean areValid() {
+		return true;
+		// TODO
+	}
+
+	public Map<String, Object> asMap() {
+		final Map<String, Object> props = new HashMap<>();
+		props.put(SCRIPT_PATH_PROPERTY_NAME, this.getSearchPath());
+		props.put(MODE_NAME_PROPERTY_NAME, this.getModeName());
+		props.put(USER_NAME_PROPERTY_NAME, this.getUserName());
+		return props;
 	}
 }

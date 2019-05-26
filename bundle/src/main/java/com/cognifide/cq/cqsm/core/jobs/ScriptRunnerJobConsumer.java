@@ -28,11 +28,11 @@ import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
 import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.jobs.JobResultsCache.ExecutionSummary;
+import com.cognifide.cq.cqsm.core.servlets.run.ScriptRunParameters;
 import com.cognifide.cq.cqsm.core.utils.sling.ResolveCallback;
 import javax.jcr.RepositoryException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.resource.PersistenceException;
-import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.event.jobs.Job;
 import org.apache.sling.event.jobs.consumer.JobConsumer;
@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
 		immediate = true,
 		service = JobConsumer.class,
 		property = {
-				Property.TOPIC + ScriptRunnerJobManagerImpl.JOB_SCRIPT_RUN_TOPIC
+				Property.TOPIC + ScriptRunParameters.JOB_SCRIPT_RUN_TOPIC
 		}
 )
 public class ScriptRunnerJobConsumer implements JobConsumer {
@@ -67,23 +67,23 @@ public class ScriptRunnerJobConsumer implements JobConsumer {
   @Override
   public JobResult process(final Job job) {
     LOG.info("Script runner job consumer started");
-    final String id = job.getId();
-    final Mode mode = getMode(job);
-    final String userId = getUserId(job);
-    return resolveDefault(resolverFactory, userId, (ResolveCallback<JobResult>) resolver -> {
-      JobResult result = JobResult.FAILED;
-      final Script script = getScript(job, resolver);
-      if (script != null && mode != null) {
-        try {
-          Progress progressLogger = scriptManager.process(script, mode, resolver);
-          String summaryPath = getSummaryPath(script, mode);
-          jobResultsCache.put(id, new ExecutionSummary(progressLogger, summaryPath));
-          result = JobResult.OK;
-        } catch (RepositoryException | PersistenceException e) {
-          LOG.error("Script manager failed to process script", e);
-          result = JobResult.FAILED;
-        }
+
+    ScriptRunParameters parameters = fromJob(job);
+
+    return resolveDefault(resolverFactory, parameters.getUserName(), (ResolveCallback<JobResult>) resolver -> {
+      JobResult result;
+      final Mode mode = Mode.fromString(parameters.getModeName(),Mode.DRY_RUN);
+      final Script script = scriptFinder.find(parameters.getSearchPath(), resolver);
+      try {
+        Progress progressLogger = scriptManager.process(script, mode, resolver);
+        String summaryPath = getSummaryPath(script, mode);
+        jobResultsCache.put(job.getId(), new ExecutionSummary(progressLogger, summaryPath));
+        result = JobResult.OK;
+      } catch (RepositoryException | PersistenceException e) {
+        LOG.error("Script manager failed to process script", e);
+        result = JobResult.FAILED;
       }
+
       return result;
     }, JobResult.FAILED);
   }
@@ -97,34 +97,12 @@ public class ScriptRunnerJobConsumer implements JobConsumer {
     return StringUtils.EMPTY;
   }
 
-  private Mode getMode(Job job) {
-    Mode result = null;
-    String modeName = (String) job.getProperty(ScriptRunnerJobManagerImpl.MODE_NAME_PROPERTY_NAME);
-    if (StringUtils.isNotBlank(modeName)) {
-      result = StringUtils.isEmpty(modeName) ? Mode.DRY_RUN : Mode.valueOf(modeName.toUpperCase());
-    } else {
-      LOG.error("Mode is null");
-    }
-    return result;
+  private ScriptRunParameters fromJob(Job job) {
+    String searchPath = job
+            .getProperty(ScriptRunParameters.SCRIPT_PATH_PROPERTY_NAME, String.class);
+    String modeName = job.getProperty(ScriptRunParameters.MODE_NAME_PROPERTY_NAME, String.class);
+    String userName = job.getProperty(ScriptRunParameters.USER_NAME_PROPERTY_NAME, String.class);
+    return new ScriptRunParameters(searchPath, modeName, userName);
   }
 
-  private Script getScript(Job job, ResourceResolver resolver) {
-    String scriptSearchPath = (String) job
-        .getProperty(ScriptRunnerJobManagerImpl.SCRIPT_PATH_PROPERTY_NAME);
-    if (StringUtils.isNotBlank(scriptSearchPath)) {
-      final Script script = scriptFinder.find(scriptSearchPath, resolver);
-      if (script == null) {
-        LOG.error("Script not found: %s", scriptSearchPath);
-        return null;
-      }
-      return script;
-    } else {
-      LOG.error("Script search path is blank");
-      return null;
-    }
-  }
-
-  private String getUserId(Job job) {
-    return job.getProperty(ScriptRunnerJobManagerImpl.USER_NAME_PROPERTY_NAME, String.class);
-  }
 }

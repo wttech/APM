@@ -127,4 +127,9 @@ public class ScriptFinderImpl implements ScriptFinder {
   private boolean isAbsolute(String path) {
     return StringUtils.startsWith(path, "/");
   }
+
+  private String getAbsoluteScriptPath(String path) {
+    if (isAbsolute(path)) { return path; }
+    return SCRIPT_PATH + "/" + path;
+  }
 }
