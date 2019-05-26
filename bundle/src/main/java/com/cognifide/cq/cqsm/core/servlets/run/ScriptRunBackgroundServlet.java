@@ -17,13 +17,14 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.cq.cqsm.core.servlets;
+package com.cognifide.cq.cqsm.core.servlets.run;
 
 import com.cognifide.cq.cqsm.api.scriptrunnerjob.JobProgressOutput;
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.jobs.ScriptRunnerJobManager;
+import com.cognifide.cq.cqsm.core.servlets.run.ScriptRunParameters;
 import com.cognifide.cq.cqsm.core.utils.ServletUtils;
 import com.google.common.collect.ImmutableMap;
 import java.io.IOException;
@@ -55,10 +56,6 @@ public class ScriptRunBackgroundServlet extends SlingAllMethodsServlet {
 
   private static final String ERROR_RESPONSE_TYPE = "error";
 
-  private static final String FILE_REQUEST_PARAMETER = "file";
-
-  private static final String MODE_REQUEST_PARAMETER = "mode";
-
   private static final String ID_REQUEST_PARAMETER = "id";
 
   @Reference
@@ -71,9 +68,16 @@ public class ScriptRunBackgroundServlet extends SlingAllMethodsServlet {
   protected void doPost(final SlingHttpServletRequest request, final SlingHttpServletResponse response)
       throws IOException {
 
-    final String searchPath = request.getParameter(FILE_REQUEST_PARAMETER);
+
+    final ScriptRunParameters parameters = getParameters(request);
+
+    if (!parameters.areValid()) {
+      updateResponse(parameters, response);
+      return;
+    }
+
     final ResourceResolver resolver = request.getResourceResolver();
-    final Script script = scriptFinder.find(searchPath, resolver);
+    final Script script = scriptFinder.find(parameters.getSearchPath(), resolver);
 
     final boolean isValid = script.isValid();
     final boolean isExecutable = script.isExecutionEnabled();
@@ -81,12 +85,7 @@ public class ScriptRunBackgroundServlet extends SlingAllMethodsServlet {
     if (!(isValid && isExecutable)) {
       ServletUtils.writeMessage(response, ERROR_RESPONSE_TYPE, String.format("Script '%s' cannot be processed. " +
               "Script needs to be executable and valid. Actual script status: valid - %s, executable - %s",
-          searchPath, isValid, isExecutable));
-      return;
-    }
-
-    BackgroundJobParameters parameters = getParameters(request, response);
-    if (parameters == null) {
+          parameters.getSearchPath(), isValid, isExecutable));
       return;
     }
 
@@ -105,24 +104,23 @@ public class ScriptRunBackgroundServlet extends SlingAllMethodsServlet {
     ServletUtils.writeJson(response, jobProgressOutput);
   }
 
-  private BackgroundJobParameters getParameters(final SlingHttpServletRequest request,
-      final SlingHttpServletResponse response) throws IOException {
-    final String searchPath = request.getParameter(FILE_REQUEST_PARAMETER);
-    final String modeName = request.getParameter(MODE_REQUEST_PARAMETER);
+  private ScriptRunParameters getParameters(final SlingHttpServletRequest request) {
+    final String searchPath = request.getParameter(ScriptRunParameters.SCRIPT_PATH_PROPERTY_NAME);
+    final String modeName = request.getParameter(ScriptRunParameters.MODE_NAME_PROPERTY_NAME);
     final String userName = request.getUserPrincipal().getName();
 
-    if (StringUtils.isEmpty(searchPath)) {
+    return new ScriptRunParameters(searchPath, modeName, userName);
+  }
+
+  private void updateResponse(ScriptRunParameters params, final SlingHttpServletResponse response)  throws IOException{
+    if (StringUtils.isEmpty(params.getSearchPath())) {
       ServletUtils.writeMessage(response, ERROR_RESPONSE_TYPE,
-          "Please set the script file name: -d \"file=[name]\"");
-      return null;
+              "Please set the script file name: -d \"file=[name]\"");
     }
 
-    if (StringUtils.isEmpty(modeName)) {
+    if (StringUtils.isEmpty(params.getModeName())) {
       ServletUtils.writeMessage(response, ERROR_RESPONSE_TYPE, "Running mode not specified.");
-      return null;
     }
-
-    return new BackgroundJobParameters(searchPath, modeName, userName);
   }
 
   private Map<String, Object> createMapWithJobIdKey(Job job) {

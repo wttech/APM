@@ -26,9 +26,7 @@ import static com.cognifide.cq.cqsm.core.jobs.ScriptRunnerJobStatus.UNKNOWN;
 import com.cognifide.cq.cqsm.api.scriptrunnerjob.JobProgressOutput;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.jobs.JobResultsCache.ExecutionSummary;
-import com.cognifide.cq.cqsm.core.servlets.BackgroundJobParameters;
-import java.util.HashMap;
-import java.util.Map;
+import com.cognifide.cq.cqsm.core.servlets.run.ScriptRunParameters;
 import org.apache.sling.event.jobs.Job;
 import org.apache.sling.event.jobs.JobManager;
 import org.osgi.service.component.annotations.Component;
@@ -44,14 +42,6 @@ import org.osgi.service.component.annotations.Reference;
 )
 public class ScriptRunnerJobManagerImpl implements ScriptRunnerJobManager {
 
-  public static final String JOB_SCRIPT_RUN_TOPIC = "script/job/run";
-
-  public static final String SCRIPT_PATH_PROPERTY_NAME = "searchPath";
-
-  public static final String MODE_NAME_PROPERTY_NAME = "modeName";
-
-  public static final String USER_NAME_PROPERTY_NAME = "userName";
-
   @Reference
   private JobManager jobManager;
 
@@ -59,13 +49,8 @@ public class ScriptRunnerJobManagerImpl implements ScriptRunnerJobManager {
   private JobResultsCache jobResultsCache;
 
   @Override
-  public Job scheduleJob(BackgroundJobParameters parameters) {
-    final Map<String, Object> props = new HashMap<>();
-    props.put(SCRIPT_PATH_PROPERTY_NAME, parameters.getSearchPath());
-    props.put(MODE_NAME_PROPERTY_NAME, parameters.getModeName());
-    props.put(USER_NAME_PROPERTY_NAME, parameters.getUserName());
-    return jobManager.addJob(JOB_SCRIPT_RUN_TOPIC, props);
-
+  public Job scheduleJob(ScriptRunParameters parameters) {
+    return jobManager.addJob(ScriptRunParameters.JOB_SCRIPT_RUN_TOPIC,parameters.asMap());
   }
 
   @Override

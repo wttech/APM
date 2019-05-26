@@ -20,13 +20,13 @@
 package com.cognifide.cq.cqsm.core.jobs;
 
 import com.cognifide.cq.cqsm.api.scriptrunnerjob.JobProgressOutput;
-import com.cognifide.cq.cqsm.core.servlets.BackgroundJobParameters;
+import com.cognifide.cq.cqsm.core.servlets.run.ScriptRunParameters;
 
 import org.apache.sling.event.jobs.Job;
 
 public interface ScriptRunnerJobManager {
 
-	Job scheduleJob(BackgroundJobParameters parameters);
+	Job scheduleJob(ScriptRunParameters parameters);
 
 	JobProgressOutput checkJobStatus(String id);
 }
