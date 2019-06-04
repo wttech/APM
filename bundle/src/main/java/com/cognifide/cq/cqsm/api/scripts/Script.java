@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,10 +20,8 @@
 package com.cognifide.cq.cqsm.api.scripts;
 
 import com.cognifide.cq.cqsm.core.scripts.Checksum;
-
-import org.apache.sling.api.resource.ResourceResolver;
-
 import java.util.Date;
+import org.apache.sling.api.resource.ResourceResolver;
 
 public interface Script {
 
@@ -63,11 +61,6 @@ public interface Script {
 	boolean isDryRunExecuted();
 
 	/**
-	 * Check dry run result
-	 */
-	boolean isDryRunSuccessful();
-
-	/**
 	 * Check run on publish
 	 */
 	boolean isPublishRun();
@@ -96,4 +89,56 @@ public interface Script {
 	 * Return copy of the file
 	 */
 	String getData();
+
+	/**
+	 * Return user that replicated script
+	 * @return
+	 */
+	String getReplicatedBy();
+
+	/**
+	 * Return last dry run date
+	 */
+	Date getDryRunTime();
+
+	/**
+	 * Get path to dry run summary
+	 */
+	String getDryRunSummary();
+
+	/**
+	 * Check dry run result
+	 */
+	boolean isDryRunSuccessful();
+
+	/**
+	 * Return date of last run on author.
+	 */
+	Date getRunTime();
+
+	/**
+	 * Get path to summary of last run on author.
+	 */
+	String getRunSummary();
+
+	/**
+	 * Return status of last run on author.
+	 */
+	boolean isRunSuccessful();
+
+	/**
+	 * Get path to summary of last run on publish
+	 */
+	String getRunOnPublishSummary();
+
+	/**
+	 * Return date of last run on publish.
+	 */
+	Date getRunOnPublishTime();
+
+	/**
+	 * Return status of last run on publish.
+	 */
+	boolean isRunOnPublishSuccessful();
+
 }

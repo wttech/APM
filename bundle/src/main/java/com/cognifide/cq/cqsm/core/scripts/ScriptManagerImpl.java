@@ -39,12 +39,23 @@ import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
 import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
 import com.cognifide.cq.cqsm.api.scripts.ScriptStorage;
-import com.cognifide.cq.cqsm.core.Cqsm;
+import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.actions.executor.ActionExecutor;
 import com.cognifide.cq.cqsm.core.progress.ProgressImpl;
 import com.cognifide.cq.cqsm.core.sessions.SessionSavingMode;
 import com.cognifide.cq.cqsm.core.sessions.SessionSavingPolicy;
 import com.google.common.collect.Maps;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.LineIterator;
+import org.apache.jackrabbit.api.JackrabbitSession;
+import org.apache.sling.api.resource.PersistenceException;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -52,6 +63,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -59,24 +71,15 @@ import java.util.Map;
 import java.util.TreeMap;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.LineIterator;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
-import org.apache.jackrabbit.api.JackrabbitSession;
-import org.apache.sling.api.resource.PersistenceException;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.osgi.framework.Constants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-@Component
-@Service
-@Properties({@Property(name = Constants.SERVICE_DESCRIPTION, value = "CQSM Script Manager Service"),
-		@Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)})
+@Component(
+		immediate = true,
+		service = ScriptManager.class,
+		property = {
+				Property.DESCRIPTION + "CQSM Script Manager Service",
+				Property.VENDOR
+		}
+)
 public class ScriptManagerImpl implements ScriptManager {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ScriptManagerImpl.class);
@@ -135,7 +138,7 @@ public class ScriptManagerImpl implements ScriptManager {
 	@Override
 	public synchronized Progress process(final Script script, final Mode mode, ResourceResolver resolver)
 			throws RepositoryException, PersistenceException {
-		return process(script, mode, Maps.<String, String>newHashMap(), resolver);
+		return process(script, mode, Maps.newHashMap(), resolver);
 	}
 
 	@Override
@@ -165,15 +168,19 @@ public class ScriptManagerImpl implements ScriptManager {
 			modifiableScript.setDryRunStatus(success);
 		}
 
-		if (mode.equals(Mode.VALIDATION)) {
+		if (Mode.VALIDATION.equals(mode)) {
 			modifiableScript.setValid(success);
+		}
+
+		if (Mode.DRY_RUN.equals(mode)) {
+			modifiableScript.setDryRunTime(new Date());
 		}
 	}
 
 	@Override
 	public Progress evaluate(String scriptContent, Mode mode, ResourceResolver resolver)
 			throws RepositoryException, PersistenceException {
-		return evaluate(scriptContent, mode, Maps.<String, String>newHashMap(), resolver);
+		return evaluate(scriptContent, mode, Maps.newHashMap(), resolver);
 	}
 
 	@Override

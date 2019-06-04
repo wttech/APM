@@ -19,98 +19,114 @@
  */
 package com.cognifide.cq.cqsm.core.servlets;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import com.cognifide.cq.cqsm.api.scriptrunnerjob.JobProgressOutput;
+import com.cognifide.cq.cqsm.api.scripts.Script;
+import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
+import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.jobs.ScriptRunnerJobManager;
 import com.cognifide.cq.cqsm.core.utils.ServletUtils;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
-import org.apache.felix.scr.annotations.sling.SlingServlet;
-import org.apache.sling.api.SlingHttpServletRequest;
-import org.apache.sling.api.SlingHttpServletResponse;
-import org.apache.sling.api.servlets.SlingAllMethodsServlet;
-import org.apache.sling.event.jobs.Job;
-import org.osgi.framework.Constants;
-
+import com.google.common.collect.ImmutableMap;
 import java.io.IOException;
 import java.util.Map;
+import javax.servlet.Servlet;
+import org.apache.commons.lang.StringUtils;
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.SlingHttpServletResponse;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.servlets.SlingAllMethodsServlet;
+import org.apache.sling.event.jobs.Job;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
-import javax.servlet.ServletException;
-
-@SlingServlet(paths = {"/bin/cqsm/run-background"}, methods = {"GET", "POST"})
-@Service
-@Properties({
-		@Property(name = Constants.SERVICE_DESCRIPTION, value = "CQSM Servlet for running scripts in background and checking theirs status"),
-		@Property(name = Constants.SERVICE_VENDOR, value = "Cognifide Ltd")})
+@Component(
+		immediate = true,
+		service = Servlet.class,
+		property = {
+				Property.PATH + "/bin/cqsm/run-background",
+				Property.METHOD + "GET",
+				Property.METHOD + "POST",
+				Property.DESCRIPTION + "CQSM Servlet for running scripts in background and checking theirs status",
+				Property.VENDOR
+		}
+)
 public class ScriptRunBackgroundServlet extends SlingAllMethodsServlet {
 
-	private static final String BACKGROUND_RESPONSE_TYPE = "background";
+  private static final String BACKGROUND_RESPONSE_TYPE = "background";
 
-	private static final String ERROR_RESPONSE_TYPE = "error";
+  private static final String ERROR_RESPONSE_TYPE = "error";
 
-	private static final String FILE_REQUEST_PARAMETER = "file";
+  private static final String FILE_REQUEST_PARAMETER = "file";
 
-	private static final String MODE_REQUEST_PARAMETER = "mode";
+  private static final String MODE_REQUEST_PARAMETER = "mode";
 
-	private static final String ID_REQUEST_PARAMETER = "id";
+  private static final String ID_REQUEST_PARAMETER = "id";
 
-	private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+  @Reference
+  private ScriptRunnerJobManager scriptRunnerJobManager;
 
-	@Reference
-	private ScriptRunnerJobManager scriptRunnerJobManager;
+  @Reference
+  private ScriptFinder scriptFinder;
 
-	@Override
-	protected void doPost(final SlingHttpServletRequest request, final SlingHttpServletResponse response)
-			throws ServletException, IOException {
-		BackgroundJobParameters parameters = getParameters(request, response);
-		if (parameters == null) {
-			return;
-		}
+  @Override
+  protected void doPost(final SlingHttpServletRequest request, final SlingHttpServletResponse response)
+      throws IOException {
 
-		Job job = scriptRunnerJobManager.scheduleJob(parameters);
-		ServletUtils.writeMessage(response, BACKGROUND_RESPONSE_TYPE, BACKGROUND_RESPONSE_TYPE, createMapWithJobIdKey(job));
-	}
+    final String searchPath = request.getParameter(FILE_REQUEST_PARAMETER);
+    final ResourceResolver resolver = request.getResourceResolver();
+    final Script script = scriptFinder.find(searchPath, resolver);
 
-	@Override
-	protected void doGet(final SlingHttpServletRequest request, final SlingHttpServletResponse response)
-			throws ServletException, IOException {
-		final String id = request.getParameter(ID_REQUEST_PARAMETER);
-		if (id == null) {
-			return;
-		}
-		JobProgressOutput jobProgressOutput = scriptRunnerJobManager.checkJobStatus(id);
-		ServletUtils.writeJson(response, gson.toJson(jobProgressOutput));
-	}
+    final boolean isValid = script.isValid();
+    final boolean isExecutable = script.isExecutionEnabled();
 
-	private BackgroundJobParameters getParameters(final SlingHttpServletRequest request,
-			final SlingHttpServletResponse response) throws IOException {
-		final String searchPath = request.getParameter(FILE_REQUEST_PARAMETER);
-		final String modeName = request.getParameter(MODE_REQUEST_PARAMETER);
-		final String userName = request.getUserPrincipal().getName();
+    if (!(isValid && isExecutable)) {
+      ServletUtils.writeMessage(response, ERROR_RESPONSE_TYPE, String.format("Script '%s' cannot be processed. " +
+              "Script needs to be executable and valid. Actual script status: valid - %s, executable - %s",
+          searchPath, isValid, isExecutable));
+      return;
+    }
 
-		if (StringUtils.isEmpty(searchPath)) {
-			ServletUtils.writeMessage(response, ERROR_RESPONSE_TYPE,
-					"Please set the script file name: -d \"file=[name]\"");
-			return null;
-		}
+    BackgroundJobParameters parameters = getParameters(request, response);
+    if (parameters == null) {
+      return;
+    }
 
-		if (StringUtils.isEmpty(modeName)) {
-			ServletUtils.writeMessage(response, ERROR_RESPONSE_TYPE, "Running mode not specified.");
-			return null;
-		}
+    Job job = scriptRunnerJobManager.scheduleJob(parameters);
+    ServletUtils.writeMessage(response, BACKGROUND_RESPONSE_TYPE, BACKGROUND_RESPONSE_TYPE, createMapWithJobIdKey(job));
+  }
 
-		return new BackgroundJobParameters(searchPath, modeName, userName);
-	}
+  @Override
+  protected void doGet(final SlingHttpServletRequest request, final SlingHttpServletResponse response)
+      throws IOException {
+    final String id = request.getParameter(ID_REQUEST_PARAMETER);
+    if (id == null) {
+      return;
+    }
+    JobProgressOutput jobProgressOutput = scriptRunnerJobManager.checkJobStatus(id);
+    ServletUtils.writeJson(response, jobProgressOutput);
+  }
 
-	private Map<String, Object> createMapWithJobIdKey(Job job) {
-		return ImmutableMap.<String, Object>builder().put(ID_REQUEST_PARAMETER, job.getId()).build();
-	}
+  private BackgroundJobParameters getParameters(final SlingHttpServletRequest request,
+      final SlingHttpServletResponse response) throws IOException {
+    final String searchPath = request.getParameter(FILE_REQUEST_PARAMETER);
+    final String modeName = request.getParameter(MODE_REQUEST_PARAMETER);
+    final String userName = request.getUserPrincipal().getName();
+
+    if (StringUtils.isEmpty(searchPath)) {
+      ServletUtils.writeMessage(response, ERROR_RESPONSE_TYPE,
+          "Please set the script file name: -d \"file=[name]\"");
+      return null;
+    }
+
+    if (StringUtils.isEmpty(modeName)) {
+      ServletUtils.writeMessage(response, ERROR_RESPONSE_TYPE, "Running mode not specified.");
+      return null;
+    }
+
+    return new BackgroundJobParameters(searchPath, modeName, userName);
+  }
+
+  private Map<String, Object> createMapWithJobIdKey(Job job) {
+    return ImmutableMap.<String, Object>builder().put(ID_REQUEST_PARAMETER, job.getId()).build();
+  }
 
 }

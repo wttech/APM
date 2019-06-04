@@ -32,14 +32,18 @@ public class JobProgressOutput {
 	private String type;
 
 	@Getter
+	private String path;
+
+	@Getter
 	private List<ProgressEntry> entries;
 
 	public JobProgressOutput(ScriptRunnerJobStatus status) {
 		this.type = status.toString();
 	}
 
-	public JobProgressOutput(ScriptRunnerJobStatus status, List<ProgressEntry> entries) {
+	public JobProgressOutput(ScriptRunnerJobStatus status, String path, List<ProgressEntry> entries) {
 		this.entries = entries;
+		this.path = path;
 		this.type = status.toString();
 	}
 }

@@ -1,0 +1,25 @@
+# This script provides example actions for permission manipulation.
+
+# This action will create group only if this group do not exist
+CREATE-GROUP test_group IF-NOT-EXISTS
+
+# Change current context to specified authorizable
+FOR-GROUP test_group
+
+# Purge will remove all permission for current context for whole subtree, starting from specified path as root
+	PURGE /content/dam
+	
+# Allow and deny are common actions that can be used for setting privileges.
+	ALLOW	/apps [READ]
+	ALLOW	/libs [READ]
+	ALLOW	/tmp [READ]
+	ALLOW	/var [READ]
+	ALLOW	/etc [READ]
+	
+	ALLOW	/content/site/en [READ] IF-EXISTS
+	ALLOW	/content/site/fr [READ] IF-EXISTS
+	ALLOW	/content/site/es /* [READ] IF-EXISTS
+	DENY /content/site/en [REPLICATE DELETE MODIFY CREATE] IF-EXISTS
+	DENY /content/site/fr [REPLICATE DELETE MODIFY CREATE] IF-EXISTS
+	DENY /content/site/es /* [DELETE] IF-EXISTS
+	DENY /content/site/it /* [ALL] IF-EXISTS

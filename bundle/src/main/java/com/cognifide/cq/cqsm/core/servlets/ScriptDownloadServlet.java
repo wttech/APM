@@ -19,18 +19,14 @@
  */
 package com.cognifide.cq.cqsm.core.servlets;
 
-import com.cognifide.cq.cqsm.core.Cqsm;
+import com.cognifide.cq.cqsm.core.Property;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Service;
-import org.apache.felix.scr.annotations.sling.SlingServlet;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
-import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,14 +38,19 @@ import java.net.URLEncoder;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.servlet.Servlet;
 import javax.servlet.ServletException;
 
-@SlingServlet(paths = {"/bin/cqsm/fileDownload"}, methods = {"GET"})
-@Service
-// @formatter:off
-@Properties({@Property(name = Constants.SERVICE_DESCRIPTION, value = "CQSM File Download Servlet"),
-		@Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)})
-// @formatter:on
+@Component(
+		immediate = true,
+		service = Servlet.class,
+		property = {
+				Property.PATH + "/bin/cqsm/fileDownload",
+				Property.METHOD + "GET",
+				Property.DESCRIPTION + "CQSM File Download Servlet",
+				Property.VENDOR
+		}
+)
 public class ScriptDownloadServlet extends SlingSafeMethodsServlet {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ScriptDownloadServlet.class);

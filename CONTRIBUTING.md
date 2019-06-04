@@ -8,14 +8,11 @@ We appreciate all commits and improvements, feel free to join APM community and 
 Please refer to [Installation guide](https://github.com/Cognifide/apm/wiki/Installing) section in the wiki space.
 After setting up APM on your AEM instance you may check if it works properly entering [http://localhost:4502/etc/cqsm.html](http://localhost:4502/etc/cqsm.html) (when running default AEM port configuration).
 
-The project uses default [AEM archetype](https://docs.adobe.com/docs/en/aem/6-2/develop/dev-tools/ht-projects-maven.html). To build the project use:
+The project uses [Gradle plugin](https://github.com/Cognifide/gradle-aem-plugin). To build the project use:
 
 ```bash
 # to install whole AEM package (Java + content)
-$ mvn clean install -PautoInstallPackage
-
-# to install Java code (bundle) only
-$ mvn clean install -PautoInstallBundle
+$ gradlew :build :aemDeploy
 ```
 
 ## APM Contributor License Agreement

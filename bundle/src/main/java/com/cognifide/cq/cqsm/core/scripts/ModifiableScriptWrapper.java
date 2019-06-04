@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,16 +23,14 @@ import com.cognifide.cq.cqsm.api.scripts.ExecutionMode;
 import com.cognifide.cq.cqsm.api.scripts.ModifiableScript;
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.core.utils.ResourceMixinUtil;
-
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 
 public class ModifiableScriptWrapper implements ModifiableScript {
 
@@ -62,14 +60,59 @@ public class ModifiableScriptWrapper implements ModifiableScript {
 	}
 
 	@Override
-	public void setDryRunStatus(Boolean flag) throws PersistenceException {
-		setProperty(ScriptContent.CQSM_DRY_RUN_SUCCESSFUL, flag);
-	}
-
-	@Override
 	public void setPublishRun(Boolean flag) throws PersistenceException {
 		setProperty(ScriptContent.CQSM_PUBLISH_RUN, flag);
 	}
+
+	@Override
+	public void setDryRunTime(Date executionDate) throws PersistenceException {
+		setProperty(ScriptContent.DRY_RUN_TIME, executionDate);
+	}
+
+	@Override
+	public void setDryRunSummary(String path) throws PersistenceException {
+		setProperty(ScriptContent.DRY_RUN_SUMMARY, path);
+	}
+
+	@Override
+	public void setDryRunStatus(Boolean flag) throws PersistenceException {
+		setProperty(ScriptContent.DRY_RUN_SUCCESSFUL, flag);
+	}
+
+	@Override
+	public void setRunTime(Date executionDate) throws PersistenceException {
+		setProperty(ScriptContent.RUN_TIME, executionDate);
+	}
+
+	@Override
+	public void setRunSummary(String path) throws PersistenceException {
+		setProperty(ScriptContent.RUN_SUMMARY, path);
+	}
+
+	@Override
+	public void setRunStatus(Boolean flag) throws PersistenceException {
+		setProperty(ScriptContent.RUN_SUCCESSFUL, flag);
+	}
+
+	@Override
+	public void setRunOnPublishTime(Date executionDate) throws PersistenceException {
+		setProperty(ScriptContent.RUN_ON_PUBLISH_TIME, executionDate);
+	}
+
+	@Override
+	public void setRunOnPublishSummary(String path) throws PersistenceException {
+		setProperty(ScriptContent.RUN_ON_PUBLISH_SUMMARY, path);
+	}
+
+	@Override
+	public void setRunOnPublishStatus(Boolean flag) throws PersistenceException {
+		setProperty(ScriptContent.RUN_ON_PUBLISH_SUCCESSFUL, flag);
+	}
+
+  @Override
+  public void setReplicatedBy(String userId) throws PersistenceException {
+    setProperty(ScriptContent.CQSM_REPLICATED_BY, userId);
+  }
 
 	@Override
 	public void setExecutionMode(ExecutionMode mode) throws PersistenceException {

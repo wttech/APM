@@ -36,7 +36,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
-@Ignore
+@Ignore // TODO: FixThis - all tests in this class are causing stack overflow exception !!!
 public class ActionFactoryImplTest {
 
 	ActionFactoryImpl factory;

@@ -20,27 +20,25 @@
 package com.cognifide.cq.cqsm.core.servlets;
 
 import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
-import com.cognifide.cq.cqsm.core.Cqsm;
+import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.utils.ServletUtils;
-
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Reference;
-import org.apache.felix.scr.annotations.Service;
-import org.apache.felix.scr.annotations.sling.SlingServlet;
+import java.io.IOException;
+import javax.servlet.Servlet;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
-import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
-import java.io.IOException;
-
-import javax.servlet.ServletException;
-
-@SlingServlet(resourceTypes = "cqsm/core/renderers/definitionsRenderer", selectors = "action", extensions = "json")
-@Service
-@Properties({@Property(name = Constants.SERVICE_DESCRIPTION, value = "CQSM Definitions Servlet"),
-		@Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)})
+@Component(
+		immediate = true,
+		service = Servlet.class,
+		property = {
+				Property.PATH + "/bin/cqsm/definitions",
+				Property.DESCRIPTION + "CQSM Definitions Servlet",
+				Property.VENDOR
+		}
+)
 public class DefinitionsServlet extends SlingAllMethodsServlet {
 
 	@Reference
@@ -48,7 +46,7 @@ public class DefinitionsServlet extends SlingAllMethodsServlet {
 
 	@Override
 	protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response)
-			throws ServletException, IOException {
+			throws IOException {
 		ServletUtils.writeJson(response, scriptManager.getPredefinedDefinitions());
 	}
 }

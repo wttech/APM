@@ -19,37 +19,42 @@
  */
 package com.cognifide.cq.cqsm.core.servlets;
 
-import com.cognifide.cq.cqsm.core.Cqsm;
+import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
+import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.models.FileModel;
-import com.cognifide.cq.cqsm.core.models.ImportInitModel;
 import com.cognifide.cq.cqsm.core.utils.ServletUtils;
-
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Service;
-import org.apache.felix.scr.annotations.sling.SlingServlet;
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.servlet.Servlet;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
-import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
-import java.io.IOException;
-import java.util.List;
-
-import javax.servlet.ServletException;
-
-@SlingServlet(paths = {"/bin/cqsm/list"}, methods = {"GET"})
-@Service
-@Properties({
-		@Property(name = Constants.SERVICE_DESCRIPTION, value = "CQSM List Servlet"),
-		@Property(name = Constants.SERVICE_VENDOR, value = Cqsm.VENDOR_NAME)
-})
+@Component(
+		immediate = true,
+		service = Servlet.class,
+		property = {
+				Property.PATH + "/bin/cqsm/list",
+				Property.METHOD + "GET",
+				Property.DESCRIPTION + "CQSM List Servlet",
+				Property.VENDOR
+		}
+)
 public class ScriptListServlet extends SlingAllMethodsServlet {
 
-	@Override
-	protected void doGet(final SlingHttpServletRequest request, final SlingHttpServletResponse response)
-			throws ServletException, IOException {
-		List<FileModel> files = request.adaptTo(ImportInitModel.class).getFiles();
-		ServletUtils.writeJson(response, files);
-	}
+  @Reference
+  private ScriptFinder scriptFinder;
+
+  @Override
+  protected void doGet(final SlingHttpServletRequest request, final SlingHttpServletResponse response)
+      throws IOException {
+    List<FileModel> files = scriptFinder.findAll(request.getResourceResolver()).stream()
+        .map(FileModel::new)
+        .sorted()
+        .collect(Collectors.toList());
+    ServletUtils.writeJson(response, files);
+  }
 }

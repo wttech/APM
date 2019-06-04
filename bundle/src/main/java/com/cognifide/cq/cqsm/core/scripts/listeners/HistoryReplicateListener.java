@@ -20,24 +20,25 @@
 package com.cognifide.cq.cqsm.core.scripts.listeners;
 
 import com.cognifide.cq.cqsm.api.executors.Mode;
-import com.cognifide.cq.cqsm.api.history.Entry;
-import com.cognifide.cq.cqsm.api.history.History;
+import com.cognifide.cq.cqsm.api.history.HistoryEntry;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.scripts.Event;
 import com.cognifide.cq.cqsm.api.scripts.EventListener;
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
 import com.cognifide.cq.cqsm.api.utils.InstanceTypeProvider;
+import com.cognifide.cq.cqsm.core.history.History;
+import javax.jcr.RepositoryException;
 
-import org.apache.felix.scr.annotations.Activate;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Reference;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jcr.RepositoryException;
-
-@Component
+@Component(
+		immediate = true
+)
 public class HistoryReplicateListener implements EventListener {
 
 	private static final Logger LOG = LoggerFactory.getLogger(HistoryReplicateListener.class);
@@ -62,7 +63,7 @@ public class HistoryReplicateListener implements EventListener {
 	public void handle(Script script, Mode mode, Progress progress) {
 		if (mode.isRun()) {
 			try {
-				Entry entry = history.log(script, mode, progress);
+				HistoryEntry entry = history.log(script, mode, progress);
 				history.replicate(entry, progress.getExecutor());
 			} catch (RepositoryException e) {
 				LOG.error("Repository error occurred while replicating script execution", e);
