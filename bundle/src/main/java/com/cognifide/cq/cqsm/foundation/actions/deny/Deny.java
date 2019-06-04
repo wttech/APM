@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,6 +25,7 @@ import com.cognifide.cq.cqsm.api.exceptions.ActionExecutionException;
 import com.cognifide.cq.cqsm.api.executors.Context;
 import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
 import com.cognifide.cq.cqsm.foundation.permissions.PermissionActionHelper;
+import com.cognifide.cq.cqsm.foundation.permissions.Restrictions;
 import com.cognifide.cq.cqsm.foundation.permissions.exceptions.PermissionException;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,84 +38,86 @@ import org.slf4j.LoggerFactory;
 
 public class Deny implements Action {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(Deny.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(Deny.class);
 
-	private final String path;
+  private final String path;
 
-	private final String glob;
+  private final List<String> permissions;
 
-  private final List<String> itemNames;
+  private final Restrictions restrictions;
 
-	private final boolean ignoreUnexistingPaths;
+  private final boolean ignoreNonExistingPaths;
 
-	private final List<String> permissions;
+  public Deny(final String path, final List<String> permissions,
+      final String glob, List<String> ntNames, final List<String> itemNames,
+      final boolean ignoreNonExistingPaths) {
+    this.path = path;
+    this.permissions = permissions;
+    this.restrictions = new Restrictions(glob, ntNames, itemNames);
+    this.ignoreNonExistingPaths = ignoreNonExistingPaths;
+  }
 
-  public Deny(final String path, final String glob, final List<String> itemNames, final boolean ignoreUnexistingPaths,
-			final List<String> permissions) {
-		this.path = path;
-		this.glob = glob;
-    this.itemNames = itemNames;
-		this.ignoreUnexistingPaths = ignoreUnexistingPaths;
-		this.permissions = permissions;
-	}
+  @Override
+  public ActionResult simulate(final Context context) {
+    return process(context, true);
+  }
 
-	@Override
-	public ActionResult simulate(final Context context) {
-		return process(context, true);
-	}
+  @Override
+  public ActionResult execute(final Context context) {
+    return process(context, false);
+  }
 
-	@Override
-	public ActionResult execute(final Context context) {
-		return process(context, false);
-	}
+  private ActionResult process(final Context context, boolean simulate) {
+    ActionResult actionResult = new ActionResult();
+    try {
+      Authorizable authorizable = context.getCurrentAuthorizable();
+      actionResult.setAuthorizable(authorizable.getID());
+      context.getSession().getNode(path);
+      final PermissionActionHelper permissionActionHelper = new PermissionActionHelper(
+          context.getValueFactory(), path, permissions, restrictions);
+      LOGGER.info(String.format("Denying permissions %s for authorizable with id = %s for path = %s %s",
+          permissions.toString(), context.getCurrentAuthorizable().getID(), path, restrictions));
+      if (simulate) {
+        permissionActionHelper.checkPermissions(context.getAccessControlManager());
+      } else {
+        permissionActionHelper.applyPermissions(context.getAccessControlManager(), authorizable.getPrincipal(), false);
+      }
+      actionResult.logMessage("Added deny privilege for " + authorizable.getID() + " on " + path);
+      if (permissions.contains("MODIFY")) {
+        List<String> globModifyPermission = new ArrayList<>();
+        globModifyPermission.add("MODIFY_PAGE");
+        String preparedGlob = recalculateGlob(restrictions.getGlob());
+        new Deny(path, globModifyPermission,
+            preparedGlob + "*/jcr:content*", restrictions.getNtNames(), restrictions.getItemNames(),
+            ignoreNonExistingPaths)
+            .process(context, simulate);
+      }
+    } catch (final PathNotFoundException e) {
+      if (ignoreNonExistingPaths) {
+        actionResult.logWarning("Path " + path + " not found");
+      } else {
+        actionResult.logError("Path " + path + " not found");
+      }
+    } catch (final RepositoryException | PermissionException | ActionExecutionException e) {
+      actionResult.logError(MessagingUtils.createMessage(e));
+    }
+    return actionResult;
+  }
 
-	private ActionResult process(final Context context, boolean simulate) {
-		ActionResult actionResult = new ActionResult();
-		try {
-			Authorizable authorizable = context.getCurrentAuthorizable();
-			actionResult.setAuthorizable(authorizable.getID());
-			context.getSession().getNode(path);
-			final PermissionActionHelper permissionActionHelper = new PermissionActionHelper(
-          context.getValueFactory(), path, glob, itemNames, permissions);
-			LOGGER.info(String.format("Denying permissions %s for authorizable with id = %s for path = %s %s",
-					permissions.toString(), context.getCurrentAuthorizable().getID(), path,
-					StringUtils.isEmpty(glob) ? "" : ("glob = " + glob)));
-			if (simulate) {
-				permissionActionHelper.checkPermissions(context.getAccessControlManager());
-			} else {
-				permissionActionHelper
-						.applyPermissions(context.getAccessControlManager(), authorizable.getPrincipal(),
-								false);
-			}
-			actionResult.logMessage("Added deny privilege for " + authorizable.getID() + " on " + path);
-			if (permissions.contains("MODIFY")) {
-				List<String> globModifyPermission = new ArrayList<>();
-				globModifyPermission.add("MODIFY_PAGE");
-				String preparedGlob = "";
-				if (!StringUtils.isBlank(glob)) {
-					preparedGlob = glob;
-					if (StringUtils.endsWith(glob, "*")) {
-						preparedGlob = StringUtils.substring(glob, 0, StringUtils.lastIndexOf(glob, '*'));
-					}
-				}
-        new Deny(path, preparedGlob + "*/jcr:content*", itemNames, ignoreUnexistingPaths, globModifyPermission)
-						.process(context, simulate);
-			}
-		} catch (final PathNotFoundException e) {
-			if (ignoreUnexistingPaths) {
-				actionResult.logWarning("Path " + path + " not found");
-			} else {
-				actionResult.logError("Path " + path + " not found");
-			}
-		} catch (final RepositoryException | PermissionException | ActionExecutionException e) {
-			actionResult.logError(MessagingUtils.createMessage(e));
-		}
-		return actionResult;
-	}
+  private String recalculateGlob(String glob) {
+    String preparedGlob = "";
+    if (!StringUtils.isBlank(glob)) {
+      preparedGlob = glob;
+      if (StringUtils.endsWith(glob, "*")) {
+        preparedGlob = StringUtils.substring(glob, 0, StringUtils.lastIndexOf(glob, '*'));
+      }
+    }
+    return preparedGlob;
+  }
 
-	@Override
-	public boolean isGeneric() {
-		return false;
-	}
+  @Override
+  public boolean isGeneric() {
+    return false;
+  }
 
 }

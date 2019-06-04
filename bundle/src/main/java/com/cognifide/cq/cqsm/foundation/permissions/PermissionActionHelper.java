@@ -25,43 +25,33 @@ import com.cognifide.cq.cqsm.foundation.permissions.utils.JackrabbitAccessContro
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 import javax.jcr.ValueFactory;
 import javax.jcr.security.AccessControlException;
-import javax.jcr.ValueFormatException;
 import javax.jcr.security.AccessControlManager;
 import javax.jcr.security.Privilege;
-import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.api.security.JackrabbitAccessControlList;
 
 public class PermissionActionHelper {
 
-  private static final String STRICT = "STRICT";
-
   private final ValueFactory valueFactory;
-
-  private final List<String> itemNames;
-
-  private final List<String> permissions;
 
   private final String path;
 
-  private final String glob;
+  private final List<String> permissions;
 
-  public PermissionActionHelper(final ValueFactory valueFactory, final String path,
-      final String glob, final List<String> itemNames, final List<String> permissions) {
+  private final Restrictions restrictions;
 
+  public PermissionActionHelper(ValueFactory valueFactory, String path, List<String> permissions,
+      Restrictions restrictions) {
     this.valueFactory = valueFactory;
     this.path = path;
-    this.glob = glob;
-    this.itemNames = itemNames;
     this.permissions = permissions;
+    this.restrictions = restrictions;
   }
 
   public void checkPermissions(AccessControlManager accessControlManager)
@@ -89,37 +79,10 @@ public class PermissionActionHelper {
       final Principal principal,
       final JackrabbitAccessControlList jackrabbitAcl) throws RepositoryException {
 
-    final Map<String, Value> globRestrictions = new HashMap<>();
-    final Map<String, Value[]> itemNamesRestrictions = new HashMap<>();
-
-    if (StringUtils.isNotBlank(glob)) {
-      globRestrictions.put("rep:glob", getGlobValue());
-    }
-
-    if (itemNames != null && !itemNames.isEmpty()) {
-      itemNamesRestrictions.put("rep:itemNames", getItemNamesValue());
-    }
-
+    Map<String, Value> singleValueRestrictions = restrictions.getSingleValueRestrictions(valueFactory);
+    Map<String, Value[]> multiValueRestrictions = restrictions.getMultiValueRestrictions(valueFactory);
     jackrabbitAcl.addEntry(principal, privileges.toArray(new Privilege[privileges.size()]), allow,
-        globRestrictions, itemNamesRestrictions);
-  }
-
-  private Value getGlobValue() {
-    if (STRICT.equalsIgnoreCase(glob)) {
-      return valueFactory.createValue(StringUtils.EMPTY);
-    }
-    return valueFactory.createValue(glob);
-  }
-
-  private Value[] getItemNamesValue() throws ValueFormatException {
-    if (STRICT.equalsIgnoreCase(glob)) {
-      return new Value[]{valueFactory.createValue(StringUtils.EMPTY)};
-    }
-    Value[] values = new Value[itemNames.size()];
-    for (int idx = 0; idx < itemNames.size(); idx++) {
-      values[idx] = valueFactory.createValue(itemNames.get(idx), PropertyType.NAME);
-    }
-    return values;
+        singleValueRestrictions, multiValueRestrictions);
   }
 
   public List<Privilege> createPrivileges(final AccessControlManager accessControlManager,
