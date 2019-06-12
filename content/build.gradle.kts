@@ -8,19 +8,6 @@ plugins {
 
 description = "AEM Permission Management :: Package"
 
-aem {
-    tasks {
-        compose {
-            duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-            fromProject(":bundle")
-            fromProject(":content")
-            vaultDefinition {
-                version = rootProject.version as String
-            }
-        }
-    }
-}
-
 publishing {
     publications {
         create<MavenPublication>("apm") {

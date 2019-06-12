@@ -11,9 +11,15 @@ description = "AEM Permission Management :: Application Core"
 
 aem {
     tasks {
+        compose {
+            fromJar("com.cognifide.cq.actions:com.cognifide.cq.actions.api:6.0.2")
+            fromJar("com.cognifide.cq.actions:com.cognifide.cq.actions.core:6.0.2")
+            fromJar("com.cognifide.cq.actions:com.cognifide.cq.actions.msg.replication:6.0.2")
+        }
         bundle {
             installPath = "/apps/apm/install"
             javaPackage = "com.cognifide.cq.cqsm"
+            category = "apm"
             displayName = "AEM Permission Management"
             license = "http://www.apache.org/licenses/LICENSE-2.0.txt"
             vendor = "Cognifide"
