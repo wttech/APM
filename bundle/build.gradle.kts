@@ -11,11 +11,6 @@ description = "AEM Permission Management :: Application Core"
 
 aem {
     tasks {
-        compose {
-            fromJar("com.cognifide.cq.actions:com.cognifide.cq.actions.api:6.0.2")
-            fromJar("com.cognifide.cq.actions:com.cognifide.cq.actions.core:6.0.2")
-            fromJar("com.cognifide.cq.actions:com.cognifide.cq.actions.msg.replication:6.0.2")
-        }
         bundle {
             installPath = "/apps/apm/install"
             javaPackage = "com.cognifide.cq.cqsm"
@@ -40,9 +35,7 @@ dependencies {
     testImplementation("org.spockframework:spock-core:1.1-groovy-2.4")
 
     compileOnly("com.cognifide.cq.actions:com.cognifide.cq.actions.api:6.0.2")
-    compileOnly("com.cognifide.cq.actions:com.cognifide.cq.actions.core:6.0.2")
-    compileOnly("com.cognifide.cq.actions:com.cognifide.cq.actions.msg.replication:6.0.2")
-    
+
     compileOnly("com.adobe.aem:uber-jar:6.3.0:apis")
     compileOnly("org.osgi:osgi.cmpn:6.0.0")
     compileOnly("org.osgi:org.osgi.core:6.0.0")
