@@ -4,16 +4,26 @@ import pl.allegro.tech.build.axion.release.domain.scm.ScmPosition
 plugins {
     id("pl.allegro.tech.build.axion-release") version "1.10.1"
     id("org.nosphere.apache.rat") version "0.4.0"
+    id("com.cognifide.aem.instance")
     id("com.cognifide.aem.package")
     `maven-publish`
     signing
 }
 
-defaultTasks = listOf(":aemDeploy")
+defaultTasks = listOf(":aemSatisfy", ":aemDeploy")
 description = "AEM Permission Management :: Root"
 
 aem {
     tasks {
+        satisfy {
+            packages {
+                group("default") {
+                    dependency("com.cognifide.cq.actions:com.cognifide.cq.actions.api:6.0.2")
+                    dependency("com.cognifide.cq.actions:com.cognifide.cq.actions.core:6.0.2")
+                    dependency("com.cognifide.cq.actions:com.cognifide.cq.actions.msg.replication:6.0.2")
+                }
+            }
+        }
         compose {
             duplicatesStrategy = DuplicatesStrategy.EXCLUDE
             fromProject("bundle")
