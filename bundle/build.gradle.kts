@@ -42,7 +42,7 @@ dependencies {
     compileOnly("com.cognifide.cq.actions:com.cognifide.cq.actions.api:6.0.2")
     compileOnly("com.cognifide.cq.actions:com.cognifide.cq.actions.core:6.0.2")
     compileOnly("com.cognifide.cq.actions:com.cognifide.cq.actions.msg.replication:6.0.2")
-    
+
     compileOnly("com.adobe.aem:uber-jar:6.3.0:apis")
     compileOnly("org.osgi:osgi.cmpn:6.0.0")
     compileOnly("org.osgi:org.osgi.core:6.0.0")
@@ -68,7 +68,6 @@ tasks {
         classifier = "sources"
         from(sourceSets.main.get().allJava)
     }
-
     register<org.gradle.jvm.tasks.Jar>("javadocJar") {
         classifier = "javadoc"
         from(javadoc.get().destinationDir)
@@ -85,7 +84,6 @@ publishing {
                 artifactId = "apm-bundle"
                 version = rootProject.version
             }
-            
         }
     }
 }

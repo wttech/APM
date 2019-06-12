@@ -172,7 +172,7 @@ allprojects {
         extensions.findByType(SigningExtension::class)?.apply {
             useGpgCmd()
             val publication = extensions.findByType(PublishingExtension::class)?.publications?.findByName("apm")
-            if(publication != null) {
+            if (publication != null) {
                 sign(publication)
             }
         }
