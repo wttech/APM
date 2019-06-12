@@ -61,7 +61,6 @@ tasks {
         classifier = "sources"
         from(sourceSets.main.get().allJava)
     }
-
     register<org.gradle.jvm.tasks.Jar>("javadocJar") {
         classifier = "javadoc"
         from(javadoc.get().destinationDir)
@@ -78,7 +77,6 @@ publishing {
                 artifactId = "apm-bundle"
                 version = rootProject.version
             }
-            
         }
     }
 }
