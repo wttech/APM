@@ -29,6 +29,7 @@ import com.cognifide.cq.cqsm.core.jobs.JobResultsCache.ExecutionSummary;
 import com.cognifide.cq.cqsm.core.servlets.BackgroundJobParameters;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.sling.event.jobs.Job;
 import org.apache.sling.event.jobs.JobManager;
 import org.osgi.service.component.annotations.Component;
@@ -64,7 +65,9 @@ public class ScriptRunnerJobManagerImpl implements ScriptRunnerJobManager {
     props.put(SCRIPT_PATH_PROPERTY_NAME, parameters.getSearchPath());
     props.put(MODE_NAME_PROPERTY_NAME, parameters.getModeName());
     props.put(USER_NAME_PROPERTY_NAME, parameters.getUserName());
-    return jobManager.addJob(JOB_SCRIPT_RUN_TOPIC, props);
+    Job job = jobManager.addJob(JOB_SCRIPT_RUN_TOPIC, props);
+    jobResultsCache.put(job.getId(), ExecutionSummary.running());
+    return job;
 
   }
 
@@ -90,7 +93,11 @@ public class ScriptRunnerJobManagerImpl implements ScriptRunnerJobManager {
   private JobProgressOutput getJobProgress(String id) {
     ExecutionSummary executionSummary = jobResultsCache.get(id);
     if (executionSummary != null) {
-      return new JobProgressOutput(FINISHED, executionSummary.getPath(), executionSummary.getProgress().getEntries());
+      if (executionSummary.isFinished()) {
+        return new JobProgressOutput(FINISHED, executionSummary.getPath(), executionSummary.getProgress().getEntries());
+      } else {
+        return new JobProgressOutput(RUNNING);
+      }
     }
     return new JobProgressOutput(UNKNOWN);
   }

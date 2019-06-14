@@ -77,7 +77,7 @@ public class ScriptRunnerJobConsumer implements JobConsumer {
         try {
           Progress progressLogger = scriptManager.process(script, mode, resolver);
           String summaryPath = getSummaryPath(script, mode);
-          jobResultsCache.put(id, new ExecutionSummary(progressLogger, summaryPath));
+          jobResultsCache.put(id, ExecutionSummary.finished(progressLogger, summaryPath));
           result = JobResult.OK;
         } catch (RepositoryException | PersistenceException e) {
           LOG.error("Script manager failed to process script", e);
