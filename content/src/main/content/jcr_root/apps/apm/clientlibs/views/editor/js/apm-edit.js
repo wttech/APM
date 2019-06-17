@@ -43,11 +43,11 @@
 
     Console.prototype = {
       isFileNameLocked: function () {
-        return this.$fileName.is('[readonly="readonly"]');
+        return this.$fileName.is(':disabled');
       },
       changeFileName: function (name) {
         this.$fileName.val(name);
-        this.$fileName.attr('readonly','readonly');
+        this.$fileName.attr('disabled', 'disabled');
       },
       hasChanged: function () {
         return this.initialValue !== this.$textArea.val();
