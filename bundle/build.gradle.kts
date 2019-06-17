@@ -1,6 +1,7 @@
 plugins {
     id("com.cognifide.aem.bundle")
     id("io.franzbecker.gradle-lombok")
+    antlr
     groovy
     java
     `maven-publish`
@@ -34,6 +35,8 @@ dependencies {
     testImplementation("org.codehaus.groovy:groovy-all:2.4.13")
     testImplementation("org.spockframework:spock-core:1.1-groovy-2.4")
 
+    antlr("org.antlr:antlr4:4.7.2")
+    
     compileOnly("com.cognifide.cq.actions:com.cognifide.cq.actions.api:6.0.2")
 
     compileOnly("com.adobe.aem:uber-jar:6.3.0:apis")
@@ -64,6 +67,20 @@ tasks {
     register<org.gradle.jvm.tasks.Jar>("javadocJar") {
         classifier = "javadoc"
         from(javadoc.get().destinationDir)
+    }
+}
+
+tasks.generateGrammarSource {
+    maxHeapSize = "64m"
+    arguments = arguments + listOf("-visitor", "-long-messages", "-package", "com.cognifide.apm.antlr")
+    outputDirectory = project.file("src/main/generated/com/cognifide/apm/antlr")
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs("src/main/generated")
+        }
     }
 }
 
