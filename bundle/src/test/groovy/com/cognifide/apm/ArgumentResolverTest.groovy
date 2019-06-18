@@ -175,8 +175,8 @@ class ArgumentResolverTest extends Specification {
         }
 
         @Override
-        List<ApmType> visitArgument(ApmLangParser.ArgumentContext ctx) {
-            return Collections.<ApmType> singletonList(parameterResolver.resolve(ctx))
+        List<ApmType> visitArguments(ApmLangParser.ArgumentsContext ctx) {
+            return parameterResolver.resolve(ctx)
         }
     }
 }

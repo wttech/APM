@@ -25,17 +25,30 @@ import com.google.common.primitives.Ints
 
 class ArgumentResolver(private val variableHolder: VariableHolder) {
 
-    private val resolver: Resolver
+    private val singleArgumentResolver: SingleArgumentResolver
+    private val multiArgumentResolver: MultiArgumentResolver
 
     init {
-        this.resolver = Resolver()
+        this.singleArgumentResolver = SingleArgumentResolver()
+        this.multiArgumentResolver = MultiArgumentResolver()
+    }
+
+    fun resolve(context: ArgumentsContext): List<ApmType> {
+        return multiArgumentResolver.visitArguments(context)
     }
 
     fun resolve(context: ArgumentContext): ApmType {
-        return resolver.visit(context)
+        return singleArgumentResolver.visit(context)
     }
 
-    private inner class Resolver : ApmLangBaseVisitor<ApmType>() {
+    private inner class MultiArgumentResolver : ListBaseVisitor<ApmType>() {
+
+        override fun visitArgument(ctx: ArgumentContext): MutableList<ApmType> {
+            return mutableListOf(singleArgumentResolver.visit(ctx))
+        }
+    }
+
+    private inner class SingleArgumentResolver : ApmLangBaseVisitor<ApmType>() {
 
         override fun defaultResult(): ApmType {
             return ApmEmpty()
