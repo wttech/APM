@@ -18,17 +18,32 @@
  * =========================LICENSE_END==================================
  */
 
-repositories {
-    mavenLocal()
-    jcenter()
-    maven { url = uri("https://repo.adobe.com/nexus/content/groups/public") }
-    maven { url = uri("https://plugins.gradle.org/m2") }
-    maven { url = uri("https://dl.bintray.com/cognifide/maven-public") }
+package com.cognifide.apm.antlr
+
+abstract class ApmType {
+    open val integer: Int?
+        get() = null
+    open val string: String?
+        get() = null
+    open val stringList: List<ApmString>?
+        get() = null
 }
 
-dependencies {
-    implementation("com.cognifide.gradle:aem-plugin:6.2.0")
-    implementation("com.moowork.gradle:gradle-node-plugin:1.2.0")
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.31")
-    implementation("io.franzbecker:gradle-lombok:1.14")
+abstract class ApmValue : ApmType()
+
+class ApmInteger(val value: Int) : ApmValue() {
+    override val integer: Int
+        get() = value
 }
+
+class ApmString(val value: String) : ApmValue() {
+    override val string: String
+        get() = value
+}
+
+class ApmStringList(val value: List<ApmString>) : ApmType() {
+    override val stringList: List<ApmString>
+        get() = value
+}
+
+class ApmEmpty : ApmType()

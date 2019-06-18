@@ -21,15 +21,11 @@ path
     ;
 
 array
-    : ARRAY_BEGIN value (',' value)* ARRAY_END
+    : ARRAY_BEGIN expression (',' expression)* ARRAY_END
     ;
 
 variable
     : VARIABLE_PREFIX IDENTIFIER
-    ;
-
-booleanValue
-    : BOOLEAN_VALUE
     ;
 
 numberValue
@@ -38,26 +34,21 @@ numberValue
 
 stringValue
     : STRING_LITERAL
-    ;
-
-stringConst
-    : IDENTIFIER
+    | IDENTIFIER
     ;
 
 value
     : variable
-    | booleanValue
     | numberValue
     | stringValue
-    | stringConst
     ;
 
-operator
+plus
     : '+'
     ;
 
 expression
-    : expression operator expression
+    : expression plus expression
     | value
     ;
 
@@ -150,12 +141,6 @@ STRING_LITERAL
     ;
 VARIABLE_PREFIX
     : '$'
-    ;
-BOOLEAN_VALUE
-    : 'true'
-    | 'TRUE'
-    | 'false'
-    | 'FALSE'
     ;
 IDENTIFIER
     : Letter LetterOrDigit*
