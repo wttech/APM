@@ -46,26 +46,28 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
                     ?.map { child -> child.accept(this) }
                     ?.filter { child -> child is ApmString }
                     ?.map { child -> child as ApmString }
+                    ?.map { child -> child.string }
                     ?: listOf()
-            return ApmStringList(values)
+            return ApmList(values)
         }
 
         override fun visitExpression(ctx: ExpressionContext): ApmType {
             if (ctx.plus() != null) {
-                val leftValue = visit(ctx.expression(0))
-                val rightValue = visit(ctx.expression(1))
+                val left = visit(ctx.expression(0))
+                val right = visit(ctx.expression(1))
                 return when {
-                    leftValue is ApmString && rightValue is ApmString -> ApmString(leftValue.string + rightValue.string)
-                    leftValue is ApmString && rightValue is ApmInteger -> ApmString(leftValue.string + rightValue.integer.toString())
-                    leftValue is ApmInteger && rightValue is ApmString -> ApmString(leftValue.integer.toString() + rightValue.string)
-                    leftValue is ApmInteger && rightValue is ApmInteger -> ApmInteger(leftValue.integer + rightValue.integer)
-                    else -> throw ArgumentResolverException("Operation not supported for given values $leftValue and $rightValue")
+                    left is ApmString && right is ApmString -> ApmString(left.string + right.string)
+                    left is ApmString && right is ApmInteger -> ApmString(left.string + right.integer.toString())
+                    left is ApmInteger && right is ApmString -> ApmString(left.integer.toString() + right.string)
+                    left is ApmInteger && right is ApmInteger -> ApmInteger(left.integer + right.integer)
+                    left is ApmList && right is ApmList -> ApmList(left.list + right.list)
+                    else -> throw ArgumentResolverException("Operation not supported for given values $left and $right")
                 }
             }
-            return if (ctx.value() != null) {
-                visit(ctx.value())
-            } else {
-                super.visitExpression(ctx)
+            return when {
+                ctx.value() != null -> visit(ctx.value())
+                ctx.array() != null -> visit(ctx.array())
+                else -> super.visitExpression(ctx)
             }
         }
 

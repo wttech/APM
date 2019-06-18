@@ -21,7 +21,7 @@ path
     ;
 
 array
-    : ARRAY_BEGIN expression (',' expression)* ARRAY_END
+    : ARRAY_BEGIN EOL? value (',' EOL? value)* EOL? ARRAY_END
     ;
 
 variable
@@ -49,12 +49,12 @@ plus
 
 expression
     : expression plus expression
+    | array
     | value
     ;
 
 argument
-    : array
-    | expression
+    : expression
     ;
 
 command

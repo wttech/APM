@@ -28,6 +28,23 @@ class ArgumentResolverTest extends Specification {
 
     private variableHolder = Mock(VariableHolder.class)
 
+    def "declaring multiline list"() {
+        given:
+        def parameterResolver = new ArgumentResolver(this.variableHolder)
+        def parser = ApmLangParserHelper.createParserUsingScript(
+                """GENERIC [
+                    'a',
+                    'b',
+                    'c'
+                ]""")
+
+        when:
+        def result = new ParameterVisitor(parameterResolver).visit(parser.apm())
+
+        then:
+        result[0].getList() == ["a", "b", "c"]
+    }
+
     def "accessing not existing variable"() {
         given:
         variableHolder.get("var1") >> new ApmString("val1")
@@ -68,7 +85,19 @@ class ArgumentResolverTest extends Specification {
         result[0].getString() == "val110"
     }
 
-    def "addition of numbers"() {
+    def "sum of lists"() {
+        given:
+        def parameterResolver = new ArgumentResolver(variableHolder)
+        def parser = ApmLangParserHelper.createParserUsingScript("GENERIC ['a', 'b'] + ['c', 'd']")
+
+        when:
+        def result = new ParameterVisitor(parameterResolver).visit(parser.apm())
+
+        then:
+        result[0].getList() == ["a", "b", "c", "d"]
+    }
+
+    def "sum of numbers"() {
         given:
         variableHolder.get("var1") >> new ApmInteger(10)
         def parameterResolver = new ArgumentResolver(variableHolder)
@@ -79,6 +108,19 @@ class ArgumentResolverTest extends Specification {
 
         then:
         result[0].getInteger() == 17
+    }
+
+    def "invalid sum of elements"() {
+        given:
+        def parameterResolver = new ArgumentResolver(variableHolder)
+        def parser = ApmLangParserHelper.createParserUsingScript("GENERIC ['a', 'b'] + 5")
+
+        when:
+        new ParameterVisitor(parameterResolver).visit(parser.apm())
+
+        then:
+        def exception = thrown(ArgumentResolverException.class)
+        exception.message == "Operation not supported for given values ApmList(value=[a, b]) and ApmInteger(value=5)"
     }
 
     def "resolve number parameters"() {
@@ -111,7 +153,7 @@ class ArgumentResolverTest extends Specification {
 
     def "resolve list parameters"() {
         given:
-        variableHolder.get("var1") >> new ApmStringList(Lists.newArrayList(new ApmString("val1")))
+        variableHolder.get("var1") >> new ApmList(Lists.newArrayList("val1"))
         variableHolder.get("var2") >> new ApmString("val2")
         def parameterResolver = new ArgumentResolver(variableHolder)
         def parser = ApmLangParserHelper.createParserUsingScript("GENERIC \$var1 [\$var2, FALSE]")
@@ -120,9 +162,8 @@ class ArgumentResolverTest extends Specification {
         def result = new ParameterVisitor(parameterResolver).visit(parser.apm())
 
         then:
-        result[0].getStringList().get(0).getString() == "val1"
-        result[1].getStringList().get(0).getString() == "val2"
-        result[1].getStringList().get(1).getString() == "FALSE"
+        result[0].getList() == ["val1"]
+        result[1].getList() == ["val2", "FALSE"]
     }
 
     static class ParameterVisitor extends ListBaseVisitor<ApmType> {

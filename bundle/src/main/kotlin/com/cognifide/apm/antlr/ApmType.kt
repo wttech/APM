@@ -25,24 +25,24 @@ abstract class ApmType {
         get() = null
     open val string: String?
         get() = null
-    open val stringList: List<ApmString>?
+    open val list: List<String>?
         get() = null
 }
 
 abstract class ApmValue : ApmType()
 
-class ApmInteger(val value: Int) : ApmValue() {
+data class ApmInteger(val value: Int) : ApmValue() {
     override val integer: Int
         get() = value
 }
 
-class ApmString(val value: String) : ApmValue() {
+data class ApmString(val value: String) : ApmValue() {
     override val string: String
         get() = value
 }
 
-class ApmStringList(val value: List<ApmString>) : ApmType() {
-    override val stringList: List<ApmString>
+data class ApmList(val value: List<String>) : ApmType() {
+    override val list: List<String>
         get() = value
 }
 
