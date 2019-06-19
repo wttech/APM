@@ -74,6 +74,7 @@ tasks {
 
 tasks.compileKotlin {
     kotlinOptions.jvmTarget = "1.8"
+    dependsOn(tasks.generateGrammarSource)
 }
 
 tasks.generateGrammarSource {
