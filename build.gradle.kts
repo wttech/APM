@@ -54,7 +54,7 @@ tasks.rat {
     excludes.add("**/LICENSE")
     excludes.add(".travis.yml")
 
-
+    excludes.add("**/main/generated/**")
     excludes.add("**/clientlibs/externals/ace/js/**")
     excludes.add("**/clientlibs/js/json2.js")
 
@@ -85,6 +85,7 @@ tasks.rat {
 
     // IntelliJ files
     excludes.add("**/build/**")
+    excludes.add("**/out/**")
     excludes.add("**/.idea/**")
     excludes.add("**/*.iml")
 }
