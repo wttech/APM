@@ -29,7 +29,7 @@ apm
     ;
 
 line
-    : (command | defineMacro | importScript)
+    : (command | importScript)
     ;
 
 name
@@ -78,15 +78,10 @@ argument
     ;
 
 command
-    : RUN_MACRO name arguments? # RunMacro
-    | RUN_SCRIPT path # RunScript
+    : RUN_SCRIPT path # RunScript
     | FOR_EACH IDENTIFIER IN argument EOL? body # ForEach
-    | DEFINE IDENTIFIER argument # Define
+    | DEFINE IDENTIFIER argument # DefineVariable
     | IDENTIFIER arguments? # GenericCommand
-    ;
-
-parameters
-    : IDENTIFIER+
     ;
 
 arguments
@@ -95,10 +90,6 @@ arguments
 
 body
     : BLOCK_BEGIN EOL? (command? EOL)+ BLOCK_END
-    ;
-
-defineMacro
-    : DEFINE_MACRO name parameters? EOL? body
     ;
 
 importScript
@@ -123,14 +114,6 @@ BLOCK_BEGIN
 BLOCK_END
     : 'end'
     | 'END'
-    ;
-DEFINE_MACRO
-    : 'define macro'
-    | 'DEFINE MACRO'
-    ;
-RUN_MACRO
-    : 'use macro'
-    | 'USE MACRO'
     ;
 IMPORT_SCRIPT
     : 'import'

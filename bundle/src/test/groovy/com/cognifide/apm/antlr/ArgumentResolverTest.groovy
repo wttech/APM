@@ -18,15 +18,18 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm
+package com.cognifide.apm.antlr
 
-import com.cognifide.apm.antlr.*
+
+import com.cognifide.apm.antlr.argument.ArgumentResolver
+import com.cognifide.apm.antlr.argument.ArgumentResolverException
+import com.cognifide.apm.antlr.common.ListBaseVisitor
 import com.google.common.collect.Lists
 import spock.lang.Specification
 
 class ArgumentResolverTest extends Specification {
 
-    private variableHolder = Mock(VariableHolder.class)
+    private variableHolder = new VariableHolder()
 
     def "declaring multiline list"() {
         given:
@@ -47,7 +50,7 @@ class ArgumentResolverTest extends Specification {
 
     def "accessing not existing variable"() {
         given:
-        variableHolder.get("var1") >> new ApmString("val1")
+        variableHolder.set("var1", new ApmString("val1"))
         def parameterResolver = new ArgumentResolver(this.variableHolder)
         def parser = ApmLangParserHelper.createParserUsingScript("GENERIC \$var1 \$var2")
 
@@ -61,7 +64,7 @@ class ArgumentResolverTest extends Specification {
 
     def "concatenation of strings"() {
         given:
-        variableHolder.get("var1") >> new ApmString("val1")
+        variableHolder.set("var1", new ApmString("val1"))
         def parameterResolver = new ArgumentResolver(variableHolder)
         def parser = ApmLangParserHelper.createParserUsingScript("GENERIC \$var1 + 'val2'")
 
@@ -74,7 +77,7 @@ class ArgumentResolverTest extends Specification {
 
     def "concatenation of string and number"() {
         given:
-        variableHolder.get("var1") >> new ApmString("val1")
+        variableHolder.set("var1", new ApmString("val1"))
         def parameterResolver = new ArgumentResolver(variableHolder)
         def parser = ApmLangParserHelper.createParserUsingScript("GENERIC \$var1 + 10")
 
@@ -99,7 +102,7 @@ class ArgumentResolverTest extends Specification {
 
     def "sum of numbers"() {
         given:
-        variableHolder.get("var1") >> new ApmInteger(10)
+        variableHolder.set("var1", new ApmInteger(10))
         def parameterResolver = new ArgumentResolver(variableHolder)
         def parser = ApmLangParserHelper.createParserUsingScript("GENERIC \$var1 + 7")
 
@@ -125,7 +128,7 @@ class ArgumentResolverTest extends Specification {
 
     def "resolve number parameters"() {
         given:
-        variableHolder.get("var1") >> new ApmInteger(1)
+        variableHolder.set("var1", new ApmInteger(1))
         def parameterResolver = new ArgumentResolver(variableHolder)
         def parser = ApmLangParserHelper.createParserUsingScript("GENERIC \$var1 2")
 
@@ -139,7 +142,7 @@ class ArgumentResolverTest extends Specification {
 
     def "resolve string parameters"() {
         given:
-        variableHolder.get("var1") >> new ApmString("val1")
+        variableHolder.set("var1", new ApmString("val1"))
         def parameterResolver = new ArgumentResolver(variableHolder)
         def parser = ApmLangParserHelper.createParserUsingScript("GENERIC \$var1 'val2'")
 
@@ -153,8 +156,8 @@ class ArgumentResolverTest extends Specification {
 
     def "resolve list parameters"() {
         given:
-        variableHolder.get("var1") >> new ApmList(Lists.newArrayList("val1"))
-        variableHolder.get("var2") >> new ApmString("val2")
+        variableHolder.set("var1", new ApmList(Lists.newArrayList("val1")))
+        variableHolder.set("var2", new ApmString("val2"))
         def parameterResolver = new ArgumentResolver(variableHolder)
         def parser = ApmLangParserHelper.createParserUsingScript("GENERIC \$var1 [\$var2, FALSE]")
 
@@ -176,7 +179,7 @@ class ArgumentResolverTest extends Specification {
 
         @Override
         List<ApmType> visitArguments(ApmLangParser.ArgumentsContext ctx) {
-            return parameterResolver.resolve(ctx)
+            return parameterResolver.resolve(ctx).values
         }
     }
 }

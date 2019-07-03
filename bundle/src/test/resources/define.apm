@@ -1,0 +1,14 @@
+DEFINE var 'global'
+SHOW $var                           # should be 'global'
+FOREACH i IN ['1'] BEGIN
+  SHOW $var                         # should be 'global'
+  DEFINE var '1. foreach'
+  SHOW $var                         # 'global' shadowed by '1. foreach'
+  FOREACH j IN ['1']
+  BEGIN
+    DEFINE var '2. foreach'
+    SHOW $var                       # '1. foreach' shadowed by '2. foreach'
+  END
+  SHOW $var                         # going back to '1. foreach'
+END
+SHOW $var                           # going back to 'global'

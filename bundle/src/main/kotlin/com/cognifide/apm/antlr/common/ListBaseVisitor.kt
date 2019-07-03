@@ -18,6 +18,20 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm.antlr
+package com.cognifide.apm.antlr.common
 
-class ArgumentResolverException(message: String) : RuntimeException(message)
+import com.cognifide.apm.antlr.ApmLangBaseVisitor
+
+open class ListBaseVisitor<T> : ApmLangBaseVisitor<MutableList<T>>() {
+
+    override fun defaultResult(): MutableList<T> {
+        return mutableListOf()
+    }
+
+    override fun aggregateResult(aggregate: MutableList<T>, nextResult: MutableList<T>?): MutableList<T> {
+        if (nextResult != null) {
+            aggregate.addAll(nextResult)
+        }
+        return aggregate
+    }
+}

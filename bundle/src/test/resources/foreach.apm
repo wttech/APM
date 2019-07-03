@@ -1,0 +1,6 @@
+FOREACH i IN ['a', 'b'] BEGIN
+  FOREACH j IN ['c', 'd']
+  BEGIN
+    SHOW $i+'/'+$j
+  END
+END

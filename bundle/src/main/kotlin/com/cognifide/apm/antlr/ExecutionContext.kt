@@ -20,18 +20,18 @@
 
 package com.cognifide.apm.antlr
 
-import org.antlr.v4.runtime.tree.TerminalNode
+import com.cognifide.apm.antlr.ApmLangParser.ApmContext
+import com.cognifide.apm.antlr.argument.ArgumentResolver
+import com.cognifide.cq.cqsm.api.logger.Progress
+import com.cognifide.cq.cqsm.core.progress.ProgressImpl
 
-/**
- * Returns string literal without leading and trailing quotation marks.
- */
-fun TerminalNode.toPlainString(): String {
-    val value = toString()
-    if (value.startsWith("\"")) {
-        return value.trim('"')
+class ExecutionContext(val executor: String, val root: ApmContext) {
+
+    val variableHolder = VariableHolder()
+    val argumentResolver = ArgumentResolver(variableHolder)
+    val progress: Progress
+
+    init {
+        this.progress = ProgressImpl(executor)
     }
-    if (value.startsWith("\'")) {
-        return value.trim('\'')
-    }
-    return value
 }

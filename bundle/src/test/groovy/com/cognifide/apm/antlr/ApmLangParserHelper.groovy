@@ -18,13 +18,10 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm
+package com.cognifide.apm.antlr
 
-import com.cognifide.apm.antlr.ApmLangLexer
-import com.cognifide.apm.antlr.ApmLangParser
 import org.antlr.v4.runtime.CharStream
 import org.antlr.v4.runtime.CharStreams
-import org.antlr.v4.runtime.CodePointCharStream
 import org.antlr.v4.runtime.CommonTokenStream
 
 class ApmLangParserHelper {
@@ -39,7 +36,7 @@ class ApmLangParserHelper {
         return createParser(charStream)
     }
 
-    private static ApmLangParser createParser(CodePointCharStream charStream) {
+    private static ApmLangParser createParser(CharStream charStream) {
         ApmLangLexer lexer = new ApmLangLexer(charStream)
         CommonTokenStream commonTokenStream = new CommonTokenStream(lexer)
         return new ApmLangParser(commonTokenStream)

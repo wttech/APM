@@ -20,16 +20,10 @@
 
 package com.cognifide.apm.antlr
 
-open class ListBaseVisitor<T> : ApmLangBaseVisitor<MutableList<T>>() {
+import com.cognifide.apm.antlr.argument.Arguments
+import com.cognifide.cq.cqsm.api.logger.Progress
 
-    override fun defaultResult(): MutableList<T> {
-        return mutableListOf()
-    }
+interface ActionInvoker {
 
-    override fun aggregateResult(aggregate: MutableList<T>, nextResult: MutableList<T>?): MutableList<T> {
-        if (nextResult != null) {
-            aggregate.addAll(nextResult)
-        }
-        return aggregate
-    }
+    fun runAction(progress: Progress, commandName: String, arguments: Arguments)
 }

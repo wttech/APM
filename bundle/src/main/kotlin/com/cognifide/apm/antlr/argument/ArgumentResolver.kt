@@ -18,9 +18,11 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm.antlr
+package com.cognifide.apm.antlr.argument
 
+import com.cognifide.apm.antlr.*
 import com.cognifide.apm.antlr.ApmLangParser.*
+import com.cognifide.apm.antlr.common.ListBaseVisitor
 import com.google.common.primitives.Ints
 
 class ArgumentResolver(private val variableHolder: VariableHolder) {
@@ -33,12 +35,20 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
         this.multiArgumentResolver = MultiArgumentResolver()
     }
 
-    fun resolve(context: ArgumentsContext): List<ApmType> {
-        return multiArgumentResolver.visitArguments(context)
+    fun resolve(context: ArgumentsContext?): Arguments {
+        return if (context != null) {
+            Arguments(multiArgumentResolver.visitArguments(context))
+        } else {
+            Arguments(listOf())
+        }
     }
 
-    fun resolve(context: ArgumentContext): ApmType {
-        return singleArgumentResolver.visit(context)
+    fun resolve(context: ArgumentContext?): ApmType {
+        return if (context != null) {
+            singleArgumentResolver.visitArgument(context)
+        } else {
+            ApmEmpty()
+        }
     }
 
     private inner class MultiArgumentResolver : ListBaseVisitor<ApmType>() {
@@ -103,7 +113,7 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
 
         override fun visitVariable(ctx: VariableContext): ApmType {
             val name = ctx.IDENTIFIER().toString()
-            return variableHolder.get(name)
+            return variableHolder[name]
                     ?: throw ArgumentResolverException("Variable $name not found")
         }
 

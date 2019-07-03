@@ -20,7 +20,58 @@
 
 package com.cognifide.apm.antlr
 
-interface VariableHolder {
+import java.util.*
 
-    fun get(name: String): ApmType?
+class VariableHolder {
+
+    private val contexts = ArrayDeque<Context>()
+
+    init {
+        createLocalContext()
+    }
+
+    operator fun set(name: String, value: ApmType) {
+        contexts.peek()[name] = value
+    }
+
+    operator fun get(name: String): ApmType? {
+        for (context in contexts) {
+            if (context.containsKey(name)) {
+                return context[name]
+            }
+            if (context.isIsolated) {
+                break
+            }
+        }
+        return null
+    }
+
+    fun createIsolatedLocalContext() {
+        contexts.push(Context(true))
+    }
+
+    fun createLocalContext() {
+        contexts.push(Context(false))
+    }
+
+    fun removeLocalContext() {
+        contexts.pop()
+    }
+
+    private class Context(val isIsolated: Boolean = false) {
+
+        private val variables = HashMap<String, ApmType>()
+
+        fun containsKey(key: Any): Boolean {
+            return variables.containsKey(key)
+        }
+
+        operator fun set(key: String, value: ApmType) {
+            variables[key] = value
+        }
+
+        operator fun get(key: Any): ApmType? {
+            return variables[key]
+        }
+    }
 }
