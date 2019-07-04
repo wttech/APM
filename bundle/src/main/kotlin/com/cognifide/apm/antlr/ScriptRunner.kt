@@ -21,6 +21,7 @@
 package com.cognifide.apm.antlr
 
 import com.cognifide.apm.antlr.ApmLangParser.DefineVariableContext
+import com.cognifide.apm.antlr.ApmLangParser.ForEachContext
 import com.cognifide.cq.cqsm.api.logger.Message
 import com.cognifide.cq.cqsm.api.logger.Progress
 import com.cognifide.cq.cqsm.api.logger.Status
@@ -39,30 +40,34 @@ class ScriptRunner(private val actionInvoker: ActionInvoker) {
             val variableName = ctx.IDENTIFIER().toString()
             val variableValue = executionContext.argumentResolver.resolve(ctx.argument())
             executionContext.variableHolder[variableName] = variableValue
-            info("define", "Defined variable: $variableName = $variableValue")
+            info("define", "Defined variable: $variableName= $variableValue")
         }
 
-        override fun visitForEach(ctx: ApmLangParser.ForEachContext) {
-            try {
-                executionContext.variableHolder.createLocalContext()
-                val variableName = ctx.IDENTIFIER().toString()
-                val variableValue = executionContext.argumentResolver.resolve(ctx.argument())
-                val values: List<ApmValue> = when (variableValue) {
-                    is ApmList -> variableValue.list.map { ApmString(it) }
-                    is ApmEmpty -> listOf()
-                    else -> listOf(variableValue as ApmValue)
-                }
-                var i = 1
-                info("foreach", "Begin")
-                for (value in values) {
+        override fun visitForEach(ctx: ForEachContext) {
+            val index = ctx.IDENTIFIER().toString()
+            val values: List<ApmValue> = readValues(ctx)
+            var i = 1
+            info("foreach", "Begin")
+            for (value in values) {
+                try {
+                    executionContext.variableHolder.createLocalContext()
                     info("foreach", "Iteration: $i")
-                    executionContext.variableHolder[variableName] = value
+                    executionContext.variableHolder[index] = value
                     visit(ctx.body())
                     i++
+                } finally {
+                    executionContext.variableHolder.removeLocalContext()
                 }
-                info("foreach", "End")
-            } finally {
-                executionContext.variableHolder.removeLocalContext()
+            }
+            info("foreach", "End")
+        }
+
+        private fun readValues(ctx: ForEachContext): List<ApmValue> {
+            val variableValue = executionContext.argumentResolver.resolve(ctx.argument())
+            return when (variableValue) {
+                is ApmList -> variableValue.list.map { ApmString(it) }
+                is ApmEmpty -> listOf()
+                else -> listOf(variableValue as ApmValue)
             }
         }
 
