@@ -18,20 +18,6 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm.antlr
+package com.cognifide.apm.antlr.executioncontext
 
-import com.cognifide.apm.antlr.ApmLangParser.ApmContext
-import com.cognifide.apm.antlr.argument.ArgumentResolver
-import com.cognifide.cq.cqsm.api.logger.Progress
-import com.cognifide.cq.cqsm.core.progress.ProgressImpl
-
-class ExecutionContext(val executor: String, val root: ApmContext) {
-
-    val variableHolder = VariableHolder()
-    val argumentResolver = ArgumentResolver(variableHolder)
-    val progress: Progress
-
-    init {
-        this.progress = ProgressImpl(executor)
-    }
-}
+class ExecutionContextException(message: String) : RuntimeException(message)

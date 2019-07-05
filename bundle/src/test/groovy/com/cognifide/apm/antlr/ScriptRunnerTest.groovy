@@ -21,9 +21,14 @@
 package com.cognifide.apm.antlr
 
 import com.cognifide.apm.antlr.argument.Arguments
+import com.cognifide.apm.antlr.executioncontext.ExecutionContext
 import com.cognifide.cq.cqsm.api.logger.Message
 import com.cognifide.cq.cqsm.api.logger.Progress
 import com.cognifide.cq.cqsm.api.logger.Status
+import com.cognifide.cq.cqsm.api.scripts.Script
+import com.cognifide.cq.cqsm.api.scripts.ScriptFinder
+import org.apache.commons.io.IOUtils
+import org.apache.sling.api.resource.ResourceResolver
 import spock.lang.Specification
 
 class ScriptRunnerTest extends Specification {
@@ -66,9 +71,14 @@ class ScriptRunnerTest extends Specification {
                      "Executing command SHOW 'global'"]
     }
 
-    private static ExecutionContext createExecutionContext(String file) {
-        def parser = ApmLangParserHelper.createParserUsingFile(file)
-        return new ExecutionContext("user", parser.apm())
+    private ExecutionContext createExecutionContext(String file) {
+        def content = IOUtils.toString(getClass().getResourceAsStream(file))
+        def scriptFinder = Mock(ScriptFinder)
+        def resourceResolver = Mock(ResourceResolver)
+        def script = Mock(Script)
+        script.path >> "/conf/apm/scripts/main.apm"
+        script.data >> content
+        return new ExecutionContext.Factory().create(scriptFinder, resourceResolver, script, "user")
     }
 
     private static ActionInvoker createActionInvoker() {

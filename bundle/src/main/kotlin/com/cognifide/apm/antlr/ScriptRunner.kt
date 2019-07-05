@@ -22,6 +22,7 @@ package com.cognifide.apm.antlr
 
 import com.cognifide.apm.antlr.ApmLangParser.DefineVariableContext
 import com.cognifide.apm.antlr.ApmLangParser.ForEachContext
+import com.cognifide.apm.antlr.executioncontext.ExecutionContext
 import com.cognifide.cq.cqsm.api.logger.Message
 import com.cognifide.cq.cqsm.api.logger.Progress
 import com.cognifide.cq.cqsm.api.logger.Status
@@ -30,7 +31,7 @@ class ScriptRunner(private val actionInvoker: ActionInvoker) {
 
     fun execute(executionContext: ExecutionContext): Progress {
         val executor = Executor(executionContext)
-        executor.visit(executionContext.root)
+        executor.visit(executionContext.root.apm)
         return executionContext.progress
     }
 
@@ -38,8 +39,8 @@ class ScriptRunner(private val actionInvoker: ActionInvoker) {
 
         override fun visitDefineVariable(ctx: DefineVariableContext) {
             val variableName = ctx.IDENTIFIER().toString()
-            val variableValue = executionContext.argumentResolver.resolve(ctx.argument())
-            executionContext.variableHolder[variableName] = variableValue
+            val variableValue = executionContext.resolveArgument(ctx.argument())
+            executionContext.setVariable(variableName, variableValue)
             info("define", "Defined variable: $variableName= $variableValue")
         }
 
@@ -50,20 +51,20 @@ class ScriptRunner(private val actionInvoker: ActionInvoker) {
             info("foreach", "Begin")
             for (value in values) {
                 try {
-                    executionContext.variableHolder.createLocalContext()
+                    executionContext.createLocalContext()
                     info("foreach", "Iteration: $i")
-                    executionContext.variableHolder[index] = value
+                    executionContext.setVariable(index, value)
                     visit(ctx.body())
                     i++
                 } finally {
-                    executionContext.variableHolder.removeLocalContext()
+                    executionContext.removeLocalContext()
                 }
             }
             info("foreach", "End")
         }
 
         private fun readValues(ctx: ForEachContext): List<ApmValue> {
-            val variableValue = executionContext.argumentResolver.resolve(ctx.argument())
+            val variableValue = executionContext.resolveArgument(ctx.argument())
             return when (variableValue) {
                 is ApmList -> variableValue.list.map { ApmString(it) }
                 is ApmEmpty -> listOf()
@@ -73,7 +74,7 @@ class ScriptRunner(private val actionInvoker: ActionInvoker) {
 
         override fun visitGenericCommand(ctx: ApmLangParser.GenericCommandContext) {
             val commandName = ctx.IDENTIFIER().toString().toUpperCase()
-            val arguments = executionContext.argumentResolver.resolve(ctx.arguments())
+            val arguments = executionContext.resolveArguments(ctx.arguments())
             actionInvoker.runAction(executionContext.progress, commandName, arguments)
         }
 
