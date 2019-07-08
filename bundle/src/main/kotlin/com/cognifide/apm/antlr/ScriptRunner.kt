@@ -46,15 +46,13 @@ class ScriptRunner(private val actionInvoker: ActionInvoker) {
         override fun visitForEach(ctx: ForEachContext) {
             val index = ctx.IDENTIFIER().toString()
             val values: List<ApmValue> = readValues(ctx)
-            var i = 1
             info("foreach", "Begin")
-            for (value in values) {
+            for ((iteration, value) in values.withIndex()) {
                 try {
                     executionContext.variableHolder.createLocalContext()
-                    info("foreach", "Iteration: $i")
+                    info("foreach", "Iteration: $iteration")
                     executionContext.variableHolder[index] = value
                     visit(ctx.body())
-                    i++
                 } finally {
                     executionContext.variableHolder.removeLocalContext()
                 }
