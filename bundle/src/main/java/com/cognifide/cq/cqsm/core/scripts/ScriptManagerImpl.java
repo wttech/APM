@@ -19,10 +19,11 @@
  */
 package com.cognifide.cq.cqsm.core.scripts;
 
+import com.cognifide.apm.antlr.ScriptRunner;
+import com.cognifide.apm.antlr.executioncontext.ExecutionContext;
 import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
 import com.cognifide.cq.cqsm.api.actions.ActionFactory;
-import com.cognifide.cq.cqsm.api.actions.ActionResult;
 import com.cognifide.cq.cqsm.api.actions.interfaces.DefinitionProvider;
 import com.cognifide.cq.cqsm.api.actions.interfaces.ScriptProvider;
 import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
@@ -45,17 +46,6 @@ import com.cognifide.cq.cqsm.core.progress.ProgressImpl;
 import com.cognifide.cq.cqsm.core.sessions.SessionSavingMode;
 import com.cognifide.cq.cqsm.core.sessions.SessionSavingPolicy;
 import com.google.common.collect.Maps;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.LineIterator;
-import org.apache.jackrabbit.api.JackrabbitSession;
-import org.apache.sling.api.resource.PersistenceException;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -71,6 +61,15 @@ import java.util.Map;
 import java.util.TreeMap;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.LineIterator;
+import org.apache.jackrabbit.api.JackrabbitSession;
+import org.apache.sling.api.resource.PersistenceException;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component(
 		immediate = true,
@@ -110,26 +109,34 @@ public class ScriptManagerImpl implements ScriptManager {
 		final String path = script.getPath();
 
 		LOG.info(String.format("Script execution started: %s [%s]", path, mode));
-		Progress progress = new ProgressImpl(resolver.getUserID());
-		final List<ActionDescriptor> descriptors = parseAllDescriptors(script, customDefinitions, resolver);
 		final ActionExecutor actionExecutor = createExecutor(mode, resolver);
 		final Context context = actionExecutor.getContext();
 		final SessionSavingPolicy savingPolicy = context.getSavingPolicy();
 
-		eventManager.trigger(Event.BEFORE_EXECUTE, script, mode, progress);
+		ExecutionContext executionContext = ExecutionContext.create(scriptFinder, resolver, script, resolver.getUserID());
+		eventManager.trigger(Event.BEFORE_EXECUTE, script, mode, executionContext.getProgress());
+		ScriptRunner scriptRunner = new ScriptRunner((progress, commandName, parameters) -> {
+//			try {
+//				ActionDescriptor descriptor = actionFactory.evaluate(commandName, parameters);
+//				ActionResult result = actionExecutor.execute(descriptor);
+//				progress.addEntry(descriptor, result);
+//
+//				if ((Status.ERROR == result.getStatus()) && (Mode.DRY_RUN != mode)) {
+//					eventManager.trigger(Event.AFTER_EXECUTE, script, mode, progress);
+//				} else {
+//					savingPolicy.save(context.getSession(), SessionSavingMode.EVERY_ACTION);
+//				}
+//			} catch (RepositoryException | ActionCreationException e) {
+//				LOG.error("Error while processing command: {}", commandName, e);
+//				progress.addEntry(commandName, Message.getErrorMessage(e.getMessage()), Status.ERROR);
+//			}
+			progress.addEntry(commandName, Message.getInfoMessage(parameters.toString()), Status.SUCCESS);
+		});
 
-		for (ActionDescriptor descriptor : descriptors) {
-			ActionResult result = actionExecutor.execute(descriptor);
-			progress.addEntry(descriptor, result);
-
-			if ((Status.ERROR == result.getStatus()) && (Mode.DRY_RUN != mode)) {
-				eventManager.trigger(Event.AFTER_EXECUTE, script, mode, progress);
-				return progress;
-			}
-
-			savingPolicy.save(context.getSession(), SessionSavingMode.EVERY_ACTION);
+		final Progress progress = scriptRunner.execute(executionContext);
+		if (progress.isSuccess()) {
+			savingPolicy.save(context.getSession(), SessionSavingMode.SINGLE);
 		}
-		savingPolicy.save(context.getSession(), SessionSavingMode.SINGLE);
 
 		eventManager.trigger(Event.AFTER_EXECUTE, script, mode, progress);
 		return progress;
@@ -203,7 +210,7 @@ public class ScriptManagerImpl implements ScriptManager {
 	@Override
 	public Map<String, String> getPredefinedDefinitions() {
 		if (predefinedDefinitions == null) {
-			predefinedDefinitions = Collections.synchronizedMap(new TreeMap<String, String>());
+			predefinedDefinitions = Collections.synchronizedMap(new TreeMap<>());
 			eventManager.trigger(Event.INIT_DEFINITIONS);
 		}
 		return predefinedDefinitions;

@@ -56,7 +56,8 @@ class ExecutionContext private constructor(
         registerScript(root)
     }
 
-    companion object Factory {
+    companion object {
+        @JvmStatic
         fun create(scriptFinder: ScriptFinder, resourceResolver: ResourceResolver, script: Script, executor: String): ExecutionContext {
             return ExecutionContext(scriptFinder, resourceResolver, ParsedScript.create(script), executor)
         }
