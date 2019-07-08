@@ -30,7 +30,6 @@ import com.cognifide.apm.antlr.parsedscript.ParsedScript
 import com.cognifide.cq.cqsm.api.logger.Progress
 import com.cognifide.cq.cqsm.api.scripts.Script
 import com.cognifide.cq.cqsm.api.scripts.ScriptFinder
-import com.cognifide.cq.cqsm.core.progress.ProgressImpl
 import org.apache.commons.lang.StringUtils
 import org.apache.sling.api.resource.ResourceResolver
 
@@ -38,12 +37,10 @@ class ExecutionContext private constructor(
         private val scriptFinder: ScriptFinder,
         private val resourceResolver: ResourceResolver,
         val root: ParsedScript,
-        executor: String) {
+        val progress: Progress) {
 
     private val parsedScripts: MutableMap<String, ParsedScript> = mutableMapOf()
     private var runScripts: StackWithRoot<RunScript> = StackWithRoot(RunScript(root))
-
-    val progress: Progress = ProgressImpl(executor)
 
     private val currentRunScript: RunScript
         get() = runScripts.peek()
@@ -58,8 +55,8 @@ class ExecutionContext private constructor(
 
     companion object {
         @JvmStatic
-        fun create(scriptFinder: ScriptFinder, resourceResolver: ResourceResolver, script: Script, executor: String): ExecutionContext {
-            return ExecutionContext(scriptFinder, resourceResolver, ParsedScript.create(script), executor)
+        fun create(scriptFinder: ScriptFinder, resourceResolver: ResourceResolver, script: Script, progress: Progress): ExecutionContext {
+            return ExecutionContext(scriptFinder, resourceResolver, ParsedScript.create(script), progress)
         }
     }
 

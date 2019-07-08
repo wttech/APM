@@ -24,6 +24,8 @@ import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.IntStream
 import org.antlr.v4.runtime.Recognizer
 import org.antlr.v4.runtime.Token
+import kotlin.math.max
+import kotlin.math.min
 
 object InvalidSyntaxMessageFactory {
 
@@ -31,20 +33,17 @@ object InvalidSyntaxMessageFactory {
         return String.format("Error at %d:%d", e.line, e.charPositionInLine)
     }
 
-    fun detailedSyntaxError(e: InvalidSyntaxException): String {
+    fun detailedSyntaxError(e: InvalidSyntaxException): List<String> {
         return underlineError(e.recognizer, e.offendingToken, e.line, e.charPositionInLine)
     }
 
-    private fun underlineError(recognizer: Recognizer<*, *>, offendingToken: Token?, line: Int, charPositionInLine: Int): String {
+    private fun underlineError(recognizer: Recognizer<*, *>, offendingToken: Token?, line: Int, startIndex: Int): List<String> {
         val errorLine = getErrorLine(recognizer, line)
-        val builder = StringBuilder()
-        builder.append("Invalid line: ")
-        builder.append(errorLine)
-        builder.append("\n")
+        val invalidLine = "Invalid line: $errorLine\n"
         val length = invalidSequenceLength(offendingToken)
-        builder.append("Invalid sequence: ")
-        builder.append(errorLine, charPositionInLine, charPositionInLine + length)
-        return builder.toString()
+        val endIndex = min(startIndex + length, errorLine.length)
+        val invalidSequence = "Invalid sequence: ${errorLine.substring(startIndex, endIndex)}"
+        return listOf(invalidLine, invalidSequence)
     }
 
     private fun getErrorLine(recognizer: Recognizer<*, *>, line: Int): String {
@@ -62,7 +61,7 @@ object InvalidSyntaxMessageFactory {
             val start = offendingToken.startIndex
             val stop = offendingToken.stopIndex
             if (start in 0..stop) {
-                return Math.max(stop - start, 1)
+                return max(stop - start, 1)
             }
         }
         return 1

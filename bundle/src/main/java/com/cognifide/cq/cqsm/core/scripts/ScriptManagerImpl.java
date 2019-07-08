@@ -20,7 +20,6 @@
 package com.cognifide.cq.cqsm.core.scripts;
 
 import com.cognifide.apm.antlr.ScriptRunner;
-import com.cognifide.apm.antlr.executioncontext.ExecutionContext;
 import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
 import com.cognifide.cq.cqsm.api.actions.ActionFactory;
@@ -109,13 +108,14 @@ public class ScriptManagerImpl implements ScriptManager {
 		final String path = script.getPath();
 
 		LOG.info(String.format("Script execution started: %s [%s]", path, mode));
+		final Progress progress = new ProgressImpl(resolver.getUserID());
 		final ActionExecutor actionExecutor = createExecutor(mode, resolver);
 		final Context context = actionExecutor.getContext();
 		final SessionSavingPolicy savingPolicy = context.getSavingPolicy();
 
-		ExecutionContext executionContext = ExecutionContext.create(scriptFinder, resolver, script, resolver.getUserID());
-		eventManager.trigger(Event.BEFORE_EXECUTE, script, mode, executionContext.getProgress());
-		ScriptRunner scriptRunner = new ScriptRunner((progress, commandName, parameters) -> {
+		eventManager.trigger(Event.BEFORE_EXECUTE, script, mode, progress);
+		ScriptRunner scriptRunner = new ScriptRunner(scriptFinder, resolver,
+				(internalProgress, commandName, parameters) -> {
 //			try {
 //				ActionDescriptor descriptor = actionFactory.evaluate(commandName, parameters);
 //				ActionResult result = actionExecutor.execute(descriptor);
@@ -130,10 +130,10 @@ public class ScriptManagerImpl implements ScriptManager {
 //				LOG.error("Error while processing command: {}", commandName, e);
 //				progress.addEntry(commandName, Message.getErrorMessage(e.getMessage()), Status.ERROR);
 //			}
-			progress.addEntry(commandName, Message.getInfoMessage(parameters.toString()), Status.SUCCESS);
+					internalProgress.addEntry(commandName, Message.getInfoMessage(parameters.toString()), Status.SUCCESS);
 		});
 
-		final Progress progress = scriptRunner.execute(executionContext);
+		scriptRunner.execute(script, progress);
 		if (progress.isSuccess()) {
 			savingPolicy.save(context.getSession(), SessionSavingMode.SINGLE);
 		}

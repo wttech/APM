@@ -22,17 +22,37 @@ package com.cognifide.apm.antlr
 
 import com.cognifide.apm.antlr.ApmLangParser.DefineVariableContext
 import com.cognifide.apm.antlr.ApmLangParser.ForEachContext
+import com.cognifide.apm.antlr.argument.ArgumentResolverException
 import com.cognifide.apm.antlr.executioncontext.ExecutionContext
+import com.cognifide.apm.antlr.executioncontext.ExecutionContextException
+import com.cognifide.apm.antlr.parsedscript.InvalidSyntaxException
+import com.cognifide.apm.antlr.parsedscript.InvalidSyntaxMessageFactory
 import com.cognifide.cq.cqsm.api.logger.Message
 import com.cognifide.cq.cqsm.api.logger.Progress
 import com.cognifide.cq.cqsm.api.logger.Status
+import com.cognifide.cq.cqsm.api.scripts.Script
+import com.cognifide.cq.cqsm.api.scripts.ScriptFinder
+import org.apache.sling.api.resource.ResourceResolver
 
-class ScriptRunner(private val actionInvoker: ActionInvoker) {
+class ScriptRunner(
+        private val scriptFinder: ScriptFinder,
+        private val resourceResolver: ResourceResolver,
+        private val actionInvoker: ActionInvoker) {
 
-    fun execute(executionContext: ExecutionContext): Progress {
-        val executor = Executor(executionContext)
-        executor.visit(executionContext.root.apm)
-        return executionContext.progress
+    fun execute(script: Script, progress: Progress): Progress {
+        try {
+            val executionContext = ExecutionContext.create(scriptFinder, resourceResolver, script, progress)
+            val executor = Executor(executionContext)
+            executor.visit(executionContext.root.apm)
+        } catch (e: InvalidSyntaxException) {
+            val errorMessages = InvalidSyntaxMessageFactory.detailedSyntaxError(e)
+            progress.addEntry("", errorMessages.map { Message.getErrorMessage(it) }, Status.ERROR)
+        } catch (e: ArgumentResolverException) {
+            progress.addEntry("", Message.getErrorMessage(e.message), Status.ERROR)
+        } catch (e: ExecutionContextException) {
+            progress.addEntry("", Message.getErrorMessage(e.message), Status.ERROR)
+        }
+        return progress
     }
 
     private inner class Executor(private val executionContext: ExecutionContext) : ApmLangBaseVisitor<Unit>() {
