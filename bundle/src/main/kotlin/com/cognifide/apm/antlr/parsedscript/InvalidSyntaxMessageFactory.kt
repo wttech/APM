@@ -24,26 +24,21 @@ import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.IntStream
 import org.antlr.v4.runtime.Recognizer
 import org.antlr.v4.runtime.Token
-import kotlin.math.max
-import kotlin.math.min
 
 object InvalidSyntaxMessageFactory {
-
-    fun generalSyntaxError(e: InvalidSyntaxException): String {
-        return String.format("Error at %d:%d", e.line, e.charPositionInLine)
-    }
 
     fun detailedSyntaxError(e: InvalidSyntaxException): List<String> {
         return underlineError(e.recognizer, e.offendingToken, e.line, e.charPositionInLine)
     }
 
-    private fun underlineError(recognizer: Recognizer<*, *>, offendingToken: Token?, line: Int, startIndex: Int): List<String> {
+    private fun underlineError(recognizer: Recognizer<*, *>, offendingToken: Token?, line: Int, charPositionInLine: Int): List<String> {
         val errorLine = getErrorLine(recognizer, line)
-        val invalidLine = "Invalid line: $errorLine\n"
-        val length = invalidSequenceLength(offendingToken)
-        val endIndex = min(startIndex + length, errorLine.length)
-        val invalidSequence = "Invalid sequence: ${errorLine.substring(startIndex, endIndex)}"
-        return listOf(invalidLine, invalidSequence)
+        val invalidLine = "Invalid line [$line:$charPositionInLine]: $errorLine"
+        return if (offendingToken != null) {
+            listOf(invalidLine, "Invalid sequence: ${offendingToken.text}")
+        } else {
+            listOf(invalidLine)
+        }
     }
 
     private fun getErrorLine(recognizer: Recognizer<*, *>, line: Int): String {
@@ -54,16 +49,5 @@ object InvalidSyntaxMessageFactory {
 
     private fun toString(inputStream: IntStream): String {
         return (inputStream as? CommonTokenStream)?.tokenSource?.inputStream?.toString() ?: inputStream.toString()
-    }
-
-    private fun invalidSequenceLength(offendingToken: Token?): Int {
-        if (offendingToken != null) {
-            val start = offendingToken.startIndex
-            val stop = offendingToken.stopIndex
-            if (start in 0..stop) {
-                return max(stop - start, 1)
-            }
-        }
-        return 1
     }
 }

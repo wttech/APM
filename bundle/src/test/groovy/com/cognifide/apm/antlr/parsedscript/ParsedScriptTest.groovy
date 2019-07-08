@@ -28,7 +28,7 @@ import spock.lang.Unroll
 class ParsedScriptTest extends Specification {
 
     @Unroll
-    def "run script #file"(String file, String output) {
+    def "run script #file"(String file, List<String> output) {
         given:
         def script = Mock(Script)
         script.data >> IOUtils.toString((InputStream) getClass().getResourceAsStream(file))
@@ -39,11 +39,12 @@ class ParsedScriptTest extends Specification {
 
         then:
         def e = thrown(InvalidSyntaxException)
-        new InvalidSyntaxMessageFactory().detailedSyntaxError(e) == output
+        def error = new InvalidSyntaxMessageFactory().detailedSyntaxError(e)
+        error == output
 
         where:
         file            | output
-        "/invalid1.apm" | "Invalid line: DEFINE \$ nana\nInvalid sequence: \$"
-        "/invalid2.apm" | "Invalid line: DEFINE / nana\nInvalid sequence: /"
+        "/invalid1.apm" | ["Invalid line: DEFINE \$ nana", "Invalid sequence: \$"]
+        "/invalid2.apm" | ["Invalid line: DEFINE / nana", "Invalid sequence: /"]
     }
 }
