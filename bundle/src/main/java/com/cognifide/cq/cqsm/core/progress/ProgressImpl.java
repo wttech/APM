@@ -38,7 +38,7 @@ public class ProgressImpl implements Progress {
 
 
 	public ProgressImpl(String executor) {
-		this(executor, new LinkedList<ProgressEntry>());
+		this(executor, new LinkedList<>());
 	}
 
 	public ProgressImpl(String executor, List<ProgressEntry> entries) {
@@ -59,6 +59,11 @@ public class ProgressImpl implements Progress {
 	@Override
 	public void addEntry(Message message, Status status) {
 		this.entries.add(new ProgressEntry(message, status));
+	}
+
+	@Override
+	public void addEntry(String commandName, Message message, Status status) {
+		this.entries.add(new ProgressEntry(commandName, message, status));
 	}
 
 	@Override

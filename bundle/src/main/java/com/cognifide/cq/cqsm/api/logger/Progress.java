@@ -33,6 +33,8 @@ public interface Progress extends Serializable {
 
 	void addEntry(Message message, Status status);
 
+	void addEntry(String commandName, Message message, Status status);
+
 	boolean isSuccess();
 
 	ProgressEntry getLastError();

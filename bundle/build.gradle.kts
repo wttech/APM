@@ -1,6 +1,8 @@
 plugins {
     id("com.cognifide.aem.bundle")
     id("io.franzbecker.gradle-lombok")
+    kotlin("jvm")
+    antlr
     groovy
     java
     `maven-publish`
@@ -29,10 +31,12 @@ aem {
 }
 
 dependencies {
-    testImplementation("junit:junit:4.10")
-    testImplementation("org.mockito:mockito-core:1.9.5")
-    testImplementation("org.codehaus.groovy:groovy-all:2.4.13")
-    testImplementation("org.spockframework:spock-core:1.1-groovy-2.4")
+    testCompile("junit:junit:4.12")
+    testCompile("org.mockito:mockito-core:1.9.5")
+    testCompile("org.codehaus.groovy:groovy-all:2.5.7")
+    testCompile("org.spockframework:spock-core:1.3-groovy-2.5")
+
+    antlr("org.antlr:antlr4:4.7.2")
 
     compileOnly("com.cognifide.cq.actions:com.cognifide.cq.actions.api:6.0.2")
 
@@ -54,6 +58,7 @@ dependencies {
     compileOnly("javax.servlet:servlet-api:2.4")
     compileOnly("org.slf4j:slf4j-log4j12:1.7.7")
     compileOnly("org.projectlombok:lombok:1.16.20")
+    implementation(kotlin("stdlib-jdk8"))
 }
 
 tasks {
@@ -64,6 +69,29 @@ tasks {
     register<org.gradle.jvm.tasks.Jar>("javadocJar") {
         classifier = "javadoc"
         from(javadoc.get().destinationDir)
+    }
+}
+
+tasks.compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+    dependsOn(tasks.generateGrammarSource)
+}
+
+tasks.generateGrammarSource {
+    maxHeapSize = "64m"
+    arguments = arguments + listOf("-visitor", "-long-messages", "-package", "com.cognifide.apm.antlr")
+    outputDirectory = project.file("src/main/generated/com/cognifide/apm/antlr")
+}
+
+tasks.test {
+    useJUnit()
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs("src/main/generated")
+        }
     }
 }
 
