@@ -45,6 +45,6 @@ class ParsedScriptTest extends Specification {
         where:
         file            | output
         "/invalid1.apm" | ["Invalid line [20:7]: DEFINE \$ nana", "Invalid sequence: \$"]
-        "/invalid2.apm" | ["Invalid line [20:7]: DEFINE / nana", "Invalid sequence: /"]
+        "/invalid2.apm" | ["Invalid line [20:7]: DEFINE / nana"]
     }
 }
