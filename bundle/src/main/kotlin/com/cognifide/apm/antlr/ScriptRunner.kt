@@ -39,9 +39,11 @@ class ScriptRunner(
         private val resourceResolver: ResourceResolver,
         private val actionInvoker: ActionInvoker) {
 
-    fun execute(script: Script, progress: Progress): Progress {
+    @JvmOverloads
+    fun execute(script: Script, progress: Progress, initialDefinitions: Map<String, String> = mapOf()): Progress {
         try {
             val executionContext = ExecutionContext.create(scriptFinder, resourceResolver, script, progress)
+            initialDefinitions.forEach { (name, value) -> executionContext.setVariable(name, ApmString(value)) }
             val executor = Executor(executionContext)
             executor.visit(executionContext.root.apm)
         } catch (e: InvalidSyntaxException) {

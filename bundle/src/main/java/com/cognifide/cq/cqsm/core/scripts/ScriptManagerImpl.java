@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -71,51 +71,51 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Component(
-		immediate = true,
-		service = ScriptManager.class,
-		property = {
-				Property.DESCRIPTION + "CQSM Script Manager Service",
-				Property.VENDOR
-		}
+    immediate = true,
+    service = ScriptManager.class,
+    property = {
+        Property.DESCRIPTION + "CQSM Script Manager Service",
+        Property.VENDOR
+    }
 )
 public class ScriptManagerImpl implements ScriptManager {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ScriptManagerImpl.class);
+  private static final Logger LOG = LoggerFactory.getLogger(ScriptManagerImpl.class);
 
-	@Reference
-	private ActionFactory actionFactory;
+  @Reference
+  private ActionFactory actionFactory;
 
-	@Reference
-	private ScriptStorage scriptStorage;
+  @Reference
+  private ScriptStorage scriptStorage;
 
-	@Reference
-	private ScriptFinder scriptFinder;
+  @Reference
+  private ScriptFinder scriptFinder;
 
-	private EventManager eventManager = new EventManager();
+  private EventManager eventManager = new EventManager();
 
-	private Map<String, String> predefinedDefinitions;
+  private Map<String, String> predefinedDefinitions;
 
-	private Progress execute(Script script, final Mode mode, Map<String, String> customDefinitions,
-			ResourceResolver resolver) throws ExecutionException, RepositoryException {
-		if (script == null) {
-			throw new ExecutionException("Script is not specified");
-		}
+  private Progress execute(Script script, final Mode mode, Map<String, String> customDefinitions,
+      ResourceResolver resolver) throws ExecutionException, RepositoryException {
+    if (script == null) {
+      throw new ExecutionException("Script is not specified");
+    }
 
-		if (mode == null) {
-			throw new ExecutionException("Execution mode is not specified");
-		}
+    if (mode == null) {
+      throw new ExecutionException("Execution mode is not specified");
+    }
 
-		final String path = script.getPath();
+    final String path = script.getPath();
 
-		LOG.info(String.format("Script execution started: %s [%s]", path, mode));
-		final Progress progress = new ProgressImpl(resolver.getUserID());
-		final ActionExecutor actionExecutor = createExecutor(mode, resolver);
-		final Context context = actionExecutor.getContext();
-		final SessionSavingPolicy savingPolicy = context.getSavingPolicy();
+    LOG.info(String.format("Script execution started: %s [%s]", path, mode));
+    final Progress progress = new ProgressImpl(resolver.getUserID());
+    final ActionExecutor actionExecutor = createExecutor(mode, resolver);
+    final Context context = actionExecutor.getContext();
+    final SessionSavingPolicy savingPolicy = context.getSavingPolicy();
 
-		eventManager.trigger(Event.BEFORE_EXECUTE, script, mode, progress);
-		ScriptRunner scriptRunner = new ScriptRunner(scriptFinder, resolver,
-				(internalProgress, commandName, parameters) -> {
+    eventManager.trigger(Event.BEFORE_EXECUTE, script, mode, progress);
+    ScriptRunner scriptRunner = new ScriptRunner(scriptFinder, resolver,
+        (internalProgress, commandName, parameters) -> {
 //			try {
 //				ActionDescriptor descriptor = actionFactory.evaluate(commandName, parameters);
 //				ActionResult result = actionExecutor.execute(descriptor);
@@ -130,159 +130,159 @@ public class ScriptManagerImpl implements ScriptManager {
 //				LOG.error("Error while processing command: {}", commandName, e);
 //				progress.addEntry(commandName, Message.getErrorMessage(e.getMessage()), Status.ERROR);
 //			}
-					internalProgress.addEntry(commandName, Message.getInfoMessage(parameters.toString()), Status.SUCCESS);
-		});
+          internalProgress.addEntry(commandName, Message.getInfoMessage(parameters.toString()), Status.SUCCESS);
+        });
 
-		scriptRunner.execute(script, progress);
-		if (progress.isSuccess()) {
-			savingPolicy.save(context.getSession(), SessionSavingMode.SINGLE);
-		}
+    scriptRunner.execute(script, progress, customDefinitions);
+    if (progress.isSuccess()) {
+      savingPolicy.save(context.getSession(), SessionSavingMode.SINGLE);
+    }
 
-		eventManager.trigger(Event.AFTER_EXECUTE, script, mode, progress);
-		return progress;
-	}
+    eventManager.trigger(Event.AFTER_EXECUTE, script, mode, progress);
+    return progress;
+  }
 
-	@Override
-	public synchronized Progress process(final Script script, final Mode mode, ResourceResolver resolver)
-			throws RepositoryException, PersistenceException {
-		return process(script, mode, Maps.newHashMap(), resolver);
-	}
+  @Override
+  public synchronized Progress process(final Script script, final Mode mode, ResourceResolver resolver)
+      throws RepositoryException, PersistenceException {
+    return process(script, mode, Maps.newHashMap(), resolver);
+  }
 
-	@Override
-	public Progress process(Script script, final Mode mode, final Map<String, String> customDefinitions,
-			ResourceResolver resolver) throws RepositoryException, PersistenceException {
-		Progress progress;
-		try {
-			progress = execute(script, mode, customDefinitions, resolver);
+  @Override
+  public Progress process(Script script, final Mode mode, final Map<String, String> customDefinitions,
+      ResourceResolver resolver) throws RepositoryException, PersistenceException {
+    Progress progress;
+    try {
+      progress = execute(script, mode, customDefinitions, resolver);
 
-		} catch (ExecutionException e) {
-			progress = new ProgressImpl(resolver.getUserID());
-			progress.addEntry(Message.getErrorMessage(e.getMessage()), Status.ERROR);
-		}
-		process(script, mode, progress.isSuccess(), resolver);
-		return progress;
-	}
+    } catch (ExecutionException e) {
+      progress = new ProgressImpl(resolver.getUserID());
+      progress.addEntry(Message.getErrorMessage(e.getMessage()), Status.ERROR);
+    }
+    process(script, mode, progress.isSuccess(), resolver);
+    return progress;
+  }
 
-	private void process(final Script script, final Mode mode, final boolean success,
-			ResourceResolver resolver) throws PersistenceException {
-		final ModifiableScript modifiableScript = new ModifiableScriptWrapper(resolver, script);
+  private void process(final Script script, final Mode mode, final boolean success,
+      ResourceResolver resolver) throws PersistenceException {
+    final ModifiableScript modifiableScript = new ModifiableScriptWrapper(resolver, script);
 
-		if (Arrays.asList(Mode.RUN, Mode.AUTOMATIC_RUN).contains(mode)) {
-			modifiableScript.setExecuted(true);
-		}
+    if (Arrays.asList(Mode.RUN, Mode.AUTOMATIC_RUN).contains(mode)) {
+      modifiableScript.setExecuted(true);
+    }
 
-		if (Arrays.asList(Mode.DRY_RUN, Mode.RUN, Mode.AUTOMATIC_RUN).contains(mode)) {
-			modifiableScript.setDryRunStatus(success);
-		}
+    if (Arrays.asList(Mode.DRY_RUN, Mode.RUN, Mode.AUTOMATIC_RUN).contains(mode)) {
+      modifiableScript.setDryRunStatus(success);
+    }
 
-		if (Mode.VALIDATION.equals(mode)) {
-			modifiableScript.setValid(success);
-		}
+    if (Mode.VALIDATION.equals(mode)) {
+      modifiableScript.setValid(success);
+    }
 
-		if (Mode.DRY_RUN.equals(mode)) {
-			modifiableScript.setDryRunTime(new Date());
-		}
-	}
+    if (Mode.DRY_RUN.equals(mode)) {
+      modifiableScript.setDryRunTime(new Date());
+    }
+  }
 
-	@Override
-	public Progress evaluate(String scriptContent, Mode mode, ResourceResolver resolver)
-			throws RepositoryException, PersistenceException {
-		return evaluate(scriptContent, mode, Maps.newHashMap(), resolver);
-	}
+  @Override
+  public Progress evaluate(String scriptContent, Mode mode, ResourceResolver resolver)
+      throws RepositoryException, PersistenceException {
+    return evaluate(scriptContent, mode, Maps.newHashMap(), resolver);
+  }
 
-	@Override
-	public Progress evaluate(String scriptContent, Mode mode, Map<String, String> customDefinitions,
-			ResourceResolver resolver) throws RepositoryException, PersistenceException {
-		Script script = scriptFinder.find(ScriptManager.FILE_FOR_EVALUATION, false, resolver);
-		if (script != null) {
-			scriptStorage.remove(script, resolver);
-		}
+  @Override
+  public Progress evaluate(String scriptContent, Mode mode, Map<String, String> customDefinitions,
+      ResourceResolver resolver) throws RepositoryException, PersistenceException {
+    Script script = scriptFinder.find(ScriptManager.FILE_FOR_EVALUATION, false, resolver);
+    if (script != null) {
+      scriptStorage.remove(script, resolver);
+    }
 
-		InputStream stream = new ByteArrayInputStream(scriptContent.getBytes(StandardCharsets.UTF_8));
-		script = scriptStorage.save(FILE_FOR_EVALUATION, stream, true, resolver);
+    InputStream stream = new ByteArrayInputStream(scriptContent.getBytes(StandardCharsets.UTF_8));
+    script = scriptStorage.save(FILE_FOR_EVALUATION, stream, true, resolver);
 
-		Progress progress = process(script, mode, customDefinitions, resolver);
-		scriptStorage.remove(script, resolver);
+    Progress progress = process(script, mode, customDefinitions, resolver);
+    scriptStorage.remove(script, resolver);
 
-		return progress;
-	}
+    return progress;
+  }
 
-	@Override
-	public Map<String, String> getPredefinedDefinitions() {
-		if (predefinedDefinitions == null) {
-			predefinedDefinitions = Collections.synchronizedMap(new TreeMap<>());
-			eventManager.trigger(Event.INIT_DEFINITIONS);
-		}
-		return predefinedDefinitions;
-	}
+  @Override
+  public Map<String, String> getPredefinedDefinitions() {
+    if (predefinedDefinitions == null) {
+      predefinedDefinitions = Collections.synchronizedMap(new TreeMap<>());
+      eventManager.trigger(Event.INIT_DEFINITIONS);
+    }
+    return predefinedDefinitions;
+  }
 
-	@Override
-	public EventManager getEventManager() {
-		return eventManager;
-	}
+  @Override
+  public EventManager getEventManager() {
+    return eventManager;
+  }
 
-	@Override
-	public List<Script> findIncludes(Script script, ResourceResolver resolver) throws ExecutionException {
-		final List<Script> includes = new ArrayList<>();
-		final HashMap<String, String> definitions = new HashMap<>();
-		parseIncludeDescriptors(script, definitions, includes, resolver);
-		return includes;
-	}
+  @Override
+  public List<Script> findIncludes(Script script, ResourceResolver resolver) throws ExecutionException {
+    final List<Script> includes = new ArrayList<>();
+    final HashMap<String, String> definitions = new HashMap<>();
+    parseIncludeDescriptors(script, definitions, includes, resolver);
+    return includes;
+  }
 
-	private List<ActionDescriptor> parseAllDescriptors(Script script, Map<String, String> customDefinitions,
-			ResourceResolver resolver) throws ExecutionException {
-		final List<Script> includes = new ArrayList<>();
-		final HashMap<String, String> definitions = new HashMap<>();
+  private List<ActionDescriptor> parseAllDescriptors(Script script, Map<String, String> customDefinitions,
+      ResourceResolver resolver) throws ExecutionException {
+    final List<Script> includes = new ArrayList<>();
+    final HashMap<String, String> definitions = new HashMap<>();
 
-		definitions.putAll(getPredefinedDefinitions());
-		definitions.putAll(customDefinitions);
+    definitions.putAll(getPredefinedDefinitions());
+    definitions.putAll(customDefinitions);
 
-		return parseIncludeDescriptors(script, definitions, includes, resolver);
-	}
+    return parseIncludeDescriptors(script, definitions, includes, resolver);
+  }
 
-	private List<ActionDescriptor> parseIncludeDescriptors(Script script, Map<String, String> definitions,
-			List<Script> includes, ResourceResolver resolver) throws ExecutionException {
-		final List<ActionDescriptor> descriptors = new LinkedList<>();
-		LineIterator lineIterator = IOUtils.lineIterator(new StringReader(script.getData()));
+  private List<ActionDescriptor> parseIncludeDescriptors(Script script, Map<String, String> definitions,
+      List<Script> includes, ResourceResolver resolver) throws ExecutionException {
+    final List<ActionDescriptor> descriptors = new LinkedList<>();
+    LineIterator lineIterator = IOUtils.lineIterator(new StringReader(script.getData()));
 
-		while (lineIterator.hasNext()) {
-			String line = lineIterator.next();
-			if (ScriptUtils.isAction(line)) {
-				final String command = ScriptUtils.parseCommand(line, definitions);
-				final ActionDescriptor descriptor = actionFactory.evaluate(command);
-				final Action action = descriptor.getAction();
+    while (lineIterator.hasNext()) {
+      String line = lineIterator.next();
+      if (ScriptUtils.isAction(line)) {
+        final String command = ScriptUtils.parseCommand(line, definitions);
+        final ActionDescriptor descriptor = actionFactory.evaluate(command);
+        final Action action = descriptor.getAction();
 
-				descriptors.add(descriptor);
+        descriptors.add(descriptor);
 
-				if (action instanceof DefinitionProvider) {
-					definitions.putAll(((DefinitionProvider) action).provideDefinitions(definitions));
-				} else if (action instanceof ScriptProvider) {
-					getIncludes(definitions, includes, resolver, descriptors, (ScriptProvider) action);
-				}
-			}
-		}
-		return descriptors;
-	}
+        if (action instanceof DefinitionProvider) {
+          definitions.putAll(((DefinitionProvider) action).provideDefinitions(definitions));
+        } else if (action instanceof ScriptProvider) {
+          getIncludes(definitions, includes, resolver, descriptors, (ScriptProvider) action);
+        }
+      }
+    }
+    return descriptors;
+  }
 
-	private void getIncludes(Map<String, String> definitions, List<Script> includes,
-			ResourceResolver resolver, List<ActionDescriptor> descriptors, ScriptProvider action)
-			throws ExecutionException {
-		for (String path : action.provideScripts()) {
-			Script include = scriptFinder.find(path, resolver);
+  private void getIncludes(Map<String, String> definitions, List<Script> includes,
+      ResourceResolver resolver, List<ActionDescriptor> descriptors, ScriptProvider action)
+      throws ExecutionException {
+    for (String path : action.provideScripts()) {
+      Script include = scriptFinder.find(path, resolver);
 
-			if (include != null) {
-				includes.add(include);
-				descriptors.addAll(parseIncludeDescriptors(include, definitions, includes,
-						resolver));
-			} else {
-				throw new ActionCreationException(
-						String.format("Included script: '%s' does not exists.", path));
-			}
-		}
-	}
+      if (include != null) {
+        includes.add(include);
+        descriptors.addAll(parseIncludeDescriptors(include, definitions, includes,
+            resolver));
+      } else {
+        throw new ActionCreationException(
+            String.format("Included script: '%s' does not exists.", path));
+      }
+    }
+  }
 
-	private ActionExecutor createExecutor(Mode mode, ResourceResolver resolver) throws RepositoryException {
-		final Context context = new Context((JackrabbitSession) resolver.adaptTo(Session.class));
-		return mode.getExecutor(context, actionFactory);
-	}
+  private ActionExecutor createExecutor(Mode mode, ResourceResolver resolver) throws RepositoryException {
+    final Context context = new Context((JackrabbitSession) resolver.adaptTo(Session.class));
+    return mode.getExecutor(context, actionFactory);
+  }
 }
