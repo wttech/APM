@@ -85,7 +85,14 @@ command
     ;
 
 arguments
-    : argument+
+    : complexArgument+
+    ;
+
+complexArgument
+    : argument #RequiredArgument
+    | IDENTIFIER '=' argument #NamedArgument
+    | '--' IDENTIFIER #SimpleFlag
+    | '--' FLAG #ComplexFlag
     ;
 
 body
@@ -148,12 +155,20 @@ VARIABLE_PREFIX
 IDENTIFIER
     : Letter LetterOrDigit*
     ;
+FLAG
+    : Letter LetterOrDigitOrDash*
+    ;
 COMMENT
     : '#' (~[\\\r\n] )* -> skip
     ;
 
 fragment Digits
     : [0-9] ([0-9_]* [0-9])?
+    ;
+fragment LetterOrDigitOrDash
+    : Letter
+    | '-'
+    | [0-9]
     ;
 fragment LetterOrDigit
     : Letter

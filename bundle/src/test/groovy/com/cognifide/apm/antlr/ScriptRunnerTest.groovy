@@ -77,7 +77,7 @@ class ScriptRunnerTest extends Specification {
             void runAction(Progress progress, String commandName, Arguments arguments) {
                 def command = new StringBuilder("Executing command ")
                 command.append(commandName)
-                arguments.values.each {
+                arguments.required.each {
                     command.append(" ")
                             .append("'")
                             .append(it.getString())

@@ -22,4 +22,8 @@ package com.cognifide.apm.antlr.argument
 
 import com.cognifide.apm.antlr.ApmType
 
-data class Arguments(val values: List<ApmType>)
+data class Arguments(
+        val required: List<ApmType> = listOf(),
+        val named: Map<String, ApmType> = mapOf(),
+        val flags: List<String> = listOf()
+)

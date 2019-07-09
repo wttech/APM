@@ -20,10 +20,8 @@
 
 package com.cognifide.apm.antlr
 
-
 import com.cognifide.apm.antlr.argument.ArgumentResolver
 import com.cognifide.apm.antlr.argument.ArgumentResolverException
-import com.cognifide.apm.antlr.common.ListBaseVisitor
 import com.google.common.collect.Lists
 import spock.lang.Specification
 
@@ -35,27 +33,27 @@ class ArgumentResolverTest extends Specification {
         given:
         def parameterResolver = new ArgumentResolver(this.variableHolder)
         def parser = ApmLangParserHelper.createParserUsingScript(
-                """GENERIC [
+                """[
                     'a',
                     'b',
                     'c'
                 ]""")
 
         when:
-        def result = new ParameterVisitor(parameterResolver).visit(parser.apm())
+        def result = parameterResolver.resolve(parser.arguments())
 
         then:
-        result[0].getList() == ["a", "b", "c"]
+        result.required[0].getList() == ["a", "b", "c"]
     }
 
     def "accessing not existing variable"() {
         given:
         variableHolder.set("var1", new ApmString("val1"))
         def parameterResolver = new ArgumentResolver(this.variableHolder)
-        def parser = ApmLangParserHelper.createParserUsingScript("GENERIC \$var1 \$var2")
+        def parser = ApmLangParserHelper.createParserUsingScript("\$var1 \$var2")
 
         when:
-        new ParameterVisitor(parameterResolver).visit(parser.apm())
+        parameterResolver.resolve(parser.arguments())
 
         then:
         def exception = thrown(ArgumentResolverException.class)
@@ -66,60 +64,60 @@ class ArgumentResolverTest extends Specification {
         given:
         variableHolder.set("var1", new ApmString("val1"))
         def parameterResolver = new ArgumentResolver(variableHolder)
-        def parser = ApmLangParserHelper.createParserUsingScript("GENERIC \$var1 + 'val2'")
+        def parser = ApmLangParserHelper.createParserUsingScript("\$var1 + 'val2'")
 
         when:
-        def result = new ParameterVisitor(parameterResolver).visit(parser.apm())
+        def result = parameterResolver.resolve(parser.arguments())
 
         then:
-        result[0].getString() == "val1val2"
+        result.required[0].getString() == "val1val2"
     }
 
     def "concatenation of string and number"() {
         given:
         variableHolder.set("var1", new ApmString("val1"))
         def parameterResolver = new ArgumentResolver(variableHolder)
-        def parser = ApmLangParserHelper.createParserUsingScript("GENERIC \$var1 + 10")
+        def parser = ApmLangParserHelper.createParserUsingScript("\$var1 + 10")
 
         when:
-        def result = new ParameterVisitor(parameterResolver).visit(parser.apm())
+        def result = parameterResolver.resolve(parser.arguments())
 
         then:
-        result[0].getString() == "val110"
+        result.required[0].getString() == "val110"
     }
 
     def "sum of lists"() {
         given:
         def parameterResolver = new ArgumentResolver(variableHolder)
-        def parser = ApmLangParserHelper.createParserUsingScript("GENERIC ['a', 'b'] + ['c', 'd']")
+        def parser = ApmLangParserHelper.createParserUsingScript("['a', 'b'] + ['c', 'd']")
 
         when:
-        def result = new ParameterVisitor(parameterResolver).visit(parser.apm())
+        def result = parameterResolver.resolve(parser.arguments())
 
         then:
-        result[0].getList() == ["a", "b", "c", "d"]
+        result.required[0].getList() == ["a", "b", "c", "d"]
     }
 
     def "sum of numbers"() {
         given:
         variableHolder.set("var1", new ApmInteger(10))
         def parameterResolver = new ArgumentResolver(variableHolder)
-        def parser = ApmLangParserHelper.createParserUsingScript("GENERIC \$var1 + 7")
+        def parser = ApmLangParserHelper.createParserUsingScript("\$var1 + 7")
 
         when:
-        def result = new ParameterVisitor(parameterResolver).visit(parser.apm())
+        def result = parameterResolver.resolve(parser.arguments())
 
         then:
-        result[0].getInteger() == 17
+        result.required[0].getInteger() == 17
     }
 
     def "invalid sum of elements"() {
         given:
         def parameterResolver = new ArgumentResolver(variableHolder)
-        def parser = ApmLangParserHelper.createParserUsingScript("GENERIC ['a', 'b'] + 5")
+        def parser = ApmLangParserHelper.createParserUsingScript("['a', 'b'] + 5")
 
         when:
-        new ParameterVisitor(parameterResolver).visit(parser.apm())
+        parameterResolver.resolve(parser.arguments())
 
         then:
         def exception = thrown(ArgumentResolverException.class)
@@ -130,28 +128,28 @@ class ArgumentResolverTest extends Specification {
         given:
         variableHolder.set("var1", new ApmInteger(1))
         def parameterResolver = new ArgumentResolver(variableHolder)
-        def parser = ApmLangParserHelper.createParserUsingScript("GENERIC \$var1 2")
+        def parser = ApmLangParserHelper.createParserUsingScript("\$var1 2")
 
         when:
-        def result = new ParameterVisitor(parameterResolver).visit(parser.apm())
+        def result = parameterResolver.resolve(parser.arguments())
 
         then:
-        result[0].getInteger() == 1
-        result[1].getInteger() == 2
+        result.required[0].getInteger() == 1
+        result.required[1].getInteger() == 2
     }
 
     def "resolve string parameters"() {
         given:
         variableHolder.set("var1", new ApmString("val1"))
         def parameterResolver = new ArgumentResolver(variableHolder)
-        def parser = ApmLangParserHelper.createParserUsingScript("GENERIC \$var1 'val2'")
+        def parser = ApmLangParserHelper.createParserUsingScript("\$var1 'val2'")
 
         when:
-        def result = new ParameterVisitor(parameterResolver).visit(parser.apm())
+        def result = parameterResolver.resolve(parser.arguments())
 
         then:
-        result[0].getString() == "val1"
-        result[1].getString() == "val2"
+        result.required[0].getString() == "val1"
+        result.required[1].getString() == "val2"
     }
 
     def "resolve list parameters"() {
@@ -159,27 +157,42 @@ class ArgumentResolverTest extends Specification {
         variableHolder.set("var1", new ApmList(Lists.newArrayList("val1")))
         variableHolder.set("var2", new ApmString("val2"))
         def parameterResolver = new ArgumentResolver(variableHolder)
-        def parser = ApmLangParserHelper.createParserUsingScript("GENERIC \$var1 [\$var2, FALSE]")
+        def parser = ApmLangParserHelper.createParserUsingScript("\$var1 [\$var2, FALSE]")
 
         when:
-        def result = new ParameterVisitor(parameterResolver).visit(parser.apm())
+        def result = parameterResolver.resolve(parser.arguments())
 
         then:
-        result[0].getList() == ["val1"]
-        result[1].getList() == ["val2", "FALSE"]
+        result.required[0].getList() == ["val1"]
+        result.required[1].getList() == ["val2", "FALSE"]
     }
 
-    static class ParameterVisitor extends ListBaseVisitor<ApmType> {
+    def "resolve optional parameters"() {
+        given:
+        variableHolder.set("var1", new ApmList(Lists.newArrayList("val1")))
+        variableHolder.set("var2", new ApmString("val2"))
+        def parameterResolver = new ArgumentResolver(variableHolder)
+        def parser = ApmLangParserHelper.createParserUsingScript("\$var1 param1=[\$var2, FALSE] param2='STRICT'")
 
-        private final ArgumentResolver parameterResolver
+        when:
+        def result = parameterResolver.resolve(parser.arguments())
 
-        ParameterVisitor(ArgumentResolver parameterResolver) {
-            this.parameterResolver = parameterResolver
-        }
+        then:
+        result.named["param1"].getList() == ["val2", "FALSE"]
+        result.named["param2"].getString() == "STRICT"
+    }
 
-        @Override
-        List<ApmType> visitArguments(ApmLangParser.ArgumentsContext ctx) {
-            return parameterResolver.resolve(ctx).values
-        }
+    def "resolve flags"() {
+        given:
+        variableHolder.set("var1", new ApmList(Lists.newArrayList("val1")))
+        variableHolder.set("var2", new ApmString("val2"))
+        def parameterResolver = new ArgumentResolver(variableHolder)
+        def parser = ApmLangParserHelper.createParserUsingScript("\$var1 param1=[\$var2, FALSE] --IF-EXISTS --DEEP")
+
+        when:
+        def result = parameterResolver.resolve(parser.arguments())
+
+        then:
+        result.flags == ["IF-EXISTS", "DEEP"]
     }
 }

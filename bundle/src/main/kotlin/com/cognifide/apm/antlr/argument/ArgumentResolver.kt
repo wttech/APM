@@ -22,24 +22,23 @@ package com.cognifide.apm.antlr.argument
 
 import com.cognifide.apm.antlr.*
 import com.cognifide.apm.antlr.ApmLangParser.*
-import com.cognifide.apm.antlr.common.ListBaseVisitor
 import com.google.common.primitives.Ints
 
 class ArgumentResolver(private val variableHolder: VariableHolder) {
 
     private val singleArgumentResolver: SingleArgumentResolver
-    private val multiArgumentResolver: MultiArgumentResolver
 
     init {
         this.singleArgumentResolver = SingleArgumentResolver()
-        this.multiArgumentResolver = MultiArgumentResolver()
     }
 
     fun resolve(context: ArgumentsContext?): Arguments {
         return if (context != null) {
-            Arguments(multiArgumentResolver.visitArguments(context))
+            val multiArgumentResolver = MultiArgumentResolver()
+            multiArgumentResolver.visitArguments(context)
+            Arguments(multiArgumentResolver.required, multiArgumentResolver.named, multiArgumentResolver.flags)
         } else {
-            Arguments(listOf())
+            Arguments()
         }
     }
 
@@ -51,10 +50,26 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
         }
     }
 
-    private inner class MultiArgumentResolver : ListBaseVisitor<ApmType>() {
+    private inner class MultiArgumentResolver : ApmLangBaseVisitor<Unit>() {
 
-        override fun visitArgument(ctx: ArgumentContext): MutableList<ApmType> {
-            return mutableListOf(singleArgumentResolver.visit(ctx))
+        val required = mutableListOf<ApmType>()
+        val named = mutableMapOf<String, ApmType>()
+        val flags = mutableListOf<String>()
+
+        override fun visitRequiredArgument(ctx: RequiredArgumentContext) {
+            required.add(singleArgumentResolver.visitArgument(ctx.argument()))
+        }
+
+        override fun visitNamedArgument(ctx: NamedArgumentContext) {
+            named[ctx.IDENTIFIER().toString()] = singleArgumentResolver.visitArgument(ctx.argument())
+        }
+
+        override fun visitSimpleFlag(ctx: SimpleFlagContext) {
+            flags.add(ctx.IDENTIFIER().toString())
+        }
+
+        override fun visitComplexFlag(ctx: ComplexFlagContext) {
+            flags.add(ctx.FLAG().toString())
         }
     }
 
@@ -116,6 +131,5 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
             return variableHolder[name]
                     ?: throw ArgumentResolverException("Variable $name not found")
         }
-
     }
 }
