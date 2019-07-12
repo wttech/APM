@@ -93,7 +93,7 @@ public class ScriptRunBackgroundServlet extends SlingAllMethodsServlet {
 			final SlingHttpServletResponse response) throws IOException {
 		final String searchPath = request.getParameter(FILE_REQUEST_PARAMETER);
 		final String modeName = request.getParameter(MODE_REQUEST_PARAMETER);
-		final String userName = request.getUserPrincipal().getName();
+		final String userName = request.getResourceResolver().getUserID();
 
 		if (StringUtils.isEmpty(searchPath)) {
 			ServletUtils.writeMessage(response, ERROR_RESPONSE_TYPE,
