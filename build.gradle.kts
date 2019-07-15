@@ -1,3 +1,4 @@
+import com.cognifide.gradle.aem.pkg.tasks.Compose
 import pl.allegro.tech.build.axion.release.domain.TagNameSerializationConfig
 import pl.allegro.tech.build.axion.release.domain.scm.ScmPosition
 
@@ -12,6 +13,20 @@ plugins {
 
 defaultTasks = listOf(":aemSatisfy", ":aemDeploy")
 description = "AEM Permission Management :: Root"
+
+scmVersion {
+    useHighestVersion = true
+    ignoreUncommittedChanges = false
+    tag(closureOf<TagNameSerializationConfig> {
+        prefix = "apm"
+    })
+}
+
+project.version = scmVersion.version
+
+allprojects {
+    group = "com.cognifide.aem"
+}
 
 aem {
     tasks {
@@ -29,24 +44,23 @@ aem {
             fromProject("bundle")
             fromProject("content")
             vaultDefinition {
-                version = rootProject.version as String
+                version = scmVersion.version as String
             }
         }
     }
 }
 
-scmVersion {
-    useHighestVersion = true
-    ignoreUncommittedChanges = false
-    tag(closureOf<TagNameSerializationConfig> {
-        prefix = "apm"
-    })
-}
-
-project.version = scmVersion.version
-
-allprojects {
-    group = "com.cognifide.aem"
+publishing {
+    publications {
+        create<MavenPublication>("apm") {
+            val apmContent by tasks.named(Compose.NAME, Compose::class)
+            artifact(apmContent)
+            afterEvaluate {
+                artifactId = "apm"
+                version = project.version
+            }
+        }
+    }
 }
 
 tasks.rat {
