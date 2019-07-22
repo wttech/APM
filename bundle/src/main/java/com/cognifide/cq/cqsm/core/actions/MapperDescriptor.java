@@ -21,7 +21,7 @@
 package com.cognifide.cq.cqsm.core.actions;
 
 import com.cognifide.apm.antlr.argument.Arguments;
-import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
+import com.cognifide.cq.cqsm.api.actions.Action;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -39,7 +39,7 @@ public class MapperDescriptor {
     return mappingDescriptors.stream().anyMatch(it -> it.handles(arguments));
   }
 
-  public ActionDescriptor handle(Arguments arguments) {
+  public Action handle(Arguments arguments) {
     return mappingDescriptors.stream()
         .filter(it -> it.handles(arguments)).findFirst()
         .orElseThrow(() -> new RuntimeException(""))

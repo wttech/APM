@@ -20,33 +20,59 @@
 
 package com.cognifide.cq.cqsm.core.actions
 
-
-import com.cognifide.cq.cqsm.api.actions.ActionDescriptor
+import com.cognifide.cq.cqsm.api.actions.Action
+import com.cognifide.cq.cqsm.api.actions.ActionResult
 import com.cognifide.cq.cqsm.api.actions.annotations.Flags
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapper
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping
 import com.cognifide.cq.cqsm.api.actions.annotations.Named
+import com.cognifide.cq.cqsm.api.exceptions.ActionExecutionException
+import com.cognifide.cq.cqsm.api.executors.Context
 
 @Mapper("sample")
 class SampleMapper {
 
     @Mapping("")
-    ActionDescriptor create1(String path, String permissions,
-                             @Named("glob") String glob, @Named("types") List<String> types, @Named("items") List<String> items,
-                             @Flags List<String> flags) {
-        return new ActionDescriptor("create1", null)
+    Action create1(String path, String permissions,
+                   @Named("glob") String glob, @Named("types") List<String> types, @Named("items") List<String> items,
+                   @Flags List<String> flags) {
+        return new DummyAction("create1")
     }
 
     @Mapping("")
-    ActionDescriptor create2(String path, List<String> permissions,
-                             @Named("glob") String glob, @Named("types") List<String> types, @Named("items") List<String> items,
-                             @Flags List<String> flags) {
-        return new ActionDescriptor("create2", null)
+    Action create2(String path, List<String> permissions,
+                   @Named("glob") String glob, @Named("types") List<String> types, @Named("items") List<String> items,
+                   @Flags List<String> flags) {
+        return new DummyAction("create2")
     }
 
-    ActionDescriptor create3(String path, List<String> permissions,
-                             @Named("glob") String glob, @Named("types") List<String> types, @Named("items") List<String> items,
-                             @Flags List<String> flags) {
-        return new ActionDescriptor("create3", null)
+    Action create3(String path, List<String> permissions,
+                   @Named("glob") String glob, @Named("types") List<String> types, @Named("items") List<String> items,
+                   @Flags List<String> flags) {
+        return new DummyAction("create3")
+    }
+
+    class DummyAction implements Action {
+
+        String name
+
+        DummyAction(String name) {
+            this.name = name
+        }
+
+        @Override
+        ActionResult simulate(Context context) throws ActionExecutionException {
+            return null
+        }
+
+        @Override
+        ActionResult execute(Context context) throws ActionExecutionException {
+            return null
+        }
+
+        @Override
+        boolean isGeneric() {
+            return false
+        }
     }
 }

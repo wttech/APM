@@ -21,7 +21,7 @@
 package com.cognifide.cq.cqsm.core.actions;
 
 import com.cognifide.apm.antlr.argument.Arguments;
-import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
+import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.core.actions.ParameterDescriptor.NamedParameterDescriptor;
 import com.cognifide.cq.cqsm.core.actions.ParameterDescriptor.RequiredParameterDescriptor;
 import java.lang.reflect.InvocationTargetException;
@@ -60,12 +60,12 @@ public class MappingDescriptor {
     return CollectionUtils.removeAll(arguments.getNamed().keySet(), expectedKeys).isEmpty();
   }
 
-  public ActionDescriptor handle(Object mapper, Arguments arguments) {
+  public Action handle(Object mapper, Arguments arguments) {
     List<Object> args = parameterDescriptors.stream()
         .map(parameterDescriptor -> parameterDescriptor.getArgument(arguments))
         .collect(Collectors.toList());
     try {
-      return (ActionDescriptor) method.invoke(mapper, args.toArray());
+      return (Action) method.invoke(mapper, args.toArray());
     } catch (IllegalAccessException | InvocationTargetException e) {
       throw new RuntimeException("", e);
     }

@@ -20,6 +20,7 @@
 package com.cognifide.cq.cqsm.core.actions;
 
 import com.cognifide.apm.antlr.argument.Arguments;
+import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
 import com.cognifide.cq.cqsm.api.actions.ActionFactory;
 import com.cognifide.cq.cqsm.api.actions.ActionMapper;
@@ -52,16 +53,12 @@ public class ActionFactoryImpl implements ActionFactory {
   public ActionDescriptor evaluate(String command, Arguments arguments) throws ActionCreationException {
     Optional<MapperDescriptor> mapper = registry.getMapper(command);
     if (mapper.isPresent()) {
-      ActionDescriptor descriptor = tryToEvaluateCommand(mapper.get(), arguments);
-      if (descriptor != null) {
-        return descriptor;
-      }
+      return new ActionDescriptor(command, tryToEvaluateCommand(mapper.get(), arguments));
     }
-
     throw new ActionCreationException(String.format("Cannot find action for command: %s", command));
   }
 
-  private ActionDescriptor tryToEvaluateCommand(MapperDescriptor mapper, Arguments arguments)
+  private Action tryToEvaluateCommand(MapperDescriptor mapper, Arguments arguments)
       throws ActionCreationException {
     if (mapper.handles(arguments)) {
       return mapper.handle(arguments);

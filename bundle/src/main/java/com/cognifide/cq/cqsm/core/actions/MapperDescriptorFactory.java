@@ -24,7 +24,7 @@ import com.cognifide.apm.antlr.ApmInteger;
 import com.cognifide.apm.antlr.ApmList;
 import com.cognifide.apm.antlr.ApmString;
 import com.cognifide.apm.antlr.ApmType;
-import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
+import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.annotations.Flags;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
@@ -74,8 +74,8 @@ public class MapperDescriptorFactory {
     if (mappingAnnotation == null) {
       return Optional.empty();
     }
-    if (!ActionDescriptor.class.equals(method.getReturnType())) {
-      throw new InvalidActionMapperException("Mapping method must have return type " + ActionDescriptor.class);
+    if (!Action.class.equals(method.getReturnType())) {
+      throw new InvalidActionMapperException("Mapping method must have return type " + Action.class.getName());
     }
 
     List<ParameterDescriptor> parameterDescriptors = Lists.newArrayList();

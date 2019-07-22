@@ -24,7 +24,7 @@ import com.cognifide.apm.antlr.ApmList
 import com.cognifide.apm.antlr.ApmString
 import com.cognifide.apm.antlr.ApmType
 import com.cognifide.apm.antlr.argument.Arguments
-import com.cognifide.cq.cqsm.api.actions.ActionDescriptor
+import com.cognifide.cq.cqsm.api.actions.Action
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapper
 import com.cognifide.cq.cqsm.api.exceptions.InvalidActionMapperException
 import spock.lang.Specification
@@ -53,7 +53,7 @@ class MapperDescriptorTest extends Specification {
 
         then:
         def e = thrown(InvalidActionMapperException.class)
-        e.message == "Mapping method must have return type class " + ActionDescriptor.class.getName()
+        e.message == "Mapping method must have return type " + Action.class.getName()
     }
 
     def "creates valid MapperDescriptor for SampleMapper"() {
@@ -91,7 +91,7 @@ class MapperDescriptorTest extends Specification {
         expect:
         MapperDescriptorFactory mapperDescriptorFactory = new MapperDescriptorFactory()
         def mapperDescriptor = mapperDescriptorFactory.create(SampleMapper.class)
-        mapperDescriptor.handle(toArguments(required, named, flags)).command == result
+        mapperDescriptor.handle(toArguments(required, named, flags)).name == result
 
         where:
         required                         | named         | flags         || result
