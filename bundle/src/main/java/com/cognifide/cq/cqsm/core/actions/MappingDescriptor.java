@@ -22,9 +22,15 @@ package com.cognifide.cq.cqsm.core.actions;
 
 import com.cognifide.apm.antlr.argument.Arguments;
 import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
+import com.cognifide.cq.cqsm.core.actions.ParameterDescriptor.NamedParameterDescriptor;
+import com.cognifide.cq.cqsm.core.actions.ParameterDescriptor.RequiredParameterDescriptor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections.CollectionUtils;
 
 @RequiredArgsConstructor
 public class MappingDescriptor {
@@ -33,10 +39,35 @@ public class MappingDescriptor {
   private final List<ParameterDescriptor> parameterDescriptors;
 
   public boolean handles(Arguments arguments) {
-    return false;
+    boolean handles = parameterDescriptors.stream()
+        .allMatch(parameterDescriptor -> parameterDescriptor.handles(arguments));
+    handles &= checkRequired(arguments);
+    handles &= checkNamed(arguments);
+    return handles;
   }
 
-  public ActionDescriptor handle(Arguments arguments) {
-    return null;
+  private boolean checkRequired(Arguments arguments) {
+    long expectedCount = parameterDescriptors.stream().filter(RequiredParameterDescriptor.class::isInstance).count();
+    return expectedCount == arguments.getRequired().size();
+  }
+
+  private boolean checkNamed(Arguments arguments) {
+    Set<String> expectedKeys = parameterDescriptors.stream()
+        .filter(NamedParameterDescriptor.class::isInstance)
+        .map(NamedParameterDescriptor.class::cast)
+        .map(NamedParameterDescriptor::getName)
+        .collect(Collectors.toSet());
+    return CollectionUtils.removeAll(arguments.getNamed().keySet(), expectedKeys).isEmpty();
+  }
+
+  public ActionDescriptor handle(Object mapper, Arguments arguments) {
+    List<Object> args = parameterDescriptors.stream()
+        .map(parameterDescriptor -> parameterDescriptor.getArgument(arguments))
+        .collect(Collectors.toList());
+    try {
+      return (ActionDescriptor) method.invoke(mapper, args.toArray());
+    } catch (IllegalAccessException | InvocationTargetException e) {
+      throw new RuntimeException("", e);
+    }
   }
 }

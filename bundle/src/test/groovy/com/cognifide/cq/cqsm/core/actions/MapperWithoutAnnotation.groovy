@@ -20,7 +20,8 @@
 
 package com.cognifide.cq.cqsm.core.actions
 
-import com.cognifide.cq.cqsm.api.actions.Action
+
+import com.cognifide.cq.cqsm.api.actions.ActionDescriptor
 import com.cognifide.cq.cqsm.api.actions.annotations.Flags
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping
 import com.cognifide.cq.cqsm.api.actions.annotations.Named
@@ -28,9 +29,9 @@ import com.cognifide.cq.cqsm.api.actions.annotations.Named
 class MapperWithoutAnnotation {
 
     @Mapping("")
-    Action create(String path, List<String> permissions,
-                  @Named("glob") String glob, @Named("types") List<String> types, @Named("items") List<String> items,
-                  @Flags List<String> flags) {
+    ActionDescriptor create(String path, List<String> permissions,
+                            @Named("glob") String glob, @Named("types") List<String> types, @Named("items") List<String> items,
+                            @Flags List<String> flags) {
         return null
     }
 }

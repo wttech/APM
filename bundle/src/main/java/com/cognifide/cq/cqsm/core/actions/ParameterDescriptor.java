@@ -21,6 +21,7 @@
 package com.cognifide.cq.cqsm.core.actions;
 
 import com.cognifide.apm.antlr.ApmType;
+import com.cognifide.apm.antlr.argument.Arguments;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -30,13 +31,36 @@ public abstract class ParameterDescriptor {
 
   private final Class<? extends ApmType> type;
 
+  abstract Object getArgument(Arguments arguments);
+
+  abstract boolean handles(Arguments arguments);
+
+  protected boolean sameType(ApmType apmType) {
+    return this.type.equals(apmType.getClass());
+  }
+
+  @Getter
   public static class RequiredParameterDescriptor extends ParameterDescriptor {
 
-    public RequiredParameterDescriptor(Class<? extends ApmType> type) {
+    private final int index;
+
+    public RequiredParameterDescriptor(Class<? extends ApmType> type, int index) {
       super(type);
+      this.index = index;
+    }
+
+    @Override
+    Object getArgument(Arguments arguments) {
+      return arguments.getRequired().get(index).getArgument();
+    }
+
+    @Override
+    boolean handles(Arguments arguments) {
+      return arguments.getRequired().size() > index && sameType(arguments.getRequired().get(index));
     }
   }
 
+  @Getter
   public static class NamedParameterDescriptor extends ParameterDescriptor {
 
     private final String name;
@@ -45,12 +69,33 @@ public abstract class ParameterDescriptor {
       super(type);
       this.name = name;
     }
+
+    @Override
+    Object getArgument(Arguments arguments) {
+      return arguments.getNamed().containsKey(name) ? arguments.getNamed().get(name).getArgument() : null;
+    }
+
+    @Override
+    boolean handles(Arguments arguments) {
+      return !arguments.getNamed().containsKey(name) || sameType(arguments.getNamed().get(name));
+    }
   }
 
+  @Getter
   public static class FlagsParameterDescriptor extends ParameterDescriptor {
 
     public FlagsParameterDescriptor(Class<? extends ApmType> type) {
       super(type);
+    }
+
+    @Override
+    Object getArgument(Arguments arguments) {
+      return arguments.getFlags();
+    }
+
+    @Override
+    boolean handles(Arguments arguments) {
+      return true;
     }
   }
 }

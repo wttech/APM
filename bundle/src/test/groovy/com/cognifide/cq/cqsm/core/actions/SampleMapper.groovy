@@ -20,7 +20,8 @@
 
 package com.cognifide.cq.cqsm.core.actions
 
-import com.cognifide.cq.cqsm.api.actions.Action
+
+import com.cognifide.cq.cqsm.api.actions.ActionDescriptor
 import com.cognifide.cq.cqsm.api.actions.annotations.Flags
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapper
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping
@@ -30,22 +31,22 @@ import com.cognifide.cq.cqsm.api.actions.annotations.Named
 class SampleMapper {
 
     @Mapping("")
-    Action create1(String path, String permissions,
-                   @Named("glob") String glob, @Named("types") List<String> types, @Named("items") List<String> items,
-                   @Flags List<String> flags) {
-        return null
+    ActionDescriptor create1(String path, String permissions,
+                             @Named("glob") String glob, @Named("types") List<String> types, @Named("items") List<String> items,
+                             @Flags List<String> flags) {
+        return new ActionDescriptor("create1", null)
     }
 
     @Mapping("")
-    Action create2(String path, List<String> permissions,
-                   @Named("glob") String glob, @Named("types") List<String> types, @Named("items") List<String> items,
-                   @Flags List<String> flags) {
-        return null
+    ActionDescriptor create2(String path, List<String> permissions,
+                             @Named("glob") String glob, @Named("types") List<String> types, @Named("items") List<String> items,
+                             @Flags List<String> flags) {
+        return new ActionDescriptor("create2", null)
     }
 
-    Action create3(String path, List<String> permissions,
-                   @Named("glob") String glob, @Named("types") List<String> types, @Named("items") List<String> items,
-                   @Flags List<String> flags) {
-        return null
+    ActionDescriptor create3(String path, List<String> permissions,
+                             @Named("glob") String glob, @Named("types") List<String> types, @Named("items") List<String> items,
+                             @Flags List<String> flags) {
+        return new ActionDescriptor("create3", null)
     }
 }

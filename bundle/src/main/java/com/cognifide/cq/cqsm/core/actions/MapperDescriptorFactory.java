@@ -24,17 +24,18 @@ import com.cognifide.apm.antlr.ApmInteger;
 import com.cognifide.apm.antlr.ApmList;
 import com.cognifide.apm.antlr.ApmString;
 import com.cognifide.apm.antlr.ApmType;
+import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
 import com.cognifide.cq.cqsm.api.actions.annotations.Flags;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
 import com.cognifide.cq.cqsm.api.actions.annotations.Named;
+import com.cognifide.cq.cqsm.api.exceptions.InvalidActionMapperException;
 import com.cognifide.cq.cqsm.core.actions.ParameterDescriptor.FlagsParameterDescriptor;
 import com.cognifide.cq.cqsm.core.actions.ParameterDescriptor.NamedParameterDescriptor;
 import com.cognifide.cq.cqsm.core.actions.ParameterDescriptor.RequiredParameterDescriptor;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import java.lang.reflect.AnnotatedType;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -45,7 +46,9 @@ public class MapperDescriptorFactory {
 
   public MapperDescriptor create(Class<?> mapperClass) {
     Mapper mapperAnnotation = mapperClass.getDeclaredAnnotation(Mapper.class);
-    Preconditions.checkArgument(mapperAnnotation != null, "Mapper must be annotated with " + Mapper.class.getName());
+    if (mapperAnnotation == null) {
+      throw new InvalidActionMapperException("Mapper must be annotated with " + Mapper.class.getName());
+    }
 
     final Object mapper = createInstance(mapperClass);
     final String name = mapperAnnotation.value();
@@ -60,9 +63,9 @@ public class MapperDescriptorFactory {
     try {
       return mapperClass.newInstance();
     } catch (InstantiationException e) {
-      throw new RuntimeException("Cannot instantiate action mapper", e);
+      throw new InvalidActionMapperException("Cannot instantiate action mapper", e);
     } catch (IllegalAccessException e) {
-      throw new RuntimeException("Cannot construct action mapper, is constructor non public?", e);
+      throw new InvalidActionMapperException("Cannot construct action mapper, is constructor non public?", e);
     }
   }
 
@@ -71,25 +74,47 @@ public class MapperDescriptorFactory {
     if (mappingAnnotation == null) {
       return Optional.empty();
     }
+    if (!ActionDescriptor.class.equals(method.getReturnType())) {
+      throw new InvalidActionMapperException("Mapping method must have return type " + ActionDescriptor.class);
+    }
 
     List<ParameterDescriptor> parameterDescriptors = Lists.newArrayList();
-    AnnotatedType[] annotatedParameterTypes = method.getAnnotatedParameterTypes();
-    for (int i = 0; i < annotatedParameterTypes.length; i++) {
-      AnnotatedType annotatedParameterType = annotatedParameterTypes[i];
-      Class<? extends ApmType> apmType = getApmType(annotatedParameterType.getType());
-      ParameterDescriptor parameterDescriptor;
-      if (annotatedParameterType.isAnnotationPresent(Named.class)) {
-        Named namedAnnotation = annotatedParameterType.getDeclaredAnnotation(Named.class);
+    Type[] types = method.getGenericParameterTypes();
+    Annotation[][] annotations = method.getParameterAnnotations();
+    int required = 0;
+    for (int i = 0; i < types.length; i++) {
+      Type type = types[i];
+      Annotation[] parameterAnnotations = annotations[i];
+      Class<? extends ApmType> apmType = getApmType(type);
+      ParameterDescriptor parameterDescriptor = null;
+      if (containsAnnotation(parameterAnnotations, Named.class)) {
+        Named namedAnnotation = getAnnotation(parameterAnnotations, Named.class);
         parameterDescriptor = new NamedParameterDescriptor(apmType, namedAnnotation.value());
-      } else if (annotatedParameterType.isAnnotationPresent(Flags.class)) {
+      }
+      if (containsAnnotation(parameterAnnotations, Flags.class)) {
         parameterDescriptor = new FlagsParameterDescriptor(apmType);
-      } else {
-        parameterDescriptor = new RequiredParameterDescriptor(apmType);
+      }
+      if (parameterDescriptor == null) {
+        parameterDescriptor = new RequiredParameterDescriptor(apmType, required);
+        required++;
       }
       parameterDescriptors.add(parameterDescriptor);
     }
 
     return Optional.of(new MappingDescriptor(method, ImmutableList.copyOf(parameterDescriptors)));
+  }
+
+  private <T extends Annotation> T getAnnotation(Annotation[] annotations, Class<T> type) {
+    for (int i = 0; i < annotations.length; i++) {
+      if (type.isInstance(annotations[i])) {
+        return (T) annotations[i];
+      }
+    }
+    return null;
+  }
+
+  private <T extends Annotation> boolean containsAnnotation(Annotation[] annotations, Class<T> type) {
+    return getAnnotation(annotations, type) != null;
   }
 
   private Class<? extends ApmType> getApmType(Type type) {

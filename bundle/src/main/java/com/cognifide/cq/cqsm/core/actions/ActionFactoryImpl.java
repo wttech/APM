@@ -20,28 +20,21 @@
 package com.cognifide.cq.cqsm.core.actions;
 
 import com.cognifide.apm.antlr.argument.Arguments;
-import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
 import com.cognifide.cq.cqsm.api.actions.ActionFactory;
 import com.cognifide.cq.cqsm.api.actions.ActionMapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
 import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
 import com.cognifide.cq.cqsm.core.Property;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Component(
     immediate = true,
@@ -52,8 +45,6 @@ import org.slf4j.LoggerFactory;
     }
 )
 public class ActionFactoryImpl implements ActionFactory {
-
-  private static final Logger LOG = LoggerFactory.getLogger(ActionFactoryImpl.class);
 
   @Reference
   private ActionMapperRegistry registry;
@@ -76,50 +67,6 @@ public class ActionFactoryImpl implements ActionFactory {
       return mapper.handle(arguments);
     }
     throw new ActionCreationException("Mapper cannot handle given arguments: " + arguments);
-  }
-
-  private ActionDescriptor tryToEvaluateCommand(Object mapper, String command) throws ActionCreationException {
-    for (Method method : mapper.getClass().getDeclaredMethods()) {
-      if (!method.isAnnotationPresent(Mapping.class)) {
-        continue;
-      }
-
-      final Mapping annotation = method.getAnnotation(Mapping.class);
-
-      for (final String regex : annotation.value()) {
-        final Pattern pattern = Pattern.compile("^" + regex + "$");
-        final Matcher matcher = pattern.matcher(command);
-
-        if (matcher.matches()) {
-          final List<Object> args = new ArrayList<>();
-          final List<String> rawArgs = new ArrayList<>();
-          final Type[] parameterTypes = method.getGenericParameterTypes();
-
-          for (int i = 1; i <= matcher.groupCount(); i++) {
-            rawArgs.add(matcher.group(i));
-
-            if (mapper instanceof ActionMapper) {
-              args.add(((ActionMapper) mapper)
-                  .mapParameter(matcher.group(i), parameterTypes[i - 1]));
-            } else {
-              args.add(matcher.group(i));
-            }
-          }
-
-          try {
-            return new ActionDescriptor(command,
-                (Action) method.invoke(mapper, args.toArray()), rawArgs);
-          } catch (IllegalAccessException e) {
-            LOG.error("Cannot access action mapper method: {} while processing command: {}",
-                e.getMessage(), command);
-          } catch (InvocationTargetException e) {
-            LOG.error("Cannot invoke action mapper method: {} while processing command: {}",
-                e.getMessage(), command);
-          }
-        }
-      }
-    }
-    return null;
   }
 
   @Override

@@ -18,32 +18,21 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm.antlr
+package com.cognifide.cq.cqsm.core.actions
 
-abstract class ApmType(val argument: Any? = null) {
-    open val integer: Int?
-        get() = null
-    open val string: String?
-        get() = null
-    open val list: List<String>?
-        get() = null
+import com.cognifide.cq.cqsm.api.actions.Action
+import com.cognifide.cq.cqsm.api.actions.annotations.Flags
+import com.cognifide.cq.cqsm.api.actions.annotations.Mapper
+import com.cognifide.cq.cqsm.api.actions.annotations.Mapping
+import com.cognifide.cq.cqsm.api.actions.annotations.Named
+
+@Mapper("mapper")
+class MapperWithWrongReturnType {
+
+    @Mapping("")
+    Action create(String path, List<String> permissions,
+                  @Named("glob") String glob, @Named("types") List<String> types, @Named("items") List<String> items,
+                  @Flags List<String> flags) {
+        return null
+    }
 }
-
-abstract class ApmValue(arg: Any? = null) : ApmType(arg)
-
-data class ApmInteger(val value: Int) : ApmValue(value) {
-    override val integer: Int
-        get() = value
-}
-
-data class ApmString(val value: String) : ApmValue(value) {
-    override val string: String
-        get() = value
-}
-
-data class ApmList(val value: List<String>) : ApmType(value) {
-    override val list: List<String>
-        get() = value
-}
-
-class ApmEmpty : ApmType()

@@ -43,6 +43,6 @@ public class MapperDescriptor {
     return mappingDescriptors.stream()
         .filter(it -> it.handles(arguments)).findFirst()
         .orElseThrow(() -> new RuntimeException(""))
-        .handle(arguments);
+        .handle(mapper, arguments);
   }
 }

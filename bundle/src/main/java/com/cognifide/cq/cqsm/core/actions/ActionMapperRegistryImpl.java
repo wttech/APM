@@ -21,6 +21,7 @@
 package com.cognifide.cq.cqsm.core.actions;
 
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
+import com.cognifide.cq.cqsm.api.exceptions.InvalidActionMapperException;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.actions.scanner.AnnotatedClassRegistry;
 import com.cognifide.cq.cqsm.core.actions.scanner.RegistryChangedListener;
@@ -97,8 +98,12 @@ public class ActionMapperRegistryImpl implements RegistryChangedListener, Action
     MapperDescriptorFactory mapperDescriptorFactory = new MapperDescriptorFactory();
     Map<String, MapperDescriptor> mappers = Maps.newHashMapWithExpectedSize(classes.size());
     for (Class clazz : classes) {
-      MapperDescriptor mapperDescriptor = mapperDescriptorFactory.create(clazz);
-      mappers.put(mapperDescriptor.getName(), mapperDescriptor);
+      try {
+        MapperDescriptor mapperDescriptor = mapperDescriptorFactory.create(clazz);
+        mappers.put(mapperDescriptor.getName(), mapperDescriptor);
+      } catch (InvalidActionMapperException e) {
+        LOG.warn("Cannot register ActionMapper of class " + clazz.getName(), e);
+      }
     }
 
     if (LOG.isDebugEnabled()) {
