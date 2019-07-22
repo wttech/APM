@@ -30,5 +30,4 @@ dependencies {
     implementation("com.cognifide.gradle:aem-plugin:6.2.0")
     implementation("com.moowork.gradle:gradle-node-plugin:1.2.0")
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.31")
-    implementation("io.franzbecker:gradle-lombok:1.14")
 }

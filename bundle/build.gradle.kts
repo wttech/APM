@@ -1,6 +1,5 @@
 plugins {
     id("com.cognifide.aem.bundle")
-    id("io.franzbecker.gradle-lombok")
     kotlin("jvm")
     antlr
     groovy
@@ -10,6 +9,11 @@ plugins {
 }
 
 description = "AEM Permission Management :: Application Core"
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
 
 aem {
     tasks {
@@ -37,6 +41,9 @@ dependencies {
     testCompile("org.spockframework:spock-core:1.3-groovy-2.5")
 
     antlr("org.antlr:antlr4:4.7.2")
+
+    compileOnly("org.projectlombok:lombok:1.18.8")
+    annotationProcessor("org.projectlombok:lombok:1.18.8")
 
     compileOnly("com.cognifide.cq.actions:com.cognifide.cq.actions.api:6.0.2")
 

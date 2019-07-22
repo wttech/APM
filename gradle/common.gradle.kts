@@ -20,7 +20,6 @@
 
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 allprojects {
     repositories {
@@ -30,14 +29,6 @@ allprojects {
     }
 
     plugins.withId("java") {
-        tasks.withType<JavaCompile>().configureEach {
-            with(options) {
-                sourceCompatibility = "1.8"
-                targetCompatibility = "1.8"
-                encoding = "UTF-8"
-            }
-        }
-
         tasks.withType<Test>().configureEach {
             failFast = true
             useJUnitPlatform()
@@ -50,14 +41,6 @@ allprojects {
                 "testImplementation"("org.junit.jupiter:junit-jupiter-api:5.3.2")
                 "testRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:5.3.2")
                 "testImplementation"("io.wcm:io.wcm.testing.aem-mock.junit5:2.3.2")
-            }
-        }
-    }
-
-    plugins.withId("org.jetbrains.kotlin.jvm") {
-        tasks.withType<KotlinCompile>().configureEach {
-            kotlinOptions {
-                jvmTarget = "1.8"
             }
         }
     }
