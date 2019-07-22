@@ -21,14 +21,30 @@ package com.cognifide.cq.cqsm.foundation.actions.allow;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.BasicActionMapper;
+import com.cognifide.cq.cqsm.api.actions.annotations.Flags;
+import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
+import com.cognifide.cq.cqsm.api.actions.annotations.Named;
 import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
 import java.util.Collections;
 import java.util.List;
 
+@Mapper("allow")
 public class AllowMapper extends BasicActionMapper {
 
   public static final String REFERENCE = "Add allow permissions for current authorizable on specified path.";
+
+  @Mapping(
+      value = {"ALLOW" + SPACE + PATH + SPACE + GLOB + SPACE + "TYPES" + LIST + SPACE + LIST + SPACE + ("IF" + DASH
+          + "EXISTS")},
+      args = {"path", "glob", "ntNames", "permissions"},
+      reference = REFERENCE
+  )
+  public Action create(String path, List<String> permissions,
+      @Named("glob") String glob, @Named("types") List<String> ntNames, @Named("items") List<String> itemNames,
+      @Flags List<String> flags) {
+    return mapAction(path, permissions, glob, ntNames, itemNames, flags.contains("IF-EXISTS"));
+  }
 
   @Mapping(
       value = {"ALLOW" + SPACE + PATH + SPACE + LIST},

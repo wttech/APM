@@ -24,15 +24,20 @@ import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.actions.scanner.AnnotatedClassRegistry;
 import com.cognifide.cq.cqsm.core.actions.scanner.RegistryChangedListener;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
+import org.scribe.utils.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +57,8 @@ public class ActionMapperRegistryImpl implements RegistryChangedListener, Action
 
   private AnnotatedClassRegistry registry;
 
-  private volatile AtomicReference<List<Object>> mappers = new AtomicReference<>(Collections.emptyList());
+  private volatile AtomicReference<Map<String, MapperDescriptor>> mappers = new AtomicReference<>(
+      Collections.emptyMap());
 
   @Activate
   public void activate(ComponentContext componentContext) {
@@ -70,24 +76,29 @@ public class ActionMapperRegistryImpl implements RegistryChangedListener, Action
 
   @Override
   public void registryChanged(List<Class<?>> registeredClasses) {
-    this.mappers.set(ImmutableList.copyOf(createActionMappers(registeredClasses)));
+    this.mappers.set(ImmutableMap.copyOf(createActionMappers(registeredClasses)));
   }
 
   @Override
-  public List<Object> getMappers() {
-    return mappers.get();
+  public Optional<MapperDescriptor> getMapper(String name) {
+    Preconditions.checkNotNull(name, "Name cannot be null");
+    return Optional.ofNullable(mappers.get().get(name.trim().toLowerCase()));
   }
 
-  private static List<Object> createActionMappers(List<Class<?>> classes) {
-    List<Object> mappers = Lists.newArrayListWithExpectedSize(classes.size());
+  @Override
+  public Collection<Object> getMappers() {
+    return mappers.get().values()
+        .stream()
+        .map(it -> it.getMapper())
+        .collect(Collectors.toList());
+  }
+
+  private static Map<String, MapperDescriptor> createActionMappers(List<Class<?>> classes) {
+    MapperDescriptorFactory mapperDescriptorFactory = new MapperDescriptorFactory();
+    Map<String, MapperDescriptor> mappers = Maps.newHashMapWithExpectedSize(classes.size());
     for (Class clazz : classes) {
-      try {
-        mappers.add(clazz.newInstance());
-      } catch (InstantiationException e) {
-        LOG.error("Cannot instantiate action mapper: {}", e.getMessage());
-      } catch (IllegalAccessException e) {
-        LOG.error("Cannot construct action mapper, is constructor non public? {}", e.getMessage());
-      }
+      MapperDescriptor mapperDescriptor = mapperDescriptorFactory.create(clazz);
+      mappers.put(mapperDescriptor.getName(), mapperDescriptor);
     }
 
     if (LOG.isDebugEnabled()) {

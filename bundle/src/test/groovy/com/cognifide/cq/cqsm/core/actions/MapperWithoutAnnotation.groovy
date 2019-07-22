@@ -18,14 +18,19 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.cq.cqsm.core.actions;
+package com.cognifide.cq.cqsm.core.actions
 
-import java.util.Collection;
-import java.util.Optional;
+import com.cognifide.cq.cqsm.api.actions.Action
+import com.cognifide.cq.cqsm.api.actions.annotations.Flags
+import com.cognifide.cq.cqsm.api.actions.annotations.Mapping
+import com.cognifide.cq.cqsm.api.actions.annotations.Named
 
-public interface ActionMapperRegistry {
+class MapperWithoutAnnotation {
 
-  Optional<MapperDescriptor> getMapper(String name);
-
-  Collection<Object> getMappers();
+    @Mapping("")
+    Action create(String path, List<String> permissions,
+                  @Named("glob") String glob, @Named("types") List<String> types, @Named("items") List<String> items,
+                  @Flags List<String> flags) {
+        return null
+    }
 }

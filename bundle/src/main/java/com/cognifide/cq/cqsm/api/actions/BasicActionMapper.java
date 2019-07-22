@@ -22,7 +22,6 @@ package com.cognifide.cq.cqsm.api.actions;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
 import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
-
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -31,7 +30,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.MissingFormatArgumentException;
 
-@Mapper
+@Mapper("")
 public abstract class BasicActionMapper implements ActionMapper {
 
 	public static final String SPACE = "[^\\S\\r\\n]+";

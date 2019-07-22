@@ -20,12 +20,37 @@
 
 package com.cognifide.cq.cqsm.core.actions;
 
-import java.util.Collection;
-import java.util.Optional;
+import com.cognifide.apm.antlr.ApmType;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-public interface ActionMapperRegistry {
+@Getter
+@RequiredArgsConstructor
+public abstract class ParameterDescriptor {
 
-  Optional<MapperDescriptor> getMapper(String name);
+  private final Class<? extends ApmType> type;
 
-  Collection<Object> getMappers();
+  public static class RequiredParameterDescriptor extends ParameterDescriptor {
+
+    public RequiredParameterDescriptor(Class<? extends ApmType> type) {
+      super(type);
+    }
+  }
+
+  public static class NamedParameterDescriptor extends ParameterDescriptor {
+
+    private final String name;
+
+    public NamedParameterDescriptor(Class<? extends ApmType> type, String name) {
+      super(type);
+      this.name = name;
+    }
+  }
+
+  public static class FlagsParameterDescriptor extends ParameterDescriptor {
+
+    public FlagsParameterDescriptor(Class<? extends ApmType> type) {
+      super(type);
+    }
+  }
 }

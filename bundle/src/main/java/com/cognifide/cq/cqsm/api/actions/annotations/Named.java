@@ -18,14 +18,17 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.cq.cqsm.core.actions;
+package com.cognifide.cq.cqsm.api.actions.annotations;
 
-import java.util.Collection;
-import java.util.Optional;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public interface ActionMapperRegistry {
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.PARAMETER)
+public @interface Named {
 
-  Optional<MapperDescriptor> getMapper(String name);
+  String value();
 
-  Collection<Object> getMappers();
 }

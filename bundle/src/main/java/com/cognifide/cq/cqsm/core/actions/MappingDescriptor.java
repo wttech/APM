@@ -20,12 +20,23 @@
 
 package com.cognifide.cq.cqsm.core.actions;
 
-import java.util.Collection;
-import java.util.Optional;
+import com.cognifide.apm.antlr.argument.Arguments;
+import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
+import java.lang.reflect.Method;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
 
-public interface ActionMapperRegistry {
+@RequiredArgsConstructor
+public class MappingDescriptor {
 
-  Optional<MapperDescriptor> getMapper(String name);
+  private final Method method;
+  private final List<ParameterDescriptor> parameterDescriptors;
 
-  Collection<Object> getMappers();
+  public boolean handles(Arguments arguments) {
+    return false;
+  }
+
+  public ActionDescriptor handle(Arguments arguments) {
+    return null;
+  }
 }
