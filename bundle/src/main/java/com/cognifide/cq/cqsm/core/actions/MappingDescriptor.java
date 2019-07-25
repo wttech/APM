@@ -67,7 +67,7 @@ public class MappingDescriptor {
     try {
       return (Action) method.invoke(mapper, args.toArray());
     } catch (IllegalAccessException | InvocationTargetException e) {
-      throw new RuntimeException("", e);
+      throw new RuntimeException("Cannot invoke mapping method", e);
     }
   }
 }

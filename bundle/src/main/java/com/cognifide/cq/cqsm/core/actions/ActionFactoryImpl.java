@@ -23,7 +23,6 @@ import com.cognifide.apm.antlr.argument.Arguments;
 import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
 import com.cognifide.cq.cqsm.api.actions.ActionFactory;
-import com.cognifide.cq.cqsm.api.actions.ActionMapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
 import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
 import com.cognifide.cq.cqsm.core.Property;
@@ -72,15 +71,15 @@ public class ActionFactoryImpl implements ActionFactory {
 
     for (Object mapper : registry.getMappers()) {
       for (Method method : mapper.getClass().getDeclaredMethods()) {
-        if (!method.isAnnotationPresent(Mapping.class) || !(mapper instanceof ActionMapper)) {
+        if (!method.isAnnotationPresent(Mapping.class)) {
           continue;
         }
 
         final Mapping mapping = method.getAnnotation(Mapping.class);
-        final List<String> commands = ((ActionMapper) mapper).referMapping(mapping);
+//        final List<String> commands = ((ActionMapper) mapper).referMapping(mapping);
 
         HashMap<String, Object> reference = new HashMap<>();
-        reference.put("commands", commands);
+        reference.put("commands", mapping.value());
         reference.put("pattern", mapping.value());
         reference.put("args", mapping.args());
         reference.put("reference", mapping.reference());
@@ -96,10 +95,10 @@ public class ActionFactoryImpl implements ActionFactory {
 
   private void sortReferences(List<Map<String, Object>> references) {
     Collections.sort(references, (object1, object2) -> {
-      List<String> commands1 = (List<String>) object1.get("commands");
-      List<String> commands2 = (List<String>) object2.get("commands");
-      String command1 = commands1.get(0);
-      String command2 = commands2.get(0);
+      String[] commands1 = (String[]) object1.get("commands");
+      String[] commands2 = (String[]) object2.get("commands");
+      String command1 = commands1[0];
+      String command2 = commands2[0];
       return command1.compareToIgnoreCase(command2);
     });
   }

@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,19 +20,19 @@
 package com.cognifide.cq.cqsm.foundation.actions.sessionsave;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.BasicActionMapper;
+import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
-import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
 
-public final class SessionSaveMapper extends BasicActionMapper {
+@Mapper("session-save")
+public final class SessionSaveMapper {
 
-	@Mapping(
-			value = {"SESSION" + DASH + "SAVE" + SPACE + STRING},
-			args = {"mode"},
-			reference = "Set session saving mode."
-	)
-	public Action mapAction(String mode) throws ActionCreationException {
-		return new SessionSave(mode);
-	}
+  @Mapping(
+      value = "SESSION-SAVE",
+      args = {"mode"},
+      reference = "Set session saving mode."
+  )
+  public Action mapAction(String mode) {
+    return new SessionSave(mode);
+  }
 
 }

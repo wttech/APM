@@ -123,10 +123,13 @@ public class ScriptManagerImpl implements ScriptManager {
             LOG.error("Error while processing command: {}", commandName, e);
             progress.addEntry(commandName, Message.getErrorMessage(e.getMessage()), Status.ERROR);
           }
-          internalProgress.addEntry(commandName, Message.getInfoMessage(arguments.toString()), Status.SUCCESS);
         });
 
-    scriptRunner.execute(script, progress, customDefinitions);
+    try {
+      scriptRunner.execute(script, progress, customDefinitions);
+    } catch (RuntimeException e) {
+      progress.addEntry("", Message.getErrorMessage(e.getMessage()), Status.ERROR);
+    }
     if (progress.isSuccess()) {
       savingPolicy.save(context.getSession(), SessionSavingMode.SINGLE);
     }

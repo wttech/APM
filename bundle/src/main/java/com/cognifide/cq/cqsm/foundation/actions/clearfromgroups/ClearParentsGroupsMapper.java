@@ -17,32 +17,20 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
+package com.cognifide.cq.cqsm.foundation.actions.clearfromgroups;
 
-package com.cognifide.cq.cqsm.core.actions;
-
-import com.cognifide.apm.antlr.argument.Arguments;
 import com.cognifide.cq.cqsm.api.actions.Action;
-import java.util.List;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
+import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
 
-@Getter
-@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-public class MapperDescriptor {
+@Mapper("clear-parents-groups")
+public final class ClearParentsGroupsMapper {
 
-  private final Object mapper;
-  private final String name;
-  private final List<MappingDescriptor> mappingDescriptors;
-
-  public boolean handles(Arguments arguments) {
-    return mappingDescriptors.stream().anyMatch(it -> it.handles(arguments));
-  }
-
-  public Action handle(Arguments arguments) {
-    return mappingDescriptors.stream()
-        .filter(it -> it.handles(arguments)).findFirst()
-        .orElseThrow(() -> new RuntimeException("Cannot find matching mapping method"))
-        .handle(mapper, arguments);
-  }
+	@Mapping(
+			value = "CLEAR-PARENTS-GROUPS",
+			reference = "This action removes all memberships of a given group."
+	)
+	public Action mapActionForClearGroups() {
+		return new ClearFromGroups(ClearFromGroupOperationTypes.ALL_PARENTS);
+	}
 }

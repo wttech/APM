@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,18 +20,18 @@
 package com.cognifide.cq.cqsm.foundation.actions.forauthorizable;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.BasicActionMapper;
+import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
-import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
 
-public final class ForGroupMapper extends BasicActionMapper {
+@Mapper("for-group")
+public final class ForGroupMapper {
 
-	@Mapping(
-			value = {"FOR" + DASH + "GROUP" + SPACE + STRING},
-			args = {"groupId"},
-			reference = "Set specified group as a current authorizable for execution context."
-	)
-	public Action mapAction(final String id) throws ActionCreationException {
-		return new ForAuthorizable(id, true);
-	}
+  @Mapping(
+      value = "FOR-GROUP",
+      args = {"groupId"},
+      reference = "Set specified group as a current authorizable for execution context."
+  )
+  public Action mapAction(String groupId) {
+    return new ForAuthorizable(groupId, true);
+  }
 }

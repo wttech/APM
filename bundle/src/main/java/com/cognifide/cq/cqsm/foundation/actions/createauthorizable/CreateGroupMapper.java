@@ -19,52 +19,28 @@
  */
 package com.cognifide.cq.cqsm.foundation.actions.createauthorizable;
 
-import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.BasicActionMapper;
-import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
+import static com.cognifide.cq.cqsm.foundation.actions.CommonFlags.IF_NOT_EXISTS;
+import static com.cognifide.cq.cqsm.foundation.actions.createauthorizable.CreateAuthorizableStrategy.GROUP;
 
-public class CreateGroupMapper extends BasicActionMapper {
+import com.cognifide.cq.cqsm.api.actions.Action;
+import com.cognifide.cq.cqsm.api.actions.annotations.Flags;
+import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
+import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
+import com.cognifide.cq.cqsm.api.actions.annotations.Named;
+import java.util.List;
+
+@Mapper("create-group")
+public class CreateGroupMapper {
 
 	public static final String REFERENCE = "Create a group.";
 
 	@Mapping(
-			value = {"CREATE" + DASH + "GROUP" + SPACE + STRING},
-			args = {"groupId"},
-			reference = REFERENCE
-	)
-	public Action mapAction(String id) {
-		return mapAction(id, null, false);
-	}
-
-	@Mapping(
-			value = {"CREATE" + DASH + "GROUP" + SPACE + STRING + SPACE + PATH},
+      value = "CREATE-GROUP",
 			args = {"groupId", "path"},
 			reference = REFERENCE
 	)
-	public Action mapAction(String id, String path) {
-		return mapAction(id, path, false);
-	}
-
-	@Mapping(
-			value = {"CREATE" + DASH + "GROUP" + SPACE + STRING + SPACE + ("IF" + DASH + "NOT" + DASH + "EXISTS")},
-			args = {"groupId"},
-			reference = REFERENCE
-	)
-	public Action mapActionWithIfNotExists(String id) {
-		return mapAction(id, null, true);
-	}
-
-	@Mapping(
-			value = {"CREATE" + DASH + "GROUP" + SPACE + STRING + SPACE + PATH + SPACE + ("IF" + DASH + "NOT" + DASH + "EXISTS")},
-			args = {"groupId", "path"},
-			reference = REFERENCE
-	)
-	public Action mapActionWithIfNotExists(String id, String path) {
-		return mapAction(id, path, true);
-	}
-
-	private Action mapAction(String id, String path, Boolean ifNotExists) {
-		return new CreateAuthorizable(id, null, path, ifNotExists, CreateAuthorizableStrategy.GROUP);
+  public Action mapAction(String groupId, @Named("path") String path, @Flags List<String> flags) {
+    return new CreateAuthorizable(groupId, null, path, flags.contains(IF_NOT_EXISTS), GROUP);
 	}
 
 }
