@@ -27,6 +27,7 @@ import com.cognifide.cq.cqsm.api.logger.ProgressEntry;
 import com.cognifide.cq.cqsm.api.logger.Status;
 import com.cognifide.cq.cqsm.api.progress.ProgressHelper;
 import com.google.common.collect.Lists;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -63,7 +64,12 @@ public class ProgressImpl implements Progress {
 
 	@Override
 	public void addEntry(String commandName, Message message, Status status) {
-		this.entries.add(new ProgressEntry(commandName, message, status));
+		this.entries.add(new ProgressEntry(commandName, Collections.singletonList(message), status));
+	}
+
+	@Override
+	public void addEntry(String commandName, List<Message> messages, Status status) {
+		this.entries.add(new ProgressEntry(commandName, messages, status));
 	}
 
 	@Override

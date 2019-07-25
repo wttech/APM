@@ -22,24 +22,47 @@ package com.cognifide.apm.antlr
 
 import com.cognifide.apm.antlr.ApmLangParser.DefineVariableContext
 import com.cognifide.apm.antlr.ApmLangParser.ForEachContext
+import com.cognifide.apm.antlr.argument.ArgumentResolverException
+import com.cognifide.apm.antlr.executioncontext.ExecutionContext
+import com.cognifide.apm.antlr.executioncontext.ExecutionContextException
+import com.cognifide.apm.antlr.parsedscript.InvalidSyntaxException
+import com.cognifide.apm.antlr.parsedscript.InvalidSyntaxMessageFactory
 import com.cognifide.cq.cqsm.api.logger.Message
 import com.cognifide.cq.cqsm.api.logger.Progress
 import com.cognifide.cq.cqsm.api.logger.Status
+import com.cognifide.cq.cqsm.api.scripts.Script
+import com.cognifide.cq.cqsm.api.scripts.ScriptFinder
+import org.apache.sling.api.resource.ResourceResolver
 
-class ScriptRunner(private val actionInvoker: ActionInvoker) {
+class ScriptRunner(
+        private val scriptFinder: ScriptFinder,
+        private val resourceResolver: ResourceResolver,
+        private val actionInvoker: ActionInvoker) {
 
-    fun execute(executionContext: ExecutionContext): Progress {
-        val executor = Executor(executionContext)
-        executor.visit(executionContext.root)
-        return executionContext.progress
+    @JvmOverloads
+    fun execute(script: Script, progress: Progress, initialDefinitions: Map<String, String> = mapOf()): Progress {
+        try {
+            val executionContext = ExecutionContext.create(scriptFinder, resourceResolver, script, progress)
+            initialDefinitions.forEach { (name, value) -> executionContext.setVariable(name, ApmString(value)) }
+            val executor = Executor(executionContext)
+            executor.visit(executionContext.root.apm)
+        } catch (e: InvalidSyntaxException) {
+            val errorMessages = InvalidSyntaxMessageFactory.detailedSyntaxError(e)
+            progress.addEntry("", errorMessages.map { Message.getErrorMessage(it) }, Status.ERROR)
+        } catch (e: ArgumentResolverException) {
+            progress.addEntry("", Message.getErrorMessage(e.message), Status.ERROR)
+        } catch (e: ExecutionContextException) {
+            progress.addEntry("", Message.getErrorMessage(e.message), Status.ERROR)
+        }
+        return progress
     }
 
     private inner class Executor(private val executionContext: ExecutionContext) : ApmLangBaseVisitor<Unit>() {
 
         override fun visitDefineVariable(ctx: DefineVariableContext) {
             val variableName = ctx.IDENTIFIER().toString()
-            val variableValue = executionContext.argumentResolver.resolve(ctx.argument())
-            executionContext.variableHolder[variableName] = variableValue
+            val variableValue = executionContext.resolveArgument(ctx.argument())
+            executionContext.setVariable(variableName, variableValue)
             info("define", "Defined variable: $variableName= $variableValue")
         }
 
@@ -49,19 +72,19 @@ class ScriptRunner(private val actionInvoker: ActionInvoker) {
             info("foreach", "Begin")
             for ((iteration, value) in values.withIndex()) {
                 try {
-                    executionContext.variableHolder.createLocalContext()
+                    executionContext.createLocalContext()
                     info("foreach", "Iteration: $iteration")
-                    executionContext.variableHolder[index] = value
+                    executionContext.setVariable(index, value)
                     visit(ctx.body())
                 } finally {
-                    executionContext.variableHolder.removeLocalContext()
+                    executionContext.removeLocalContext()
                 }
             }
             info("foreach", "End")
         }
 
         private fun readValues(ctx: ForEachContext): List<ApmValue> {
-            val variableValue = executionContext.argumentResolver.resolve(ctx.argument())
+            val variableValue = executionContext.resolveArgument(ctx.argument())
             return when (variableValue) {
                 is ApmList -> variableValue.list.map { ApmString(it) }
                 is ApmEmpty -> listOf()
@@ -71,7 +94,7 @@ class ScriptRunner(private val actionInvoker: ActionInvoker) {
 
         override fun visitGenericCommand(ctx: ApmLangParser.GenericCommandContext) {
             val commandName = ctx.IDENTIFIER().toString().toUpperCase()
-            val arguments = executionContext.argumentResolver.resolve(ctx.arguments())
+            val arguments = executionContext.resolveArguments(ctx.arguments())
             actionInvoker.runAction(executionContext.progress, commandName, arguments)
         }
 

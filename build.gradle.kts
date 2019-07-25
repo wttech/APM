@@ -43,6 +43,7 @@ aem {
             duplicatesStrategy = DuplicatesStrategy.EXCLUDE
             fromProject("bundle")
             fromProject("content")
+            fromJar("org.jetbrains.kotlin:kotlin-osgi-bundle:1.3.40")
             vaultDefinition {
                 version = scmVersion.version as String
             }

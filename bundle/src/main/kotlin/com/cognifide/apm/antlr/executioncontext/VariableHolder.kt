@@ -18,13 +18,14 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm.antlr
+package com.cognifide.apm.antlr.executioncontext
 
-import java.util.*
+import com.cognifide.apm.antlr.ApmType
+import com.cognifide.apm.antlr.common.StackWithRoot
 
 class VariableHolder {
 
-    private val contexts = ArrayDeque<Context>()
+    private val contexts = StackWithRoot(Context())
 
     init {
         createLocalContext()
@@ -39,28 +40,21 @@ class VariableHolder {
             if (context.containsKey(name)) {
                 return context[name]
             }
-            if (context.isIsolated) {
-                break
-            }
         }
         return null
     }
 
-    fun createIsolatedLocalContext() {
-        contexts.push(Context(true))
-    }
-
     fun createLocalContext() {
-        contexts.push(Context(false))
+        contexts.push(Context())
     }
 
     fun removeLocalContext() {
         contexts.pop()
     }
 
-    private class Context(val isIsolated: Boolean = false) {
+    private class Context {
 
-        private val variables = HashMap<String, ApmType>()
+        private val variables = mutableMapOf<String, ApmType>()
 
         fun containsKey(key: Any): Boolean {
             return variables.containsKey(key)

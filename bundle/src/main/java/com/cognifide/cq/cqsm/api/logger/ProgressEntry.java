@@ -21,15 +21,11 @@ package com.cognifide.cq.cqsm.api.logger;
 
 import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
 import com.cognifide.cq.cqsm.api.actions.ActionResult;
-
-import java.util.Collections;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-
 import java.util.LinkedList;
 import java.util.List;
-
 import lombok.Getter;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 
 public class ProgressEntry {
 
@@ -66,12 +62,12 @@ public class ProgressEntry {
 		this.status = status;
 	}
 
-	public ProgressEntry(String command, Message message, Status status) {
+	public ProgressEntry(String command, List<Message> messages, Status status) {
 		this.authorizable = "";
 		this.actionName = "";
 		this.parameters = "";
 		this.command = command;
-		this.messages = Collections.singletonList(message);
+		this.messages = messages;
 		this.status = status;
 	}
 

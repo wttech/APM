@@ -58,7 +58,8 @@ dependencies {
     compileOnly("javax.servlet:servlet-api:2.4")
     compileOnly("org.slf4j:slf4j-log4j12:1.7.7")
     compileOnly("org.projectlombok:lombok:1.16.20")
-    implementation(kotlin("stdlib-jdk8"))
+
+    compileOnly(kotlin("osgi-bundle"))
 }
 
 tasks {

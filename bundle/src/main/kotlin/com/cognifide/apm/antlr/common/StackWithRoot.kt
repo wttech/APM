@@ -1,4 +1,4 @@
-/*-
+/*
  * ========================LICENSE_START=================================
  * AEM Permission Management
  * %%
@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,28 +17,25 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.cq.cqsm.api.logger;
 
-import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
-import com.cognifide.cq.cqsm.api.actions.ActionResult;
-import java.io.Serializable;
-import java.util.List;
+package com.cognifide.apm.antlr.common
 
-public interface Progress extends Serializable {
+import java.util.*
 
-	List<ProgressEntry> getEntries();
+class StackWithRoot<E>(private val root: E) : Iterable<E> {
 
-	void addEntry(ActionDescriptor description, ActionResult result);
+    override fun iterator(): Iterator<E> {
+        val values = mutableListOf<E>()
+        values.addAll(internal)
+        values.add(root)
+        return values.iterator()
+    }
 
-	void addEntry(Message message, Status status);
+    private val internal: ArrayDeque<E> = ArrayDeque()
 
-	void addEntry(String commandName, Message message, Status status);
+    fun push(element: E) = internal.push(element)
 
-  void addEntry(String commandName, List<Message> messages, Status status);
+    fun pop(): E = if (internal.isEmpty()) root else internal.pop()
 
-	boolean isSuccess();
-
-	ProgressEntry getLastError();
-
-	String getExecutor();
+    fun peek(): E = if (internal.isEmpty()) root else internal.peek()
 }

@@ -22,6 +22,7 @@ package com.cognifide.apm.antlr
 
 import com.cognifide.apm.antlr.argument.ArgumentResolver
 import com.cognifide.apm.antlr.argument.ArgumentResolverException
+import com.cognifide.apm.antlr.executioncontext.VariableHolder
 import com.google.common.collect.Lists
 import spock.lang.Specification
 

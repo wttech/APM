@@ -1,4 +1,4 @@
-/*-
+/*
  * ========================LICENSE_START=================================
  * AEM Permission Management
  * %%
@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,28 +17,15 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.cq.cqsm.api.logger;
 
-import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
-import com.cognifide.cq.cqsm.api.actions.ActionResult;
-import java.io.Serializable;
-import java.util.List;
+package com.cognifide.apm.antlr.executioncontext
 
-public interface Progress extends Serializable {
+import com.cognifide.apm.antlr.parsedscript.ParsedScript
 
-	List<ProgressEntry> getEntries();
+class RunScript(val parsedScript: ParsedScript) {
 
-	void addEntry(ActionDescriptor description, ActionResult result);
+    val variableHolder = VariableHolder()
 
-	void addEntry(Message message, Status status);
-
-	void addEntry(String commandName, Message message, Status status);
-
-  void addEntry(String commandName, List<Message> messages, Status status);
-
-	boolean isSuccess();
-
-	ProgressEntry getLastError();
-
-	String getExecutor();
+    val path: String
+        get() = parsedScript.script.path
 }

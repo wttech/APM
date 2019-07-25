@@ -24,18 +24,25 @@ import com.cognifide.apm.antlr.argument.Arguments
 import com.cognifide.cq.cqsm.api.logger.Message
 import com.cognifide.cq.cqsm.api.logger.Progress
 import com.cognifide.cq.cqsm.api.logger.Status
+import com.cognifide.cq.cqsm.api.scripts.Script
+import com.cognifide.cq.cqsm.api.scripts.ScriptFinder
+import com.cognifide.cq.cqsm.core.progress.ProgressImpl
+import org.apache.commons.io.IOUtils
+import org.apache.sling.api.resource.ResourceResolver
 import spock.lang.Specification
 
 class ScriptRunnerTest extends Specification {
 
-    def scriptExecutor = new ScriptRunner(createActionInvoker())
+    def scriptFinder = Mock(ScriptFinder)
+    def resourceResolver = Mock(ResourceResolver)
+    def scriptExecutor = new ScriptRunner(scriptFinder, resourceResolver, createActionInvoker())
 
     def "run foreach"() {
         given:
-        ExecutionContext context = createExecutionContext("/foreach.apm")
+        Script script = createScript("/foreach.apm")
 
         when:
-        def result = scriptExecutor.execute(context)
+        def result = scriptExecutor.execute(script, new ProgressImpl(""))
 
         then:
         def commands = result.entries
@@ -49,10 +56,10 @@ class ScriptRunnerTest extends Specification {
 
     def "run define"() {
         given:
-        ExecutionContext context = createExecutionContext("/define.apm")
+        Script script = createScript("/define.apm")
 
         when:
-        def result = scriptExecutor.execute(context)
+        def result = scriptExecutor.execute(script, new ProgressImpl(""))
 
         then:
         def commands = result.entries
@@ -66,9 +73,12 @@ class ScriptRunnerTest extends Specification {
                      "Executing command SHOW 'global'"]
     }
 
-    private static ExecutionContext createExecutionContext(String file) {
-        def parser = ApmLangParserHelper.createParserUsingFile(file)
-        return new ExecutionContext("user", parser.apm())
+    private Script createScript(String file) {
+        def content = IOUtils.toString(getClass().getResourceAsStream(file))
+        def script = Mock(Script)
+        script.path >> "/conf/apm/scripts/main.apm"
+        script.data >> content
+        return script
     }
 
     private static ActionInvoker createActionInvoker() {
