@@ -8,6 +8,16 @@ plugins {
 
 description = "AEM Permission Management :: Package"
 
+aem {
+    tasks {
+        compose {
+            vaultDefinition {
+                version = rootProject.version as String
+            }
+        }
+    }
+}
+
 publishing {
     publications {
         create<MavenPublication>("apm") {

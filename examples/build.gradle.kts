@@ -28,6 +28,15 @@ plugins {
 
 description = "AEM Permission Management :: Examples"
 
+aem {
+    tasks {
+        compose {
+            vaultDefinition {
+                version = rootProject.version as String
+            }
+        }
+    }
+}
 
 publishing {
     publications {
