@@ -40,9 +40,10 @@
     </table>
 
     <h3>Permissions</h3>
-    For commands: ALLOW, DENY you should specify an argument which is a list of
-    permissions.<br/><br/>
+
+    For commands: ALLOW, DENY you should specify an argument which is a list of permissions.<br/><br/>
     Possible values:
+
     <ul class="permission-list">
       <li>READ,</li>
       <li>CREATE,</li>
@@ -53,7 +54,9 @@
       <li>REPLICATE,</li>
       <li>ALL.</li>
     </ul>
+
     You can also use jcr privileges identifiers:
+
     <ul>
       <li>jcr:readAccessControl,</li>
       <li>jcr:versionManagement,</li>
@@ -61,50 +64,47 @@
       <li>jcr:nodeTypeManagement,</li>
       <li>...</li>
     </ul>
+
     Wrap them into square brackets like in examples below.
 
     <table style="width: 30%; margin-bottom: 1%; margin-top: 1%;" is="coral-table">
       <tbody>
       <tr is="coral-table-row">
-        <td is="coral-table-cell">FOR USER foo</td>
+        <td is="coral-table-cell">FOR-USER "foo"</td>
       </tr>
       <tr is="coral-table-row">
-        <td is="coral-table-cell">ALLOW /content [ALL]</td>
+        <td is="coral-table-cell">ALLOW "/content" ["ALL"]</td>
       </tr>
       <tr is="coral-table-row">
-        <td is="coral-table-cell">ALLOW /etc [READ]</td>
+        <td is="coral-table-cell">ALLOW "/etc" ["READ"]</td>
       </tr>
       <tr is="coral-table-row">
-        <td is="coral-table-cell">DENY /content/bar [MODIFY, DELETE]</td>
+        <td is="coral-table-cell">DENY "/content/bar" ["MODIFY", "DELETE"]</td>
       </tr>
       <tr is="coral-table-row">
-        <td is="coral-table-cell">ALLOW /content/bar [jcr:nodeTypeManagement]</td>
+        <td is="coral-table-cell">ALLOW "/content/bar" ["jcr:nodeTypeManagement"]</td>
       </tr>
       </tbody>
     </table>
 
     The default ACL effects the whole subtree of the target node, you can limit it by adding a
-    glob
-    parameter, which defines a pattern to restrict the subtree.
-    This affects performance so please use it carefully. Apply privileges directly on target
-    node
-    whenever you can.<br/><br/>
-    You can use STRICT keyword as a glob pattern to match a target node only. See examples
-    below:
+    glob parameter, which defines a pattern to restrict the subtree. This affects performance so please use it
+    carefully. Apply privileges directly on target node whenever you can.<br/><br/>
+    You can use STRICT as a glob pattern to match a target node only. See examples below:
 
     <table style="width: 30%; margin-bottom: 1%; margin-top: 1%;" is="coral-table">
       <tbody>
       <tr is="coral-table-row">
-        <td is="coral-table-cell">FOR USER foo</td>
+        <td is="coral-table-cell">FOR-USER "foo"</td>
       </tr>
       <tr is="coral-table-row">
-        <td is="coral-table-cell">ALLOW /content bar [ALL]</td>
+        <td is="coral-table-cell">ALLOW "/content" glob= "bar" ["ALL"]</td>
       </tr>
       <tr is="coral-table-row">
-        <td is="coral-table-cell">DENY /content bar [jcr:nodeTypeManagement]</td>
+        <td is="coral-table-cell">DENY "/content" glob= "bar" ["jcr:nodeTypeManagement"]</td>
       </tr>
       <tr is="coral-table-row">
-        <td is="coral-table-cell">ALLOW /content/foo STRICT [ALL]</td>
+        <td is="coral-table-cell">ALLOW "/content/foo" glob= "STRICT" ["ALL"]</td>
       </tr>
       </tbody>
     </table>
