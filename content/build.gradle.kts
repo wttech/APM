@@ -11,6 +11,7 @@ description = "AEM Permission Management :: Package"
 aem {
     tasks {
         compose {
+            duplicatesStrategy = DuplicatesStrategy.EXCLUDE
             vaultDefinition {
                 version = rootProject.version as String
             }
