@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,64 +19,42 @@
  */
 package com.cognifide.cq.cqsm.api.logger;
 
-import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
-import com.cognifide.cq.cqsm.api.actions.ActionResult;
-import java.util.LinkedList;
+import static org.apache.commons.lang.StringUtils.defaultString;
+
+import com.google.common.collect.ImmutableList;
+import java.util.Collections;
 import java.util.List;
 import lombok.Getter;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 
+@Getter
 public class ProgressEntry {
 
-	@Getter
-	private String authorizable;
+  private final String authorizable;
 
-	@Getter
-	private String actionName;
+  private final String command;
 
-	@Getter
-	private String command;
+  private final List<String> messages;
 
-	@Getter
-	private final List<Message> messages;
+  private final List<String> parameters;
 
-	@Getter
-	private final Status status;
+  private final Status status;
 
-	@Getter
-	private String parameters;
+  public ProgressEntry(String authorizable, String command, List<String> messages, List<String> parameters,
+      Status status) {
+    this.authorizable = defaultString(authorizable);
+    this.command = defaultString(command);
+    this.messages = messages != null ? ImmutableList.copyOf(messages) : Collections.emptyList();
+    this.parameters = parameters != null ? ImmutableList.copyOf(parameters) : Collections.emptyList();
+    this.status = status != null ? status : Status.SUCCESS;
+  }
 
-	public ProgressEntry(ActionDescriptor actionDescriptor, ActionResult actionResult) {
-		this.actionName = actionDescriptor.getAction().getClass().getSimpleName();
-		this.command = actionDescriptor.getCommand();
-		this.parameters = StringUtils.join(actionDescriptor.getArgs(), " ");
-		this.authorizable = actionResult.getAuthorizable();
-		this.messages = new LinkedList<>(actionResult.getMessages());
-		this.status = actionResult.getStatus();
-	}
+  public String getLastMessageText() {
+    String message = null;
+    if (CollectionUtils.isNotEmpty(messages)) {
+      message = messages.get(messages.size() - 1);
+    }
 
-	public ProgressEntry(Message message, Status status) {
-		this.messages = new LinkedList<>();
-		this.messages.add(message);
-		this.status = status;
-	}
-
-	public ProgressEntry(String command, List<Message> messages, Status status) {
-		this.authorizable = "";
-		this.actionName = "";
-		this.parameters = "";
-		this.command = command;
-		this.messages = messages;
-		this.status = status;
-	}
-
-	public String getLastMessageText() {
-		String message = null;
-		if (CollectionUtils.isNotEmpty(messages)) {
-			message = messages.get(messages.size() - 1).getText();
-		}
-
-		return message;
-	}
+    return message;
+  }
 }

@@ -27,7 +27,6 @@ import com.cognifide.apm.antlr.executioncontext.ExecutionContext
 import com.cognifide.apm.antlr.executioncontext.ExecutionContextException
 import com.cognifide.apm.antlr.parsedscript.InvalidSyntaxException
 import com.cognifide.apm.antlr.parsedscript.InvalidSyntaxMessageFactory
-import com.cognifide.cq.cqsm.api.logger.Message
 import com.cognifide.cq.cqsm.api.logger.Progress
 import com.cognifide.cq.cqsm.api.logger.Status
 import com.cognifide.cq.cqsm.api.scripts.Script
@@ -48,11 +47,11 @@ class ScriptRunner(
             executor.visit(executionContext.root.apm)
         } catch (e: InvalidSyntaxException) {
             val errorMessages = InvalidSyntaxMessageFactory.detailedSyntaxError(e)
-            progress.addEntry("", errorMessages.map { Message.getErrorMessage(it) }, Status.ERROR)
+            progress.addEntry(Status.ERROR, errorMessages)
         } catch (e: ArgumentResolverException) {
-            progress.addEntry("", Message.getErrorMessage(e.message), Status.ERROR)
+            progress.addEntry(Status.ERROR, e.message)
         } catch (e: ExecutionContextException) {
-            progress.addEntry("", Message.getErrorMessage(e.message), Status.ERROR)
+            progress.addEntry(Status.ERROR, e.message)
         }
         return progress
     }
@@ -69,18 +68,17 @@ class ScriptRunner(
         override fun visitForEach(ctx: ForEachContext) {
             val index = ctx.IDENTIFIER().toString()
             val values: List<ApmValue> = readValues(ctx)
-            info("foreach", "Begin")
             for ((iteration, value) in values.withIndex()) {
                 try {
                     executionContext.createLocalContext()
-                    info("foreach", "Iteration: $iteration")
+                    info("foreach", "$iteration. Begin: $index= $value")
                     executionContext.setVariable(index, value)
                     visit(ctx.body())
+                    info("foreach", "$iteration. End")
                 } finally {
                     executionContext.removeLocalContext()
                 }
             }
-            info("foreach", "End")
         }
 
         private fun readValues(ctx: ForEachContext): List<ApmValue> {
@@ -104,8 +102,8 @@ class ScriptRunner(
             else -> throw RuntimeException("Cannot resolve command's name")
         }
 
-        private fun info(shortInfo: String, details: String = "") {
-            executionContext.progress.addEntry(shortInfo, Message.getInfoMessage(details), Status.SUCCESS)
+        private fun info(command: String, details: String = "") {
+            executionContext.progress.addEntry(Status.SUCCESS, details, command)
         }
     }
 }

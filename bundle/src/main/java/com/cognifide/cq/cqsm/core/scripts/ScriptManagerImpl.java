@@ -27,7 +27,6 @@ import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
 import com.cognifide.cq.cqsm.api.exceptions.ExecutionException;
 import com.cognifide.cq.cqsm.api.executors.Context;
 import com.cognifide.cq.cqsm.api.executors.Mode;
-import com.cognifide.cq.cqsm.api.logger.Message;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.logger.Status;
 import com.cognifide.cq.cqsm.api.scripts.Event;
@@ -121,14 +120,14 @@ public class ScriptManagerImpl implements ScriptManager {
             }
           } catch (RepositoryException | ActionCreationException e) {
             LOG.error("Error while processing command: {}", commandName, e);
-            progress.addEntry(commandName, Message.getErrorMessage(e.getMessage()), Status.ERROR);
+            progress.addEntry(Status.ERROR, e.getMessage(), commandName);
           }
         });
 
     try {
       scriptRunner.execute(script, progress, customDefinitions);
     } catch (RuntimeException e) {
-      progress.addEntry("", Message.getErrorMessage(e.getMessage()), Status.ERROR);
+      progress.addEntry(Status.ERROR, e.getMessage());
     }
     if (progress.isSuccess()) {
       savingPolicy.save(context.getSession(), SessionSavingMode.SINGLE);
@@ -153,7 +152,7 @@ public class ScriptManagerImpl implements ScriptManager {
 
     } catch (ExecutionException e) {
       progress = new ProgressImpl(resolver.getUserID());
-      progress.addEntry(Message.getErrorMessage(e.getMessage()), Status.ERROR);
+      progress.addEntry(Status.ERROR, e.getMessage());
     }
     process(script, mode, progress.isSuccess(), resolver);
     return progress;

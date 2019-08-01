@@ -34,16 +34,29 @@ abstract class ApmValue(arg: Any? = null) : ApmType(arg)
 data class ApmInteger(val value: Int) : ApmValue(value) {
     override val integer: Int
         get() = value
+
+    override fun toString(): String {
+        return value.toString()
+    }
 }
 
 data class ApmString(val value: String) : ApmValue(value) {
     override val string: String
         get() = value
+
+    override fun toString(): String {
+        return "\"$value\""
+    }
 }
 
 data class ApmList(val value: List<String>) : ApmType(value) {
     override val list: List<String>
         get() = value
+
+    override fun toString(): String {
+        return value.joinToString(prefix = "[", postfix = "]") { "\"$it\"" }
+    }
+
 }
 
 class ApmEmpty : ApmType()
