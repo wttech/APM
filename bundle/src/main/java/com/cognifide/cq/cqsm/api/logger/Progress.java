@@ -19,6 +19,7 @@
  */
 package com.cognifide.cq.cqsm.api.logger;
 
+import com.cognifide.apm.antlr.argument.Arguments;
 import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
 import com.cognifide.cq.cqsm.api.actions.ActionResult;
 import java.io.Serializable;
@@ -37,6 +38,10 @@ public interface Progress extends Serializable {
   void addEntry(Status status, String message, String command);
 
   void addEntry(Status status, List<String> messages, String command);
+
+  void addEntry(Status status, String message, String command, String authorizable, Arguments arguments);
+
+  void addEntry(Status status, List<String> messages, String command, String authorizable, Arguments arguments);
 
   boolean isSuccess();
 

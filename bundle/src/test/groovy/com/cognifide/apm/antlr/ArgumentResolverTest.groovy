@@ -41,7 +41,7 @@ class ArgumentResolverTest extends Specification {
                 ]""")
 
         when:
-        def result = parameterResolver.resolve(parser.arguments())
+        def result = parameterResolver.resolve(parser.complexArguments())
 
         then:
         result.required[0].getList() == ["a", "b", "c"]
@@ -54,7 +54,7 @@ class ArgumentResolverTest extends Specification {
         def parser = ApmLangParserHelper.createParserUsingScript("\$var1 \$var2")
 
         when:
-        parameterResolver.resolve(parser.arguments())
+        parameterResolver.resolve(parser.complexArguments())
 
         then:
         def exception = thrown(ArgumentResolverException.class)
@@ -68,7 +68,7 @@ class ArgumentResolverTest extends Specification {
         def parser = ApmLangParserHelper.createParserUsingScript("\$var1 + 'val2'")
 
         when:
-        def result = parameterResolver.resolve(parser.arguments())
+        def result = parameterResolver.resolve(parser.complexArguments())
 
         then:
         result.required[0].getString() == "val1val2"
@@ -81,7 +81,7 @@ class ArgumentResolverTest extends Specification {
         def parser = ApmLangParserHelper.createParserUsingScript("\$var1 + 10")
 
         when:
-        def result = parameterResolver.resolve(parser.arguments())
+        def result = parameterResolver.resolve(parser.complexArguments())
 
         then:
         result.required[0].getString() == "val110"
@@ -93,7 +93,7 @@ class ArgumentResolverTest extends Specification {
         def parser = ApmLangParserHelper.createParserUsingScript("['a', 'b'] + ['c', 'd']")
 
         when:
-        def result = parameterResolver.resolve(parser.arguments())
+        def result = parameterResolver.resolve(parser.complexArguments())
 
         then:
         result.required[0].getList() == ["a", "b", "c", "d"]
@@ -106,7 +106,7 @@ class ArgumentResolverTest extends Specification {
         def parser = ApmLangParserHelper.createParserUsingScript("\$var1 + 7")
 
         when:
-        def result = parameterResolver.resolve(parser.arguments())
+        def result = parameterResolver.resolve(parser.complexArguments())
 
         then:
         result.required[0].getInteger() == 17
@@ -118,7 +118,7 @@ class ArgumentResolverTest extends Specification {
         def parser = ApmLangParserHelper.createParserUsingScript("['a', 'b'] + 5")
 
         when:
-        parameterResolver.resolve(parser.arguments())
+        parameterResolver.resolve(parser.complexArguments())
 
         then:
         def exception = thrown(ArgumentResolverException.class)
@@ -132,7 +132,7 @@ class ArgumentResolverTest extends Specification {
         def parser = ApmLangParserHelper.createParserUsingScript("\$var1 2")
 
         when:
-        def result = parameterResolver.resolve(parser.arguments())
+        def result = parameterResolver.resolve(parser.complexArguments())
 
         then:
         result.required[0].getInteger() == 1
@@ -146,7 +146,7 @@ class ArgumentResolverTest extends Specification {
         def parser = ApmLangParserHelper.createParserUsingScript("\$var1 'val2'")
 
         when:
-        def result = parameterResolver.resolve(parser.arguments())
+        def result = parameterResolver.resolve(parser.complexArguments())
 
         then:
         result.required[0].getString() == "val1"
@@ -161,7 +161,7 @@ class ArgumentResolverTest extends Specification {
         def parser = ApmLangParserHelper.createParserUsingScript("\$var1 [\$var2, FALSE]")
 
         when:
-        def result = parameterResolver.resolve(parser.arguments())
+        def result = parameterResolver.resolve(parser.complexArguments())
 
         then:
         result.required[0].getList() == ["val1"]
@@ -176,7 +176,7 @@ class ArgumentResolverTest extends Specification {
         def parser = ApmLangParserHelper.createParserUsingScript("\$var1 param1=[\$var2, FALSE] param2='STRICT'")
 
         when:
-        def result = parameterResolver.resolve(parser.arguments())
+        def result = parameterResolver.resolve(parser.complexArguments())
 
         then:
         result.named["param1"].getList() == ["val2", "FALSE"]
@@ -191,7 +191,7 @@ class ArgumentResolverTest extends Specification {
         def parser = ApmLangParserHelper.createParserUsingScript("\$var1 param1=[\$var2, FALSE] --IF-EXISTS --DEEP")
 
         when:
-        def result = parameterResolver.resolve(parser.arguments())
+        def result = parameterResolver.resolve(parser.complexArguments())
 
         then:
         result.flags == ["IF-EXISTS", "DEEP"]

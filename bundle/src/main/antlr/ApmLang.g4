@@ -78,10 +78,10 @@ argument
     ;
 
 command
-    : RUN_SCRIPT path # RunScript
+    : RUN_SCRIPT path namedArguments? # RunScript
     | FOR_EACH IDENTIFIER IN argument EOL? body # ForEach
     | DEFINE IDENTIFIER argument # DefineVariable
-    | commandName arguments? # GenericCommand
+    | commandName complexArguments? # GenericCommand
     ;
 
 commandName
@@ -93,14 +93,30 @@ identifier
     | EXTENDED_IDENTIFIER
     ;
 
-arguments
+complexArguments
     : complexArgument+
     ;
 
 complexArgument
-    : argument #RequiredArgument
-    | IDENTIFIER '=' argument #NamedArgument
-    | '--' identifier #Flag
+    : requiredArgument
+    | namedArgument
+    | flag
+    ;
+
+requiredArgument
+    : argument
+    ;
+
+namedArguments
+    : namedArgument+
+    ;
+
+namedArgument
+    : IDENTIFIER '=' argument
+    ;
+
+flag
+    : '--' identifier
     ;
 
 body

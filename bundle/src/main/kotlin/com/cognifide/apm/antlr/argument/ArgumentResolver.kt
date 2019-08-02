@@ -34,10 +34,20 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
         this.singleArgumentResolver = SingleArgumentResolver()
     }
 
-    fun resolve(context: ArgumentsContext?): Arguments {
+    fun resolve(context: ComplexArgumentsContext?): Arguments {
         return if (context != null) {
             val multiArgumentResolver = MultiArgumentResolver()
-            multiArgumentResolver.visitArguments(context)
+            multiArgumentResolver.visitComplexArguments(context)
+            Arguments(multiArgumentResolver.required, multiArgumentResolver.named, multiArgumentResolver.flags)
+        } else {
+            Arguments()
+        }
+    }
+
+    fun resolve(context: NamedArgumentsContext?): Arguments {
+        return if (context != null) {
+            val multiArgumentResolver = MultiArgumentResolver()
+            multiArgumentResolver.visitNamedArguments(context)
             Arguments(multiArgumentResolver.required, multiArgumentResolver.named, multiArgumentResolver.flags)
         } else {
             Arguments()

@@ -57,6 +57,16 @@ public class ProgressImpl implements Progress {
     return Lists.newLinkedList(entries);
   }
 
+  public void addEntry(Status status, List<String> messages, String command, String authorizable,
+      Arguments arguments) {
+    this.entries.add(new ProgressEntry(authorizable, command, messages, toParameters(arguments), status));
+  }
+
+  public void addEntry(Status status, String message, String command, String authorizable,
+      Arguments arguments) {
+    this.entries.add(new ProgressEntry(authorizable, command, singletonList(message), toParameters(arguments), status));
+  }
+
   @Override
   public void addEntry(ActionDescriptor descriptor, ActionResult result) {
     this.entries.add(

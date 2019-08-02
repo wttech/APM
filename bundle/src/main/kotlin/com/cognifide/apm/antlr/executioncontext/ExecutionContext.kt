@@ -20,8 +20,7 @@
 
 package com.cognifide.apm.antlr.executioncontext
 
-import com.cognifide.apm.antlr.ApmLangParser.ArgumentContext
-import com.cognifide.apm.antlr.ApmLangParser.ArgumentsContext
+import com.cognifide.apm.antlr.ApmLangParser.*
 import com.cognifide.apm.antlr.ApmType
 import com.cognifide.apm.antlr.argument.ArgumentResolver
 import com.cognifide.apm.antlr.argument.Arguments
@@ -89,7 +88,11 @@ class ExecutionContext private constructor(
         return variableHolder[key]
     }
 
-    fun resolveArguments(arguments: ArgumentsContext): Arguments {
+    fun resolveArguments(arguments: ComplexArgumentsContext): Arguments {
+        return argumentResolver.resolve(arguments)
+    }
+
+    fun resolveArguments(arguments: NamedArgumentsContext): Arguments {
         return argumentResolver.resolve(arguments)
     }
 
@@ -113,7 +116,7 @@ class ExecutionContext private constructor(
         return if (path.startsWith("/")) {
             path
         } else {
-            StringUtils.substringBeforeLast(runScripts.peek().path, "/") + path
+            StringUtils.substringBeforeLast(runScripts.peek().path, "/") + "/" + path
         }
     }
 }
