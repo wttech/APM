@@ -23,6 +23,7 @@ package com.cognifide.apm.antlr
 import com.cognifide.apm.antlr.ApmLangParser.DefineVariableContext
 import com.cognifide.apm.antlr.ApmLangParser.ForEachContext
 import com.cognifide.apm.antlr.argument.ArgumentResolverException
+import com.cognifide.apm.antlr.common.getIdentifier
 import com.cognifide.apm.antlr.executioncontext.ExecutionContext
 import com.cognifide.apm.antlr.executioncontext.ExecutionContextException
 import com.cognifide.apm.antlr.parsedscript.InvalidSyntaxException
@@ -91,15 +92,9 @@ class ScriptRunner(
         }
 
         override fun visitGenericCommand(ctx: ApmLangParser.GenericCommandContext) {
-            val commandName = getCommandName(ctx).toUpperCase()
+            val commandName = getIdentifier(ctx.commandName().identifier()).toUpperCase()
             val arguments = executionContext.resolveArguments(ctx.arguments())
             actionInvoker.runAction(executionContext.progress, commandName, arguments)
-        }
-
-        private fun getCommandName(ctx: ApmLangParser.GenericCommandContext) = when {
-            ctx.commandName().IDENTIFIER() != null -> ctx.commandName().IDENTIFIER().toString()
-            ctx.commandName().EXTENDED_IDENTIFIER() != null -> ctx.commandName().EXTENDED_IDENTIFIER().toString()
-            else -> throw RuntimeException("Cannot resolve command's name")
         }
 
         private fun info(command: String, details: String = "") {

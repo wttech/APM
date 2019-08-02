@@ -22,6 +22,7 @@ package com.cognifide.apm.antlr.argument
 
 import com.cognifide.apm.antlr.*
 import com.cognifide.apm.antlr.ApmLangParser.*
+import com.cognifide.apm.antlr.common.getIdentifier
 import com.cognifide.apm.antlr.executioncontext.VariableHolder
 import com.google.common.primitives.Ints
 
@@ -65,12 +66,8 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
             named[ctx.IDENTIFIER().toString()] = singleArgumentResolver.visitArgument(ctx.argument())
         }
 
-        override fun visitSimpleFlag(ctx: SimpleFlagContext) {
-            flags.add(ctx.IDENTIFIER().toString())
-        }
-
-        override fun visitComplexFlag(ctx: ComplexFlagContext) {
-            flags.add(ctx.EXTENDED_IDENTIFIER().toString())
+        override fun visitFlag(ctx: FlagContext) {
+            flags.add(getIdentifier(ctx.identifier()))
         }
     }
 

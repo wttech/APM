@@ -85,6 +85,10 @@ command
     ;
 
 commandName
+    : identifier
+    ;
+
+identifier
     : IDENTIFIER
     | EXTENDED_IDENTIFIER
     ;
@@ -96,8 +100,7 @@ arguments
 complexArgument
     : argument #RequiredArgument
     | IDENTIFIER '=' argument #NamedArgument
-    | '--' IDENTIFIER #SimpleFlag
-    | '--' EXTENDED_IDENTIFIER #ComplexFlag
+    | '--' identifier #Flag
     ;
 
 body
