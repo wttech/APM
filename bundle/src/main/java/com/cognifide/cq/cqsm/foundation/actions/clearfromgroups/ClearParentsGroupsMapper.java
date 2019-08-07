@@ -17,17 +17,20 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
+package com.cognifide.cq.cqsm.foundation.actions.clearfromgroups;
 
-repositories {
-    mavenLocal()
-    jcenter()
-    maven { url = uri("https://repo.adobe.com/nexus/content/groups/public") }
-    maven { url = uri("https://plugins.gradle.org/m2") }
-    maven { url = uri("https://dl.bintray.com/cognifide/maven-public") }
-}
+import com.cognifide.cq.cqsm.api.actions.Action;
+import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
+import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
 
-dependencies {
-    implementation("com.cognifide.gradle:aem-plugin:6.2.0")
-    implementation("com.moowork.gradle:gradle-node-plugin:1.2.0")
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.31")
+@Mapper("clear-parents-groups")
+public final class ClearParentsGroupsMapper {
+
+	@Mapping(
+			value = "CLEAR-PARENTS-GROUPS",
+			reference = "This action removes all memberships of a given group."
+	)
+	public Action mapActionForClearGroups() {
+		return new ClearFromGroups(ClearFromGroupOperationTypes.ALL_PARENTS);
+	}
 }

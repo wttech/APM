@@ -20,11 +20,9 @@
 package com.cognifide.cq.cqsm.core.scripts;
 
 import com.cognifide.apm.antlr.ScriptRunner;
-import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
 import com.cognifide.cq.cqsm.api.actions.ActionFactory;
-import com.cognifide.cq.cqsm.api.actions.interfaces.DefinitionProvider;
-import com.cognifide.cq.cqsm.api.actions.interfaces.ScriptProvider;
+import com.cognifide.cq.cqsm.api.actions.ActionResult;
 import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
 import com.cognifide.cq.cqsm.api.exceptions.ExecutionException;
 import com.cognifide.cq.cqsm.api.executors.Context;
@@ -47,21 +45,16 @@ import com.cognifide.cq.cqsm.core.sessions.SessionSavingPolicy;
 import com.google.common.collect.Maps;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.LineIterator;
 import org.apache.jackrabbit.api.JackrabbitSession;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -115,25 +108,28 @@ public class ScriptManagerImpl implements ScriptManager {
 
     eventManager.trigger(Event.BEFORE_EXECUTE, script, mode, progress);
     ScriptRunner scriptRunner = new ScriptRunner(scriptFinder, resolver,
-        (internalProgress, commandName, parameters) -> {
-//			try {
-//				ActionDescriptor descriptor = actionFactory.evaluate(commandName, parameters);
-//				ActionResult result = actionExecutor.execute(descriptor);
-//				progress.addEntry(descriptor, result);
-//
-//				if ((Status.ERROR == result.getStatus()) && (Mode.DRY_RUN != mode)) {
-//					eventManager.trigger(Event.AFTER_EXECUTE, script, mode, progress);
-//				} else {
-//					savingPolicy.save(context.getSession(), SessionSavingMode.EVERY_ACTION);
-//				}
-//			} catch (RepositoryException | ActionCreationException e) {
-//				LOG.error("Error while processing command: {}", commandName, e);
-//				progress.addEntry(commandName, Message.getErrorMessage(e.getMessage()), Status.ERROR);
-//			}
-          internalProgress.addEntry(commandName, Message.getInfoMessage(parameters.toString()), Status.SUCCESS);
+        (internalProgress, commandName, arguments) -> {
+          try {
+            ActionDescriptor descriptor = actionFactory.evaluate(commandName, arguments);
+            ActionResult result = actionExecutor.execute(descriptor);
+            progress.addEntry(descriptor, result);
+
+            if ((Status.ERROR == result.getStatus()) && (Mode.DRY_RUN != mode)) {
+              eventManager.trigger(Event.AFTER_EXECUTE, script, mode, progress);
+            } else {
+              savingPolicy.save(context.getSession(), SessionSavingMode.EVERY_ACTION);
+            }
+          } catch (RepositoryException | ActionCreationException e) {
+            LOG.error("Error while processing command: {}", commandName, e);
+            progress.addEntry(commandName, Message.getErrorMessage(e.getMessage()), Status.ERROR);
+          }
         });
 
-    scriptRunner.execute(script, progress, customDefinitions);
+    try {
+      scriptRunner.execute(script, progress, customDefinitions);
+    } catch (RuntimeException e) {
+      progress.addEntry("", Message.getErrorMessage(e.getMessage()), Status.ERROR);
+    }
     if (progress.isSuccess()) {
       savingPolicy.save(context.getSession(), SessionSavingMode.SINGLE);
     }
@@ -224,61 +220,9 @@ public class ScriptManagerImpl implements ScriptManager {
   @Override
   public List<Script> findIncludes(Script script, ResourceResolver resolver) throws ExecutionException {
     final List<Script> includes = new ArrayList<>();
-    final HashMap<String, String> definitions = new HashMap<>();
-    parseIncludeDescriptors(script, definitions, includes, resolver);
+//    final HashMap<String, String> definitions = new HashMap<>();
+//    parseIncludeDescriptors(script, definitions, includes, resolver);
     return includes;
-  }
-
-  private List<ActionDescriptor> parseAllDescriptors(Script script, Map<String, String> customDefinitions,
-      ResourceResolver resolver) throws ExecutionException {
-    final List<Script> includes = new ArrayList<>();
-    final HashMap<String, String> definitions = new HashMap<>();
-
-    definitions.putAll(getPredefinedDefinitions());
-    definitions.putAll(customDefinitions);
-
-    return parseIncludeDescriptors(script, definitions, includes, resolver);
-  }
-
-  private List<ActionDescriptor> parseIncludeDescriptors(Script script, Map<String, String> definitions,
-      List<Script> includes, ResourceResolver resolver) throws ExecutionException {
-    final List<ActionDescriptor> descriptors = new LinkedList<>();
-    LineIterator lineIterator = IOUtils.lineIterator(new StringReader(script.getData()));
-
-    while (lineIterator.hasNext()) {
-      String line = lineIterator.next();
-      if (ScriptUtils.isAction(line)) {
-        final String command = ScriptUtils.parseCommand(line, definitions);
-        final ActionDescriptor descriptor = actionFactory.evaluate(command);
-        final Action action = descriptor.getAction();
-
-        descriptors.add(descriptor);
-
-        if (action instanceof DefinitionProvider) {
-          definitions.putAll(((DefinitionProvider) action).provideDefinitions(definitions));
-        } else if (action instanceof ScriptProvider) {
-          getIncludes(definitions, includes, resolver, descriptors, (ScriptProvider) action);
-        }
-      }
-    }
-    return descriptors;
-  }
-
-  private void getIncludes(Map<String, String> definitions, List<Script> includes,
-      ResourceResolver resolver, List<ActionDescriptor> descriptors, ScriptProvider action)
-      throws ExecutionException {
-    for (String path : action.provideScripts()) {
-      Script include = scriptFinder.find(path, resolver);
-
-      if (include != null) {
-        includes.add(include);
-        descriptors.addAll(parseIncludeDescriptors(include, definitions, includes,
-            resolver));
-      } else {
-        throw new ActionCreationException(
-            String.format("Included script: '%s' does not exists.", path));
-      }
-    }
   }
 
   private ActionExecutor createExecutor(Mode mode, ResourceResolver resolver) throws RepositoryException {

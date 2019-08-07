@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,19 +20,20 @@
 package com.cognifide.cq.cqsm.foundation.actions.check.password;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.BasicActionMapper;
+import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
 
-public final class CheckPasswordMapper extends BasicActionMapper {
+@Mapper("check-password")
+public final class CheckPasswordMapper {
 
-	public static final String REFERENCE = "Verify that specific password is set for given authorizable.";
+  public static final String REFERENCE = "Verify that specific password is set for given authorizable.";
 
-	@Mapping(
-			value = {"CHECK" + DASH + "PASSWORD" + SPACE + STRING + SPACE + STRING},
-			args = {"userId", "password"},
-			reference = REFERENCE
-	)
-	public Action mapAction(final String userId, final String password) {
-		return new CheckPassword(userId, password);
-	}
+  @Mapping(
+      value = "CHECK-PASSWORD",
+      args = {"userId", "password"},
+      reference = REFERENCE
+  )
+  public Action mapAction(String userId, String password) {
+    return new CheckPassword(userId, password);
+  }
 }

@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,19 +20,19 @@
 package com.cognifide.cq.cqsm.foundation.actions.removeall;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.BasicActionMapper;
+import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
-import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
 
-public final class RemoveAllMapper extends BasicActionMapper {
+@Mapper("remove-all")
+public final class RemoveAllMapper {
 
-	@Mapping(
-			value = {"REMOVE" + DASH + "ALL" + SPACE + PATH},
-			args = {"path"},
-			reference = "Delete every permission applied for current authorizable on specified path."
-	)
-	public Action mapAction(final String path) throws ActionCreationException {
-		return new RemoveAll(path);
-	}
+  @Mapping(
+      value = "REMOVE-ALL",
+      args = {"path"},
+      reference = "Delete every permission applied for current authorizable on specified path."
+  )
+  public Action mapAction(String path) {
+    return new RemoveAll(path);
+  }
 
 }

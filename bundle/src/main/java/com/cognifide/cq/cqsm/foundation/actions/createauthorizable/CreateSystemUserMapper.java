@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,52 +19,28 @@
  */
 package com.cognifide.cq.cqsm.foundation.actions.createauthorizable;
 
+import static com.cognifide.cq.cqsm.foundation.actions.CommonFlags.IF_NOT_EXISTS;
+import static com.cognifide.cq.cqsm.foundation.actions.createauthorizable.CreateAuthorizableStrategy.SYSTEM_USER;
+
 import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.BasicActionMapper;
+import com.cognifide.cq.cqsm.api.actions.annotations.Flags;
+import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
+import com.cognifide.cq.cqsm.api.actions.annotations.Named;
+import java.util.List;
 
-public class CreateSystemUserMapper extends BasicActionMapper {
+@Mapper("create-system-user")
+public class CreateSystemUserMapper {
 
-	public static final String REFERENCE = "Create a system user.";
+  public static final String REFERENCE = "Create a system user.";
 
-	@Mapping(
-			value = {"CREATE" + DASH + "SYSTEM" + SPACE + "USER" + SPACE + STRING},
-			args = {"userId"},
-			reference = REFERENCE
-	)
-	public Action mapAction(String id) {
-		return mapAction(id, null, false);
-	}
-
-	@Mapping(
-			value = {"CREATE" + DASH + "SYSTEM" + SPACE + "USER" + SPACE + STRING + SPACE + PATH},
-			args = {"userId", "path"},
-			reference = REFERENCE
-	)
-	public Action mapAction(String id, String path) {
-		return mapAction(id, path, false);
-	}
-
-	@Mapping(
-			value = {"CREATE" + DASH + "SYSTEM" + SPACE + "USER" + SPACE + STRING + SPACE + ("IF" + DASH + "NOT" + DASH + "EXISTS")},
-			args = {"userId"},
-			reference = REFERENCE
-	)
-	public Action mapActionWithIfNotExists(String id) {
-		return mapAction(id, null, true);
-	}
-
-	@Mapping(
-			value = {"CREATE" + DASH + "SYSTEM" + SPACE + "USER" + SPACE + STRING + SPACE + PATH + SPACE + ("IF" + DASH + "NOT" + DASH + "EXISTS")},
-			args = {"userId", "path"},
-			reference = REFERENCE
-	)
-	public Action mapActionWithIfNotExists(String id, String path) {
-		return mapAction(id, path, true);
-	}
-
-	private Action mapAction(String id, String path, Boolean ifNotExists) {
-		return new CreateAuthorizable(id, null, path, ifNotExists, CreateAuthorizableStrategy.SYSTEM_USER);
-	}
+  @Mapping(
+      value = "CREATE-SYSTEM-USER",
+      args = {"userId", "path"},
+      reference = REFERENCE
+  )
+  public Action mapAction(String userId, @Named("path") String path, @Flags List<String> flags) {
+    return new CreateAuthorizable(userId, null, path, flags.contains(IF_NOT_EXISTS), SYSTEM_USER);
+  }
 
 }

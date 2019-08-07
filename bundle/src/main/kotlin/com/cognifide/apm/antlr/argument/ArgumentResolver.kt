@@ -70,7 +70,7 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
         }
 
         override fun visitComplexFlag(ctx: ComplexFlagContext) {
-            flags.add(ctx.FLAG().toString())
+            flags.add(ctx.EXTENDED_IDENTIFIER().toString())
         }
     }
 
@@ -83,8 +83,7 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
         override fun visitArray(ctx: ArrayContext): ApmType {
             val values = ctx.children
                     ?.map { child -> child.accept(this) }
-                    ?.filter { child -> child is ApmString }
-                    ?.map { child -> child as ApmString }
+                    ?.filterIsInstance<ApmString>()
                     ?.map { child -> child.string }
                     ?: listOf()
             return ApmList(values)

@@ -93,9 +93,15 @@ class ScriptRunner(
         }
 
         override fun visitGenericCommand(ctx: ApmLangParser.GenericCommandContext) {
-            val commandName = ctx.IDENTIFIER().toString().toUpperCase()
+            val commandName = getCommandName(ctx).toUpperCase()
             val arguments = executionContext.resolveArguments(ctx.arguments())
             actionInvoker.runAction(executionContext.progress, commandName, arguments)
+        }
+
+        private fun getCommandName(ctx: ApmLangParser.GenericCommandContext) = when {
+            ctx.commandName().IDENTIFIER() != null -> ctx.commandName().IDENTIFIER().toString()
+            ctx.commandName().EXTENDED_IDENTIFIER() != null -> ctx.commandName().EXTENDED_IDENTIFIER().toString()
+            else -> throw RuntimeException("Cannot resolve command's name")
         }
 
         private fun info(shortInfo: String, details: String = "") {

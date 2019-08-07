@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,31 +20,23 @@
 package com.cognifide.cq.cqsm.foundation.actions.check.permissions;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.BasicActionMapper;
+import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
-
+import com.cognifide.cq.cqsm.api.actions.annotations.Named;
 import java.util.List;
 
-public final class CheckAllowMapper extends BasicActionMapper {
+@Mapper("check-allow")
+public final class CheckAllowMapper {
 
-	public static final String REFERENCE = "Check that specific permissions are allowed for current authorizable"
-			+ " on specified path.";
+  public static final String REFERENCE = "Check that specific permissions are allowed for current authorizable"
+      + " on specified path.";
 
-	@Mapping(
-			value = {"CHECK" + DASH + "ALLOW" + SPACE + STRING + SPACE + PATH + SPACE + LIST},
-			args = {"authorizableId", "path", "permissions"},
-			reference = REFERENCE
-	)
-	public Action mapAction(final String id, final String path, List<String> permissions) {
-		return mapAction(id, path, null, permissions);
-	}
-
-	@Mapping(
-			value = {"CHECK" + DASH + "ALLOW" + SPACE + STRING + SPACE + PATH + SPACE + STRING + SPACE + LIST},
-			args = {"authorizableId", "path", "glob", "permissions"},
-			reference = REFERENCE
-	)
-	public Action mapAction(final String id, final String path, String glob, List<String> permissions) {
-		return new CheckPermissions(id, path, glob, permissions, true);
-	}
+  @Mapping(
+      value = "CHECK-ALLOW",
+      args = {"authorizableId", "path", "permissions"},
+      reference = REFERENCE
+  )
+  public Action mapAction(String id, String path, List<String> permissions, @Named("glob") String glob) {
+    return new CheckPermissions(id, path, glob, permissions, true);
+  }
 }

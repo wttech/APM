@@ -20,18 +20,18 @@
 package com.cognifide.cq.cqsm.foundation.actions.forauthorizable;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.BasicActionMapper;
+import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
-import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
 
-public final class ForUserMapper extends BasicActionMapper {
+@Mapper("for-user")
+public final class ForUserMapper {
 
 	@Mapping(
-			value = {"FOR" + DASH + "USER" + SPACE + STRING},
+			value = "FOR-USER",
 			args = {"userId"},
 			reference = "Set specified user as a current authorizable for execution context."
 	)
-	public Action mapAction(final String id) throws ActionCreationException {
-		return new ForAuthorizable(id, false);
+	public Action mapAction(String userId) {
+		return new ForAuthorizable(userId, false);
 	}
 }

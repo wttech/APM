@@ -81,7 +81,12 @@ command
     : RUN_SCRIPT path # RunScript
     | FOR_EACH IDENTIFIER IN argument EOL? body # ForEach
     | DEFINE IDENTIFIER argument # DefineVariable
-    | IDENTIFIER arguments? # GenericCommand
+    | commandName arguments? # GenericCommand
+    ;
+
+commandName
+    : IDENTIFIER
+    | EXTENDED_IDENTIFIER
     ;
 
 arguments
@@ -92,7 +97,7 @@ complexArgument
     : argument #RequiredArgument
     | IDENTIFIER '=' argument #NamedArgument
     | '--' IDENTIFIER #SimpleFlag
-    | '--' FLAG #ComplexFlag
+    | '--' EXTENDED_IDENTIFIER #ComplexFlag
     ;
 
 body
@@ -155,7 +160,7 @@ VARIABLE_PREFIX
 IDENTIFIER
     : Letter LetterOrDigit*
     ;
-FLAG
+EXTENDED_IDENTIFIER
     : Letter LetterOrDigitOrDash*
     ;
 COMMENT

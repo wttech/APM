@@ -20,7 +20,7 @@
 
 package com.cognifide.apm.antlr
 
-abstract class ApmType {
+abstract class ApmType(val argument: Any? = null) {
     open val integer: Int?
         get() = null
     open val string: String?
@@ -29,19 +29,19 @@ abstract class ApmType {
         get() = null
 }
 
-abstract class ApmValue : ApmType()
+abstract class ApmValue(arg: Any? = null) : ApmType(arg)
 
-data class ApmInteger(val value: Int) : ApmValue() {
+data class ApmInteger(val value: Int) : ApmValue(value) {
     override val integer: Int
         get() = value
 }
 
-data class ApmString(val value: String) : ApmValue() {
+data class ApmString(val value: String) : ApmValue(value) {
     override val string: String
         get() = value
 }
 
-data class ApmList(val value: List<String>) : ApmType() {
+data class ApmList(val value: List<String>) : ApmType(value) {
     override val list: List<String>
         get() = value
 }
