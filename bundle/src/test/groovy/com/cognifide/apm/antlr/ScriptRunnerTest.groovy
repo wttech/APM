@@ -21,7 +21,6 @@
 package com.cognifide.apm.antlr
 
 import com.cognifide.apm.antlr.argument.Arguments
-import com.cognifide.cq.cqsm.api.logger.Message
 import com.cognifide.cq.cqsm.api.logger.Progress
 import com.cognifide.cq.cqsm.api.logger.Status
 import com.cognifide.cq.cqsm.api.scripts.Script
@@ -93,7 +92,7 @@ class ScriptRunnerTest extends Specification {
                             .append(it.getString())
                             .append("'")
                 }
-                progress.addEntry(command.toString(), Message.getInfoMessage(""), Status.SUCCESS)
+                progress.addEntry(Status.SUCCESS, "", command.toString())
             }
         }
     }

@@ -52,7 +52,7 @@ public class ActionFactoryImpl implements ActionFactory {
   public ActionDescriptor evaluate(String command, Arguments arguments) throws ActionCreationException {
     Optional<MapperDescriptor> mapper = registry.getMapper(command);
     if (mapper.isPresent()) {
-      return new ActionDescriptor(command, tryToEvaluateCommand(mapper.get(), arguments));
+      return new ActionDescriptor(command, tryToEvaluateCommand(mapper.get(), arguments), arguments);
     }
     throw new ActionCreationException(String.format("Cannot find action for command: %s", command));
   }

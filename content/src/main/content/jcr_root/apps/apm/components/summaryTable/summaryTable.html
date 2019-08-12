@@ -49,22 +49,24 @@
     </thead>
     <tbody is="coral-table-body">
     <sly data-sly-list.execution="${item.entry.executionSummary}">
-      <tr is="coral-table-row">
+      <tr is="coral-table-row"
+          class="${execution.status.toString == 'SUCCESS' ? 'entry-success' : (execution.status.toString == 'ERROR' ? 'entry-error' : 'entry-warning')}">
         <td is="coral-table-cell">${executionList.index}</td>
         <td is="coral-table-cell">${execution.authorizable}</td>
-        <td is="coral-table-cell">${execution.actionName}</td>
-        <td is="coral-table-cell">${execution.parameters}</td>
+        <td is="coral-table-cell">${execution.command.toUpperCase}</td>
         <td is="coral-table-cell">
-          <coral-icon
-              icon="${execution.status.toString.toLowerCase == 'success' ? 'check' : (execution.status.toString.toLowerCase == 'error' ? 'close' : 'alert')}"/>
+          <ul>
+            <li data-sly-repeat.text="${execution.parameters}">${text}</li>
+          </ul>
         </td>
         <td is="coral-table-cell">
-          <sly data-sly-list.message="${execution.messages}">
-            <span class="${message.info ? message.info : ''}">
-              ${message.text}
-            </span>
-            <br data-sly-test="${!messageList.last}"/>
-          </sly>
+          <coral-icon
+              icon="${execution.status.toString == 'SUCCESS' ? 'check' : (execution.status.toString == 'ERROR' ? 'close' : 'alert')}"/>
+        </td>
+        <td is="coral-table-cell">
+          <ul>
+            <li data-sly-repeat.text="${execution.messages}">${text}</li>
+          </ul>
         </td>
       </tr>
     </sly>

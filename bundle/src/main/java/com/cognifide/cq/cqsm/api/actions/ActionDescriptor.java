@@ -19,27 +19,16 @@
  */
 package com.cognifide.cq.cqsm.api.actions;
 
-import java.util.Collections;
-import java.util.List;
-
+import com.cognifide.apm.antlr.argument.Arguments;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
+@RequiredArgsConstructor
 public final class ActionDescriptor {
 
 	private final String command;
-
-	private final List<String> args;
-
 	private final Action action;
+  private final Arguments arguments;
 
-	public ActionDescriptor(String command, Action action) {
-		this(command, action, Collections.<String>emptyList());
-	}
-
-	public ActionDescriptor(String command, Action action, List<String> args) {
-		this.command = command;
-		this.action = action;
-		this.args = args;
-	}
 }

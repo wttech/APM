@@ -122,7 +122,7 @@ class ArgumentResolverTest extends Specification {
 
         then:
         def exception = thrown(ArgumentResolverException.class)
-        exception.message == "Operation not supported for given values ApmList(value=[a, b]) and ApmInteger(value=5)"
+        exception.message == "Operation not supported for given values [\"a\", \"b\"] and 5"
     }
 
     def "resolve number parameters"() {
