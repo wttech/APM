@@ -20,9 +20,11 @@
 
 package com.cognifide.apm.antlr
 
-import com.cognifide.apm.antlr.ApmLangParser.DefineVariableContext
-import com.cognifide.apm.antlr.ApmLangParser.ForEachContext
+import com.cognifide.apm.antlr.ApmLangParser.*
 import com.cognifide.apm.antlr.argument.ArgumentResolverException
+import com.cognifide.apm.antlr.argument.Arguments
+import com.cognifide.apm.antlr.argument.toPlainString
+import com.cognifide.apm.antlr.common.getIdentifier
 import com.cognifide.apm.antlr.executioncontext.ExecutionContext
 import com.cognifide.apm.antlr.executioncontext.ExecutionContextException
 import com.cognifide.apm.antlr.parsedscript.InvalidSyntaxException
@@ -81,6 +83,21 @@ class ScriptRunner(
             }
         }
 
+        override fun visitRunScript(ctx: RunScriptContext) {
+            val path = ctx.path().STRING_LITERAL().toPlainString()
+            val arguments = executionContext.resolveArguments(ctx.namedArguments())
+            val loadScript = executionContext.loadScript(path)
+            executionContext.createScriptContext(loadScript)
+            try {
+                arguments.named.forEach { (key, value) -> executionContext.setVariable(key, value) }
+                info("run", "Begin: path= ${loadScript.path}", arguments)
+                visit(loadScript.apm)
+                info("run", "End")
+            } finally {
+                executionContext.removeScriptContext()
+            }
+        }
+
         private fun readValues(ctx: ForEachContext): List<ApmValue> {
             val variableValue = executionContext.resolveArgument(ctx.argument())
             return when (variableValue) {
@@ -90,20 +107,18 @@ class ScriptRunner(
             }
         }
 
-        override fun visitGenericCommand(ctx: ApmLangParser.GenericCommandContext) {
-            val commandName = getCommandName(ctx).toUpperCase()
-            val arguments = executionContext.resolveArguments(ctx.arguments())
+        override fun visitGenericCommand(ctx: GenericCommandContext) {
+            val commandName = getIdentifier(ctx.commandName().identifier()).toUpperCase()
+            val arguments = executionContext.resolveArguments(ctx.complexArguments())
             actionInvoker.runAction(executionContext.progress, commandName, arguments)
         }
 
-        private fun getCommandName(ctx: ApmLangParser.GenericCommandContext) = when {
-            ctx.commandName().IDENTIFIER() != null -> ctx.commandName().IDENTIFIER().toString()
-            ctx.commandName().EXTENDED_IDENTIFIER() != null -> ctx.commandName().EXTENDED_IDENTIFIER().toString()
-            else -> throw RuntimeException("Cannot resolve command's name")
-        }
-
-        private fun info(command: String, details: String = "") {
-            executionContext.progress.addEntry(Status.SUCCESS, details, command)
+        private fun info(command: String, details: String = "", arguments: Arguments? = null) {
+            if (arguments != null) {
+                executionContext.progress.addEntry(Status.SUCCESS, details, command, "", arguments)
+            } else {
+                executionContext.progress.addEntry(Status.SUCCESS, details, command)
+            }
         }
     }
 }

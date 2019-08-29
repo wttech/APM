@@ -22,6 +22,7 @@ package com.cognifide.apm.antlr.argument
 
 import com.cognifide.apm.antlr.*
 import com.cognifide.apm.antlr.ApmLangParser.*
+import com.cognifide.apm.antlr.common.getIdentifier
 import com.cognifide.apm.antlr.executioncontext.VariableHolder
 import com.google.common.primitives.Ints
 
@@ -33,10 +34,20 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
         this.singleArgumentResolver = SingleArgumentResolver()
     }
 
-    fun resolve(context: ArgumentsContext?): Arguments {
+    fun resolve(context: ComplexArgumentsContext?): Arguments {
         return if (context != null) {
             val multiArgumentResolver = MultiArgumentResolver()
-            multiArgumentResolver.visitArguments(context)
+            multiArgumentResolver.visitComplexArguments(context)
+            Arguments(multiArgumentResolver.required, multiArgumentResolver.named, multiArgumentResolver.flags)
+        } else {
+            Arguments()
+        }
+    }
+
+    fun resolve(context: NamedArgumentsContext?): Arguments {
+        return if (context != null) {
+            val multiArgumentResolver = MultiArgumentResolver()
+            multiArgumentResolver.visitNamedArguments(context)
             Arguments(multiArgumentResolver.required, multiArgumentResolver.named, multiArgumentResolver.flags)
         } else {
             Arguments()
@@ -65,12 +76,8 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
             named[ctx.IDENTIFIER().toString()] = singleArgumentResolver.visitArgument(ctx.argument())
         }
 
-        override fun visitSimpleFlag(ctx: SimpleFlagContext) {
-            flags.add(ctx.IDENTIFIER().toString())
-        }
-
-        override fun visitComplexFlag(ctx: ComplexFlagContext) {
-            flags.add(ctx.EXTENDED_IDENTIFIER().toString())
+        override fun visitFlag(ctx: FlagContext) {
+            flags.add(getIdentifier(ctx.identifier()))
         }
     }
 
