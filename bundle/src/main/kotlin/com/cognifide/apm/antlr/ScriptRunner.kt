@@ -113,6 +113,15 @@ class ScriptRunner(
             actionInvoker.runAction(executionContext.progress, commandName, arguments)
         }
 
+        override fun visitImportScript(ctx: ImportScriptContext) {
+            val path = ctx.path().STRING_LITERAL().toPlainString()
+            val loadScript = executionContext.loadScript(path)
+            val varFinder = VariableDefinitionsFinder()
+
+            varFinder.find(loadScript).forEach { (name, value) -> executionContext.setVariable(name, value)
+            }
+        }
+
         private fun info(command: String, details: String = "", arguments: Arguments? = null) {
             if (arguments != null) {
                 executionContext.progress.addEntry(Status.SUCCESS, details, command, "", arguments)
