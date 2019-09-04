@@ -124,8 +124,11 @@ body
     ;
 
 importScript
-    : IMPORT_SCRIPT path
+    : IMPORT_SCRIPT path as?
     ;
+as
+  : AS name
+  ;
 
 /*
  * Lexer Rules
@@ -165,6 +168,10 @@ IN
 DEFINE
     : 'define'
     | 'DEFINE'
+    ;
+AS
+    : 'AS'
+    | 'as'
     ;
 NUMBER_LITERAL
     : [0-9]+

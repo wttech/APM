@@ -72,6 +72,21 @@ class ScriptRunnerTest extends Specification {
                      "Executing command SHOW 'global'"]
     }
 
+    def "run import"(){
+        given:
+        Script script = createScript("/import.apm")
+        scriptFinder.find("/import-define.apm", resourceResolver) >> createScript("/import-define.apm")
+
+        when:
+        def result = scriptExecutor.execute(script, new ProgressImpl(""))
+
+        then:
+        def messages = result.entries
+                .collect { it.messages[0] }
+
+        messages == ["Imported variable: var = \"imported_val\"", "Imported variable: namespace_var = \"imported_val\""]
+    }
+
     private Script createScript(String file) {
         def content = IOUtils.toString(getClass().getResourceAsStream(file))
         def script = Mock(Script)

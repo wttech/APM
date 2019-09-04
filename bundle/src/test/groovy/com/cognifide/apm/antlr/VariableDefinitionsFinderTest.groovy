@@ -6,7 +6,7 @@ import spock.lang.Specification
 
 class VariableDefinitionsFinderTest extends Specification {
 
-    def "find variable definitions " (){
+    def "find variable definitions" (){
         given:
         def underTest = new VariableDefinitionsFinder()
 

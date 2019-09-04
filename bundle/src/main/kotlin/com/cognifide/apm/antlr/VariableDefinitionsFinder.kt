@@ -4,15 +4,19 @@ import com.cognifide.apm.antlr.argument.ArgumentResolver
 import com.cognifide.apm.antlr.executioncontext.VariableHolder
 import com.cognifide.apm.antlr.parsedscript.ParsedScript
 
-class VariableDefinitionsFinder  {
+class VariableDefinitionsFinder {
 
-    fun find(parsedScript: ParsedScript) : Map<String, ApmType>{
+    fun find(parsedScript: ParsedScript): Map<String, ApmType> {
         val finder = DefinitionFinder()
         finder.visit(parsedScript.apm)
         return finder.variables
     }
 
-    private inner class DefinitionFinder() : ApmLangBaseVisitor<Unit>(){
+    fun format(vararg args: Any?): String {
+        return "%s%s".format("", "2")
+    }
+
+    private inner class DefinitionFinder() : ApmLangBaseVisitor<Unit>() {
         val variables = mutableMapOf<String, ApmType>()
         val variableHolder = VariableHolder()
         val argumentResolver = ArgumentResolver(variableHolder)
