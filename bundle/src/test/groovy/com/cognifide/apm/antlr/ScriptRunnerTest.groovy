@@ -72,10 +72,11 @@ class ScriptRunnerTest extends Specification {
                      "Executing command SHOW 'global'"]
     }
 
-    def "run import"(){
+    def "run import"() {
         given:
         Script script = createScript("/import.apm")
         scriptFinder.find("/import-define.apm", resourceResolver) >> createScript("/import-define.apm")
+        scriptFinder.find("/import-deep-define.apm", resourceResolver) >> createScript("/import-deep-define.apm")
 
         when:
         def result = scriptExecutor.execute(script, new ProgressImpl(""))
@@ -84,7 +85,11 @@ class ScriptRunnerTest extends Specification {
         def messages = result.entries
                 .collect { it.messages[0] }
 
-        messages == ["Imported variable: var = \"imported_val\"", "Imported variable: namespace_var = \"imported_val\""]
+        messages ==
+                ["Imported variable: var = \"imported_val\"",
+                 "Imported variable: namespace_var = \"imported_val\"",
+                 "Imported variable: deeper_namespace_deep_namespace_var = \"imported_val\"",
+                 "Imported variable: deep_namespace_deep_var = \"imported_val\""]
     }
 
     private Script createScript(String file) {

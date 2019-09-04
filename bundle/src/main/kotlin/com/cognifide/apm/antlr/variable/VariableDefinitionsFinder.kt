@@ -1,5 +1,8 @@
-package com.cognifide.apm.antlr
+package com.cognifide.apm.antlr.variable
 
+import com.cognifide.apm.antlr.ApmLangBaseVisitor
+import com.cognifide.apm.antlr.ApmLangParser
+import com.cognifide.apm.antlr.ApmType
 import com.cognifide.apm.antlr.argument.ArgumentResolver
 import com.cognifide.apm.antlr.executioncontext.VariableHolder
 import com.cognifide.apm.antlr.parsedscript.ParsedScript
@@ -16,11 +19,10 @@ class VariableDefinitionsFinder {
         return "%s%s".format("", "2")
     }
 
-    private inner class DefinitionFinder() : ApmLangBaseVisitor<Unit>() {
+    private inner class DefinitionFinder : ApmLangBaseVisitor<Unit>() {
         val variables = mutableMapOf<String, ApmType>()
         val variableHolder = VariableHolder()
         val argumentResolver = ArgumentResolver(variableHolder)
-
 
         override fun visitDefineVariable(ctx: ApmLangParser.DefineVariableContext) {
             val value = argumentResolver.resolve(ctx.argument())

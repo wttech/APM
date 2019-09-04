@@ -29,11 +29,11 @@ import com.cognifide.apm.antlr.executioncontext.ExecutionContext
 import com.cognifide.apm.antlr.executioncontext.ExecutionContextException
 import com.cognifide.apm.antlr.parsedscript.InvalidSyntaxException
 import com.cognifide.apm.antlr.parsedscript.InvalidSyntaxMessageFactory
+import com.cognifide.apm.antlr.variable.ImportVariable
 import com.cognifide.cq.cqsm.api.logger.Progress
 import com.cognifide.cq.cqsm.api.logger.Status
 import com.cognifide.cq.cqsm.api.scripts.Script
 import com.cognifide.cq.cqsm.api.scripts.ScriptFinder
-import com.google.common.base.Joiner
 import org.apache.sling.api.resource.ResourceResolver
 
 class ScriptRunner(
@@ -116,21 +116,14 @@ class ScriptRunner(
 
         override fun visitImportScript(ctx: ImportScriptContext) {
             val path = ctx.path().STRING_LITERAL().toPlainString()
-            val loadScript = executionContext.loadScript(path)
-            val varFinder = VariableDefinitionsFinder()
             val nameSpace = ctx.`as`()?.name()?.IDENTIFIER()?.toString()
-            varFinder.find(loadScript)
-                    .map { (name, value) -> joinName(nameSpace, name) to value }
+
+            val lv = ImportVariable(executionContext)
+            lv.importAllVariables(path, nameSpace)
                     .forEach { (name, value) ->
                         executionContext.setVariable(name, value)
                         executionContext.progress.addEntry(Status.SUCCESS, "Imported variable: %s = %s".format(name, value))
                     }
-        }
-
-        private fun joinName(nameSpace: String?, name: String): String {
-            return Joiner.on("_")
-                    .skipNulls()
-                    .join(nameSpace, name)
         }
 
         private fun info(command: String, details: String = "", arguments: Arguments? = null) {

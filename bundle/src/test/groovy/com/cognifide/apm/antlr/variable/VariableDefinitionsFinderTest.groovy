@@ -1,5 +1,9 @@
-package com.cognifide.apm.antlr
+package com.cognifide.apm.antlr.variable
 
+import com.cognifide.apm.antlr.ApmInteger
+import com.cognifide.apm.antlr.ApmList
+import com.cognifide.apm.antlr.ApmString
+import com.cognifide.apm.antlr.ApmType
 import com.cognifide.apm.antlr.parsedscript.ParsedScript
 import com.cognifide.cq.cqsm.api.scripts.Script
 import spock.lang.Specification
