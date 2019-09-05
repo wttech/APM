@@ -99,14 +99,13 @@ class ScriptRunner(
             }
         }
 
-        private fun readValues(ctx: ForEachContext): List<ApmValue> {
-            val variableValue = executionContext.resolveArgument(ctx.argument())
-            return when (variableValue) {
+        private fun readValues(ctx: ForEachContext): List<ApmValue> =
+             when (val variableValue = executionContext.resolveArgument(ctx.argument())) {
                 is ApmList -> variableValue.list.map { ApmString(it) }
                 is ApmEmpty -> listOf()
                 else -> listOf(variableValue as ApmValue)
             }
-        }
+
 
         override fun visitGenericCommand(ctx: GenericCommandContext) {
             val commandName = getIdentifier(ctx.commandName().identifier()).toUpperCase()
@@ -115,15 +114,33 @@ class ScriptRunner(
         }
 
         override fun visitImportScript(ctx: ImportScriptContext) {
-            val path = ctx.path().STRING_LITERAL().toPlainString()
-            val nameSpace = ctx.`as`()?.name()?.IDENTIFIER()?.toString()
+            val result = ImportVariable(executionContext).importAllVariables(ctx)
 
-            val lv = ImportVariable(executionContext)
-            lv.importAllVariables(path, nameSpace)
-                    .forEach { (name, value) ->
-                        executionContext.setVariable(name, value)
-                        executionContext.progress.addEntry(Status.SUCCESS, "Imported variable: %s = %s".format(name, value))
-                    }
+            result.variables.forEach { (name, value) ->
+                executionContext.setVariable(name, value)
+            }
+
+            executionContext.progress.addEntry(Status.SUCCESS, importScriptMessages(result))
+        }
+
+        private fun importScriptMessages(importResult: ImportVariable.Result): List<String> {
+            val messages = mutableListOf(importScriptOpenMessage(importResult))
+            messages.addAll(
+                    importResult
+                            .variables
+                            .map { "Imported variable: ${it.key} = ${it.value}" })
+
+            return messages.toList()
+
+        }
+
+        private fun importScriptOpenMessage(importResult: ImportVariable.Result): String {
+            val msg = "Import from script ${importResult.path}"
+
+            return when(importResult.ns){
+                null -> msg
+                else -> msg + " with namespace: ${importResult.ns}"
+            } + ". Notice, only DEFINE action will be processed!"
         }
 
         private fun info(command: String, details: String = "", arguments: Arguments? = null) {

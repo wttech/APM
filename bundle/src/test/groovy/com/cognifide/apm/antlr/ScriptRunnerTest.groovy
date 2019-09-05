@@ -82,13 +82,18 @@ class ScriptRunnerTest extends Specification {
         def result = scriptExecutor.execute(script, new ProgressImpl(""))
 
         then:
-        def messages = result.entries
-                .collect { it.messages[0] }
+        result.entries.size() == 3
+        result.entries[0].messages ==
+                ["Import from script /import-define.apm. Notice, only DEFINE action will be processed!",
+                 "Imported variable: var = \"imported_val\""]
 
-        messages ==
-                ["Imported variable: var = \"imported_val\"",
-                 "Imported variable: namespace_var = \"imported_val\"",
-                 "Imported variable: deeper_namespace_deep_namespace_var = \"imported_val\"",
+        result.entries[1].messages ==
+                ["Import from script /import-define.apm with namespace: namespace. Notice, only DEFINE action will be processed!",
+                 "Imported variable: namespace_var = \"imported_val\""]
+
+        result.entries[2].messages ==
+                ["Import from script /import-deep-define.apm with namespace: deep_namespace. Notice, only DEFINE action will be processed!",
+                 "Imported variable: deep_namespace_deeper_namespace_var = \"imported_val\"",
                  "Imported variable: deep_namespace_deep_var = \"imported_val\""]
     }
 
