@@ -100,11 +100,11 @@ class ScriptRunner(
         }
 
         private fun readValues(ctx: ForEachContext): List<ApmValue> =
-             when (val variableValue = executionContext.resolveArgument(ctx.argument())) {
-                is ApmList -> variableValue.list.map { ApmString(it) }
-                is ApmEmpty -> listOf()
-                else -> listOf(variableValue as ApmValue)
-            }
+                when (val variableValue = executionContext.resolveArgument(ctx.argument())) {
+                    is ApmList -> variableValue.list.map { ApmString(it) }
+                    is ApmEmpty -> listOf()
+                    else -> listOf(variableValue as ApmValue)
+                }
 
 
         override fun visitGenericCommand(ctx: GenericCommandContext) {
@@ -124,20 +124,17 @@ class ScriptRunner(
         }
 
         private fun importScriptMessages(importResult: ImportVariable.Result): List<String> {
-            val messages = mutableListOf(importScriptOpenMessage(importResult))
-            messages.addAll(
-                    importResult
-                            .variables
-                            .map { "Imported variable: ${it.key} = ${it.value}" })
+            val importedVariableMessages = importResult
+                    .variables
+                    .map { "Imported variable: ${it.key} = ${it.value}" }
 
-            return messages.toList()
-
+            return listOf(importScriptOpenMessage(importResult)) + importedVariableMessages
         }
 
         private fun importScriptOpenMessage(importResult: ImportVariable.Result): String {
             val msg = "Import from script ${importResult.path}"
 
-            return when(importResult.ns){
+            return when (importResult.ns) {
                 null -> msg
                 else -> msg + " with namespace: ${importResult.ns}"
             } + ". Notice, only DEFINE action will be processed!"
