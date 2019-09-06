@@ -27,9 +27,9 @@ import com.cognifide.apm.antlr.argument.toPlainString
 import com.cognifide.apm.antlr.common.getIdentifier
 import com.cognifide.apm.antlr.executioncontext.ExecutionContext
 import com.cognifide.apm.antlr.executioncontext.ExecutionContextException
+import com.cognifide.apm.antlr.importscript.ImportScript
 import com.cognifide.apm.antlr.parsedscript.InvalidSyntaxException
 import com.cognifide.apm.antlr.parsedscript.InvalidSyntaxMessageFactory
-import com.cognifide.apm.antlr.variable.ImportVariable
 import com.cognifide.cq.cqsm.api.logger.Progress
 import com.cognifide.cq.cqsm.api.logger.Status
 import com.cognifide.cq.cqsm.api.scripts.Script
@@ -99,14 +99,6 @@ class ScriptRunner(
             }
         }
 
-        private fun readValues(ctx: ForEachContext): List<ApmValue> =
-                when (val variableValue = executionContext.resolveArgument(ctx.argument())) {
-                    is ApmList -> variableValue.list.map { ApmString(it) }
-                    is ApmEmpty -> listOf()
-                    else -> listOf(variableValue as ApmValue)
-                }
-
-
         override fun visitGenericCommand(ctx: GenericCommandContext) {
             val commandName = getIdentifier(ctx.commandName().identifier()).toUpperCase()
             val arguments = executionContext.resolveArguments(ctx.complexArguments())
@@ -114,30 +106,17 @@ class ScriptRunner(
         }
 
         override fun visitImportScript(ctx: ImportScriptContext) {
-            val result = ImportVariable(executionContext).importAllVariables(ctx)
+            val result = ImportScript(executionContext).import(ctx)
+            executionContext.variableHolder.setAll(result.variableHolder)
+            executionContext.progress.addEntry(Status.SUCCESS, result.toMessages())
+        }
 
-            result.variables.forEach { (name, value) ->
-                executionContext.setVariable(name, value)
+        private fun readValues(ctx: ForEachContext): List<ApmValue> {
+            return when (val variableValue = executionContext.resolveArgument(ctx.argument())) {
+                is ApmList -> variableValue.list.map { ApmString(it) }
+                is ApmEmpty -> listOf()
+                else -> listOf(variableValue as ApmValue)
             }
-
-            executionContext.progress.addEntry(Status.SUCCESS, importScriptMessages(result))
-        }
-
-        private fun importScriptMessages(importResult: ImportVariable.Result): List<String> {
-            val importedVariableMessages = importResult
-                    .variables
-                    .map { "Imported variable: ${it.key} = ${it.value}" }
-
-            return listOf(importScriptOpenMessage(importResult)) + importedVariableMessages
-        }
-
-        private fun importScriptOpenMessage(importResult: ImportVariable.Result): String {
-            val msg = "Import from script ${importResult.path}"
-
-            return when (importResult.ns) {
-                null -> msg
-                else -> msg + " with namespace: ${importResult.ns}"
-            } + ". Notice, only DEFINE action will be processed!"
         }
 
         private fun info(command: String, details: String = "", arguments: Arguments? = null) {

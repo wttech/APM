@@ -16,4 +16,4 @@
  # See the License for the specific language governing permissions and
  # limitations under the License.
  # =========================LICENSE_END==================================
-DEFINE var 'imported_val'
+DEFINE var 'imported val'

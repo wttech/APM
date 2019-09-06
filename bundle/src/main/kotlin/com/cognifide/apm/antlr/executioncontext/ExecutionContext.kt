@@ -43,9 +43,9 @@ class ExecutionContext private constructor(
 
     private val currentRunScript: RunScript
         get() = runScripts.peek()
-    private val variableHolder: VariableHolder
+    val variableHolder: VariableHolder
         get() = currentRunScript.variableHolder
-    private val argumentResolver: ArgumentResolver
+    val argumentResolver: ArgumentResolver
         get() = ArgumentResolver(variableHolder)
 
     init {

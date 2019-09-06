@@ -18,4 +18,4 @@
  # =========================LICENSE_END==================================
 IMPORT '/import-define.apm'
 IMPORT '/import-define.apm' AS namespace
-IMPORT '/import-deep-define.apm' AS deep_namespace
+IMPORT '/import-deep-define.apm' AS deepNamespace

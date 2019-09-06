@@ -84,17 +84,17 @@ class ScriptRunnerTest extends Specification {
         then:
         result.entries.size() == 3
         result.entries[0].messages ==
-                ["Import from script /import-define.apm. Notice, only DEFINE action will be processed!",
-                 "Imported variable: var = \"imported_val\""]
+                ["Import from script /import-define.apm. Notice, only DEFINE actions were processed!",
+                 "Imported variable: var= \"imported val\""]
 
         result.entries[1].messages ==
-                ["Import from script /import-define.apm with namespace: namespace. Notice, only DEFINE action will be processed!",
-                 "Imported variable: namespace_var = \"imported_val\""]
+                ["Import from script /import-define.apm. Notice, only DEFINE actions were processed!",
+                 "Imported variable: namespace_var= \"imported val\""]
 
         result.entries[2].messages ==
-                ["Import from script /import-deep-define.apm with namespace: deep_namespace. Notice, only DEFINE action will be processed!",
-                 "Imported variable: deep_namespace_deeper_namespace_var = \"imported_val\"",
-                 "Imported variable: deep_namespace_deep_var = \"imported_val\""]
+                ["Import from script /import-deep-define.apm. Notice, only DEFINE actions were processed!",
+                 "Imported variable: deepNamespace_deeperNamespace_var= \"imported val\"",
+                 "Imported variable: deepNamespace_deepVar= \"imported val + imported val\""]
     }
 
     private Script createScript(String file) {
