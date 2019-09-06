@@ -27,6 +27,7 @@ import com.cognifide.apm.antlr.argument.toPlainString
 import com.cognifide.apm.antlr.common.getIdentifier
 import com.cognifide.apm.antlr.executioncontext.ExecutionContext
 import com.cognifide.apm.antlr.executioncontext.ExecutionContextException
+import com.cognifide.apm.antlr.importscript.ImportScript
 import com.cognifide.apm.antlr.parsedscript.InvalidSyntaxException
 import com.cognifide.apm.antlr.parsedscript.InvalidSyntaxMessageFactory
 import com.cognifide.cq.cqsm.api.logger.Progress
@@ -98,19 +99,24 @@ class ScriptRunner(
             }
         }
 
-        private fun readValues(ctx: ForEachContext): List<ApmValue> {
-            val variableValue = executionContext.resolveArgument(ctx.argument())
-            return when (variableValue) {
-                is ApmList -> variableValue.list.map { ApmString(it) }
-                is ApmEmpty -> listOf()
-                else -> listOf(variableValue as ApmValue)
-            }
-        }
-
         override fun visitGenericCommand(ctx: GenericCommandContext) {
             val commandName = getIdentifier(ctx.commandName().identifier()).toUpperCase()
             val arguments = executionContext.resolveArguments(ctx.complexArguments())
             actionInvoker.runAction(executionContext.progress, commandName, arguments)
+        }
+
+        override fun visitImportScript(ctx: ImportScriptContext) {
+            val result = ImportScript(executionContext).import(ctx)
+            executionContext.variableHolder.setAll(result.variableHolder)
+            executionContext.progress.addEntry(Status.SUCCESS, result.toMessages())
+        }
+
+        private fun readValues(ctx: ForEachContext): List<ApmValue> {
+            return when (val variableValue = executionContext.resolveArgument(ctx.argument())) {
+                is ApmList -> variableValue.list.map { ApmString(it) }
+                is ApmEmpty -> listOf()
+                else -> listOf(variableValue as ApmValue)
+            }
         }
 
         private fun info(command: String, details: String = "", arguments: Arguments? = null) {

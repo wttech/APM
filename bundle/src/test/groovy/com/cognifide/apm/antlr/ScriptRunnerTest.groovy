@@ -72,6 +72,31 @@ class ScriptRunnerTest extends Specification {
                      "Executing command SHOW 'global'"]
     }
 
+    def "run import"() {
+        given:
+        Script script = createScript("/import.apm")
+        scriptFinder.find("/import-define.apm", resourceResolver) >> createScript("/import-define.apm")
+        scriptFinder.find("/import-deep-define.apm", resourceResolver) >> createScript("/import-deep-define.apm")
+
+        when:
+        def result = scriptExecutor.execute(script, new ProgressImpl(""))
+
+        then:
+        result.entries.size() == 3
+        result.entries[0].messages ==
+                ["Import from script /import-define.apm. Notice, only DEFINE actions were processed!",
+                 "Imported variable: var= \"imported val\""]
+
+        result.entries[1].messages ==
+                ["Import from script /import-define.apm. Notice, only DEFINE actions were processed!",
+                 "Imported variable: namespace_var= \"imported val\""]
+
+        result.entries[2].messages ==
+                ["Import from script /import-deep-define.apm. Notice, only DEFINE actions were processed!",
+                 "Imported variable: deepNamespace_deeperNamespace_var= \"imported val\"",
+                 "Imported variable: deepNamespace_deepVar= \"imported val + imported val\""]
+    }
+
     private Script createScript(String file) {
         def content = IOUtils.toString(getClass().getResourceAsStream(file))
         def script = Mock(Script)

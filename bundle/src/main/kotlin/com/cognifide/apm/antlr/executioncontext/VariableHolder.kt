@@ -35,6 +35,10 @@ class VariableHolder {
         contexts.peek()[name] = value
     }
 
+    fun setAll(variableHolder: VariableHolder) {
+        contexts.peek().variables.putAll(variableHolder.contexts.peek().variables)
+    }
+
     operator fun get(name: String): ApmType? {
         for (context in contexts) {
             if (context.containsKey(name)) {
@@ -52,9 +56,13 @@ class VariableHolder {
         contexts.pop()
     }
 
+    fun toMap(): Map<String, ApmType> {
+        return contexts.peek().toMap()
+    }
+
     private class Context {
 
-        private val variables = mutableMapOf<String, ApmType>()
+        val variables = mutableMapOf<String, ApmType>()
 
         fun containsKey(key: Any): Boolean {
             return variables.containsKey(key)
@@ -66,6 +74,10 @@ class VariableHolder {
 
         operator fun get(key: Any): ApmType? {
             return variables[key]
+        }
+
+        fun toMap(): Map<String, ApmType> {
+            return variables.toMap()
         }
     }
 }

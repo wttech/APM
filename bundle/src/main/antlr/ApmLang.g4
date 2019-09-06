@@ -29,7 +29,7 @@ apm
     ;
 
 line
-    : (command | importScript)
+    : command
     ;
 
 name
@@ -79,6 +79,7 @@ argument
 
 command
     : RUN_SCRIPT path namedArguments? # RunScript
+    | IMPORT_SCRIPT path (AS name)? # ImportScript
     | FOR_EACH IDENTIFIER IN argument EOL? body # ForEach
     | DEFINE IDENTIFIER argument # DefineVariable
     | commandName complexArguments? # GenericCommand
@@ -123,10 +124,6 @@ body
     : BLOCK_BEGIN EOL? (command? EOL)+ BLOCK_END
     ;
 
-importScript
-    : IMPORT_SCRIPT path
-    ;
-
 /*
  * Lexer Rules
  */
@@ -165,6 +162,10 @@ IN
 DEFINE
     : 'define'
     | 'DEFINE'
+    ;
+AS
+    : 'AS'
+    | 'as'
     ;
 NUMBER_LITERAL
     : [0-9]+
