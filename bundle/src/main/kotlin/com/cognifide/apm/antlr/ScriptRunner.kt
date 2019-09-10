@@ -68,9 +68,18 @@ class ScriptRunner(
             info("define", "Defined variable: $variableName= $variableValue")
         }
 
+        override fun visitRequireVariable(ctx: RequireVariableContext) {
+            val notFound = readValues(ctx.argument()).filterIsInstance<ApmString>()
+                    .filter { it.string != null && executionContext.getVariable(it.string!!) == null }
+                    .map { "Variable \"${it.string}\" not found" }
+            if (notFound.isNotEmpty()) {
+                executionContext.progress.addEntry(Status.ERROR, notFound, "require")
+            }
+        }
+
         override fun visitForEach(ctx: ForEachContext) {
             val index = ctx.IDENTIFIER().toString()
-            val values: List<ApmValue> = readValues(ctx)
+            val values: List<ApmValue> = readValues(ctx.argument())
             for ((iteration, value) in values.withIndex()) {
                 try {
                     executionContext.createLocalContext()
@@ -101,8 +110,12 @@ class ScriptRunner(
 
         override fun visitGenericCommand(ctx: GenericCommandContext) {
             val commandName = getIdentifier(ctx.commandName().identifier()).toUpperCase()
-            val arguments = executionContext.resolveArguments(ctx.complexArguments())
-            actionInvoker.runAction(executionContext.progress, commandName, arguments)
+            try {
+                val arguments = executionContext.resolveArguments(ctx.complexArguments())
+                actionInvoker.runAction(executionContext.progress, commandName, arguments)
+            } catch (e: ArgumentResolverException) {
+                executionContext.progress.addEntry(Status.ERROR, "Action failed: ${e.message}", commandName)
+            }
         }
 
         override fun visitImportScript(ctx: ImportScriptContext) {
@@ -111,8 +124,8 @@ class ScriptRunner(
             executionContext.progress.addEntry(Status.SUCCESS, result.toMessages())
         }
 
-        private fun readValues(ctx: ForEachContext): List<ApmValue> {
-            return when (val variableValue = executionContext.resolveArgument(ctx.argument())) {
+        private fun readValues(argumentContext: ArgumentContext): List<ApmValue> {
+            return when (val variableValue = executionContext.resolveArgument(argumentContext)) {
                 is ApmList -> variableValue.list.map { ApmString(it) }
                 is ApmEmpty -> listOf()
                 else -> listOf(variableValue as ApmValue)
