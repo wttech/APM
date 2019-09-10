@@ -58,7 +58,7 @@ class ArgumentResolverTest extends Specification {
 
         then:
         def exception = thrown(ArgumentResolverException.class)
-        exception.message == "Variable var2 not found"
+        exception.message == "Variable \"var2\" not found"
     }
 
     def "concatenation of strings"() {
