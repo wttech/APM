@@ -24,12 +24,11 @@ import com.cognifide.cq.cqsm.api.executors.Context;
 import com.cognifide.cq.cqsm.api.utils.AuthorizablesUtils;
 import com.cognifide.cq.cqsm.foundation.RandomPasswordGenerator;
 import com.cognifide.cq.cqsm.foundation.actions.MockPrincipal;
-
+import javax.jcr.RepositoryException;
 import org.apache.commons.lang.StringUtils;
+import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.apache.jackrabbit.api.security.user.Group;
 import org.apache.jackrabbit.api.security.user.User;
-
-import javax.jcr.RepositoryException;
 
 public enum CreateAuthorizableStrategy {
 
@@ -87,7 +86,7 @@ public enum CreateAuthorizableStrategy {
 		}
 	};
 
-	public abstract Object create(final String id, final String password, final String path,
+	public abstract Authorizable create(final String id, final String password, final String path,
 			final Context context, final ActionResult actionResult, boolean simulate)
 			throws RepositoryException;
 

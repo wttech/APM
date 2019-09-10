@@ -22,10 +22,24 @@ package com.cognifide.apm.antlr.executioncontext
 
 import com.cognifide.apm.antlr.ApmType
 import com.cognifide.apm.antlr.common.StackWithRoot
+import org.apache.jackrabbit.api.security.user.Authorizable
 
 class VariableHolder {
 
     private val contexts = StackWithRoot(Context())
+
+    var authorizable: Authorizable?
+        get() {
+            for (context in contexts) {
+                if (context.authorizable != null) {
+                    return context.authorizable
+                }
+            }
+            return null
+        }
+        set(authorizable) {
+            contexts.peek().authorizable = authorizable
+        }
 
     init {
         createLocalContext()
@@ -60,7 +74,7 @@ class VariableHolder {
         return contexts.peek().toMap()
     }
 
-    private class Context {
+    private class Context(var authorizable: Authorizable? = null) {
 
         val variables = mutableMapOf<String, ApmType>()
 

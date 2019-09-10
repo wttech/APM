@@ -18,12 +18,16 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm.antlr
+package com.cognifide.apm.antlr.executioncontext
 
-import com.cognifide.apm.antlr.argument.Arguments
-import com.cognifide.apm.antlr.executioncontext.ExternalExecutionContext
+import com.cognifide.apm.antlr.ApmType
+import com.cognifide.cq.cqsm.api.logger.Progress
+import org.apache.jackrabbit.api.security.user.Authorizable
 
-interface ActionInvoker {
-
-    fun runAction(executionContext: ExternalExecutionContext, commandName: String, arguments: Arguments)
+interface ExternalExecutionContext {
+    val progress: Progress
+    fun setVariable(key: String, value: ApmType)
+    fun getVariable(key: String): ApmType?
+    fun setAuthorizable(authorizable: Authorizable?)
+    fun getAuthorizable(): Authorizable?
 }

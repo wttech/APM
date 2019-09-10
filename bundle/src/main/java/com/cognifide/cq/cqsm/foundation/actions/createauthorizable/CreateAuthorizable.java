@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,13 +24,11 @@ import com.cognifide.cq.cqsm.api.actions.ActionResult;
 import com.cognifide.cq.cqsm.api.executors.Context;
 import com.cognifide.cq.cqsm.api.utils.AuthorizablesUtils;
 import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
-
+import javax.jcr.RepositoryException;
 import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.apache.jackrabbit.api.security.user.Group;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.jcr.RepositoryException;
 
 public class CreateAuthorizable implements Action {
 
@@ -73,8 +71,9 @@ public class CreateAuthorizable implements Action {
 			if (authorizable != null) {
 				logMessage(actionResult, authorizable);
 			} else {
-				createStrategy.create(id, password, path, context, actionResult, simulate);
+				authorizable = createStrategy.create(id, password, path, context, actionResult, simulate);
 			}
+			context.setCurrentAuthorizable(authorizable);
 		} catch (RepositoryException e) {
 			actionResult.logError(MessagingUtils.createMessage(e));
 		}
