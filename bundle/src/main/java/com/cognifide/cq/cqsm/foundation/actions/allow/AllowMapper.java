@@ -39,7 +39,7 @@ public class AllowMapper {
       reference = REFERENCE
   )
   public Action create(String path, List<String> permissions,
-      @Named("glob") String glob, @Named("types") List<String> types, @Named("items") List<String> items,
+      @Named("glob") String glob, @Named("types") List<String> types, @Named("properties") List<String> items,
       @Flags List<String> flags) {
     return new Allow(path, permissions, glob, types, items, flags.contains(IF_EXISTS));
   }
