@@ -82,6 +82,7 @@ command
     | IMPORT_SCRIPT path (AS name)? # ImportScript
     | FOR_EACH IDENTIFIER IN argument EOL? body # ForEach
     | DEFINE IDENTIFIER argument # DefineVariable
+    | REQUIRE argument # RequireVariable
     | commandName complexArguments? # GenericCommand
     ;
 
@@ -162,6 +163,10 @@ IN
 DEFINE
     : 'define'
     | 'DEFINE'
+    ;
+REQUIRE
+    : 'require'
+    | 'REQUIRE'
     ;
 AS
     : 'AS'
