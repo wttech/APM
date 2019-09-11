@@ -47,22 +47,19 @@ import org.osgi.service.component.annotations.Component;
     service = ScriptFinder.class,
     property = {
         ScriptFinderImpl.SEARCH_PATHS + "=" + ScriptFinderImpl.SCRIPT_PATH,
-        ScriptFinderImpl.SEARCH_PATHS + "=" + ScriptFinderImpl.REPLICATION_PATH,
         Property.DESCRIPTION + "CQSM Script Finder Service",
         Property.VENDOR
     }
 )
 public class ScriptFinderImpl implements ScriptFinder {
 
-  private static final String QUERY = "SELECT * FROM [nt:file] WHERE ISDESCENDANTNODE([%s]) AND [jcr:path] LIKE '%%%s'";
+  private static final String QUERY = "SELECT * FROM [nt:resource] WHERE ISDESCENDANTNODE([%s]) AND [jcr:mixinTypes] = 'cqsm:File'";
 
   private static final String SCRIPT_EXTENSION = "cqsm";
 
   private static final String ROOT_PATH = "/conf/apm";
 
   static final String SCRIPT_PATH = ROOT_PATH + "/scripts";
-
-  static final String REPLICATION_PATH = ROOT_PATH + "/replication";
 
   static final String SEARCH_PATHS = "search.paths";
 
@@ -117,6 +114,7 @@ public class ScriptFinderImpl implements ScriptFinder {
         .map(query -> resolver.findResources(query, Query.JCR_SQL2))
         .map(resourceIterator -> Spliterators.spliteratorUnknownSize(resourceIterator, Spliterator.ORDERED))
         .flatMap(resourceSpliterator -> StreamSupport.stream(resourceSpliterator, false))
+        .map(resource -> resource.getParent())
         .filter(Objects::nonNull);
   }
 
