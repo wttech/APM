@@ -22,6 +22,7 @@ package com.cognifide.cq.cqsm.core.jobs;
 import static com.cognifide.cq.cqsm.core.utils.sling.SlingHelper.resolveDefault;
 
 import com.cognifide.cq.cqsm.api.executors.Mode;
+import com.cognifide.cq.cqsm.api.history.History;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
@@ -42,15 +43,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Component(
-		immediate = true,
-		service = JobConsumer.class,
-		property = {
-				Property.TOPIC + ScriptRunnerJobManagerImpl.JOB_SCRIPT_RUN_TOPIC
-		}
+    immediate = true,
+    service = JobConsumer.class,
+    property = {
+        Property.TOPIC + ScriptRunnerJobManagerImpl.JOB_SCRIPT_RUN_TOPIC
+    }
 )
 public class ScriptRunnerJobConsumer implements JobConsumer {
 
   private static final Logger LOG = LoggerFactory.getLogger(ScriptRunnerJobConsumer.class);
+
+  @Reference
+  private History history;
 
   @Reference
   private ScriptManager scriptManager;
@@ -89,12 +93,14 @@ public class ScriptRunnerJobConsumer implements JobConsumer {
   }
 
   private String getSummaryPath(Script script, Mode mode) {
-    if (mode == Mode.DRY_RUN) {
-      return script.getDryRunSummary();
-    } else if (mode == Mode.RUN) {
-      return script.getRunSummary();
-    }
-    return StringUtils.EMPTY;
+    return resolveDefault(resolverFactory, (ResolveCallback<String>) resolver -> {
+      if (mode == Mode.DRY_RUN) {
+        return history.findScriptHistory(resolver, script).getLastLocalDryRunPath();
+      } else if (mode == Mode.RUN) {
+        return history.findScriptHistory(resolver, script).getLastLocalRunPath();
+      }
+      return StringUtils.EMPTY;
+    }, StringUtils.EMPTY);
   }
 
   private Mode getMode(Job job) {

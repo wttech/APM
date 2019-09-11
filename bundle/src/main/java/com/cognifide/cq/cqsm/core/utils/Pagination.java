@@ -18,7 +18,7 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.cq.cqsm.core.history;
+package com.cognifide.cq.cqsm.core.utils;
 
 import java.util.ArrayList;
 import java.util.Collections;

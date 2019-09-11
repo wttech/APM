@@ -18,17 +18,26 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.cq.cqsm.core.history;
+package com.cognifide.cq.cqsm.api.history;
 
-import javax.jcr.RepositoryException;
-import org.apache.sling.api.resource.PersistenceException;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
+import com.cognifide.cq.cqsm.api.scripts.Script;
 
-public interface HistoryEntryNamingStrategy {
+public interface ScriptHistory {
 
-  Resource getHistoryEntryResource(ResourceResolver resolver, Resource historyFolder, String fileName, String filePath)
-      throws PersistenceException, RepositoryException;
+  Script getScript();
 
+  String getScriptPath();
+
+  String getLastLocalRunPath();
+
+  String getLastLocalDryRunPath();
+
+  String getLastRemoteAutomaticRunPath();
+
+  HistoryEntry getLastLocalRun();
+
+  HistoryEntry getLastLocalDryRun();
+
+  HistoryEntry getLastRemoteAutomaticRun();
 
 }

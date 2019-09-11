@@ -48,7 +48,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -166,16 +165,8 @@ public class ScriptManagerImpl implements ScriptManager {
       modifiableScript.setExecuted(true);
     }
 
-    if (Arrays.asList(Mode.DRY_RUN, Mode.RUN, Mode.AUTOMATIC_RUN).contains(mode)) {
-      modifiableScript.setDryRunStatus(success);
-    }
-
     if (Mode.VALIDATION.equals(mode)) {
       modifiableScript.setValid(success);
-    }
-
-    if (Mode.DRY_RUN.equals(mode)) {
-      modifiableScript.setDryRunTime(new Date());
     }
   }
 

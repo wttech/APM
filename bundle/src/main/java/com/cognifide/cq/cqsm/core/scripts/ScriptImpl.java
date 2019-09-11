@@ -25,6 +25,7 @@ import com.day.cq.commons.jcr.JcrConstants;
 import java.util.Date;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -54,7 +55,7 @@ public class ScriptImpl implements Script {
 
   @Override
   public boolean isDryRunExecuted() {
-    return scriptContent.getDryRunSuccessful() != null;
+    return false; //scriptContent.getDryRunSuccessful() != null; //FIXME
   }
 
   @Override
@@ -109,6 +110,11 @@ public class ScriptImpl implements Script {
   }
 
   @Override
+  public String getChecksumValue() {
+    return DigestUtils.md5Hex(scriptContent.getData());
+  }
+
+  @Override
   public String getAuthor() {
     return author;
   }
@@ -126,50 +132,5 @@ public class ScriptImpl implements Script {
   @Override
   public String getReplicatedBy() {
     return scriptContent.getReplicatedBy();
-  }
-
-  @Override
-  public Date getDryRunTime() {
-    return scriptContent.getDryRunTime();
-  }
-
-  @Override
-  public String getDryRunSummary() {
-    return scriptContent.getDryRunSummary();
-  }
-
-  @Override
-  public boolean isDryRunSuccessful() {
-    return BooleanUtils.toBoolean(scriptContent.getDryRunSuccessful());
-  }
-
-  @Override
-  public Date getRunTime() {
-    return scriptContent.getRunTime();
-  }
-
-  @Override
-  public String getRunSummary() {
-    return scriptContent.getRunSummary();
-  }
-
-  @Override
-  public boolean isRunSuccessful() {
-    return BooleanUtils.toBoolean(scriptContent.getRunSuccessful());
-  }
-
-  @Override
-  public Date getRunOnPublishTime() {
-    return scriptContent.getRunOnPublishTime();
-  }
-
-  @Override
-  public String getRunOnPublishSummary() {
-    return scriptContent.getRunOnPublishSummary();
-  }
-
-  @Override
-  public boolean isRunOnPublishSuccessful() {
-    return BooleanUtils.toBoolean(scriptContent.getRunOnPublishSuccessful());
   }
 }

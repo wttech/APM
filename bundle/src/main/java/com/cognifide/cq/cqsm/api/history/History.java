@@ -1,4 +1,4 @@
-/*-
+/*
  * ========================LICENSE_START=================================
  * AEM Permission Management
  * %%
@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,11 +17,9 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.cq.cqsm.core.history;
+package com.cognifide.cq.cqsm.api.history;
 
 import com.cognifide.cq.cqsm.api.executors.Mode;
-import com.cognifide.cq.cqsm.api.history.HistoryEntry;
-import com.cognifide.cq.cqsm.api.history.InstanceDetails;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import java.util.Calendar;
@@ -32,33 +30,27 @@ import org.apache.sling.api.resource.ResourceResolver;
 
 public interface History {
 
-	/**
-	 * Save detailed script execution on a remote host as entry
-	 */
-	HistoryEntry logRemote(Script script, Mode mode, Progress progressLogger, InstanceDetails instanceDetails,
-		Calendar executionTime);
+  /**
+   * Save detailed script execution on a remote host as entry
+   */
+  HistoryEntry logRemote(Script script, Mode mode, Progress progressLogger, InstanceDetails instanceDetails,
+      Calendar executionTime);
 
-	/**
-	 * Save detailed script execution as entry
-	 */
-	HistoryEntry log(Script script, Mode mode, Progress progressLogger);
+  /**
+   * Save detailed script execution as entry
+   */
+  HistoryEntry logLocal(Script script, Mode mode, Progress progressLogger);
 
-	/**
-	 * Replicate log entry from publish to author instance
-	 */
-	void replicate(HistoryEntry entry, String executor) throws RepositoryException;
-
-	/**
-	 * Get all logged entries
-	 */
-	List<HistoryEntry> findAll();
+  /**
+   * Replicate log entry from publish to author instance
+   */
+  void replicate(HistoryEntry entry, String executor) throws RepositoryException;
 
 	List<Resource> findAllResources(ResourceResolver resourceResolver);
 
-	List<Resource> findResources(ResourceResolver resourceResolver, Pagination pagination);
+  List<HistoryEntry> findAllHistoryEntries(ResourceResolver resourceResolver);
 
-	/**
-	 * Find entry by its unique file name
-	 */
-	HistoryEntry find(String path);
+  HistoryEntry findHistoryEntry(ResourceResolver resourceResolver, String path);
+
+  ScriptHistory findScriptHistory(ResourceResolver resourceResolver, Script script);
 }

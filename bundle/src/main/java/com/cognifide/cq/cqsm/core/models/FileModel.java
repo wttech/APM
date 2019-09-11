@@ -19,19 +19,15 @@
  */
 package com.cognifide.cq.cqsm.core.models;
 
+import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Ordering;
-
-import com.cognifide.cq.cqsm.api.scripts.Script;
-
+import java.util.Comparator;
+import java.util.Date;
+import lombok.Getter;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-
-import java.util.Comparator;
-import java.util.Date;
-
-import lombok.Getter;
 
 //FIXME looks like ScriptImpl duplicate
 public final class FileModel implements Comparable<FileModel> {
@@ -55,7 +51,7 @@ public final class FileModel implements Comparable<FileModel> {
 	private final Date executionSchedule;
 
 	@Getter
-	private final Date lastExecuted;
+	private final Date lastExecuted = null;
 
 	@Getter
 	private Date lastModified;
@@ -81,9 +77,10 @@ public final class FileModel implements Comparable<FileModel> {
 		this.valid = script.isValid();
 
 		this.lastModified = script.getLastModified();
-		this.lastExecuted = script.getExecutionLast();
-		this.dryRunSuccessful = script.isDryRunSuccessful();
-		this.dryRunExecuted = script.isDryRunExecuted();
+		//FIXME
+//		this.lastExecuted = script.getExecutionLast();
+//		this.dryRunSuccessful = script.isDryRunSuccessful();
+//		this.dryRunExecuted = script.isDryRunExecuted();
 		this.executionMode = script.getExecutionMode().name();
 		this.executionEnabled = script.isExecutionEnabled();
 		this.executionSchedule = script.getExecutionSchedule();

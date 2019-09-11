@@ -20,20 +20,22 @@
 package com.cognifide.cq.cqsm.core.history;
 
 import static com.cognifide.cq.cqsm.core.utils.sling.SlingHelper.resolveDefault;
+import static com.day.crx.JcrConstants.NT_UNSTRUCTURED;
 
 import com.cognifide.actions.api.ActionSendException;
 import com.cognifide.actions.api.ActionSubmitter;
 import com.cognifide.cq.cqsm.api.executors.Mode;
+import com.cognifide.cq.cqsm.api.history.History;
 import com.cognifide.cq.cqsm.api.history.HistoryEntry;
 import com.cognifide.cq.cqsm.api.history.InstanceDetails;
 import com.cognifide.cq.cqsm.api.history.InstanceDetails.InstanceType;
+import com.cognifide.cq.cqsm.api.history.ScriptHistory;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.progress.ProgressHelper;
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.utils.InstanceTypeProvider;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.history.HistoryEntryWriter.HistoryEntryWriterBuilder;
-import com.cognifide.cq.cqsm.core.scripts.ModifiableScriptWrapper;
 import com.cognifide.cq.cqsm.core.scripts.ScriptContent;
 import com.cognifide.cq.cqsm.core.utils.sling.ResolveCallback;
 import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper;
@@ -43,25 +45,24 @@ import com.day.cq.replication.ReplicationAction;
 import com.google.common.collect.Lists;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.query.Query;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.WordUtils;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -81,6 +82,10 @@ public class HistoryImpl implements History {
 
   private static final String HISTORY_FOLDER = "/conf/apm/history";
 
+  private static final String HISTORY_ENTRIES_QUERY = String.format("SELECT * FROM [nt:unstructured] "
+      + " WHERE ISDESCENDANTNODE([%s]) AND filePath IS NOT NULL "
+      + " ORDER BY executionTime DESC ", HISTORY_FOLDER);
+
   public static final String REPLICATE_ACTION = "com/cognifide/actions/cqsm/history/replicate";
 
   @Reference
@@ -93,7 +98,7 @@ public class HistoryImpl implements History {
   private InstanceTypeProvider instanceTypeProvider;
 
   @Override
-  public HistoryEntry log(Script script, Mode mode, Progress progressLogger) {
+  public HistoryEntry logLocal(Script script, Mode mode, Progress progressLogger) {
     InstanceType instanceDetails = instanceTypeProvider.isOnAuthor() ? InstanceType.AUTHOR : InstanceType.PUBLISH;
     return resolveDefault(resolverFactory, progressLogger.getExecutor(), (ResolveCallback<HistoryEntry>) resolver -> {
       final HistoryEntryWriter historyEntryWriter = createBuilder(resolver, script, mode, progressLogger)
@@ -132,36 +137,17 @@ public class HistoryImpl implements History {
   }
 
   @Override
-  public List<HistoryEntry> findAll() {
-    return resolveDefault(resolverFactory, (ResolveCallback<List<HistoryEntry>>) resolver -> findAllResources(resolver)
-        .stream()
-        .map(resource -> resource.adaptTo(HistoryEntry.class))
-        .collect(Collectors.toList()), Collections.emptyList());
-  }
-
-  @Override
   public List<Resource> findAllResources(ResourceResolver resourceResolver) {
-    final Resource historyFolder = resourceResolver.getResource(HISTORY_FOLDER);
-    List<Resource> historyEntries = Optional.ofNullable(historyFolder)
-        .map(resource -> resource.getChildren())
-        .map(elements -> (List<Resource>) Lists.newArrayList(elements))
-        .orElseGet(() -> {
-          LOG.warn("History folder does not exist: {}", HISTORY_FOLDER);
-          return Collections.emptyList();
-        });
-    if (!historyEntries.isEmpty()) {
-      Collections.sort(historyEntries, Comparator.comparing(this::getExecutionTime, Comparator.reverseOrder()));
-    }
-    return historyEntries;
+    Iterator<Resource> resources = resourceResolver.findResources(HISTORY_ENTRIES_QUERY, Query.JCR_SQL2);
+    return Lists.newArrayList(resources);
   }
 
   @Override
-  public List<Resource> findResources(ResourceResolver resourceResolver, Pagination pagination) {
-    return pagination.getPage(findAllResources(resourceResolver));
-  }
-
-  private Date getExecutionTime(Resource resource) {
-    return resource.getValueMap().get(HistoryEntry.EXECUTION_TIME, Date.class);
+  public List<HistoryEntry> findAllHistoryEntries(ResourceResolver resourceResolver) {
+    return findAllResources(resourceResolver)
+        .stream()
+        .map(resource -> resource.adaptTo(HistoryEntryImpl.class))
+        .collect(Collectors.toList());
   }
 
   @Override
@@ -188,78 +174,72 @@ public class HistoryImpl implements History {
   }
 
   @Override
-  public HistoryEntry find(final String path) {
-    return resolveDefault(resolverFactory, (ResolveCallback<HistoryEntry>) resolver -> {
-      HistoryEntry result = null;
-      for (String resourcePath : Arrays.asList(path, path.replace("_cqsm", ".cqsm"))) {
-        Resource resource = resolver.getResource(resourcePath);
-        if (resource != null) {
-          result = resource.adaptTo(HistoryEntry.class);
-          break;
-        }
-      }
-      return result;
-    }, null);
+  public HistoryEntry findHistoryEntry(ResourceResolver resourceResolver, final String path) {
+    Resource resource = resourceResolver.getResource(path);
+    if (resource != null) {
+      return resource.adaptTo(HistoryEntryImpl.class);
+    }
+    return null;
+  }
+
+  @Override
+  public ScriptHistory findScriptHistory(ResourceResolver resourceResolver, Script script) {
+    Resource resource = resourceResolver.getResource(getScriptHistoryPath(script));
+    if (resource != null) {
+      ScriptHistoryImpl scriptHistory = resource.adaptTo(ScriptHistoryImpl.class);
+      scriptHistory.updateScript(script);
+      return scriptHistory;
+    }
+    return ScriptHistoryImpl.empty(script.getPath());
   }
 
   private HistoryEntry createHistoryEntry(ResourceResolver resolver, Script script, Mode mode,
       HistoryEntryWriter historyEntryWriter, boolean remote) {
     try {
-      HistoryEntry historyEntry = createHistoryEntry(resolver, script, mode, historyEntryWriter);
-      updateScriptDetails(resolver, script, mode, historyEntry, remote);
-      return historyEntry;
+      Resource source = resolver.getResource(script.getPath());
+      Node historyEntryNode = createHistoryEntryNode(resolver, script, mode, remote);
+      writeProperties(resolver, historyEntryNode, historyEntryWriter);
+      copyScriptContent(source, historyEntryNode);
+      resolver.commit();
+      return resolver.getResource(historyEntryNode.getPath()).adaptTo(HistoryEntry.class);
     } catch (PersistenceException | RepositoryException e) {
       LOG.error("Issues with saving to repository while logging script execution", e);
       return null;
     }
   }
 
-  private HistoryEntry createHistoryEntry(ResourceResolver resolver, Script script, Mode mode,
-      HistoryEntryWriter historyEntryWriter) throws RepositoryException, PersistenceException {
-    Resource source = resolver.getResource(script.getPath());
-    Resource historyFolder = getOrCreateFolder(resolver);
-    HistoryEntryNamingStrategy namingStrategy = createStrategy(mode);
-    Resource entryResource = namingStrategy
-        .getHistoryEntryResource(resolver, historyFolder, source.getName(), source.getPath());
+  @NotNull
+  private Resource writeProperties(ResourceResolver resolver, Node historyEntry, HistoryEntryWriter historyEntryWriter)
+      throws RepositoryException {
+    Resource entryResource = resolver.getResource(historyEntry.getPath());
     historyEntryWriter.writeTo(entryResource);
-
-    copyScriptContent(source, entryResource);
-    resolver.commit();
-    return resolver.getResource(entryResource.getPath()).adaptTo(HistoryEntry.class);
+    return entryResource;
   }
 
-  private Resource getOrCreateFolder(ResourceResolver resolver) throws RepositoryException {
+  private Node createHistoryEntryNode(ResourceResolver resolver, Script script, Mode mode, boolean remote)
+      throws RepositoryException {
     Session session = resolver.adaptTo(Session.class);
-    Node node = JcrUtils.getOrCreateByPath(HISTORY_FOLDER, "sling:OrderedFolder", session);
+    String path = getScriptHistoryPath(script);
+    Node scriptHistory = JcrUtils
+        .getOrCreateByPath(path, "sling:OrderedFolder", NT_UNSTRUCTURED, session, true);
+    scriptHistory.setProperty("scriptPath", script.getPath());
+    String modeName = (remote ? "Remote" : "Local");
+    modeName += WordUtils.capitalizeFully(mode.toString().toLowerCase(), new char[]{'_'}).replace("_", "");
+    Node historyEntry = JcrUtils.getOrCreateUniqueByPath(scriptHistory, modeName, NT_UNSTRUCTURED);
+    historyEntry.setProperty("checksum", script.getChecksumValue());
+    scriptHistory.setProperty("last" + modeName, historyEntry.getPath());
     session.save();
-    return resolver.getResource(node.getPath());
+    return historyEntry;
   }
 
-  private void updateScriptDetails(ResourceResolver resolver, Script script, Mode mode, HistoryEntry historyEntry,
-      boolean remote) throws PersistenceException {
-    ModifiableScriptWrapper scriptWrapper = new ModifiableScriptWrapper(resolver, script);
-    if (mode == Mode.DRY_RUN) {
-      scriptWrapper.setDryRunTime(historyEntry.getExecutionTime());
-      scriptWrapper.setDryRunSummary(historyEntry.getPath());
-      scriptWrapper.setDryRunStatus(historyEntry.getIsRunSuccessful());
-    } else if (remote) {
-      scriptWrapper.setRunOnPublishTime(historyEntry.getExecutionTime());
-      scriptWrapper.setRunOnPublishSummary(historyEntry.getPath());
-      scriptWrapper.setRunOnPublishStatus(historyEntry.getIsRunSuccessful());
-    } else {
-      scriptWrapper.setRunTime(historyEntry.getExecutionTime());
-      scriptWrapper.setRunSummary(historyEntry.getPath());
-      scriptWrapper.setRunStatus(historyEntry.getIsRunSuccessful());
-    }
+  @NotNull
+  private String getScriptHistoryPath(Script script) {
+    return HISTORY_FOLDER + "/" + script.getPath().replace("/", "_");
   }
 
-  private void copyScriptContent(Resource source, Resource target) throws RepositoryException {
-    Node file = JcrUtil.copy(source.adaptTo(Node.class), target.adaptTo(Node.class), "script");
+  private void copyScriptContent(Resource source, Node target) throws RepositoryException {
+    Node file = JcrUtil.copy(source.adaptTo(Node.class), target, "script");
     file.addMixin(ScriptContent.CQSM_FILE);
-  }
-
-  private HistoryEntryNamingStrategy createStrategy(Mode mode) {
-    return mode == Mode.DRY_RUN ? new DryRunHistoryEntryNamingStrategy() : new DefaultHistoryEntryNamingStrategy();
   }
 
   private String getHostname() {

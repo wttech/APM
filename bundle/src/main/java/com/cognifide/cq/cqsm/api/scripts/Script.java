@@ -75,6 +75,8 @@ public interface Script {
 	 */
 	Checksum getChecksum();
 
+  String getChecksumValue();
+
 	/**
 	 * Return author of the file
 	 */
@@ -95,50 +97,5 @@ public interface Script {
 	 * @return
 	 */
 	String getReplicatedBy();
-
-	/**
-	 * Return last dry run date
-	 */
-	Date getDryRunTime();
-
-	/**
-	 * Get path to dry run summary
-	 */
-	String getDryRunSummary();
-
-	/**
-	 * Check dry run result
-	 */
-	boolean isDryRunSuccessful();
-
-	/**
-	 * Return date of last run on author.
-	 */
-	Date getRunTime();
-
-	/**
-	 * Get path to summary of last run on author.
-	 */
-	String getRunSummary();
-
-	/**
-	 * Return status of last run on author.
-	 */
-	boolean isRunSuccessful();
-
-	/**
-	 * Get path to summary of last run on publish
-	 */
-	String getRunOnPublishSummary();
-
-	/**
-	 * Return date of last run on publish.
-	 */
-	Date getRunOnPublishTime();
-
-	/**
-	 * Return status of last run on publish.
-	 */
-	boolean isRunOnPublishSuccessful();
 
 }

@@ -21,13 +21,10 @@ package com.cognifide.cq.cqsm.core.datasource;
 
 import com.adobe.granite.ui.components.ds.DataSource;
 import com.adobe.granite.ui.components.ds.SimpleDataSource;
-import com.cognifide.cq.cqsm.api.history.HistoryEntry;
+import com.cognifide.cq.cqsm.api.history.History;
 import com.cognifide.cq.cqsm.core.Property;
-import com.cognifide.cq.cqsm.core.history.History;
-import com.cognifide.cq.cqsm.core.history.Pagination;
+import com.cognifide.cq.cqsm.core.utils.Pagination;
 import com.google.common.primitives.Ints;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.Servlet;
@@ -58,7 +55,7 @@ public class HistoryDatasourceServlet extends SlingSafeMethodsServlet {
   @Override
   protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) {
     Pagination pagination = createPagination(request);
-    List<Resource> allHistoryResources = history.findResources(request.getResourceResolver(), pagination)
+    List<Resource> allHistoryResources = pagination.getPage(history.findAllResources(request.getResourceResolver()))
         .stream()
         .map(ResourceTypeWrapper::new)
         .collect(Collectors.toList());

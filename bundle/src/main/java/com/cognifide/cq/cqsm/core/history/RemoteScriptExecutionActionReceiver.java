@@ -24,7 +24,7 @@ import static com.google.common.base.Preconditions.checkState;
 
 import com.cognifide.actions.api.ActionReceiver;
 import com.cognifide.cq.cqsm.api.executors.Mode;
-import com.cognifide.cq.cqsm.api.history.HistoryEntry;
+import com.cognifide.cq.cqsm.api.history.History;
 import com.cognifide.cq.cqsm.api.history.InstanceDetails;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.logger.ProgressEntry;
@@ -64,7 +64,7 @@ public class RemoteScriptExecutionActionReceiver implements ActionReceiver {
 		String userId = valueMap.get(ReplicationAction.PROPERTY_USER_ID, String.class);
 		SlingHelper.operateTraced(resolverFactory, userId, resolver -> {
 			//FIXME would be lovely to cast ValueMap -> ModifiableEntryBuilder
-			String scriptLocation = valueMap.get(HistoryEntry.FILE_PATH, String.class);
+			String scriptLocation = valueMap.get(HistoryEntryImpl.FILE_PATH, String.class);
 			Resource scriptResource = resolver.getResource(scriptLocation);
 			Script script = scriptResource.adaptTo(ScriptImpl.class);
 			InstanceDetails instanceDetails = getInstanceDetails(valueMap);
@@ -81,23 +81,23 @@ public class RemoteScriptExecutionActionReceiver implements ActionReceiver {
 	}
 
 	private Mode getMode(ValueMap valueMap) {
-		return Mode.fromString(valueMap.get(HistoryEntry.MODE, String.class),
+		return Mode.fromString(valueMap.get(HistoryEntryImpl.MODE, String.class),
 				Mode.AUTOMATIC_RUN);
 	}
 
 	private Calendar getCalendar(ValueMap valueMap) {
-		return valueMap.get(HistoryEntry.EXECUTION_TIME, Calendar.class);
+		return valueMap.get(HistoryEntryImpl.EXECUTION_TIME, Calendar.class);
 	}
 
 	private Progress getProgress(ValueMap valueMap, String userID) {
 		List<ProgressEntry> progressEntries = ProgressHelper
-				.fromJson(valueMap.get(HistoryEntry.PROGRESS_LOG, String.class));
+				.fromJson(valueMap.get(HistoryEntryImpl.PROGRESS_LOG, String.class));
 		return new ProgressImpl(userID, progressEntries);
 	}
 
 	private InstanceDetails getInstanceDetails(ValueMap valueMap) {
 		InstanceDetails.InstanceType instanceType = InstanceDetails.InstanceType
-				.fromString(valueMap.get(HistoryEntry.INSTANCE_TYPE, String.class));
-		return new InstanceDetails(valueMap.get(HistoryEntry.INSTANCE_HOSTNAME, String.class), instanceType);
+				.fromString(valueMap.get(HistoryEntryImpl.INSTANCE_TYPE, String.class));
+		return new InstanceDetails(valueMap.get(HistoryEntryImpl.INSTANCE_HOSTNAME, String.class), instanceType);
 	}
 }
