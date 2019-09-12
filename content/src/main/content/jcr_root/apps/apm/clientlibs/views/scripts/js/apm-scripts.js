@@ -64,14 +64,14 @@
     },
 
     updateScripts: function () {
-      this.scripts.forEach(function(script) {
+      this.scripts.forEach(function (script) {
         script.updateScript();
       });
       this.removeFinishedScripts();
     },
   }
 
-  var LocalScript = function(mode, element) {
+  var LocalScript = function (mode, element) {
     this.scriptPath = element.attributes['data-path'].value;
     this.mode = mode;
     this.status = ScriptStatus.NEW;
@@ -81,25 +81,28 @@
   }
 
   LocalScript.prototype = {
-    showWait: function() {
+    showWait: function () {
       this.$cell.html('<coral-wait/>');
     },
 
-    showRunStatus: function(success, path) {
+    showRunStatus: function (success, summaryPath) {
       let icon = success ? 'check' : 'close';
-      let href = path && path.length && path.length > 0 ? '/apm/summary.html' + path : '/apm/history.html';
+      let href = '/bin/cqsm/lastSummary.local' + self.mode + '.html' + self.scriptPath;
+      if (summaryPath && summaryPath.length && summaryPath.length > 0) {
+        href = '/apm/summary.html' + summaryPath;
+      }
       this.$cell.html('<a data-sly-test="${run.time}" '
-              + 'is="coral-anchorbutton" '
-              + 'iconsize="S" '
-              + 'icon="' + icon + '"'
-              + 'href="' + href + '"></a>'
-            + '<time>1 second ago</time>');
+          + 'is="coral-anchorbutton" '
+          + 'iconsize="S" '
+          + 'icon="' + icon + '"'
+          + 'href="' + href + '"></a>'
+          + '<time>1 second ago</time>');
     },
 
     updateScript: function () {
       if (this.status === ScriptStatus.NEW) {
         this.runScript();
-      } else if(this.status === ScriptStatus.RUNNING) {
+      } else if (this.status === ScriptStatus.RUNNING) {
         this.checkStatus();
       }
     },
@@ -143,7 +146,7 @@
     },
   }
 
-  var RemoteScript = function(element) {
+  var RemoteScript = function (element) {
     this.scriptPath = element.attributes['data-path'].value;
     this.status = ScriptStatus.NEW;
     this.$element = $(element);
@@ -151,11 +154,11 @@
   }
 
   RemoteScript.prototype = {
-    showWait: function() {
+    showWait: function () {
       this.$cell.html('<coral-wait/>');
     },
 
-    showRunStatus: function() {
+    showRunStatus: function () {
       this.status = ScriptStatus.FINISHED;
       this.$cell.html('Script started on publish 1 second ago');
     },
@@ -189,7 +192,9 @@
   }
 
   const scriptProcessor = new ScriptProcessor();
-  const scriptUpdater = setInterval(function() {scriptProcessor.updateScripts()}, 1000);
+  const scriptUpdater = setInterval(function () {
+    scriptProcessor.updateScripts()
+  }, 1000);
 
   $(window).adaptTo('foundation-registry').register(
       'foundation.collection.action.activecondition', {
