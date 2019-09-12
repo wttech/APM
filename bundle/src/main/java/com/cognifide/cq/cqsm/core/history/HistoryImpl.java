@@ -21,6 +21,8 @@ package com.cognifide.cq.cqsm.core.history;
 
 import static com.cognifide.cq.cqsm.core.utils.sling.SlingHelper.resolveDefault;
 import static com.day.crx.JcrConstants.NT_UNSTRUCTURED;
+import static org.apache.jackrabbit.commons.JcrUtils.getOrCreateByPath;
+import static org.apache.jackrabbit.commons.JcrUtils.getOrCreateUniqueByPath;
 
 import com.cognifide.actions.api.ActionSendException;
 import com.cognifide.actions.api.ActionSubmitter;
@@ -57,7 +59,6 @@ import javax.jcr.Session;
 import javax.jcr.query.Query;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
-import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -220,16 +221,22 @@ public class HistoryImpl implements History {
       throws RepositoryException {
     Session session = resolver.adaptTo(Session.class);
     String path = getScriptHistoryPath(script);
-    Node scriptHistory = JcrUtils
-        .getOrCreateByPath(path, "sling:OrderedFolder", NT_UNSTRUCTURED, session, true);
+    Node scriptHistory = getOrCreateByPath(path, "sling:OrderedFolder", NT_UNSTRUCTURED, session, true);
     scriptHistory.setProperty("scriptPath", script.getPath());
-    String modeName = (remote ? "Remote" : "Local");
-    modeName += WordUtils.capitalizeFully(mode.toString().toLowerCase(), new char[]{'_'}).replace("_", "");
-    Node historyEntry = JcrUtils.getOrCreateUniqueByPath(scriptHistory, modeName, NT_UNSTRUCTURED);
+    String modeName = getModeName(mode, remote);
+    Node historyEntry = getOrCreateUniqueByPath(scriptHistory, modeName, NT_UNSTRUCTURED);
     historyEntry.setProperty("checksum", script.getChecksumValue());
     scriptHistory.setProperty("last" + modeName, historyEntry.getPath());
     session.save();
     return historyEntry;
+  }
+
+  @NotNull
+  private String getModeName(Mode mode, boolean remote) {
+    String modeName = (remote ? "Remote" : "Local");
+    modeName += WordUtils.capitalizeFully(mode.toString().toLowerCase(), new char[]{'_'});
+    modeName = modeName.replace("_", "");
+    return modeName;
   }
 
   @NotNull
