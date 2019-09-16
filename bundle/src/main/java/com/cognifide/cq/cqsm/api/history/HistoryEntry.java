@@ -31,9 +31,9 @@ public interface HistoryEntry {
 
   String getExecutor();
 
-  String getFilePath();
+  String getScriptPath();
 
-  String getFileName();
+  String getScriptName();
 
   String getInstanceHostname();
 
@@ -52,4 +52,6 @@ public interface HistoryEntry {
   String getPath();
 
   Calendar getExecutionTimeCalendar();
+
+  String getScriptContentPath();
 }

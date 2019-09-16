@@ -38,6 +38,7 @@ public class ScriptHistoryImpl implements ScriptHistory {
   public static final String LAST_LOCAL_RUN = "lastLocalRun";
   public static final String LAST_LOCAL_DRY_RUN = "lastLocalDryRun";
   public static final String LAST_REMOTE_AUTOMATIC_RUN = "lastRemoteAutomaticRun";
+  public static final String LAST_CHECKSUM = "lastChecksum";
 
   @Self
   private Resource resource;
@@ -65,7 +66,9 @@ public class ScriptHistoryImpl implements ScriptHistory {
   @Named(LAST_REMOTE_AUTOMATIC_RUN)
   private String lastRemoteAutomaticRunPath;
 
+  @Inject
   @Getter
+  @Named(LAST_CHECKSUM)
   private String lastChecksum;
 
   private HistoryEntry lastLocalRun;

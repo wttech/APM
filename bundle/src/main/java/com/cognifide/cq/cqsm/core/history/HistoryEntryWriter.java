@@ -41,8 +41,8 @@ public class HistoryEntryWriter {
 
   public void writeTo(Resource historyLogResource) {
     ModifiableValueMap valueMap = historyLogResource.adaptTo(ModifiableValueMap.class);
-    valueMap.put(HistoryEntryImpl.FILE_NAME, fileName);
-    valueMap.put(HistoryEntryImpl.FILE_PATH, filePath);
+    valueMap.put(HistoryEntryImpl.SCRIPT_NAME, fileName);
+    valueMap.put(HistoryEntryImpl.SCRIPT_PATH, filePath);
     valueMap.put(HistoryEntryImpl.AUTHOR, author);
     valueMap.put(HistoryEntryImpl.MODE, mode);
     valueMap.put(HistoryEntryImpl.PROGRESS_LOG, progressLog);

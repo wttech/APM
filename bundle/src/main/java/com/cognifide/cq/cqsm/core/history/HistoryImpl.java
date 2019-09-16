@@ -83,11 +83,17 @@ public class HistoryImpl implements History {
 
   private static final Logger LOG = LoggerFactory.getLogger(HistoryImpl.class);
 
+  private static final String APM_HISTORY = "apmHistory";
+
+  private static final String APM_HISTORY_SCRIPT = "script";
+
+  private static final String APM_HISTORY_ENTRY = "entry";
+
   private static final String HISTORY_FOLDER = "/conf/apm/history";
 
   private static final String HISTORY_ENTRIES_QUERY = String.format("SELECT * FROM [nt:unstructured] "
-      + " WHERE ISDESCENDANTNODE([%s]) AND filePath IS NOT NULL "
-      + " ORDER BY executionTime DESC ", HISTORY_FOLDER);
+      + " WHERE ISDESCENDANTNODE([%s]) AND apmHistory = '%s' "
+      + " ORDER BY executionTime DESC ", HISTORY_FOLDER, APM_HISTORY_ENTRY);
 
   private static final String SLING_ORDERED_FOLDER = "sling:OrderedFolder";
 
@@ -202,7 +208,7 @@ public class HistoryImpl implements History {
       Node scriptHistoryNode = createScriptHistoryNode(script, session);
       Node scriptContentNode = copyScriptContent(scriptHistoryNode, script, session);
       Node historyEntryNode = createHistoryEntryNode(scriptHistoryNode, script, mode, remote);
-      historyEntryNode.setProperty("scriptContent", scriptContentNode.getPath());
+      historyEntryNode.setProperty(HistoryEntryImpl.SCRIPT_CONTENT_PATH, scriptContentNode.getPath());
       writeProperties(resolver, historyEntryNode, historyEntryWriter);
 
       session.save();
@@ -226,8 +232,9 @@ public class HistoryImpl implements History {
       throws RepositoryException {
     String modeName = getModeName(mode, remote);
     Node historyEntry = getOrCreateUniqueByPath(scriptHistory, modeName, NT_UNSTRUCTURED);
-    historyEntry.setProperty("checksum", script.getChecksum());
-    scriptHistory.setProperty("lastChecksum", script.getChecksum());
+    historyEntry.setProperty(APM_HISTORY, APM_HISTORY_ENTRY);
+    historyEntry.setProperty(HistoryEntryImpl.CHECKSUM, script.getChecksum());
+    scriptHistory.setProperty(ScriptHistoryImpl.LAST_CHECKSUM, script.getChecksum());
     scriptHistory.setProperty("last" + modeName, historyEntry.getPath());
     return historyEntry;
   }
@@ -235,8 +242,9 @@ public class HistoryImpl implements History {
   @NotNull
   private Node createScriptHistoryNode(Script script, Session session) throws RepositoryException {
     String path = getScriptHistoryPath(script);
-    Node scriptHistory = getOrCreateByPath(path, "sling:OrderedFolder", NT_UNSTRUCTURED, session, true);
-    scriptHistory.setProperty("scriptPath", script.getPath());
+    Node scriptHistory = getOrCreateByPath(path, SLING_ORDERED_FOLDER, NT_UNSTRUCTURED, session, true);
+    scriptHistory.setProperty(APM_HISTORY, APM_HISTORY_SCRIPT);
+    scriptHistory.setProperty(ScriptHistoryImpl.SCRIPT_PATH, script.getPath());
     return scriptHistory;
   }
 

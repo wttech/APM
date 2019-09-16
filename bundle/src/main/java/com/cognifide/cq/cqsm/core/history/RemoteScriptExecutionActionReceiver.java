@@ -64,7 +64,7 @@ public class RemoteScriptExecutionActionReceiver implements ActionReceiver {
 		String userId = valueMap.get(ReplicationAction.PROPERTY_USER_ID, String.class);
 		SlingHelper.operateTraced(resolverFactory, userId, resolver -> {
 			//FIXME would be lovely to cast ValueMap -> ModifiableEntryBuilder
-			String scriptLocation = valueMap.get(HistoryEntryImpl.FILE_PATH, String.class);
+			String scriptLocation = valueMap.get(HistoryEntryImpl.SCRIPT_PATH, String.class);
 			Resource scriptResource = resolver.getResource(scriptLocation);
 			Script script = scriptResource.adaptTo(ScriptImpl.class);
 			InstanceDetails instanceDetails = getInstanceDetails(valueMap);

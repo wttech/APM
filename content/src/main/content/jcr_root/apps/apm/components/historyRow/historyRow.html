@@ -26,7 +26,8 @@
     <coral-icon icon="fileKey" size="M"></coral-icon>
   </td>
   <td is="coral-table-cell" value="${item.fileName}">
-    <a href="${item.filePath}" download="${item.fileName}" style="text-decoration:none">${item.fileName}</a>
+    <a href="${item.scriptContentPath}" download="${item.scriptName}"
+       style="text-decoration:none">${item.scriptName}</a>
   </td>
   <td is="coral-table-cell" value="${item.executionTime.time || 0}">
     <time datetime="${item.executionTime.time || 0}"
