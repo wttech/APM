@@ -1,7 +1,7 @@
 # This script provides example actions for authorizable manipulation.
 
 # With "DEFINE" action we can set constant value that can be used in whole script
-DEFINE profilePath "profile"
+DEFINE profilePath= "profile"
 
 # This action will create group. This action can be used with mandatory param "IF-NOT-EXISTS" and execute this action only if given group do not exists. We can specify path where group will be created.
 CREATE-GROUP "test_group_1" --IF-NOT-EXISTS

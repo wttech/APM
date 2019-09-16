@@ -81,7 +81,7 @@ command
     : RUN_SCRIPT path namedArguments? # RunScript
     | IMPORT_SCRIPT path (AS name)? # ImportScript
     | FOR_EACH IDENTIFIER IN argument EOL? body # ForEach
-    | DEFINE IDENTIFIER argument # DefineVariable
+    | DEFINE IDENTIFIER '=' argument # DefineVariable
     | REQUIRE argument # RequireVariable
     | commandName complexArguments? # GenericCommand
     ;

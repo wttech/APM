@@ -4,7 +4,7 @@
 CREATE-GROUP "test_group" --IF-NOT-EXISTS
 
 # Change current context to specified authorizable
-FOR-GROUP "test_group"
+FOR-GROUP "test_group" BEGIN
 
 # Purge will remove all permission for current context for whole subtree, starting from specified path as root
 	PURGE "/content/dam"
@@ -23,3 +23,5 @@ FOR-GROUP "test_group"
 	DENY "/content/site/fr" [REPLICATE, DELETE, MODIFY, CREATE] --IF-EXISTS
 	DENY "/content/site/es" [DELETE] glob= "/*" --IF-EXISTS
 	DENY "/content/site/it" [ALL] glob= "/*" --IF-EXISTS
+
+END

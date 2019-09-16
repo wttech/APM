@@ -2,13 +2,14 @@
 # ==========================
 
 # Variable definitions
-DEFINE path /content/foo/bar
+DEFINE path= '/content/foo/bar'
 
 # Users & groups creation
-CREATE USER author secret
-CREATE GROUP authors IF NOT EXISTS
+CREATE-USER 'author' password='secret' --IF-NOT-EXISTS
+CREATE-GROUP 'authors' --IF-NOT-EXISTS
 
 # Permissions setting
-FOR GROUP authors
-	ALLOW ${path} [ALL]
-	DENY ${path}/foo/bar [MODIFY, DELETE]
+FOR-GROUP 'authors' BEGIN
+	ALLOW $path [ALL]
+	DENY  $path + '/foo/bar' [MODIFY, DELETE]
+END
