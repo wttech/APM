@@ -55,11 +55,6 @@ public interface Script {
 	boolean isContentModified(ResourceResolver resolver);
 
 	/**
-	 * Check whether dry run was executed at least once
-	 */
-	boolean isDryRunExecuted();
-
-	/**
 	 * Check run on publish
 	 */
 	boolean isPublishRun();
@@ -69,7 +64,10 @@ public interface Script {
 	 */
 	String getPath();
 
-	String getChecksum();
+  /**
+   * Returns checksum of the current script content.
+   */
+  String getChecksum();
 
 	/**
 	 * Return author of the file

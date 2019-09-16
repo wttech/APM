@@ -207,7 +207,7 @@ public class HistoryImpl implements History {
 
       session.save();
       resolver.commit();
-      return resolver.getResource(historyEntryNode.getPath()).adaptTo(HistoryEntry.class);
+      return resolver.getResource(historyEntryNode.getPath()).adaptTo(HistoryEntryImpl.class);
     } catch (PersistenceException | RepositoryException e) {
       LOG.error("Issues with saving to repository while logging script execution", e);
       return null;

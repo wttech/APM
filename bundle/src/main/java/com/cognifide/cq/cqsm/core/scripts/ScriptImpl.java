@@ -59,11 +59,6 @@ public class ScriptImpl implements Script {
   }
 
   @Override
-  public boolean isDryRunExecuted() {
-    return false; //scriptContent.getDryRunSuccessful() != null; //FIXME
-  }
-
-  @Override
   public boolean isValid() {
     return BooleanUtils.toBoolean(scriptContent.getVerified());
   }
