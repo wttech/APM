@@ -19,7 +19,6 @@
  */
 package com.cognifide.cq.cqsm.api.scripts;
 
-import com.cognifide.cq.cqsm.core.scripts.Checksum;
 import java.util.Date;
 import org.apache.sling.api.resource.ResourceResolver;
 
@@ -56,11 +55,6 @@ public interface Script {
 	boolean isContentModified(ResourceResolver resolver);
 
 	/**
-	 * Check whether dry run was executed at least once
-	 */
-	boolean isDryRunExecuted();
-
-	/**
 	 * Check run on publish
 	 */
 	boolean isPublishRun();
@@ -70,10 +64,10 @@ public interface Script {
 	 */
 	String getPath();
 
-	/**
-	 * Returns checksum calculated based on the script content
-	 */
-	Checksum getChecksum();
+  /**
+   * Returns checksum of the current script content.
+   */
+  String getChecksum();
 
 	/**
 	 * Return author of the file
@@ -92,53 +86,7 @@ public interface Script {
 
 	/**
 	 * Return user that replicated script
-	 * @return
 	 */
 	String getReplicatedBy();
-
-	/**
-	 * Return last dry run date
-	 */
-	Date getDryRunTime();
-
-	/**
-	 * Get path to dry run summary
-	 */
-	String getDryRunSummary();
-
-	/**
-	 * Check dry run result
-	 */
-	boolean isDryRunSuccessful();
-
-	/**
-	 * Return date of last run on author.
-	 */
-	Date getRunTime();
-
-	/**
-	 * Get path to summary of last run on author.
-	 */
-	String getRunSummary();
-
-	/**
-	 * Return status of last run on author.
-	 */
-	boolean isRunSuccessful();
-
-	/**
-	 * Get path to summary of last run on publish
-	 */
-	String getRunOnPublishSummary();
-
-	/**
-	 * Return date of last run on publish.
-	 */
-	Date getRunOnPublishTime();
-
-	/**
-	 * Return status of last run on publish.
-	 */
-	boolean isRunOnPublishSuccessful();
 
 }

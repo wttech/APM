@@ -22,11 +22,18 @@
 <jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0"
   jcr:primaryType="nt:unstructured"
 >
-  <cqsmFilesIndex
+  <apmScriptsIndex
     jcr:primaryType="oak:QueryIndexDefinition"
     declaringNodeTypes="{Name}[nt:resource]"
     includedPaths="[/conf/apm/scripts]"
     propertyNames="{Name}[jcr:mixinTypes]"
+    reindex="{Boolean}false"
+    type="property"/>
+  <apmHistoryIndex
+    jcr:primaryType="oak:QueryIndexDefinition"
+    declaringNodeTypes="{Name}[nt:unstructured]"
+    includedPaths="[/conf/apm/history]"
+    propertyNames="{Name}[apmHistory]"
     reindex="{Boolean}false"
     type="property"/>
 </jcr:root>

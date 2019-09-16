@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,15 +21,13 @@ package com.cognifide.cq.cqsm.core.scripts;
 
 import com.cognifide.cq.cqsm.api.scripts.ExecutionMode;
 import com.cognifide.cq.cqsm.api.scripts.Script;
-
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.functors.AllPredicate;
 import org.apache.commons.collections.functors.OrPredicate;
 import org.apache.sling.api.resource.ResourceResolver;
-
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Due to the ResourceResolver dependency these filters should not be used lazy
@@ -42,46 +40,39 @@ public class ScriptFilters {
 	}
 
 	public static Predicate filterExecutionEnabled(final boolean flag) {
-		return new Predicate() {
-			@Override
-			public boolean evaluate(Object o) {
-				return ((Script) o).isExecutionEnabled() == flag;
-			}
-		};
+		return script -> ((Script) script).isExecutionEnabled() == flag;
 	}
 
 	public static Predicate filterByExecutionMode(final List<ExecutionMode> modes) {
-		return new Predicate() {
-			@Override
-			public boolean evaluate(Object o) {
-				return modes.contains(((Script) o).getExecutionMode());
-			}
-		};
+		return script -> modes.contains(((Script) script).getExecutionMode());
 	}
 
 	public static Predicate filterOnSchedule(final Date date) {
-		return new AllPredicate(new Predicate[]{filterExecutionEnabled(true),
-				filterByExecutionMode(ExecutionMode.ON_SCHEDULE), new Predicate() {
-			@Override
-			public boolean evaluate(Object o) {
-				final Script script = (Script) o;
-				return (script.getExecutionLast() == null) && script.getExecutionSchedule().before(date);
-			}
-		}});
+		return new AllPredicate(new Predicate[]{
+				filterExecutionEnabled(true),
+				filterByExecutionMode(ExecutionMode.ON_SCHEDULE),
+				o -> {
+					final Script script = (Script) o;
+					return (script.getExecutionLast() == null) && script.getExecutionSchedule().before(date);
+				}
+		});
 	}
 
 	public static Predicate filterOnModify(final ResourceResolver resolver) {
-		return new AllPredicate(new Predicate[]{filterExecutionEnabled(true),
-				filterByExecutionMode(ExecutionMode.ON_MODIFY), new Predicate() {
-			@Override
-			public boolean evaluate(Object o) {
-				return ((Script) o).isContentModified(resolver);
-			}
-		}});
+		return new AllPredicate(new Predicate[]{
+				filterExecutionEnabled(true),
+				filterByExecutionMode(ExecutionMode.ON_MODIFY),
+				script -> ((Script) script).isContentModified(resolver)
+		});
 	}
 
 	public static Predicate filterOnStart(final ResourceResolver resolver) {
-		return new AllPredicate(new Predicate[]{filterExecutionEnabled(true),
-				new OrPredicate(filterByExecutionMode(ExecutionMode.ON_START), filterOnModify(resolver))});
+		return new AllPredicate(new Predicate[]{
+				filterExecutionEnabled(true),
+				new OrPredicate(
+						filterByExecutionMode(ExecutionMode.ON_START),
+						filterOnModify(resolver)
+				)
+		});
 	}
 }

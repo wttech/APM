@@ -19,14 +19,21 @@
  */
 package com.cognifide.cq.cqsm.core.servlets;
 
+import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
 import com.cognifide.cq.cqsm.core.Property;
-import com.cognifide.cq.cqsm.core.models.FileModel;
 import com.cognifide.cq.cqsm.core.utils.ServletUtils;
+import com.google.common.collect.ComparisonChain;
+import com.google.common.collect.Ordering;
 import java.io.IOException;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.Servlet;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
@@ -51,10 +58,52 @@ public class ScriptListServlet extends SlingAllMethodsServlet {
   @Override
   protected void doGet(final SlingHttpServletRequest request, final SlingHttpServletResponse response)
       throws IOException {
-    List<FileModel> files = scriptFinder.findAll(request.getResourceResolver()).stream()
-        .map(FileModel::new)
+		List<ScriptModel> files = scriptFinder.findAll(request.getResourceResolver()).stream()
+				.map(ScriptModel::new)
         .sorted()
         .collect(Collectors.toList());
     ServletUtils.writeJson(response, files);
   }
+
+	@Getter
+	@EqualsAndHashCode
+	public static final class ScriptModel implements Comparable<ScriptModel> {
+
+		private static final Comparator<Date> DATE_DESCENDING = Ordering.natural().reverse().nullsLast();
+		private static final Comparator<String> STRING_ASCENDING = Ordering.natural().nullsLast();
+
+		private final String fileName;
+
+		private final String author;
+
+		private final boolean executionEnabled;
+
+		private final Date executionSchedule;
+
+		private final String executionMode;
+
+		private final Date lastModified;
+
+		private final boolean valid;
+
+		private final String path;
+
+		public ScriptModel(Script script) {
+			this.fileName = FilenameUtils.getName(script.getPath());
+			this.author = script.getAuthor();
+			this.path = script.getPath();
+			this.valid = script.isValid();
+			this.lastModified = script.getLastModified();
+			this.executionMode = script.getExecutionMode().name().toLowerCase();
+			this.executionEnabled = script.isExecutionEnabled();
+			this.executionSchedule = script.getExecutionSchedule();
+		}
+
+		@Override
+		public int compareTo(ScriptModel other) {
+			return ComparisonChain.start()
+					.compare(this.lastModified, other.lastModified, DATE_DESCENDING)
+					.compare(this.fileName, other.fileName, STRING_ASCENDING).result();
+		}
+	}
 }
