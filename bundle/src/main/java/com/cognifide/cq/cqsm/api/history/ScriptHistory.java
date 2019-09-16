@@ -20,13 +20,11 @@
 
 package com.cognifide.cq.cqsm.api.history;
 
-import com.cognifide.cq.cqsm.api.scripts.Script;
-
 public interface ScriptHistory {
 
-  Script getScript();
-
   String getScriptPath();
+
+  String getLastChecksum();
 
   String getLastLocalRunPath();
 

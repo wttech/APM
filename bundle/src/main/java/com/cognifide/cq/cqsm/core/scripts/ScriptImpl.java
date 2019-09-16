@@ -19,6 +19,8 @@
  */
 package com.cognifide.cq.cqsm.core.scripts;
 
+import com.cognifide.cq.cqsm.api.history.History;
+import com.cognifide.cq.cqsm.api.history.ScriptHistory;
 import com.cognifide.cq.cqsm.api.scripts.ExecutionMode;
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.day.cq.commons.jcr.JcrConstants;
@@ -27,6 +29,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.models.annotations.Model;
@@ -38,6 +41,9 @@ public class ScriptImpl implements Script {
   private final String path;
 
   @Inject
+  private History history;
+
+  @Inject
   @Named(JcrConstants.JCR_CONTENT)
   private ScriptContent scriptContent;
 
@@ -46,10 +52,9 @@ public class ScriptImpl implements Script {
   @Optional
   private String author;
 
-  protected final Checksum checksum;
+  private String checksum;
 
   public ScriptImpl(Resource resource) {
-    this.checksum = new Checksum(resource.getName());
     this.path = resource.getPath();
   }
 
@@ -92,11 +97,8 @@ public class ScriptImpl implements Script {
 
   @Override
   public boolean isContentModified(ResourceResolver resolver) {
-    Resource resource = resolver.getResource(getPath());
-    final String currentChecksum = checksum.calculate(resource);
-    final String oldChecksum = checksum.load(resolver);
-
-    return oldChecksum == null || !currentChecksum.equals(oldChecksum);
+    ScriptHistory scriptHistory = history.findScriptHistory(resolver, this);
+    return StringUtils.equals(scriptHistory.getLastChecksum(), getChecksum());
   }
 
   @Override
@@ -105,13 +107,11 @@ public class ScriptImpl implements Script {
   }
 
   @Override
-  public Checksum getChecksum() {
+  public String getChecksum() {
+    if (checksum == null) {
+      checksum = DigestUtils.md5Hex(scriptContent.getData());
+    }
     return checksum;
-  }
-
-  @Override
-  public String getChecksumValue() {
-    return DigestUtils.md5Hex(scriptContent.getData());
   }
 
   @Override

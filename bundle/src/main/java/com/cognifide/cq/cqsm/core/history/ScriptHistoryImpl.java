@@ -23,11 +23,9 @@ package com.cognifide.cq.cqsm.core.history;
 import com.cognifide.cq.cqsm.api.history.History;
 import com.cognifide.cq.cqsm.api.history.HistoryEntry;
 import com.cognifide.cq.cqsm.api.history.ScriptHistory;
-import com.cognifide.cq.cqsm.api.scripts.Script;
 import javax.inject.Inject;
 import javax.inject.Named;
 import lombok.Getter;
-import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Model;
@@ -68,12 +66,10 @@ public class ScriptHistoryImpl implements ScriptHistory {
   private String lastRemoteAutomaticRunPath;
 
   @Getter
-  private Script script;
-  @Getter
+  private String lastChecksum;
+
   private HistoryEntry lastLocalRun;
-  @Getter
   private HistoryEntry lastLocalDryRun;
-  @Getter
   private HistoryEntry lastRemoteAutomaticRun;
 
   public static ScriptHistoryImpl empty(String scriptPath) {
@@ -82,19 +78,29 @@ public class ScriptHistoryImpl implements ScriptHistory {
     return scriptHistoryImpl;
   }
 
-  void updateScript(Script script) {
-    this.script = script;
-    lastLocalRun = getHistoryEntryIfMatchesChecksum(lastLocalRunPath, script.getChecksumValue());
-    lastLocalDryRun = getHistoryEntryIfMatchesChecksum(lastLocalDryRunPath, script.getChecksumValue());
-    lastRemoteAutomaticRun = getHistoryEntryIfMatchesChecksum(lastRemoteAutomaticRunPath, script.getChecksumValue());
+  @Override
+  public HistoryEntry getLastLocalRun() {
+    lastLocalRun = getHistoryEntry(lastLocalRun, lastLocalRunPath);
+    return lastLocalRun;
   }
 
-  private HistoryEntry getHistoryEntryIfMatchesChecksum(String lastLocalRunPath, String checksum) {
-    HistoryEntry historyEntry = history.findHistoryEntry(resource.getResourceResolver(), lastLocalRunPath);
-    if (historyEntry != null && StringUtils.equals(checksum, historyEntry.getChecksum())) {
-      return historyEntry;
-    } else {
-      return null;
+  @Override
+  public HistoryEntry getLastLocalDryRun() {
+    lastLocalDryRun = getHistoryEntry(lastLocalDryRun, lastLocalDryRunPath);
+    return lastLocalDryRun;
+  }
+
+  @Override
+  public HistoryEntry getLastRemoteAutomaticRun() {
+    lastRemoteAutomaticRun = getHistoryEntry(lastRemoteAutomaticRun, lastRemoteAutomaticRunPath);
+    return lastRemoteAutomaticRun;
+  }
+
+  private HistoryEntry getHistoryEntry(HistoryEntry entry, String historyEntryPath) {
+    HistoryEntry historyEntry = entry;
+    if (historyEntry == null && resource != null && historyEntryPath != null) {
+      historyEntry = history.findHistoryEntry(resource.getResourceResolver(), historyEntryPath);
     }
+    return historyEntry;
   }
 }

@@ -51,7 +51,6 @@ public class ModifiableScriptWrapper implements ModifiableScript {
 	@Override
 	public void setExecuted(Boolean flag) throws PersistenceException {
 		setProperty(ScriptContent.CQSM_EXECUTION_LAST, flag ? new Date() : null);
-		script.getChecksum().update(resolver, resolver.getResource(script.getPath()));
 	}
 
 	@Override

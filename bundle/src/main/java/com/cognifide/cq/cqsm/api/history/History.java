@@ -27,6 +27,7 @@ import java.util.List;
 import javax.jcr.RepositoryException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.jetbrains.annotations.NotNull;
 
 public interface History {
 
@@ -46,11 +47,12 @@ public interface History {
    */
   void replicate(HistoryEntry entry, String executor) throws RepositoryException;
 
-	List<Resource> findAllResources(ResourceResolver resourceResolver);
+  List<Resource> findAllResources(ResourceResolver resourceResolver);
 
   List<HistoryEntry> findAllHistoryEntries(ResourceResolver resourceResolver);
 
   HistoryEntry findHistoryEntry(ResourceResolver resourceResolver, String path);
 
+  @NotNull
   ScriptHistory findScriptHistory(ResourceResolver resourceResolver, Script script);
 }

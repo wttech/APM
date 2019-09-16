@@ -79,6 +79,8 @@ import org.slf4j.LoggerFactory;
 )
 public class HistoryImpl implements History {
 
+  public static final String REPLICATE_ACTION = "com/cognifide/actions/cqsm/history/replicate";
+
   private static final Logger LOG = LoggerFactory.getLogger(HistoryImpl.class);
 
   private static final String HISTORY_FOLDER = "/conf/apm/history";
@@ -87,7 +89,7 @@ public class HistoryImpl implements History {
       + " WHERE ISDESCENDANTNODE([%s]) AND filePath IS NOT NULL "
       + " ORDER BY executionTime DESC ", HISTORY_FOLDER);
 
-  public static final String REPLICATE_ACTION = "com/cognifide/actions/cqsm/history/replicate";
+  private static final String SLING_ORDERED_FOLDER = "sling:OrderedFolder";
 
   @Reference
   private ActionSubmitter actionSubmitter;
@@ -187,9 +189,7 @@ public class HistoryImpl implements History {
   public ScriptHistory findScriptHistory(ResourceResolver resourceResolver, Script script) {
     Resource resource = resourceResolver.getResource(getScriptHistoryPath(script));
     if (resource != null) {
-      ScriptHistoryImpl scriptHistory = resource.adaptTo(ScriptHistoryImpl.class);
-      scriptHistory.updateScript(script);
-      return scriptHistory;
+      return resource.adaptTo(ScriptHistoryImpl.class);
     }
     return ScriptHistoryImpl.empty(script.getPath());
   }
@@ -197,10 +197,15 @@ public class HistoryImpl implements History {
   private HistoryEntry createHistoryEntry(ResourceResolver resolver, Script script, Mode mode,
       HistoryEntryWriter historyEntryWriter, boolean remote) {
     try {
-      Resource source = resolver.getResource(script.getPath());
-      Node historyEntryNode = createHistoryEntryNode(resolver, script, mode, remote);
+      Session session = resolver.adaptTo(Session.class);
+
+      Node scriptHistoryNode = createScriptHistoryNode(script, session);
+      Node scriptContentNode = copyScriptContent(scriptHistoryNode, script, session);
+      Node historyEntryNode = createHistoryEntryNode(scriptHistoryNode, script, mode, remote);
+      historyEntryNode.setProperty("scriptContent", scriptContentNode.getPath());
       writeProperties(resolver, historyEntryNode, historyEntryWriter);
-      copyScriptContent(source, historyEntryNode);
+
+      session.save();
       resolver.commit();
       return resolver.getResource(historyEntryNode.getPath()).adaptTo(HistoryEntry.class);
     } catch (PersistenceException | RepositoryException e) {
@@ -217,18 +222,22 @@ public class HistoryImpl implements History {
     return entryResource;
   }
 
-  private Node createHistoryEntryNode(ResourceResolver resolver, Script script, Mode mode, boolean remote)
+  private Node createHistoryEntryNode(Node scriptHistory, Script script, Mode mode, boolean remote)
       throws RepositoryException {
-    Session session = resolver.adaptTo(Session.class);
+    String modeName = getModeName(mode, remote);
+    Node historyEntry = getOrCreateUniqueByPath(scriptHistory, modeName, NT_UNSTRUCTURED);
+    historyEntry.setProperty("checksum", script.getChecksum());
+    scriptHistory.setProperty("lastChecksum", script.getChecksum());
+    scriptHistory.setProperty("last" + modeName, historyEntry.getPath());
+    return historyEntry;
+  }
+
+  @NotNull
+  private Node createScriptHistoryNode(Script script, Session session) throws RepositoryException {
     String path = getScriptHistoryPath(script);
     Node scriptHistory = getOrCreateByPath(path, "sling:OrderedFolder", NT_UNSTRUCTURED, session, true);
     scriptHistory.setProperty("scriptPath", script.getPath());
-    String modeName = getModeName(mode, remote);
-    Node historyEntry = getOrCreateUniqueByPath(scriptHistory, modeName, NT_UNSTRUCTURED);
-    historyEntry.setProperty("checksum", script.getChecksumValue());
-    scriptHistory.setProperty("last" + modeName, historyEntry.getPath());
-    session.save();
-    return historyEntry;
+    return scriptHistory;
   }
 
   @NotNull
@@ -241,12 +250,19 @@ public class HistoryImpl implements History {
 
   @NotNull
   private String getScriptHistoryPath(Script script) {
-    return HISTORY_FOLDER + "/" + script.getPath().replace("/", "_");
+    return HISTORY_FOLDER + "/" + script.getPath().replace("/", "_").substring(1);
   }
 
-  private void copyScriptContent(Resource source, Node target) throws RepositoryException {
-    Node file = JcrUtil.copy(source.adaptTo(Node.class), target, "script");
-    file.addMixin(ScriptContent.CQSM_FILE);
+  private Node copyScriptContent(Node scriptHistory, Script script, Session session) throws RepositoryException {
+    Node scripts = getOrCreateByPath(scriptHistory, "versions", false, SLING_ORDERED_FOLDER, SLING_ORDERED_FOLDER,
+        true);
+    if (!scripts.hasNode(script.getChecksum())) {
+      Node source = session.getNode(script.getPath());
+      Node file = JcrUtil.copy(source, scripts, script.getChecksum());
+      file.addMixin(ScriptContent.CQSM_FILE);
+      return file;
+    }
+    return scripts.getNode(script.getChecksum());
   }
 
   private String getHostname() {

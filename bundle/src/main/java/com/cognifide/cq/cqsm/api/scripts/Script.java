@@ -19,7 +19,6 @@
  */
 package com.cognifide.cq.cqsm.api.scripts;
 
-import com.cognifide.cq.cqsm.core.scripts.Checksum;
 import java.util.Date;
 import org.apache.sling.api.resource.ResourceResolver;
 
@@ -70,12 +69,7 @@ public interface Script {
 	 */
 	String getPath();
 
-	/**
-	 * Returns checksum calculated based on the script content
-	 */
-	Checksum getChecksum();
-
-  String getChecksumValue();
+	String getChecksum();
 
 	/**
 	 * Return author of the file
@@ -94,7 +88,6 @@ public interface Script {
 
 	/**
 	 * Return user that replicated script
-	 * @return
 	 */
 	String getReplicatedBy();
 

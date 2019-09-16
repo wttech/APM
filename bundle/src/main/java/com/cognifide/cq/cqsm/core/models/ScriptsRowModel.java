@@ -24,6 +24,7 @@ import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 import com.cognifide.cq.cqsm.api.history.History;
 import com.cognifide.cq.cqsm.api.history.HistoryEntry;
 import com.cognifide.cq.cqsm.api.history.ScriptHistory;
+import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.core.scripts.ScriptContent;
 import com.cognifide.cq.cqsm.core.scripts.ScriptImpl;
 import com.cognifide.cq.cqsm.core.utils.CalendarUtils;
@@ -42,6 +43,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
+import org.jetbrains.annotations.NotNull;
 
 @Model(adaptables = Resource.class)
 public final class ScriptsRowModel {
@@ -88,11 +90,20 @@ public final class ScriptsRowModel {
         this.author = script.getAuthor();
         this.isValid = script.isValid();
         this.lastModified = CalendarUtils.asCalendar(script.getLastModified());
-        this.runs.add(new ScriptRun("runOnAuthor", scriptHistory.getLastLocalRun()));
-        this.runs.add(new ScriptRun("runOnPublish", scriptHistory.getLastRemoteAutomaticRun()));
-        this.runs.add(new ScriptRun("dryRun", scriptHistory.getLastLocalDryRun()));
+        this.runs.add(createScriptRun("runOnAuthor", script, scriptHistory.getLastLocalRun()));
+        this.runs.add(createScriptRun("runOnPublish", script, scriptHistory.getLastRemoteAutomaticRun()));
+        this.runs.add(createScriptRun("dryRun", script, scriptHistory.getLastLocalDryRun()));
         this.isExecutionEnabled = script.isExecutionEnabled();
       });
+    }
+  }
+
+  @NotNull
+  private ScriptRun createScriptRun(String name, Script script, HistoryEntry historyEntry) {
+    if (historyEntry != null && StringUtils.equals(historyEntry.getChecksum(), script.getChecksum())) {
+      return new ScriptRun(name, historyEntry);
+    } else {
+      return new ScriptRun(name);
     }
   }
 
@@ -126,18 +137,18 @@ public final class ScriptsRowModel {
     private final boolean success;
     private final Calendar time;
 
-    public ScriptRun(String type, HistoryEntry historyEntry) {
+    public ScriptRun(String type) {
       this.type = type;
-      if (historyEntry != null) {
-        this.summary = historyEntry.getPath();
-        this.success = historyEntry.isRunSuccessful();
-        this.time = CalendarUtils.asCalendar(historyEntry.getExecutionTime());
-      } else {
-        this.summary = null;
-        this.success = false;
-        this.time = null;
-      }
+      this.summary = null;
+      this.success = false;
+      this.time = null;
     }
 
+    public ScriptRun(String type, HistoryEntry historyEntry) {
+      this.type = type;
+      this.summary = historyEntry.getPath();
+      this.success = historyEntry.isRunSuccessful();
+      this.time = CalendarUtils.asCalendar(historyEntry.getExecutionTime());
+    }
   }
 }
