@@ -83,7 +83,7 @@ command
     | FOR_EACH IDENTIFIER IN argument EOL? body # ForEach
     | DEFINE IDENTIFIER argument # DefineVariable
     | REQUIRE argument # RequireVariable
-    | commandName complexArguments? # GenericCommand
+    | commandName complexArguments? EOL? body? # GenericCommand
     ;
 
 commandName

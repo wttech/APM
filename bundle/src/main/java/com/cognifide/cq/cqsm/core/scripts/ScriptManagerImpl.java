@@ -106,10 +106,12 @@ public class ScriptManagerImpl implements ScriptManager {
 
     eventManager.trigger(Event.BEFORE_EXECUTE, script, mode, progress);
     ScriptRunner scriptRunner = new ScriptRunner(scriptFinder, resolver,
-        (internalProgress, commandName, arguments) -> {
+        (executionContext, commandName, arguments) -> {
           try {
+            context.setCurrentAuthorizable(executionContext.getAuthorizable());
             ActionDescriptor descriptor = actionFactory.evaluate(commandName, arguments);
             ActionResult result = actionExecutor.execute(descriptor);
+            executionContext.setAuthorizable(context.getCurrentAuthorizableIfExists());
             progress.addEntry(descriptor, result);
 
             if ((Status.ERROR == result.getStatus()) && (Mode.DRY_RUN != mode)) {

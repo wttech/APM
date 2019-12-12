@@ -21,7 +21,7 @@
 package com.cognifide.apm.antlr
 
 import com.cognifide.apm.antlr.argument.Arguments
-import com.cognifide.cq.cqsm.api.logger.Progress
+import com.cognifide.apm.antlr.executioncontext.ExternalExecutionContext
 import com.cognifide.cq.cqsm.api.logger.Status
 import com.cognifide.cq.cqsm.api.scripts.Script
 import com.cognifide.cq.cqsm.api.scripts.ScriptFinder
@@ -108,7 +108,7 @@ class ScriptRunnerTest extends Specification {
     private static ActionInvoker createActionInvoker() {
         new ActionInvoker() {
             @Override
-            void runAction(Progress progress, String commandName, Arguments arguments) {
+            void runAction(ExternalExecutionContext context, String commandName, Arguments arguments) {
                 def command = new StringBuilder("Executing command ")
                 command.append(commandName)
                 arguments.required.each {
@@ -117,7 +117,7 @@ class ScriptRunnerTest extends Specification {
                             .append(it.getString())
                             .append("'")
                 }
-                progress.addEntry(Status.SUCCESS, "", command.toString())
+                context.progress.addEntry(Status.SUCCESS, "", command.toString())
             }
         }
     }

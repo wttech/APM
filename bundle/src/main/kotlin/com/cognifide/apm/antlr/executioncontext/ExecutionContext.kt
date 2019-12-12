@@ -30,13 +30,14 @@ import com.cognifide.cq.cqsm.api.logger.Progress
 import com.cognifide.cq.cqsm.api.scripts.Script
 import com.cognifide.cq.cqsm.api.scripts.ScriptFinder
 import org.apache.commons.lang.StringUtils
+import org.apache.jackrabbit.api.security.user.Authorizable
 import org.apache.sling.api.resource.ResourceResolver
 
 class ExecutionContext private constructor(
         private val scriptFinder: ScriptFinder,
         private val resourceResolver: ResourceResolver,
         val root: ParsedScript,
-        val progress: Progress) {
+        override val progress: Progress) : ExternalExecutionContext {
 
     private val parsedScripts: MutableMap<String, ParsedScript> = mutableMapOf()
     private var runScripts: StackWithRoot<RunScript> = StackWithRoot(RunScript(root))
@@ -80,12 +81,20 @@ class ExecutionContext private constructor(
         variableHolder.removeLocalContext()
     }
 
-    fun setVariable(key: String, value: ApmType) {
+    override fun setVariable(key: String, value: ApmType) {
         variableHolder[key] = value
     }
 
-    fun getVariable(key: String): ApmType? {
+    override fun getVariable(key: String): ApmType? {
         return variableHolder[key]
+    }
+
+    override fun setAuthorizable(authorizable: Authorizable?) {
+        variableHolder.authorizable = authorizable
+    }
+
+    override fun getAuthorizable(): Authorizable? {
+        return variableHolder.authorizable
     }
 
     fun resolveArguments(arguments: ComplexArgumentsContext): Arguments {

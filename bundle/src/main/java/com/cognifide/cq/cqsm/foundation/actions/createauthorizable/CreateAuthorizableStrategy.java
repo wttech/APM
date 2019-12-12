@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,6 +25,7 @@ import com.cognifide.cq.cqsm.foundation.RandomPasswordGenerator;
 import com.cognifide.cq.cqsm.foundation.actions.MockPrincipal;
 import javax.jcr.RepositoryException;
 import org.apache.commons.lang.StringUtils;
+import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.apache.jackrabbit.api.security.user.Group;
 import org.apache.jackrabbit.api.security.user.User;
 
@@ -83,7 +84,7 @@ public enum CreateAuthorizableStrategy {
     }
   };
 
-  public abstract Object create(final String id, final String password, final String path,
+	public abstract Authorizable create(final String id, final String password, final String path,
       final Context context, final ActionResult actionResult, boolean simulate)
       throws RepositoryException;
 

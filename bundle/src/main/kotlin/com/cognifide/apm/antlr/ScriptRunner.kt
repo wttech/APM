@@ -111,10 +111,20 @@ class ScriptRunner(
         override fun visitGenericCommand(ctx: GenericCommandContext) {
             val commandName = getIdentifier(ctx.commandName().identifier()).toUpperCase()
             try {
+                if (ctx.body() != null) {
+                    executionContext.createLocalContext()
+                }
                 val arguments = executionContext.resolveArguments(ctx.complexArguments())
-                actionInvoker.runAction(executionContext.progress, commandName, arguments)
+                actionInvoker.runAction(executionContext, commandName, arguments)
+                if (ctx.body() != null) {
+                    visit(ctx.body())
+                }
             } catch (e: ArgumentResolverException) {
                 executionContext.progress.addEntry(Status.ERROR, "Action failed: ${e.message}", commandName)
+            } finally {
+                if (ctx.body() != null) {
+                    executionContext.removeLocalContext()
+                }
             }
         }
 
