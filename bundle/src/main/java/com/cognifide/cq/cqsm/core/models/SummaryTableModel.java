@@ -21,8 +21,8 @@ package com.cognifide.cq.cqsm.core.models;
 
 import static com.cognifide.cq.cqsm.core.servlets.ScriptResultServlet.EXECUTION_RESULT_SERVLET_PATH;
 
+import com.cognifide.cq.cqsm.api.history.History;
 import com.cognifide.cq.cqsm.api.history.HistoryEntry;
-import com.cognifide.cq.cqsm.core.history.History;
 import javax.inject.Inject;
 import lombok.Getter;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -37,7 +37,7 @@ public final class SummaryTableModel {
 
 	@Inject
 	public SummaryTableModel(@OSGiService History history, SlingHttpServletRequest request) {
-		entry = history.find(request.getRequestPathInfo().getSuffix());
+		entry = history.findHistoryEntry(request.getResourceResolver(), request.getRequestPathInfo().getSuffix());
 	}
 
 	public String getResultDownloadActionPath() {

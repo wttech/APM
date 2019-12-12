@@ -8,5 +8,7 @@
     </filter>
     <filter root="/home/users/system/cqsm-system-user"/>
     <filter root="/rep:policy"/>
+    <filter root="/oak:index/apmFilesIndex"/>
+    <filter root="/oak:index/apmHistoryIndex"/>
     <filter root="/var/classes/org/apache/jsp/apps/apm"/>
 </workspaceFilter>

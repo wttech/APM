@@ -22,7 +22,6 @@ package com.cognifide.cq.cqsm.foundation.actions.createauthorizable;
 import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.ActionResult;
 import com.cognifide.cq.cqsm.api.executors.Context;
-import com.cognifide.cq.cqsm.api.utils.AuthorizablesUtils;
 import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
 import javax.jcr.RepositoryException;
 import org.apache.jackrabbit.api.security.user.Authorizable;
@@ -32,73 +31,73 @@ import org.slf4j.LoggerFactory;
 
 public class CreateAuthorizable implements Action {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(CreateAuthorizable.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(CreateAuthorizable.class);
 
-	private final String path;
+  private final String path;
 
-	private final String id;
+  private final String id;
 
-	private final String password;
+  private final String password;
 
-	private final Boolean ignoreIfExists;
+  private final Boolean ignoreIfExists;
 
-	private final CreateAuthorizableStrategy createStrategy;
+  private final CreateAuthorizableStrategy createStrategy;
 
-	public CreateAuthorizable(final String id, final String password, final String path,
-			final Boolean ignoreIfExists, final CreateAuthorizableStrategy createStrategy) {
-		this.id = id;
-		this.password = password;
-		this.path = path;
-		this.ignoreIfExists = ignoreIfExists;
-		this.createStrategy = createStrategy;
-	}
+  public CreateAuthorizable(final String id, final String password, final String path,
+      final Boolean ignoreIfExists, final CreateAuthorizableStrategy createStrategy) {
+    this.id = id;
+    this.password = password;
+    this.path = path;
+    this.ignoreIfExists = ignoreIfExists;
+    this.createStrategy = createStrategy;
+  }
 
-	@Override
-	public ActionResult simulate(final Context context) {
-		return process(context, true);
-	}
+  @Override
+  public ActionResult simulate(final Context context) {
+    return process(context, true);
+  }
 
-	@Override
-	public ActionResult execute(final Context context) {
-		return process(context, false);
-	}
+  @Override
+  public ActionResult execute(final Context context) {
+    return process(context, false);
+  }
 
-	public ActionResult process(final Context context, boolean simulate) {
-		ActionResult actionResult = new ActionResult();
-		try {
-			Authorizable authorizable = AuthorizablesUtils.getAuthorizableIfExists(context, id);
-			LOGGER.info("Creating authorizable with id = " + id);
-			if (authorizable != null) {
-				logMessage(actionResult, authorizable);
-			} else {
+  public ActionResult process(final Context context, boolean simulate) {
+    ActionResult actionResult = new ActionResult();
+    try {
+      Authorizable authorizable = context.getAuthorizableManager().getAuthorizableIfExists(id);
+      LOGGER.info("Creating authorizable with id = " + id);
+      if (authorizable != null) {
+        logMessage(actionResult, authorizable);
+      } else {
 				authorizable = createStrategy.create(id, password, path, context, actionResult, simulate);
-			}
+      }
 			context.setCurrentAuthorizable(authorizable);
-		} catch (RepositoryException e) {
-			actionResult.logError(MessagingUtils.createMessage(e));
-		}
-		return actionResult;
-	}
+    } catch (RepositoryException e) {
+      actionResult.logError(MessagingUtils.createMessage(e));
+    }
+    return actionResult;
+  }
 
-	private void logMessage(ActionResult actionResult, Authorizable authorizable) throws RepositoryException {
-		if (!ignoreIfExists) {
-			if (authorizable instanceof Group) {
-				actionResult.logError(MessagingUtils.authorizableExists(authorizable.getID(), "Group"));
-			} else {
-				actionResult.logError(MessagingUtils.authorizableExists(authorizable.getID(), "User"));
-			}
-		} else {
-			if (authorizable instanceof Group) {
-				actionResult.logWarning(MessagingUtils.authorizableExists(authorizable.getID(), "Group"));
-			} else {
-				actionResult.logWarning(MessagingUtils.authorizableExists(authorizable.getID(), "User"));
-			}
-		}
-	}
+  private void logMessage(ActionResult actionResult, Authorizable authorizable) throws RepositoryException {
+    if (!ignoreIfExists) {
+      if (authorizable instanceof Group) {
+        actionResult.logError(MessagingUtils.authorizableExists(authorizable.getID(), "Group"));
+      } else {
+        actionResult.logError(MessagingUtils.authorizableExists(authorizable.getID(), "User"));
+      }
+    } else {
+      if (authorizable instanceof Group) {
+        actionResult.logWarning(MessagingUtils.authorizableExists(authorizable.getID(), "Group"));
+      } else {
+        actionResult.logWarning(MessagingUtils.authorizableExists(authorizable.getID(), "User"));
+      }
+    }
+  }
 
-	@Override
-	public boolean isGeneric() {
-		return true;
-	}
+  @Override
+  public boolean isGeneric() {
+    return true;
+  }
 
 }

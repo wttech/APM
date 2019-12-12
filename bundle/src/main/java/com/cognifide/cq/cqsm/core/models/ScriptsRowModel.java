@@ -21,6 +21,10 @@ package com.cognifide.cq.cqsm.core.models;
 
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 
+import com.cognifide.cq.cqsm.api.history.History;
+import com.cognifide.cq.cqsm.api.history.HistoryEntry;
+import com.cognifide.cq.cqsm.api.history.ScriptHistory;
+import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.core.scripts.ScriptContent;
 import com.cognifide.cq.cqsm.core.scripts.ScriptImpl;
 import com.cognifide.cq.cqsm.core.utils.CalendarUtils;
@@ -29,14 +33,17 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import lombok.Getter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
+import org.apache.sling.models.annotations.injectorspecific.Self;
+import org.jetbrains.annotations.NotNull;
 
 @Model(adaptables = Resource.class)
 public final class ScriptsRowModel {
@@ -45,6 +52,12 @@ public final class ScriptsRowModel {
       .of(JcrConstants.NT_FOLDER, "sling:OrderedFolder", "sling:Folder");
 
   public static final String SCRIPTS_ROW_RESOURCE_TYPE = "apm/components/scriptsRow";
+
+  @Self
+  private Resource resource;
+
+  @Inject
+  private History history;
 
   @Getter
   private String scriptName;
@@ -67,19 +80,30 @@ public final class ScriptsRowModel {
   @Getter
   private boolean isExecutionEnabled;
 
-  public ScriptsRowModel(Resource resource) {
+  @PostConstruct
+  protected void afterCreated() {
     this.isFolder = isFolder(resource);
     this.scriptName = defaultIfEmpty(getProperty(resource, JcrConstants.JCR_TITLE), resource.getName());
     if (!isFolder) {
       Optional.ofNullable(resource.adaptTo(ScriptImpl.class)).ifPresent(script -> {
+        ScriptHistory scriptHistory = history.findScriptHistory(resource.getResourceResolver(), script);
         this.author = script.getAuthor();
         this.isValid = script.isValid();
         this.lastModified = CalendarUtils.asCalendar(script.getLastModified());
-        this.runs.add(new ScriptRun("runOnAuthor", script.getRunSummary(), script.isRunSuccessful(), script.getRunTime()));
-        this.runs.add(new ScriptRun("runOnPublish", script.getRunOnPublishSummary(), script.isRunOnPublishSuccessful(), script.getRunOnPublishTime()));
-        this.runs.add(new ScriptRun("dryRun", script.getDryRunSummary(), script.isDryRunSuccessful(), script.getDryRunTime()));
+        this.runs.add(createScriptRun("runOnAuthor", script, scriptHistory.getLastLocalRun()));
+        this.runs.add(createScriptRun("runOnPublish", script, scriptHistory.getLastRemoteAutomaticRun()));
+        this.runs.add(createScriptRun("dryRun", script, scriptHistory.getLastLocalDryRun()));
         this.isExecutionEnabled = script.isExecutionEnabled();
       });
+    }
+  }
+
+  @NotNull
+  private ScriptRun createScriptRun(String name, Script script, HistoryEntry historyEntry) {
+    if (historyEntry != null && StringUtils.equals(historyEntry.getChecksum(), script.getChecksum())) {
+      return new ScriptRun(name, historyEntry);
+    } else {
+      return new ScriptRun(name);
     }
   }
 
@@ -113,12 +137,18 @@ public final class ScriptsRowModel {
     private final boolean success;
     private final Calendar time;
 
-    public ScriptRun(String type, String summary, boolean success, Date time) {
+    public ScriptRun(String type) {
       this.type = type;
-      this.summary = summary;
-      this.success = success;
-      this.time = CalendarUtils.asCalendar(time);
+      this.summary = null;
+      this.success = false;
+      this.time = null;
     }
 
+    public ScriptRun(String type, HistoryEntry historyEntry) {
+      this.type = type;
+      this.summary = historyEntry.getPath();
+      this.success = historyEntry.isRunSuccessful();
+      this.time = CalendarUtils.asCalendar(historyEntry.getExecutionTime());
+    }
   }
 }

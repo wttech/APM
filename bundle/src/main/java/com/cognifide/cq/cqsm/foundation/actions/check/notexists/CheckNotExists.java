@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,78 +22,73 @@ package com.cognifide.cq.cqsm.foundation.actions.check.notexists;
 import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.ActionResult;
 import com.cognifide.cq.cqsm.api.executors.Context;
-import com.cognifide.cq.cqsm.api.utils.AuthorizablesUtils;
 import com.cognifide.cq.cqsm.core.actions.ActionUtils;
 import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
-
-import org.apache.jackrabbit.api.security.user.Authorizable;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.jcr.RepositoryException;
+import org.apache.jackrabbit.api.security.user.Authorizable;
 
 public class CheckNotExists implements Action {
 
-	private final List<String> ids;
+  private final List<String> ids;
 
-	public CheckNotExists(final List<String> ids) {
-		this.ids = ids;
-	}
+  public CheckNotExists(final List<String> ids) {
+    this.ids = ids;
+  }
 
-	@Override
-	public ActionResult simulate(Context context) {
-		return process(context, false);
-	}
+  @Override
+  public ActionResult simulate(Context context) {
+    return process(context, false);
+  }
 
-	@Override
-	public ActionResult execute(final Context context) {
-		return process(context, true);
-	}
+  @Override
+  public ActionResult execute(final Context context) {
+    return process(context, true);
+  }
 
-	private ActionResult process(final Context context, boolean execute) {
+  private ActionResult process(final Context context, boolean execute) {
 
-		ActionResult actionResult = new ActionResult();
-		List<String> errors = new ArrayList<>();
+    ActionResult actionResult = new ActionResult();
+    List<String> errors = new ArrayList<>();
 
-		boolean checkFailed = checkAuthorizables(context, actionResult, errors);
+    boolean checkFailed = checkAuthorizables(context, actionResult, errors);
 
-		if (execute && checkFailed) {
-			actionResult.logError(ActionUtils.ASSERTION_FAILED_MSG);
-			return actionResult;
-		}
+    if (execute && checkFailed) {
+      actionResult.logError(ActionUtils.ASSERTION_FAILED_MSG);
+      return actionResult;
+    }
 
-		logErrors(actionResult, errors);
+    logErrors(actionResult, errors);
 
-		return actionResult;
-	}
+    return actionResult;
+  }
 
-	private boolean checkAuthorizables(final Context context, ActionResult actionResult,
-			List<String> errors) {
-		boolean checkFailed = false;
-		for (String authorizableId : ids) {
-			try {
-				Authorizable authorizable = AuthorizablesUtils
-						.getAuthorizableIfExists(context, authorizableId);
-				if (authorizable != null) {
-					actionResult.logError("Authorizable " + authorizableId + " exists");
-					checkFailed = true;
-				}
-			} catch (final RepositoryException e) {
-				errors.add(MessagingUtils.createMessage(e));
-			}
-		}
-		return checkFailed;
-	}
+  private boolean checkAuthorizables(final Context context, ActionResult actionResult,
+      List<String> errors) {
+    boolean checkFailed = false;
+    for (String authorizableId : ids) {
+      try {
+        Authorizable authorizable = context.getAuthorizableManager().getAuthorizableIfExists(authorizableId);
+        if (authorizable != null) {
+          actionResult.logError("Authorizable " + authorizableId + " exists");
+          checkFailed = true;
+        }
+      } catch (final RepositoryException e) {
+        errors.add(MessagingUtils.createMessage(e));
+      }
+    }
+    return checkFailed;
+  }
 
-	private void logErrors(ActionResult actionResult, List<String> errors) {
-		for (String error : errors) {
-			actionResult.logError(error);
-		}
-	}
+  private void logErrors(ActionResult actionResult, List<String> errors) {
+    for (String error : errors) {
+      actionResult.logError(error);
+    }
+  }
 
-	@Override
-	public boolean isGeneric() {
-		return true;
-	}
+  @Override
+  public boolean isGeneric() {
+    return true;
+  }
 }

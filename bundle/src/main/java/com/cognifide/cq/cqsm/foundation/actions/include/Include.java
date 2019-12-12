@@ -23,20 +23,16 @@ import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.ActionResult;
 import com.cognifide.cq.cqsm.api.exceptions.ActionExecutionException;
 import com.cognifide.cq.cqsm.api.executors.Context;
-import com.cognifide.cq.cqsm.api.utils.AuthorizablesUtils;
 import com.cognifide.cq.cqsm.core.actions.ActionUtils;
 import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
-
+import java.util.ArrayList;
+import java.util.List;
+import javax.jcr.RepositoryException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.apache.jackrabbit.api.security.user.Group;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.jcr.RepositoryException;
 
 public class Include implements Action {
 
@@ -79,7 +75,7 @@ public class Include implements Action {
 		for (String authorizableId : authorizableIds) {
 			try {
 
-				Authorizable authorizable = AuthorizablesUtils.getAuthorizable(context, authorizableId);
+        Authorizable authorizable = context.getAuthorizableManager().getAuthorizable(authorizableId);
 
 				if (authorizable.isGroup()) {
 					ActionUtils.checkCyclicRelations(group, (Group) authorizable);

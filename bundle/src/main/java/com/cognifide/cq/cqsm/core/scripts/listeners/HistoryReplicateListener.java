@@ -20,6 +20,7 @@
 package com.cognifide.cq.cqsm.core.scripts.listeners;
 
 import com.cognifide.cq.cqsm.api.executors.Mode;
+import com.cognifide.cq.cqsm.api.history.History;
 import com.cognifide.cq.cqsm.api.history.HistoryEntry;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.scripts.Event;
@@ -27,9 +28,7 @@ import com.cognifide.cq.cqsm.api.scripts.EventListener;
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
 import com.cognifide.cq.cqsm.api.utils.InstanceTypeProvider;
-import com.cognifide.cq.cqsm.core.history.History;
 import javax.jcr.RepositoryException;
-
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -63,7 +62,7 @@ public class HistoryReplicateListener implements EventListener {
 	public void handle(Script script, Mode mode, Progress progress) {
 		if (mode.isRun()) {
 			try {
-				HistoryEntry entry = history.log(script, mode, progress);
+        HistoryEntry entry = history.logLocal(script, mode, progress);
 				history.replicate(entry, progress.getExecutor());
 			} catch (RepositoryException e) {
 				LOG.error("Repository error occurred while replicating script execution", e);

@@ -58,22 +58,4 @@ public interface ModifiableScript {
    * Set replicated by user
    */
   void setReplicatedBy(String userId) throws PersistenceException;
-
-  void setDryRunTime(Date executionDate) throws PersistenceException;
-
-  void setDryRunSummary(String path) throws PersistenceException;
-
-  void setDryRunStatus(Boolean flag) throws PersistenceException;
-
-  void setRunTime(Date executionDate) throws PersistenceException;
-
-  void setRunSummary(String path) throws PersistenceException;
-
-  void setRunStatus(Boolean flag) throws PersistenceException;
-
-  void setRunOnPublishTime(Date executionDate) throws PersistenceException;
-
-  void setRunOnPublishSummary(String path) throws PersistenceException;
-
-  void setRunOnPublishStatus(Boolean flag) throws PersistenceException;
 }
