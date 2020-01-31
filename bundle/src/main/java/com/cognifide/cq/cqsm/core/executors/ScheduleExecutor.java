@@ -25,6 +25,7 @@ import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
 import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
 import com.cognifide.cq.cqsm.core.Property;
+import com.cognifide.cq.cqsm.core.executors.ScheduleExecutor.ScheduleExecutorConfiguration;
 import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
 import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper;
 import java.util.Date;
@@ -32,8 +33,13 @@ import java.util.List;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 @Component(
     immediate = true,
@@ -44,6 +50,7 @@ import org.osgi.service.component.annotations.Reference;
         Property.SCHEDULER + "0 * * * * ?"
     }
 )
+@Designate(ocd = ScheduleExecutorConfiguration.class)
 public class ScheduleExecutor extends AbstractExecutor implements Runnable {
 
   @Reference
@@ -55,9 +62,19 @@ public class ScheduleExecutor extends AbstractExecutor implements Runnable {
   @Reference
   private ResourceResolverFactory resolverFactory;
 
+  private boolean enabled = true;
+
+  @Activate
+  @Modified
+  public void activate(ScheduleExecutorConfiguration config) {
+    enabled = config.enableScheduleExecutor();
+  }
+
   @Override
   public synchronized void run() {
-    SlingHelper.operateTraced(resolverFactory, this::runScheduled);
+    if (enabled) {
+      SlingHelper.operateTraced(resolverFactory, this::runScheduled);
+    }
   }
 
   private void runScheduled(ResourceResolver resolver) throws PersistenceException {
@@ -77,5 +94,12 @@ public class ScheduleExecutor extends AbstractExecutor implements Runnable {
   @Override
   public ScriptManager getScriptManager() {
     return scriptManager;
+  }
+
+  @ObjectClassDefinition(name = "com.cognifide.cqsm - CQSM Schedule Executor ")
+  public @interface ScheduleExecutorConfiguration {
+
+    @AttributeDefinition(name = "Enable Schedule Executor", defaultValue = "true")
+    boolean enableScheduleExecutor();
   }
 }
