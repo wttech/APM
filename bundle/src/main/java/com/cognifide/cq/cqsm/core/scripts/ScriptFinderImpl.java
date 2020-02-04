@@ -55,8 +55,6 @@ public class ScriptFinderImpl implements ScriptFinder {
 
   private static final String QUERY = "SELECT * FROM [nt:resource] WHERE ISDESCENDANTNODE([%s]) AND [jcr:mixinTypes] = 'cqsm:File'";
 
-  private static final String SCRIPT_EXTENSION = "cqsm";
-
   private static final String ROOT_PATH = "/conf/apm";
 
   static final String SCRIPT_PATH = ROOT_PATH + "/scripts";
@@ -79,7 +77,7 @@ public class ScriptFinderImpl implements ScriptFinder {
 
   @Override
   public List<Script> findAll(ResourceResolver resolver) {
-    return findScripts(SCRIPT_EXTENSION, resolver)
+    return findScripts(resolver)
         .map(resource -> resource.adaptTo(ScriptImpl.class))
         .collect(Collectors.toList());
   }
@@ -97,7 +95,10 @@ public class ScriptFinderImpl implements ScriptFinder {
       if (isAbsolute(scriptPath)) {
         resource = resolver.getResource(scriptPath);
       } else {
-        resource = findScripts(scriptPath, resolver)
+        resource = Stream.of(searchPaths)
+            .map(searchPath -> searchPath + "/" + scriptPath)
+            .map(path -> resolver.getResource(path))
+            .filter(Objects::nonNull)
             .findFirst()
             .orElse(null);
       }
@@ -108,9 +109,9 @@ public class ScriptFinderImpl implements ScriptFinder {
     return result;
   }
 
-  private Stream<Resource> findScripts(String scriptPath, ResourceResolver resolver) {
+  private Stream<Resource> findScripts(ResourceResolver resolver) {
     return Stream.of(searchPaths)
-        .map(searchPath -> String.format(QUERY, searchPath, scriptPath))
+        .map(searchPath -> String.format(QUERY, searchPath))
         .map(query -> resolver.findResources(query, Query.JCR_SQL2))
         .map(resourceIterator -> Spliterators.spliteratorUnknownSize(resourceIterator, Spliterator.ORDERED))
         .flatMap(resourceSpliterator -> StreamSupport.stream(resourceSpliterator, false))

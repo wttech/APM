@@ -96,7 +96,7 @@ public class ScheduleExecutor extends AbstractExecutor implements Runnable {
     return scriptManager;
   }
 
-  @ObjectClassDefinition(name = "com.cognifide.cqsm - CQSM Schedule Executor ")
+  @ObjectClassDefinition(name = "AEM Permission Management - Schedule Executor Configuration ")
   public @interface ScheduleExecutorConfiguration {
 
     @AttributeDefinition(name = "Enable Schedule Executor", defaultValue = "true")
