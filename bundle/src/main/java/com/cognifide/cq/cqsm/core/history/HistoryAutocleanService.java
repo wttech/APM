@@ -47,7 +47,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 public class HistoryAutocleanService implements Runnable {
 
   private static final String QUERY = "SELECT * FROM [nt:unstructured] "
-      + "WHERE ISDESCENDANTNODE('/var/apm/history') "
+      + "WHERE ISDESCENDANTNODE('" + HistoryImpl.HISTORY_FOLDER + "') "
       + "AND executionTime IS NOT NULL";
 
   private static final String MAX_DAYS_QUERY = QUERY + " AND executionTime <= '%s'";
