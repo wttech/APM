@@ -22,21 +22,37 @@ package com.cognifide.cq.cqsm.core.actions;
 
 import com.cognifide.apm.antlr.argument.Arguments;
 import com.cognifide.cq.cqsm.api.actions.Action;
+import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
 import com.cognifide.cq.cqsm.core.actions.ParameterDescriptor.NamedParameterDescriptor;
 import com.cognifide.cq.cqsm.core.actions.ParameterDescriptor.RequiredParameterDescriptor;
+import com.google.common.collect.ImmutableList;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
 import org.apache.commons.collections.CollectionUtils;
 
-@RequiredArgsConstructor
 public class MappingDescriptor {
+
+  @Getter
+  private final List<String> names;
+  @Getter
+  private final String description;
+  @Getter
+  private final List<String> examples;
 
   private final Method method;
   private final List<ParameterDescriptor> parameterDescriptors;
+
+  public MappingDescriptor(Method method, Mapping mappingAnnotation, List<ParameterDescriptor> parameterDescriptors) {
+    this.names = ImmutableList.copyOf(mappingAnnotation.value());
+    this.description = mappingAnnotation.reference();
+    this.examples = ImmutableList.copyOf(mappingAnnotation.examples());
+    this.method = method;
+    this.parameterDescriptors = parameterDescriptors;
+  }
 
   public boolean handles(Arguments arguments) {
     boolean handles = parameterDescriptors.stream()
@@ -44,6 +60,12 @@ public class MappingDescriptor {
     handles &= checkRequired(arguments);
     handles &= checkNamed(arguments);
     return handles;
+  }
+
+  public List<ArgumentDescription> getArguments() {
+    return parameterDescriptors.stream()
+        .flatMap(parameterDescriptor -> parameterDescriptor.toArgumentDescriptions().stream())
+        .collect(Collectors.toList());
   }
 
   private boolean checkRequired(Arguments arguments) {

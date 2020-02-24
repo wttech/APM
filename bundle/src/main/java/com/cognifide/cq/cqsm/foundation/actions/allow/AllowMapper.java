@@ -22,25 +22,38 @@ package com.cognifide.cq.cqsm.foundation.actions.allow;
 import static com.cognifide.cq.cqsm.foundation.actions.CommonFlags.IF_EXISTS;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
+import com.cognifide.cq.cqsm.api.actions.annotations.Flag;
 import com.cognifide.cq.cqsm.api.actions.annotations.Flags;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
 import com.cognifide.cq.cqsm.api.actions.annotations.Named;
+import com.cognifide.cq.cqsm.api.actions.annotations.Required;
 import java.util.List;
 
 @Mapper("allow")
 public class AllowMapper {
 
-  public static final String REFERENCE = "Add allow permissions for current authorizable on specified path.";
+  public static final String REFERENCE = "Add allow permissions for current authorizable on specified path. "
+      + "Script fails if path doesn't exist.";
 
   @Mapping(
       value = "ALLOW",
-      args = {"path", "permissions", "glob", "types", "items"},
+      examples = {
+          "ALLOW '/content/dam' [READ]",
+          "ALLOW '/content/dam' properties= ['jcr:title'] [MODIFY]",
+          "ALLOW '/content/dam' properties= ['nt:folder'] [MODIFY]",
+          "ALLOW '/content/dam/domain' [READ, MODIFY] --IF-EXISTS"
+      },
       reference = REFERENCE
   )
-  public Action create(String path, List<String> permissions,
-      @Named("glob") String glob, @Named("types") List<String> types, @Named("properties") List<String> items,
-      @Flags List<String> flags) {
+  public Action create(
+      @Required(value = "path", description = "e.g.: '/content/dam'") String path,
+      @Required(value = "permissions", description = "e.g.: [READ, 'jcr:all']") List<String> permissions,
+      @Named(value = "glob", description = "regular expression to narrow set of paths") String glob,
+      @Named(value = "types", description = "list of jcr types which will be affected") List<String> types,
+      @Named(value = "properties", description = "list of properties which will be affected ") List<String> items,
+      @Flags({
+          @Flag(value = IF_EXISTS, description = "script doesn't fail if path doesn't exist")}) List<String> flags) {
     return new Allow(path, permissions, glob, types, items, flags.contains(IF_EXISTS));
   }
 }

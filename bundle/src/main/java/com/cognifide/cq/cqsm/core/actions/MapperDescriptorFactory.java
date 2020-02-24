@@ -29,6 +29,7 @@ import com.cognifide.cq.cqsm.api.actions.annotations.Flags;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
 import com.cognifide.cq.cqsm.api.actions.annotations.Named;
+import com.cognifide.cq.cqsm.api.actions.annotations.Required;
 import com.cognifide.cq.cqsm.api.exceptions.InvalidActionMapperException;
 import com.cognifide.cq.cqsm.core.actions.ParameterDescriptor.FlagsParameterDescriptor;
 import com.cognifide.cq.cqsm.core.actions.ParameterDescriptor.NamedParameterDescriptor;
@@ -81,7 +82,7 @@ public class MapperDescriptorFactory {
     List<ParameterDescriptor> parameterDescriptors = Lists.newArrayList();
     Type[] types = method.getGenericParameterTypes();
     Annotation[][] annotations = method.getParameterAnnotations();
-    int required = 0;
+    int requiredIndex = 0;
     for (int i = 0; i < types.length; i++) {
       Type type = types[i];
       Annotation[] parameterAnnotations = annotations[i];
@@ -89,19 +90,21 @@ public class MapperDescriptorFactory {
       ParameterDescriptor parameterDescriptor = null;
       if (containsAnnotation(parameterAnnotations, Named.class)) {
         Named namedAnnotation = getAnnotation(parameterAnnotations, Named.class);
-        parameterDescriptor = new NamedParameterDescriptor(apmType, namedAnnotation.value());
+        parameterDescriptor = new NamedParameterDescriptor(apmType, namedAnnotation);
       }
       if (containsAnnotation(parameterAnnotations, Flags.class)) {
-        parameterDescriptor = new FlagsParameterDescriptor(apmType);
+        Flags flagsAnnotation = getAnnotation(parameterAnnotations, Flags.class);
+        parameterDescriptor = new FlagsParameterDescriptor(apmType, flagsAnnotation);
       }
       if (parameterDescriptor == null) {
-        parameterDescriptor = new RequiredParameterDescriptor(apmType, required);
-        required++;
+        Required requiredAnnotation = getAnnotation(parameterAnnotations, Required.class);
+        parameterDescriptor = new RequiredParameterDescriptor(apmType, requiredIndex, requiredAnnotation);
+        requiredIndex++;
       }
       parameterDescriptors.add(parameterDescriptor);
     }
 
-    return Optional.of(new MappingDescriptor(method, ImmutableList.copyOf(parameterDescriptors)));
+    return Optional.of(new MappingDescriptor(method, mappingAnnotation, ImmutableList.copyOf(parameterDescriptors)));
   }
 
   private <T extends Annotation> T getAnnotation(Annotation[] annotations, Class<T> type) {

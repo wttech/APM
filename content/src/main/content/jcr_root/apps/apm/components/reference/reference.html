@@ -23,18 +23,31 @@
     <table is="coral-table">
       <thead is="coral-table-head">
       <tr is="coral-table-row">
-        <th style="width: 35%;" is="coral-table-headercell">Command syntax</th>
-        <th style="width: 20%;" is="coral-table-headercell">Arguments</th>
-        <th style="width: 45%;" is="coral-table-headercell">Description</th>
+        <th style="width: 15%" is="coral-table-headercell">Command syntax</th>
+        <th style="width: 30%" is="coral-table-headercell" colspan="2">Arguments</th>
+        <th is="coral-table-headercell">Description</th>
       </tr>
       </thead>
       <tbody is="coral-table-body">
-      <sly data-sly-repeat.map="${model.references}">
-        <tr is="coral-table-row">
-          <td is="coral-table-cell">${map["commands"] @ join='<br> ', context='html'}</td>
-          <td is="coral-table-cell">${map["args"] @ join=', '}</td>
-          <td is="coral-table-cell">${map["reference"]}</td>
-        </tr>
+      <sly data-sly-list.map="${model.references}">
+        <sly data-sly-list="${map.arguments}">
+          <tr is="coral-table-row" class="${mapList.even ? 'even' : 'odd'}">
+            <td is="coral-table-cell" rowspan="${map.arguments.size}" data-sly-test="${itemList.first}">${map.names @
+              join='<br> ', context='html'}
+            </td>
+            <td is="coral-table-cell" class="argument-cell">${item.name} (${item.type})</td>
+            <td is="coral-table-cell" class="argument-cell">${item.description}</td>
+            <td is="coral-table-cell" rowspan="${map.arguments.size}" data-sly-test="${itemList.first}">
+              <p>${map.description}</p>
+              <div data-sly-test="${map.examples}" class="description-example">
+                <strong>Examples</strong>
+                <p data-sly-repeat.example="${map.examples}">
+                  ${example}
+                </p>
+              </div>
+            </td>
+          </tr>
+        </sly>
       </sly>
       </tbody>
     </table>

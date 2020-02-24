@@ -48,6 +48,6 @@ public class ReferenceServlet extends SlingAllMethodsServlet {
   @Override
   protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response)
       throws IOException {
-    ServletUtils.writeJson(response, actionFactory.refer());
+    ServletUtils.writeJson(response, actionFactory.getCommandDescriptions());
   }
 }

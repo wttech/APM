@@ -20,12 +20,15 @@
 
 package com.cognifide.cq.cqsm.core.actions;
 
-import java.util.Collection;
-import java.util.Optional;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-public interface ActionMapperRegistry {
+@Getter
+@RequiredArgsConstructor
+public class ArgumentDescription {
 
-  Optional<MapperDescriptor> getMapper(String name);
+  private final String name;
+  private final String type;
+  private final String description;
 
-  Collection<MapperDescriptor> getMappers();
 }

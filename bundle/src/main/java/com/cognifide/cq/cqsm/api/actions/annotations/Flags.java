@@ -29,4 +29,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.PARAMETER)
 public @interface Flags {
 
+  Flag[] value() default {};
+
 }

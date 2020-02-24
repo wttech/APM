@@ -21,13 +21,13 @@ package com.cognifide.cq.cqsm.api.actions;
 
 import com.cognifide.apm.antlr.argument.Arguments;
 import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
+import com.cognifide.cq.cqsm.core.actions.CommandDescription;
 import java.util.List;
-import java.util.Map;
 
 public interface ActionFactory {
 
   ActionDescriptor evaluate(String command, Arguments arguments) throws ActionCreationException;
 
-  List<Map<String, Object>> refer();
+  List<CommandDescription> getCommandDescriptions();
 
 }
