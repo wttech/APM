@@ -5,12 +5,14 @@ import pl.allegro.tech.build.axion.release.domain.scm.ScmPosition
 plugins {
     id("pl.allegro.tech.build.axion-release") version "1.10.1"
     id("org.nosphere.apache.rat") version "0.4.0"
+    id("com.cognifide.aem.bundle")
     id("com.cognifide.aem.instance")
     id("com.cognifide.aem.package")
     `maven-publish`
     signing
 }
 
+group = "com.company.aem"
 defaultTasks = listOf(":aemSatisfy", ":aemDeploy")
 description = "AEM Permission Management :: Root"
 

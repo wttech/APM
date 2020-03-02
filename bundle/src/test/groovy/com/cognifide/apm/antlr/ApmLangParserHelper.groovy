@@ -27,7 +27,7 @@ import org.antlr.v4.runtime.CommonTokenStream
 class ApmLangParserHelper {
 
     def static createParserUsingFile(String scriptPath) {
-        CharStream charStream = CharStreams.fromStream(getClass().getResourceAsStream(scriptPath))
+        CharStream charStream = CharStreams.fromStream(ApmLangParserHelper.class.getResourceAsStream(scriptPath))
         return createParser(charStream)
     }
 

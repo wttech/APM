@@ -60,6 +60,7 @@ dependencies {
     compileOnly("commons-codec:commons-codec:1.5")
     compileOnly("commons-collections:commons-collections:3.2.1")
     compileOnly("javax.jcr:jcr:2.0")
+    compileOnly("javax.annotation:javax.annotation-api:1.3.2")
     compileOnly("javax.inject:javax.inject:1")
     compileOnly("javax.servlet:jsp-api:2.0")
     compileOnly("javax.servlet:servlet-api:2.4")
