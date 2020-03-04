@@ -26,19 +26,15 @@ ace.define("ace/mode/cqsm_highlight_rules",["require","exports","module","ace/li
 		for (var i = 0; i < CqsmReference.length; i++) {
 			var reference = CqsmReference[i];
 
-			for (var j = 0; j < reference.pattern.length; j++) {
-				actions.push({
-					token : "entity.name.function",
-					regex : "^\\s*" + reference.pattern[j] + "\\s*$",
-					tooltip: CqsmReference[i].reference
-				});
-			}
+			actions.push({
+				token : "entity.name.function",
+				regex : "^\\s*" + reference.name + "\\s*$",
+				tooltip: CqsmReference[i].description
+			});
 
-			for (var k = 0; k < reference.commands.length; k++) {
-				var match = reference.commands[k].match(/\b([A-Z]+)\b/g);
-				if (match) {
-					keywords = keywords.concat(match);
-				}
+			var match = reference.name.match(/\b([A-Z]+)\b/g);
+			if (match) {
+				keywords = keywords.concat(match);
 			}
 		}
 
