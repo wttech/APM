@@ -32,9 +32,7 @@
       <sly data-sly-list.map="${model.references}">
         <sly data-sly-list="${map.arguments}">
           <tr is="coral-table-row" class="${mapList.even ? 'even' : 'odd'}">
-            <td is="coral-table-cell" rowspan="${map.arguments.size}" data-sly-test="${itemList.first}">${map.names @
-              join='<br> ', context='html'}
-            </td>
+            <td is="coral-table-cell" rowspan="${map.arguments.size}" data-sly-test="${itemList.first}">${map.name}</td>
             <td is="coral-table-cell" class="argument-cell">${item.name} (${item.type})</td>
             <td is="coral-table-cell" class="argument-cell">${item.description}</td>
             <td is="coral-table-cell" rowspan="${map.arguments.size}" data-sly-test="${itemList.first}">

@@ -28,12 +28,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CommandDescription {
 
-  private final List<String> names;
+  private final String name;
   private final List<String> examples;
   private final String description;
   private final List<ArgumentDescription> arguments;
 
-  public String getName() {
-    return names.get(0);
-  }
 }

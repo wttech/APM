@@ -37,7 +37,7 @@ import org.apache.commons.collections.CollectionUtils;
 public class MappingDescriptor {
 
   @Getter
-  private final List<String> names;
+  private final String name;
   @Getter
   private final String description;
   @Getter
@@ -47,7 +47,7 @@ public class MappingDescriptor {
   private final List<ParameterDescriptor> parameterDescriptors;
 
   public MappingDescriptor(Method method, Mapping mappingAnnotation, List<ParameterDescriptor> parameterDescriptors) {
-    this.names = ImmutableList.copyOf(mappingAnnotation.value());
+    this.name = mappingAnnotation.value();
     this.description = mappingAnnotation.reference();
     this.examples = ImmutableList.copyOf(mappingAnnotation.examples());
     this.method = method;

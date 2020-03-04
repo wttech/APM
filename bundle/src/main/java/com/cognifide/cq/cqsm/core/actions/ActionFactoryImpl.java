@@ -69,7 +69,7 @@ public class ActionFactoryImpl implements ActionFactory {
     for (MapperDescriptor mapper : registry.getMappers()) {
       for (MappingDescriptor mapping : mapper.getMappingDescriptors()) {
         commandDescriptions.add(
-            new CommandDescription(mapping.getNames(), mapping.getExamples(), mapping.getDescription(),
+            new CommandDescription(mapping.getName(), mapping.getExamples(), mapping.getDescription(),
                 mapping.getArguments()));
       }
     }
