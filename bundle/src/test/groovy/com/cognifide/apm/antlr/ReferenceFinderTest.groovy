@@ -1,9 +1,27 @@
+/*
+ * ========================LICENSE_START=================================
+ * AEM Permission Management
+ * %%
+ * Copyright (C) 2013 Cognifide Limited
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * =========================LICENSE_END==================================
+ */
+
 package com.cognifide.apm.antlr
 
-import com.cognifide.apm.antlr.executioncontext.ExecutionContext
 import com.cognifide.cq.cqsm.api.scripts.Script
 import com.cognifide.cq.cqsm.api.scripts.ScriptFinder
-import com.cognifide.cq.cqsm.core.progress.ProgressImpl
 import org.apache.commons.io.IOUtils
 import org.apache.sling.api.resource.ResourceResolver
 import spock.lang.Specification
@@ -22,13 +40,10 @@ class ReferenceFinderTest extends Specification {
         scriptFinder.find("/run-a.apm", resourceResolver) >> createScript("/run-a.apm")
         scriptFinder.find("/run-b.apm", resourceResolver) >> createScript("/run-b.apm")
         scriptFinder.find("/run-c.apm", resourceResolver) >> createScript("/run-c.apm")
-
-        ExecutionContext executionContext = ExecutionContext.create(scriptFinder, resourceResolver, script, new ProgressImpl(""))
-        ReferenceFinder referenceFinder = new ReferenceFinder(executionContext)
-        ApmLangParser parser = ApmLangParserHelper.createParserUsingFile("/import-and-run.apm")
+        ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resourceResolver)
 
         when:
-        List<Script> references = referenceFinder.findReferences(parser.apm())
+        List<Script> references = referenceFinder.findReferences(script)
 
         then:
         references == [scriptFinder.find("/import-a.apm", resourceResolver),

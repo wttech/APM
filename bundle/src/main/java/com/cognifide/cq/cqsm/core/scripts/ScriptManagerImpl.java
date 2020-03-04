@@ -19,6 +19,7 @@
  */
 package com.cognifide.cq.cqsm.core.scripts;
 
+import com.cognifide.apm.antlr.ReferenceFinder;
 import com.cognifide.apm.antlr.ScriptRunner;
 import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
 import com.cognifide.cq.cqsm.api.actions.ActionFactory;
@@ -45,7 +46,6 @@ import com.google.common.collect.Maps;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -211,11 +211,8 @@ public class ScriptManagerImpl implements ScriptManager {
 
   @Override
   public List<Script> findIncludes(Script script, ResourceResolver resolver) throws ExecutionException {
-    final List<Script> includes = new ArrayList<>();
-    //todo findIncludes here
-//    final HashMap<String, String> definitions = new HashMap<>();
-//    parseIncludeDescriptors(script, definitions, includes, resolver);
-    return includes;
+    ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resolver);
+    return referenceFinder.findReferences(script);
   }
 
   private ActionExecutor createExecutor(Mode mode, ResourceResolver resolver) throws RepositoryException {
