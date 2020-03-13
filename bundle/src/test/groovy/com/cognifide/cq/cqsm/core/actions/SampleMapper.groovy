@@ -32,14 +32,14 @@ import com.cognifide.cq.cqsm.api.executors.Context
 @Mapper("sample")
 class SampleMapper {
 
-    @Mapping("")
+    @Mapping
     Action create1(String path, String permissions,
                    @Named("glob") String glob, @Named("types") List<String> types, @Named("items") List<String> items,
                    @Flags List<String> flags) {
         return new DummyAction("create1")
     }
 
-    @Mapping("")
+    @Mapping
     Action create2(String path, List<String> permissions,
                    @Named("glob") String glob, @Named("types") List<String> types, @Named("items") List<String> items,
                    @Flags List<String> flags) {
