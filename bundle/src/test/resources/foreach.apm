@@ -17,8 +17,8 @@
  # limitations under the License.
  # =========================LICENSE_END==================================
 
-FOREACH i IN ['a', 'b'] BEGIN
-  FOREACH j IN ['c', 'd']
+FOR-EACH i IN ['a', 'b'] BEGIN
+  FOR-EACH j IN ['c', 'd']
   BEGIN
     SHOW $i+'/'+$j
   END

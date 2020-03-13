@@ -17,25 +17,24 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.cq.cqsm.foundation.actions.destroyuser;
+package com.cognifide.cq.cqsm.foundation.actions.internal;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
 import com.cognifide.cq.cqsm.api.actions.annotations.Required;
 import com.cognifide.cq.cqsm.foundation.actions.ActionGroup;
+import org.apache.commons.lang.NotImplementedException;
 
-@Mapper(value = "destroy-user", group = ActionGroup.CORE)
-public class DestroyUserMapper {
-
-  public static final String REFERENCE = "Remove specified users.\n"
-      + "Remove user from assigned groups, all given permission and user itself.";
+@Mapper(value = "import", group = ActionGroup.CORE)
+public final class ImportMapper {
 
   @Mapping(
-      examples = "DESTROY-USER 'author'",
-      reference = REFERENCE
+      examples = "IMPORT 'utils/create-authors.apm'",
+      reference = "Imports all definitions from given script."
   )
-  public Action mapAction(@Required(value = "userId", description = "user's id e.g.: 'author'") String userId) {
-    return new DestroyUser(userId);
+  public Action mapAction(@Required(value = "path", description = "path of the script") String path) {
+    throw new NotImplementedException("");
   }
+
 }

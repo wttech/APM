@@ -32,4 +32,6 @@ public @interface Mapper {
 
   String value();
 
+  String group() default "";
+
 }

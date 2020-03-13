@@ -4,7 +4,7 @@ DEFINE groups ["test_group_1", "test_group_2", "test_group_3"]
 
 # No authorizable available here
 
-FOREACH group IN $groups BEGIN
+FOR-EACH group IN $groups BEGIN
 
   # No authorizable available here
 

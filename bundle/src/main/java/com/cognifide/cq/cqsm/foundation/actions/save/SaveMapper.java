@@ -22,12 +22,12 @@ package com.cognifide.cq.cqsm.foundation.actions.save;
 import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
+import com.cognifide.cq.cqsm.foundation.actions.ActionGroup;
 
-@Mapper("save")
+@Mapper(value = "save", group = ActionGroup.CORE)
 public final class SaveMapper {
 
   @Mapping(
-      value = "SAVE",
       reference = "Useful in addition to the SESSION-SAVE ON-DEMAND action to execute saving session.\n" +
           "Ignored when mode other than ON-DEMAND is used."
   )

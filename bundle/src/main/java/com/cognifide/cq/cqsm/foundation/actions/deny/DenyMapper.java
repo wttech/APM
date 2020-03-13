@@ -28,16 +28,16 @@ import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
 import com.cognifide.cq.cqsm.api.actions.annotations.Named;
 import com.cognifide.cq.cqsm.api.actions.annotations.Required;
+import com.cognifide.cq.cqsm.foundation.actions.ActionGroup;
 import java.util.List;
 
-@Mapper("deny")
+@Mapper(value = "deny", group = ActionGroup.CORE)
 public class DenyMapper {
 
   public static final String REFERENCE = "This action is an complementary one for ALLOW action, and can be used to"
       + " add deny permission for current authorizable on specified path. Script fails if path doesn't exist.";
 
   @Mapping(
-      value = "DENY",
       examples = {
           "DENY '/content/dam' [READ]",
           "DENY '/content/dam' properties= ['jcr:title'] [MODIFY]",

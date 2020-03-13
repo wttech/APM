@@ -22,16 +22,17 @@ package com.cognifide.cq.cqsm.foundation.actions.removeall;
 import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
+import com.cognifide.cq.cqsm.api.actions.annotations.Required;
+import com.cognifide.cq.cqsm.foundation.actions.ActionGroup;
 
-@Mapper("remove-all")
+@Mapper(value = "remove-all", group = ActionGroup.CORE)
 public final class RemoveAllMapper {
 
   @Mapping(
-      value = "REMOVE-ALL",
-      args = {"path"},
+      examples = "REMOVE-ALL '/'",
       reference = "Delete every permission applied for current authorizable on specified path."
   )
-  public Action mapAction(String path) {
+  public Action mapAction(@Required("path") String path) {
     return new RemoveAll(path);
   }
 

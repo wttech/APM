@@ -22,16 +22,16 @@ package com.cognifide.cq.cqsm.foundation.actions.sessionsave;
 import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
+import com.cognifide.cq.cqsm.api.actions.annotations.Required;
+import com.cognifide.cq.cqsm.foundation.actions.ActionGroup;
 
-@Mapper("session-save")
+@Mapper(value = "session-save", group = ActionGroup.CORE)
 public final class SessionSaveMapper {
 
   @Mapping(
-      value = "SESSION-SAVE",
-      args = {"mode"},
       reference = "Set session saving mode."
   )
-  public Action mapAction(String mode) {
+  public Action mapAction(@Required(value = "mode", description = "mode's possible values: 'EVERY-ACTION', 'SINGLE', 'ON-DEMAND', 'NEVER'") String mode) {
     return new SessionSave(mode);
   }
 

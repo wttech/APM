@@ -22,16 +22,19 @@ package com.cognifide.cq.cqsm.foundation.actions.setproperty;
 import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
+import com.cognifide.cq.cqsm.api.actions.annotations.Required;
+import com.cognifide.cq.cqsm.foundation.actions.ActionGroup;
 
-@Mapper("set-property")
+@Mapper(value = "set-property", group = ActionGroup.CORE)
 public final class SetPropertyMapper {
 
   @Mapping(
-      value = "SET-PROPERTY",
-      args = {"name", "value"},
+      examples = "SET_PROPERTY 'jcr:title' 'title'",
       reference = "This is general purpose action which can be used to assign specified value to the specified property."
   )
-  public Action mapAction(String name, String value) {
+  public Action mapAction(
+      @Required(value = "name", description = "property's name e.g.: 'jcr:title'") String name,
+      @Required(value = "value", description = "property's value e.g.: 'title'") String value) {
     return new SetProperty(name, value);
   }
 

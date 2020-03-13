@@ -17,20 +17,11 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.cq.cqsm.foundation.actions.clearfromgroups;
 
-import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
-import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
-import com.cognifide.cq.cqsm.foundation.actions.ActionGroup;
+package com.cognifide.cq.cqsm.foundation.actions;
 
-@Mapper(value = "clear-parents-groups", group = ActionGroup.CORE)
-public final class ClearParentsGroupsMapper {
+public class ActionGroup {
 
-  @Mapping(
-      reference = "This action removes all memberships of a given group."
-  )
-  public Action mapActionForClearGroups() {
-    return new ClearFromGroups(ClearFromGroupOperationTypes.ALL_PARENTS);
-  }
+  public static final String CORE = "core";
+  public static final String CHECKS = "checks";
 }

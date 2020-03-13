@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,29 +22,30 @@ package com.cognifide.cq.cqsm.foundation.actions.removefromgroup;
 import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
+import com.cognifide.cq.cqsm.api.actions.annotations.Required;
+import com.cognifide.cq.cqsm.foundation.actions.ActionGroup;
 import java.util.Collections;
 import java.util.List;
 
-@Mapper("remove-from-group")
+@Mapper(value = "remove-from-group", group = ActionGroup.CORE)
 public final class RemoveFromGroupMapper {
 
-	public static final String REFERENCE = "Remove current authorizable from specified groups.";
+  public static final String REFERENCE = "Remove current authorizable from specified groups.";
 
-	@Mapping(
-			value = "REMOVE-FROM-GROUP",
-			args = {"groupId"},
-			reference = REFERENCE
-	)
-	public Action mapAction(String id) {
-		return mapAction(Collections.singletonList(id));
-	}
+  @Mapping(
+      examples = "REMOVE-FROM-GROUP 'authors'",
+      reference = REFERENCE
+  )
+  public Action mapAction(@Required(value = "groupId", description = "group's id e.g.: 'authors'") String id) {
+    return mapAction(Collections.singletonList(id));
+  }
 
-	@Mapping(
-			value = "REMOVE-FROM-GROUP",
-			args = {"groupIds"},
-			reference = REFERENCE
-	)
-	public Action mapAction(List<String> ids) {
-		return new RemoveFromGroup(ids);
-	}
+  @Mapping(
+      examples = "REMOVE-FROM-GROUP ['authors']",
+      reference = REFERENCE
+  )
+  public Action mapAction(
+      @Required(value = "groupIds", description = "groups' ids e.g.: ['authors']") List<String> ids) {
+    return new RemoveFromGroup(ids);
+  }
 }

@@ -22,16 +22,17 @@ package com.cognifide.cq.cqsm.foundation.actions.setpassword;
 import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
+import com.cognifide.cq.cqsm.api.actions.annotations.Required;
+import com.cognifide.cq.cqsm.foundation.actions.ActionGroup;
 
-@Mapper("set-password")
+@Mapper(value = "set-password", group = ActionGroup.CORE)
 public final class SetPasswordMapper {
 
   @Mapping(
-      value = "SET-PASSWORD",
-      args = {"password"},
+      examples = "SET-PASSWORD 'p@$$w0rd'",
       reference = "Set new password for a current user."
   )
-  public Action mapAction(String password) {
+  public Action mapAction(@Required(value = "password", description = "password e.g.: 'p@$$w0rd'") String password) {
     return new SetPassword(password);
   }
 

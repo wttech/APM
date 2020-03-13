@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,55 +24,53 @@ import com.cognifide.cq.cqsm.api.actions.ActionResult;
 import com.cognifide.cq.cqsm.api.exceptions.ActionExecutionException;
 import com.cognifide.cq.cqsm.api.executors.Context;
 import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
-
+import javax.jcr.RepositoryException;
 import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.jcr.RepositoryException;
-
 public class RemoveProperty implements Action {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(RemoveProperty.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RemoveProperty.class);
 
-	private final String nameProperty;
+  private final String nameProperty;
 
-	public RemoveProperty(final String nameProperty) {
-		this.nameProperty = nameProperty;
-	}
+  public RemoveProperty(final String nameProperty) {
+    this.nameProperty = nameProperty;
+  }
 
-	@Override
-	public ActionResult simulate(final Context context) {
-		return process(context, true);
-	}
+  @Override
+  public ActionResult simulate(final Context context) {
+    return process(context, true);
+  }
 
-	@Override
-	public ActionResult execute(final Context context) {
-		return process(context, false);
-	}
+  @Override
+  public ActionResult execute(final Context context) {
+    return process(context, false);
+  }
 
-	private ActionResult process(final Context context, boolean simulate) {
-		ActionResult actionResult = new ActionResult();
+  private ActionResult process(final Context context, boolean simulate) {
+    ActionResult actionResult = new ActionResult();
 
-		try {
-			Authorizable authorizable = context.getCurrentAuthorizable();
-			actionResult.setAuthorizable(authorizable.getID());
-			LOGGER.info(String.format("Removing property %s from authorizable with id = %s", nameProperty,
-					authorizable.getID()));
-			if (!simulate) {
-				authorizable.removeProperty(nameProperty);
-			}
+    try {
+      Authorizable authorizable = context.getCurrentAuthorizable();
+      actionResult.setAuthorizable(authorizable.getID());
+      LOGGER.info(String.format("Removing property %s from authorizable with id = %s", nameProperty,
+          authorizable.getID()));
+      if (!simulate) {
+        authorizable.removeProperty(nameProperty);
+      }
 
-			actionResult.logMessage("Property " + nameProperty + " for " + authorizable.getID() + " removed");
-		} catch (RepositoryException | ActionExecutionException e) {
-			actionResult.logError(MessagingUtils.createMessage(e));
-		}
-		return actionResult;
-	}
+      actionResult.logMessage("Property " + nameProperty + " for " + authorizable.getID() + " removed");
+    } catch (RepositoryException | ActionExecutionException e) {
+      actionResult.logError(MessagingUtils.createMessage(e));
+    }
+    return actionResult;
+  }
 
-	@Override
-	public boolean isGeneric() {
-		return false;
-	}
+  @Override
+  public boolean isGeneric() {
+    return false;
+  }
 
 }

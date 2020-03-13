@@ -24,28 +24,31 @@
       <thead is="coral-table-head">
       <tr is="coral-table-row">
         <th style="width: 15%" is="coral-table-headercell">Command syntax</th>
-        <th style="width: 30%" is="coral-table-headercell" colspan="2">Arguments</th>
+        <th style="width: 30%" is="coral-table-headercell">Arguments</th>
         <th is="coral-table-headercell">Description</th>
       </tr>
       </thead>
       <tbody is="coral-table-body">
       <sly data-sly-list.map="${model.references}">
-        <sly data-sly-list="${map.arguments}">
-          <tr is="coral-table-row" class="${mapList.even ? 'even' : 'odd'}">
-            <td is="coral-table-cell" rowspan="${map.arguments.size}" data-sly-test="${itemList.first}">${map.name}</td>
-            <td is="coral-table-cell" class="argument-cell">${item.name} (${item.type})</td>
-            <td is="coral-table-cell" class="argument-cell">${item.description}</td>
-            <td is="coral-table-cell" rowspan="${map.arguments.size}" data-sly-test="${itemList.first}">
-              <p>${map.description}</p>
-              <div data-sly-test="${map.examples}" class="description-example">
-                <strong>Examples</strong>
-                <p data-sly-repeat.example="${map.examples}">
-                  ${example}
-                </p>
-              </div>
-            </td>
-          </tr>
-        </sly>
+        <tr is="coral-table-row" class="${mapList.even ? 'even' : 'odd'}">
+          <td is="coral-table-cell">${map.name}</td>
+          <td is="coral-table-cell" class="argument-cell">
+            <ul>
+              <sly data-sly-list="${map.arguments}">
+                <li><span class="argument-name argument-type-${item.type}">${item.name}&nbsp;(${item.type})</span> -&nbsp;${item.description}</li>
+              </sly>
+            </ul>
+          </td>
+          <td is="coral-table-cell">
+            <p>${map.description}</p>
+            <div data-sly-test="${map.examples}" class="description-example">
+              <strong>Examples</strong>
+              <p data-sly-repeat.example="${map.examples}">
+                ${example}
+              </p>
+            </div>
+          </td>
+        </tr>
       </sly>
       </tbody>
     </table>

@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,37 +24,36 @@ import com.cognifide.cq.cqsm.api.actions.ActionResult;
 import com.cognifide.cq.cqsm.api.executors.Context;
 import com.cognifide.cq.cqsm.core.sessions.SessionSavingMode;
 import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
-
 import javax.jcr.RepositoryException;
 
 public class Save implements Action {
 
-	@Override
-	public ActionResult simulate(Context context) {
-		return process(context, false);
-	}
+  @Override
+  public ActionResult simulate(Context context) {
+    return process(context, false);
+  }
 
-	@Override
-	public ActionResult execute(final Context context) {
-		return process(context, true);
-	}
+  @Override
+  public ActionResult execute(final Context context) {
+    return process(context, true);
+  }
 
-	private ActionResult process(final Context context, boolean execute) {
-		ActionResult actionResult = new ActionResult();
-		try {
-			if (execute) {
-				context.getSavingPolicy().save(context.getSession(),
-						SessionSavingMode.ON_DEMAND);
-			}
-			actionResult.logMessage("Session saved");
-		} catch (final RepositoryException e) {
-			actionResult.logError(MessagingUtils.createMessage(e));
-		}
-		return actionResult;
-	}
+  private ActionResult process(final Context context, boolean execute) {
+    ActionResult actionResult = new ActionResult();
+    try {
+      if (execute) {
+        context.getSavingPolicy().save(context.getSession(),
+            SessionSavingMode.ON_DEMAND);
+      }
+      actionResult.logMessage("Session saved");
+    } catch (final RepositoryException e) {
+      actionResult.logError(MessagingUtils.createMessage(e));
+    }
+    return actionResult;
+  }
 
-	@Override
-	public boolean isGeneric() {
-		return true;
-	}
+  @Override
+  public boolean isGeneric() {
+    return true;
+  }
 }

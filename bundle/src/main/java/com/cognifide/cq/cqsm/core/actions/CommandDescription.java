@@ -29,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 public class CommandDescription {
 
   private final String name;
+  private final String group;
   private final List<String> examples;
   private final String description;
   private final List<ArgumentDescription> arguments;

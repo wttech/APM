@@ -36,7 +36,7 @@ class ScriptRunnerTest extends Specification {
     def resourceResolver = Mock(ResourceResolver)
     def scriptExecutor = new ScriptRunner(scriptFinder, resourceResolver, createActionInvoker())
 
-    def "run foreach"() {
+    def "run for-each"() {
         given:
         Script script = createScript("/foreach.apm")
 
@@ -66,9 +66,9 @@ class ScriptRunnerTest extends Specification {
                 .findAll { it.startsWith("Executing") }
         commands == ["Executing command SHOW 'global'",
                      "Executing command SHOW 'global'",
-                     "Executing command SHOW '1. foreach'",
-                     "Executing command SHOW '2. foreach'",
-                     "Executing command SHOW '1. foreach'",
+                     "Executing command SHOW '1. for-each'",
+                     "Executing command SHOW '2. for-each'",
+                     "Executing command SHOW '1. for-each'",
                      "Executing command SHOW 'global'"]
     }
 

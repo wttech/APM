@@ -22,6 +22,7 @@ package com.cognifide.cq.cqsm.core.actions;
 
 import com.cognifide.apm.antlr.argument.Arguments;
 import com.cognifide.cq.cqsm.api.actions.Action;
+import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
 import com.cognifide.cq.cqsm.core.actions.ParameterDescriptor.NamedParameterDescriptor;
 import com.cognifide.cq.cqsm.core.actions.ParameterDescriptor.RequiredParameterDescriptor;
@@ -39,6 +40,8 @@ public class MappingDescriptor {
   @Getter
   private final String name;
   @Getter
+  private final String group;
+  @Getter
   private final String description;
   @Getter
   private final List<String> examples;
@@ -46,10 +49,11 @@ public class MappingDescriptor {
   private final Method method;
   private final List<ParameterDescriptor> parameterDescriptors;
 
-  public MappingDescriptor(Method method, Mapping mappingAnnotation, List<ParameterDescriptor> parameterDescriptors) {
-    this.name = mappingAnnotation.value();
-    this.description = mappingAnnotation.reference();
-    this.examples = ImmutableList.copyOf(mappingAnnotation.examples());
+  public MappingDescriptor(Method method, Mapper mapper, Mapping mapping, List<ParameterDescriptor> parameterDescriptors) {
+    this.name = mapper.value();
+    this.group = mapper.group();
+    this.description = mapping.reference();
+    this.examples = ImmutableList.copyOf(mapping.examples());
     this.method = method;
     this.parameterDescriptors = parameterDescriptors;
   }

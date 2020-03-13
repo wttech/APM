@@ -25,6 +25,7 @@ import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
 import com.cognifide.cq.cqsm.api.actions.ActionFactory;
 import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
 import com.cognifide.cq.cqsm.core.Property;
+import com.cognifide.cq.cqsm.foundation.actions.ActionGroup;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -69,7 +70,8 @@ public class ActionFactoryImpl implements ActionFactory {
     for (MapperDescriptor mapper : registry.getMappers()) {
       for (MappingDescriptor mapping : mapper.getMappingDescriptors()) {
         commandDescriptions.add(
-            new CommandDescription(mapping.getName(), mapping.getExamples(), mapping.getDescription(),
+            new CommandDescription(mapping.getName(), mapping.getGroup(),
+                mapping.getExamples(), mapping.getDescription(),
                 mapping.getArguments()));
       }
     }
@@ -80,6 +82,17 @@ public class ActionFactoryImpl implements ActionFactory {
   }
 
   private void sortReferences(List<CommandDescription> references) {
-    Collections.sort(references, Comparator.comparing(CommandDescription::getName));
+    Collections.sort(references, Comparator.comparing(CommandDescription::getGroup, (o1, o2) -> {
+      if (ActionGroup.CORE.equals(o1) && ActionGroup.CORE.equals(o2)) {
+        return 0;
+      }
+      if (ActionGroup.CORE.equals(o1)) {
+        return -1;
+      }
+      if (ActionGroup.CORE.equals(o2)) {
+        return 1;
+      }
+      return Comparator.<String>naturalOrder().compare(o1, o2);
+    }).thenComparing(CommandDescription::getName));
   }
 }

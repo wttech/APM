@@ -19,15 +19,15 @@
 
 DEFINE var 'global'
 SHOW $var                           # should be 'global'
-FOREACH i IN ['1'] BEGIN
+FOR-EACH i IN ['1'] BEGIN
   SHOW $var                         # should be 'global'
-  DEFINE var '1. foreach'
-  SHOW $var                         # 'global' shadowed by '1. foreach'
-  FOREACH j IN ['1']
+  DEFINE var '1. for-each'
+  SHOW $var                         # 'global' shadowed by '1. for-each'
+  FOR-EACH j IN ['1']
   BEGIN
-    DEFINE var '2. foreach'
-    SHOW $var                       # '1. foreach' shadowed by '2. foreach'
+    DEFINE var '2. for-each'
+    SHOW $var                       # '1. foreach' shadowed by '2. for-each'
   END
-  SHOW $var                         # going back to '1. foreach'
+  SHOW $var                         # going back to '1. for-each'
 END
 SHOW $var                           # going back to 'global'

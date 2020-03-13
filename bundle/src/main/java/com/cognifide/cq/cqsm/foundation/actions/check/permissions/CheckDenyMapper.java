@@ -22,17 +22,16 @@ package com.cognifide.cq.cqsm.foundation.actions.check.permissions;
 import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
+import com.cognifide.cq.cqsm.foundation.actions.ActionGroup;
 import java.util.List;
 
-@Mapper("check-deny")
+@Mapper(value = "check-deny", group = ActionGroup.CHECKS)
 public final class CheckDenyMapper {
 
   public static final String REFERENCE = "Check that specific permissions are denied for current authorizable"
       + " on specified path.";
 
   @Mapping(
-      value = "CHECK-DENY",
-      args = {"authorizableId", "path", "glob", "permissions"},
       reference = REFERENCE
   )
   public Action mapAction(String id, String path, String glob, List<String> permissions) {

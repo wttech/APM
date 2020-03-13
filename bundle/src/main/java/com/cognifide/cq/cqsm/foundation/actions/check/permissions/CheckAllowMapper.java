@@ -23,17 +23,16 @@ import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
 import com.cognifide.cq.cqsm.api.actions.annotations.Named;
+import com.cognifide.cq.cqsm.foundation.actions.ActionGroup;
 import java.util.List;
 
-@Mapper("check-allow")
+@Mapper(value = "check-allow", group = ActionGroup.CHECKS)
 public final class CheckAllowMapper {
 
   public static final String REFERENCE = "Check that specific permissions are allowed for current authorizable"
       + " on specified path.";
 
   @Mapping(
-      value = "CHECK-ALLOW",
-      args = {"authorizableId", "path", "permissions"},
       reference = REFERENCE
   )
   public Action mapAction(String id, String path, List<String> permissions, @Named("glob") String glob) {

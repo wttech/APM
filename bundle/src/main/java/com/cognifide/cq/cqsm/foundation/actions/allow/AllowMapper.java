@@ -28,16 +28,16 @@ import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
 import com.cognifide.cq.cqsm.api.actions.annotations.Named;
 import com.cognifide.cq.cqsm.api.actions.annotations.Required;
+import com.cognifide.cq.cqsm.foundation.actions.ActionGroup;
 import java.util.List;
 
-@Mapper("allow")
+@Mapper(value = "allow", group = ActionGroup.CORE)
 public class AllowMapper {
 
   public static final String REFERENCE = "Add allow permissions for current authorizable on specified path. "
       + "Script fails if path doesn't exist.";
 
   @Mapping(
-      value = "ALLOW",
       examples = {
           "ALLOW '/content/dam' [READ]",
           "ALLOW '/content/dam' properties= ['jcr:title'] [MODIFY]",

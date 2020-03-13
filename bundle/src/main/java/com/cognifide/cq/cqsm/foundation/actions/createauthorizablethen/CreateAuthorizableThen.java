@@ -29,40 +29,40 @@ import com.cognifide.cq.cqsm.foundation.actions.forauthorizable.ForAuthorizable;
 
 public class CreateAuthorizableThen implements Action {
 
-    private final CreateAuthorizable createAuthorizable;
+  private final CreateAuthorizable createAuthorizable;
 
-    private final ForAuthorizable forAuthorizable;
+  private final ForAuthorizable forAuthorizable;
 
-    public CreateAuthorizableThen(final String id, final String password, final String path,
-                                  final Boolean ignoreIfExists, final CreateAuthorizableStrategy createStrategy,
-                                  final Boolean shouldBeGroup) {
-        this.createAuthorizable = new CreateAuthorizable(id, password, path, ignoreIfExists, createStrategy);
-        this.forAuthorizable = new ForAuthorizable(id, shouldBeGroup);
+  public CreateAuthorizableThen(final String id, final String password, final String path,
+      final Boolean ignoreIfExists, final CreateAuthorizableStrategy createStrategy,
+      final Boolean shouldBeGroup) {
+    this.createAuthorizable = new CreateAuthorizable(id, password, path, ignoreIfExists, createStrategy);
+    this.forAuthorizable = new ForAuthorizable(id, shouldBeGroup);
+  }
+
+  @Override
+  public ActionResult simulate(final Context context) {
+    return process(context, true);
+  }
+
+  @Override
+  public ActionResult execute(final Context context) {
+    return process(context, false);
+  }
+
+  public ActionResult process(final Context context, boolean simulate) {
+    ActionResult actionResult = createAuthorizable.process(context, simulate);
+    if (actionResult.getStatus() != Status.ERROR) {
+      ActionResult createActionResult = actionResult;
+      actionResult = forAuthorizable.process(context);
+      actionResult.getMessages().addAll(0, createActionResult.getMessages());
     }
+    return actionResult;
+  }
 
-    @Override
-    public ActionResult simulate(final Context context) {
-        return process(context, true);
-    }
-
-    @Override
-    public ActionResult execute(final Context context) {
-        return process(context, false);
-    }
-
-    public ActionResult process(final Context context, boolean simulate) {
-        ActionResult actionResult = createAuthorizable.process(context, simulate);
-        if (actionResult.getStatus() != Status.ERROR) {
-            ActionResult createActionResult = actionResult;
-            actionResult = forAuthorizable.process(context);
-            actionResult.getMessages().addAll(0, createActionResult.getMessages());
-        }
-        return actionResult;
-    }
-
-    @Override
-    public boolean isGeneric() {
-        return true;
-    }
+  @Override
+  public boolean isGeneric() {
+    return true;
+  }
 
 }

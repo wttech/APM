@@ -53,11 +53,12 @@ public class MapperDescriptorFactory {
 
     final Object mapper = createInstance(mapperClass);
     final String name = mapperAnnotation.value();
+    final String group = mapperAnnotation.group();
     final List<MappingDescriptor> mappingDescriptors = Lists.newArrayList();
     for (Method method : mapperClass.getDeclaredMethods()) {
-      create(method).ifPresent(mappingDescriptors::add);
+      create(mapperAnnotation, method).ifPresent(mappingDescriptors::add);
     }
-    return new MapperDescriptor(mapper, name, ImmutableList.copyOf(mappingDescriptors));
+    return new MapperDescriptor(mapper, name, group, ImmutableList.copyOf(mappingDescriptors));
   }
 
   private Object createInstance(Class<?> mapperClass) {
@@ -70,9 +71,9 @@ public class MapperDescriptorFactory {
     }
   }
 
-  private Optional<MappingDescriptor> create(Method method) {
-    Mapping mappingAnnotation = method.getAnnotation(Mapping.class);
-    if (mappingAnnotation == null) {
+  private Optional<MappingDescriptor> create(Mapper mapper, Method method) {
+    Mapping mapping = method.getAnnotation(Mapping.class);
+    if (mapping == null) {
       return Optional.empty();
     }
     if (!Action.class.equals(method.getReturnType())) {
@@ -104,7 +105,7 @@ public class MapperDescriptorFactory {
       parameterDescriptors.add(parameterDescriptor);
     }
 
-    return Optional.of(new MappingDescriptor(method, mappingAnnotation, ImmutableList.copyOf(parameterDescriptors)));
+    return Optional.of(new MappingDescriptor(method, mapper, mapping, ImmutableList.copyOf(parameterDescriptors)));
   }
 
   private <T extends Annotation> T getAnnotation(Annotation[] annotations, Class<T> type) {

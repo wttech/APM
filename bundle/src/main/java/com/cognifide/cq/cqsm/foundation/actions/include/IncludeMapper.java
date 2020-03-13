@@ -22,30 +22,31 @@ package com.cognifide.cq.cqsm.foundation.actions.include;
 import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
+import com.cognifide.cq.cqsm.api.actions.annotations.Required;
+import com.cognifide.cq.cqsm.foundation.actions.ActionGroup;
 import java.util.Collections;
 import java.util.List;
 
-@Mapper("include")
+@Mapper(value = "include", group = ActionGroup.CORE)
 public final class IncludeMapper {
 
   public static final String REFERENCE = "This action is an complementary one for EXCLUDE action, and can be used to"
       + " add specified users and groups to current group.";
 
   @Mapping(
-      value = "INCLUDE",
-      args = {"authorizableId"},
+      examples = "INCLUDE 'authors'",
       reference = REFERENCE
   )
-  public Action mapAction(String id) {
+  public Action mapAction(@Required(value = "id", description = "user's or group's id e.g.: 'author'") String id) {
     return mapAction(Collections.singletonList(id));
   }
 
   @Mapping(
-      value = "INCLUDE",
-      args = {"authorizableIds"},
+      examples = "INCLUDE ['authors']",
       reference = REFERENCE
   )
-  public Action mapAction(List<String> ids) {
+  public Action mapAction(
+      @Required(value = "ids", description = "users' or groups' ids e.g.: ['author']") List<String> ids) {
     return new Include(ids);
   }
 }
