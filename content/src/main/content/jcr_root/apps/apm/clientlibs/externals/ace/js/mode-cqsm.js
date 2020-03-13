@@ -20,22 +20,20 @@ ace.define("ace/mode/cqsm_highlight_rules",["require","exports","module","ace/li
 	var CqsmReference = loadJson("/bin/cqsm/references");
 	
 	var CqsmHighlightRules = function() {
-		var actions = [];
+		// var actions = [];
 		var keywords = [];
 
 		for (var i = 0; i < CqsmReference.length; i++) {
 			var reference = CqsmReference[i];
 
-			actions.push({
-				token : "entity.name.function",
-				regex : "^\\s*" + reference.name + "\\s*$",
-				tooltip: CqsmReference[i].description
-			});
+			// actions.push({
+			// 	token : "entity.name.function",
+			// 	regex : "^\\s*" + reference.name + "\\s*$",
+			// 	tooltip: CqsmReference[i].description
+			// });
 
-			var match = reference.name.match(/\b([A-Z]+)\b/g);
-			if (match) {
-				keywords = keywords.concat(match);
-			}
+			keywords.push(reference.name.toUpperCase());
+			keywords.push(reference.name.toLowerCase());
 		}
 
 		var keywordMapper = this.createKeywordMapper({
@@ -50,6 +48,9 @@ ace.define("ace/mode/cqsm_highlight_rules",["require","exports","module","ace/li
 			regex : "'.*?'"
 		}, {
 			token : "string",
+			regex : "\".*?\""
+		}, {
+			token : "string",
 			regex : "\\$\\{.*?\\}"
 		}, {
 			token : "paren.lparen",
@@ -59,11 +60,11 @@ ace.define("ace/mode/cqsm_highlight_rules",["require","exports","module","ace/li
 			regex : "[\\]]"
 		}, {
 			token : keywordMapper,
-			regex : "[A-Z_$][A-Z0-9_\\-$]*\\b"
+			regex : "[A-Za-z_$][A-Za-z0-9_\\-$]*\\b"
 		}];
 
 		var rules = {
-			"start" : actions.concat(start)
+			"start" : start
 		};
 
 		this.$rules = rules;

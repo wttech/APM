@@ -24,13 +24,13 @@ ace.define("ace/token_tooltip", ["require", "exports", "module"], function (requ
 
 	function findTokenReference(token)
 	{
-		if (!token) {
+		if (!token || !token.value) {
 			return null;
 		}
 
 		if (token.type === 'identifier' || token.type === 'keyword') {
 			for (var i = 0; i < CqsmReference.length; i++) {
-				if (CqsmReference[i].name === token.value) {
+				if (CqsmReference[i].name.toUpperCase() === token.value.toUpperCase()) {
 					return CqsmReference[i];
 				}
 			}
