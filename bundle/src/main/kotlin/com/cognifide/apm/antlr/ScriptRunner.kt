@@ -83,10 +83,10 @@ class ScriptRunner(
             for ((iteration, value) in values.withIndex()) {
                 try {
                     executionContext.createLocalContext()
-                    info("foreach", "$iteration. Begin: $index= $value")
+                    info("for-each", "$iteration. Begin: $index= $value")
                     executionContext.setVariable(index, value)
                     visit(ctx.body())
-                    info("foreach", "$iteration. End")
+                    info("for-each", "$iteration. End")
                 } finally {
                     executionContext.removeLocalContext()
                 }

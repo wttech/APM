@@ -87,10 +87,9 @@ public class ActionMapperRegistryImpl implements RegistryChangedListener, Action
   }
 
   @Override
-  public Collection<Object> getMappers() {
+  public Collection<MapperDescriptor> getMappers() {
     return mappers.get().values()
         .stream()
-        .map(it -> it.getMapper())
         .collect(Collectors.toList());
   }
 

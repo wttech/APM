@@ -22,29 +22,31 @@ package com.cognifide.cq.cqsm.foundation.actions.addtogroup;
 import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
+import com.cognifide.cq.cqsm.api.actions.annotations.Required;
+import com.cognifide.cq.cqsm.foundation.actions.ActionGroup;
 import java.util.Collections;
 import java.util.List;
 
-@Mapper("add-to-group")
+@Mapper(value = "add-to-group", group = ActionGroup.CORE)
 public final class AddToGroupMapper {
 
   public static final String REFERENCE = "Add current authorizable to specified groups.";
 
   @Mapping(
-      value = "ADD-TO-GROUP",
-      args = {"group"},
+      examples = "ADD-TO-GROUP 'authors'",
       reference = REFERENCE
   )
-  public Action mapAction(String group) {
+  public Action mapAction(
+      @Required(value = "group", description = "group") String group) {
     return mapAction(Collections.singletonList(group));
   }
 
   @Mapping(
-      value = "ADD-TO-GROUP",
-      args = {"groupIds"},
+      examples = "ADD-TO-GROUP ['authors', 'publishers']",
       reference = REFERENCE
   )
-  public Action mapAction(List<String> groups) {
+  public Action mapAction(
+      @Required(value = "groups", description = "list of groups") List<String> groups) {
     return new AddToGroup(groups);
   }
 }

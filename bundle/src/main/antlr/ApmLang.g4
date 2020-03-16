@@ -153,8 +153,8 @@ RUN_SCRIPT
     | 'RUN'
     ;
 FOR_EACH
-    : 'foreach'
-    | 'FOREACH'
+    : 'for-each'
+    | 'FOR-EACH'
     ;
 IN
     : 'in'

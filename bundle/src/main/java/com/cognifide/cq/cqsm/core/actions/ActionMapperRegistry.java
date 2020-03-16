@@ -27,5 +27,5 @@ public interface ActionMapperRegistry {
 
   Optional<MapperDescriptor> getMapper(String name);
 
-  Collection<Object> getMappers();
+  Collection<MapperDescriptor> getMappers();
 }

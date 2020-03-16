@@ -24,20 +24,28 @@ ace.define("ace/token_tooltip", ["require", "exports", "module"], function (requ
 
 	function findTokenReference(token)
 	{
-		if (!token) {
+		if (!token || !token.value) {
 			return null;
 		}
 
-		for (var i = 0; i < CqsmReference.length; i++) {
-			for (var j = 0; j < CqsmReference[i].pattern.length; j++) {
-				var regex = new RegExp("^\\s*" + CqsmReference[i].pattern[j] + "\\s*$");
-				if (regex.test(token.value)) {
-					CqsmReference[i].which = j;
-
+		if (token.type === 'identifier' || token.type === 'keyword') {
+			for (var i = 0; i < CqsmReference.length; i++) {
+				if (CqsmReference[i].name.toUpperCase() === token.value.toUpperCase()) {
 					return CqsmReference[i];
 				}
 			}
 		}
+
+		// for (var i = 0; i < CqsmReference.length; i++) {
+		// 	for (var j = 0; j < CqsmReference[i].pattern.length; j++) {
+		// 		var regex = new RegExp("^\\s*" + CqsmReference[i].pattern[j] + "\\s*$");
+		// 		if (regex.test(token.value)) {
+		// 			CqsmReference[i].which = j;
+		//
+		// 			return CqsmReference[i];
+		// 		}
+		// 	}
+		// }
 
 		return null;
 	}
@@ -109,10 +117,9 @@ ace.define("ace/token_tooltip", ["require", "exports", "module"], function (requ
 				return;
 			}
 
-			var tokenText = wordWrap(reference.reference);
-			tokenText += "\n";
-			tokenText += "\nSyntax: " + reference.commands[reference.which];
-			tokenText += "\nArguments: " + reference.args.join(", ");
+			var tokenText = wordWrap(reference.description);
+			tokenText += '\n\nExamples:\n' + reference.examples.join('\n');
+			// tokenText += "\nArguments: " + reference.args.join(", ");
 
 			if (this.tokenText != tokenText) {
 				this.setText(tokenText);

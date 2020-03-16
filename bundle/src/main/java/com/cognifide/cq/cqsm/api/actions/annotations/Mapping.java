@@ -27,9 +27,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Mapping {
-	String[] value();
 
-	String[] args() default {};
+	String[] examples() default {};
 
 	String reference() default "";
 }

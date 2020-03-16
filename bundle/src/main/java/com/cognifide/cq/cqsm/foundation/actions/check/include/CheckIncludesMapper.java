@@ -22,17 +22,16 @@ package com.cognifide.cq.cqsm.foundation.actions.check.include;
 import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
+import com.cognifide.cq.cqsm.foundation.actions.ActionGroup;
 import java.util.Collections;
 import java.util.List;
 
-@Mapper("check-includes")
+@Mapper(value = "check-includes", group = ActionGroup.CHECKS)
 public final class CheckIncludesMapper {
 
   public static final String REFERENCE = "Verify that provided group contains all listed authorizables.";
 
   @Mapping(
-      value = "CHECK-INCLUDES",
-      args = {"authorizableId", "groupId"},
       reference = REFERENCE
   )
   public Action mapAction(String id, String group) {
@@ -40,8 +39,6 @@ public final class CheckIncludesMapper {
   }
 
   @Mapping(
-      value = "CHECK-INCLUDES",
-      args = {"authorizableId", "groupIds"},
       reference = REFERENCE
   )
   public Action mapAction(String id, List<String> groups) {

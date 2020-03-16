@@ -22,16 +22,18 @@ package com.cognifide.cq.cqsm.foundation.actions.removeproperty;
 import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
+import com.cognifide.cq.cqsm.api.actions.annotations.Required;
+import com.cognifide.cq.cqsm.foundation.actions.ActionGroup;
 
-@Mapper("remove-property")
+@Mapper(value = "remove-property", group = ActionGroup.CORE)
 public final class RemovePropertyMapper {
 
   @Mapping(
-      value = "REMOVE-PROPERTY",
-      args = {"name"},
+      examples = "REMOVE-PROPERTY 'jcr:title'",
       reference = "This is general purpose action which can be used to remove specified property."
   )
-  public Action mapAction(String propertyName) {
+  public Action mapAction(
+      @Required(value = "name", description = "property's name e.g.: 'jcr:title'") String propertyName) {
     return new RemoveProperty(propertyName);
   }
 

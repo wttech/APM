@@ -41,19 +41,17 @@ ace.define("ace/snippets/cqsm",["require","exports","module"], function(e, t, n)
 		for (var i = 0; i < references.length; i++) {
 			var reference = references[i];
 
-			for (var j = 0; j < reference.commands.length; j++) {
-				var command = reference.commands[j];
-				var header = "snippet " + command;
-				var body = command;
+			var command = reference.name;
+			var header = "snippet " + command;
+			var body = command;
 
-				for (var k = 0; k < reference.args.length; k++) {
-					var arg = reference.args[k];
+			for (var k = 0; k < reference.arguments.length; k++) {
+				var arg = reference.arguments[k];
 
-					body = body.replace(arg, "${" + (k + 1) + ":" + arg + "}");
-				}
-
-				snippetText += (header + "\n" + "\t" + body + "\n");
+				body = body.replace(arg, "${" + (k + 1) + ":" + arg + "}");
 			}
+
+			snippetText += (header + "\n" + "\t" + body + "\n");
 		}
 
 		return snippetText;

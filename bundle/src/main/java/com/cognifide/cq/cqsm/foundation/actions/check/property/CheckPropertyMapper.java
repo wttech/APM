@@ -22,15 +22,14 @@ package com.cognifide.cq.cqsm.foundation.actions.check.property;
 import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
+import com.cognifide.cq.cqsm.foundation.actions.ActionGroup;
 
-@Mapper("check-property")
+@Mapper(value = "check-property", group = ActionGroup.CHECKS)
 public final class CheckPropertyMapper {
 
   public static final String REFERENCE = "Verify that a property is set to specific value for given authorizable.";
 
   @Mapping(
-      value = "CHECK-PROPERTY",
-      args = {"authorizableId", "name", "value"},
       reference = REFERENCE
   )
   public Action mapAction(String id, String name, String value) {

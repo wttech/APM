@@ -30,7 +30,7 @@ import com.cognifide.cq.cqsm.api.actions.annotations.Named
 @Mapper("mapper")
 class MapperWithWrongReturnType {
 
-    @Mapping("")
+    @Mapping
     ActionDescriptor create(String path, List<String> permissions,
                             @Named("glob") String glob, @Named("types") List<String> types, @Named("items") List<String> items,
                             @Flags List<String> flags) {

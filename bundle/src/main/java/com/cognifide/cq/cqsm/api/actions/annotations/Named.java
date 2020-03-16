@@ -31,4 +31,5 @@ public @interface Named {
 
   String value();
 
+  String description() default "";
 }

@@ -22,17 +22,16 @@ package com.cognifide.cq.cqsm.foundation.actions.check.notexists;
 import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
+import com.cognifide.cq.cqsm.foundation.actions.ActionGroup;
 import java.util.Collections;
 import java.util.List;
 
-@Mapper("check-not-exists")
+@Mapper(value = "check-not-exists", group = ActionGroup.CHECKS)
 public final class CheckNotExistsMapper {
 
   public static final String REFERENCE = "Verify that specific authorizables do not exist.";
 
   @Mapping(
-      value = "CHECK-NOT-EXISTS",
-      args = {"id"},
       reference = REFERENCE
   )
   public Action mapAction(String id) {
@@ -40,8 +39,6 @@ public final class CheckNotExistsMapper {
   }
 
   @Mapping(
-      value = "CHECK-NOT-EXISTS",
-      args = {"ids"},
       reference = REFERENCE
   )
   public Action mapAction(List<String> ids) {

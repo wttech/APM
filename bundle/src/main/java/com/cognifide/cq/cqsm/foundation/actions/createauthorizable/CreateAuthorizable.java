@@ -70,9 +70,9 @@ public class CreateAuthorizable implements Action {
       if (authorizable != null) {
         logMessage(actionResult, authorizable);
       } else {
-				authorizable = createStrategy.create(id, password, path, context, actionResult, simulate);
+        authorizable = createStrategy.create(id, password, path, context, actionResult, simulate);
       }
-			context.setCurrentAuthorizable(authorizable);
+      context.setCurrentAuthorizable(authorizable);
     } catch (RepositoryException e) {
       actionResult.logError(MessagingUtils.createMessage(e));
     }

@@ -19,28 +19,39 @@
  */
 package com.cognifide.cq.cqsm.foundation.actions.createauthorizable;
 
-import static com.cognifide.cq.cqsm.foundation.actions.CommonFlags.IF_NOT_EXISTS;
+import static com.cognifide.cq.cqsm.foundation.actions.CommonFlags.IGNORE_IF_EXISTS;
 import static com.cognifide.cq.cqsm.foundation.actions.createauthorizable.CreateAuthorizableStrategy.SYSTEM_USER;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
+import com.cognifide.cq.cqsm.api.actions.annotations.Flag;
 import com.cognifide.cq.cqsm.api.actions.annotations.Flags;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
 import com.cognifide.cq.cqsm.api.actions.annotations.Named;
+import com.cognifide.cq.cqsm.api.actions.annotations.Required;
+import com.cognifide.cq.cqsm.foundation.actions.ActionGroup;
 import java.util.List;
 
-@Mapper("create-system-user")
+@Mapper(value = "create-system-user", group = ActionGroup.CORE)
 public class CreateSystemUserMapper {
 
   public static final String REFERENCE = "Create a system user.";
 
   @Mapping(
-      value = "CREATE-SYSTEM-USER",
-      args = {"userId", "path"},
+      examples = {
+          "CREATE-USER 'apm-user'",
+          "CREATE-USER 'apm-user' password= 'p@$$w0rd' --IGNORE-IF-EXISTS",
+          "CREATE-USER 'apm-user' path= '/home/users/client/domain'"
+      },
       reference = REFERENCE
   )
-  public Action mapAction(String userId, @Named("path") String path, @Flags List<String> flags) {
-    return new CreateAuthorizable(userId, null, path, flags.contains(IF_NOT_EXISTS), SYSTEM_USER);
+  public Action mapAction(
+      @Required(value = "userId", description = "user's login e.g.: 'apm-user'") String userId,
+      @Named(value = "password", description = "user's password e.g.: 'p@$$w0rd'") String password,
+      @Named(value = "path", description = "user's home e.g.: '/home/users/domain'") String path,
+      @Flags({
+          @Flag(value = IGNORE_IF_EXISTS, description = "script doesn't fail if user already exists")}) List<String> flags) {
+    return new CreateAuthorizable(userId, null, path, flags.contains(IGNORE_IF_EXISTS), SYSTEM_USER);
   }
 
 }

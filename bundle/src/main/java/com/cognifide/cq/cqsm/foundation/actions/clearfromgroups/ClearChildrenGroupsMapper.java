@@ -22,15 +22,15 @@ package com.cognifide.cq.cqsm.foundation.actions.clearfromgroups;
 import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
+import com.cognifide.cq.cqsm.foundation.actions.ActionGroup;
 
-@Mapper("clear-children-groups")
+@Mapper(value = "clear-children-groups", group = ActionGroup.CORE)
 public final class ClearChildrenGroupsMapper {
 
-	@Mapping(
-			value = "CLEAR-CHILDREN-GROUPS",
-			reference = "This action removes all groups from a given group."
-	)
-	public Action mapActionForClearGroups() {
-		return new ClearFromGroups(ClearFromGroupOperationTypes.ALL_CHILDREN);
-	}
+  @Mapping(
+      reference = "This action removes all groups from a given group."
+  )
+  public Action mapActionForClearGroups() {
+    return new ClearFromGroups(ClearFromGroupOperationTypes.ALL_CHILDREN);
+  }
 }

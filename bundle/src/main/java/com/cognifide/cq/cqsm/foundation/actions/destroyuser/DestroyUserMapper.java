@@ -22,19 +22,20 @@ package com.cognifide.cq.cqsm.foundation.actions.destroyuser;
 import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
+import com.cognifide.cq.cqsm.api.actions.annotations.Required;
+import com.cognifide.cq.cqsm.foundation.actions.ActionGroup;
 
-@Mapper("destroy-user")
+@Mapper(value = "destroy-user", group = ActionGroup.CORE)
 public class DestroyUserMapper {
 
   public static final String REFERENCE = "Remove specified users.\n"
       + "Remove user from assigned groups, all given permission and user itself.";
 
   @Mapping(
-      value = "DESTROY-USER",
-      args = {"userId"},
+      examples = "DESTROY-USER 'author'",
       reference = REFERENCE
   )
-  public Action mapAction(String userId) {
+  public Action mapAction(@Required(value = "userId", description = "user's id e.g.: 'author'") String userId) {
     return new DestroyUser(userId);
   }
 }

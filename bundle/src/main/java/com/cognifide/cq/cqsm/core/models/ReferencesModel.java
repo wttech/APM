@@ -22,6 +22,7 @@ package com.cognifide.cq.cqsm.core.models;
 
 import com.cognifide.cq.cqsm.api.actions.ActionFactory;
 import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
+import com.cognifide.cq.cqsm.core.actions.CommandDescription;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
@@ -34,13 +35,13 @@ import org.apache.sling.models.annotations.injectorspecific.OSGiService;
 @Model(adaptables = SlingHttpServletRequest.class)
 public class ReferencesModel {
 
-  private List<Map<String, Object>> references;
+  private List<CommandDescription> references;
 
   private Map<String, String> definitions;
 
   @Inject
   public ReferencesModel(@OSGiService ActionFactory actionFactory, @OSGiService ScriptManager scriptManager) {
-    this.references = actionFactory.refer();
+    this.references = actionFactory.getCommandDescriptions();
     this.definitions = scriptManager.getPredefinedDefinitions();
   }
 }

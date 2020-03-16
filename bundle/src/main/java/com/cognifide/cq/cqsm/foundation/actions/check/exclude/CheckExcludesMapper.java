@@ -22,17 +22,16 @@ package com.cognifide.cq.cqsm.foundation.actions.check.exclude;
 import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
+import com.cognifide.cq.cqsm.foundation.actions.ActionGroup;
 import java.util.Collections;
 import java.util.List;
 
-@Mapper("check-excludes")
+@Mapper(value = "check-excludes", group = ActionGroup.CHECKS)
 public final class CheckExcludesMapper {
 
   public static final String REFERENCE = "Verify that provided group DOES NOT contain any of listed authorizables.";
 
   @Mapping(
-      value = "CHECK-EXCLUDES",
-      args = {"group", "authorizableId"},
       reference = REFERENCE
   )
   public Action mapAction(String group, String id) {
@@ -40,8 +39,6 @@ public final class CheckExcludesMapper {
   }
 
   @Mapping(
-      value = "CHECK-EXCLUDES",
-      args = {"group", "authorizableIds"},
       reference = REFERENCE
   )
   public Action mapAction(String group, List<String> ids) {

@@ -22,16 +22,17 @@ package com.cognifide.cq.cqsm.foundation.actions.forauthorizable;
 import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
+import com.cognifide.cq.cqsm.api.actions.annotations.Required;
+import com.cognifide.cq.cqsm.foundation.actions.ActionGroup;
 
-@Mapper("for-group")
+@Mapper(value = "for-group", group = ActionGroup.CORE)
 public final class ForGroupMapper {
 
   @Mapping(
-      value = "FOR-GROUP",
-      args = {"groupId"},
+      examples = {"FOR-GROUP 'authors' BEGIN ... END"},
       reference = "Set specified group as a current authorizable for execution context."
   )
-  public Action mapAction(String groupId) {
+  public Action mapAction(@Required(value = "groupId", description = "group's id e.g.: 'authors'") String groupId) {
     return new ForAuthorizable(groupId, true);
   }
 }

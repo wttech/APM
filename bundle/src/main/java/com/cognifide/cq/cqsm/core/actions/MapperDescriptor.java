@@ -33,6 +33,7 @@ public class MapperDescriptor {
 
   private final Object mapper;
   private final String name;
+  private final String group;
   private final List<MappingDescriptor> mappingDescriptors;
 
   public boolean handles(Arguments arguments) {

@@ -22,17 +22,18 @@ package com.cognifide.cq.cqsm.foundation.actions.purge;
 import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
+import com.cognifide.cq.cqsm.api.actions.annotations.Required;
+import com.cognifide.cq.cqsm.foundation.actions.ActionGroup;
 
-@Mapper("purge")
+@Mapper(value = "purge", group = ActionGroup.CORE)
 public final class PurgeMapper {
 
   @Mapping(
-      value = "PURGE",
-      args = {"path"},
+      examples = "PURGE '/'",
       reference = "Delete every permission applied for current authorizable starting from specified path. "
           + "It invokes REMOVE-ALL action recursively for every sub-path."
   )
-  public Action mapAction(String path) {
+  public Action mapAction(@Required("path") String path) {
     return new Purge(path);
   }
 }

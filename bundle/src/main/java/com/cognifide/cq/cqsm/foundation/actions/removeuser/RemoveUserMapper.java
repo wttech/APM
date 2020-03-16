@@ -22,10 +22,12 @@ package com.cognifide.cq.cqsm.foundation.actions.removeuser;
 import com.cognifide.cq.cqsm.api.actions.Action;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
+import com.cognifide.cq.cqsm.api.actions.annotations.Required;
+import com.cognifide.cq.cqsm.foundation.actions.ActionGroup;
 import java.util.Collections;
 import java.util.List;
 
-@Mapper("remove-user")
+@Mapper(value = "remove-user", group = ActionGroup.CORE)
 public final class RemoveUserMapper {
 
   public static final String REFERENCE = "Remove specified users.\n"
@@ -34,20 +36,18 @@ public final class RemoveUserMapper {
       + " - it will automatically gain those permissions.";
 
   @Mapping(
-      value = "REMOVE-USER",
-      args = {"userId"},
+      examples = "REMOVE-USER 'author'",
       reference = REFERENCE
   )
-  public Action mapAction(String id) {
+  public Action mapAction(@Required(value = "userId", description = "user's id e.g.: 'author'") String id) {
     return mapAction(Collections.singletonList(id));
   }
 
   @Mapping(
-      value = "REMOVE-USER",
-      args = {"userIds"},
+      examples = "REMOVE-USER ['author']",
       reference = REFERENCE
   )
-  public Action mapAction(List<String> ids) {
+  public Action mapAction(@Required(value = "userIds", description = "users' ids e.g.: ['author']") List<String> ids) {
     return new RemoveUser(ids);
   }
 
