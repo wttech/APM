@@ -91,7 +91,7 @@ public final class ScriptsRowModel {
         this.isValid = script.isValid();
         this.lastModified = CalendarUtils.asCalendar(script.getLastModified());
         this.runs.add(createScriptRun("runOnAuthor", script, scriptHistory.getLastLocalRun()));
-        this.runs.add(createScriptRun("runOnPublish", script, scriptHistory.getLastRemoteAutomaticRun()));
+        this.runs.add(createScriptRun("runOnPublish", script, scriptHistory.getLastRemoteRun()));
         this.runs.add(createScriptRun("dryRun", script, scriptHistory.getLastLocalDryRun()));
         this.isExecutionEnabled = script.isExecutionEnabled();
       });

@@ -24,6 +24,7 @@
   jcr:primaryType="nt:file">
   <jcr:content
     cqsm:verified="true"
+    cqsm:executionMode="ON_HOOK"
     jcr:encoding="UTF-8"
     jcr:lastModifiedBy="admin"
     jcr:mixinTypes="[cqsm:File]"

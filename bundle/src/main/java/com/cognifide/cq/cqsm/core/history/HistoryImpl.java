@@ -58,7 +58,6 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.query.Query;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.WordUtils;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -260,7 +259,11 @@ public class HistoryImpl implements History {
   @NotNull
   private String getModeName(Mode mode, boolean remote) {
     String modeName = (remote ? "Remote" : "Local");
-    modeName += WordUtils.capitalizeFully(mode.toString().toLowerCase(), new char[]{'_'});
+    if (mode == Mode.AUTOMATIC_RUN || mode == Mode.RUN) {
+      modeName += "Run";
+    } else {
+      modeName += "DryRun";
+    }
     modeName = modeName.replace("_", "");
     return modeName;
   }
