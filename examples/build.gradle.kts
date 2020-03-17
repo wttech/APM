@@ -31,8 +31,10 @@ description = "AEM Permission Management :: Examples"
 aem {
     tasks {
         compose {
+            duplicatesStrategy = DuplicatesStrategy.EXCLUDE
             vaultDefinition {
                 version = rootProject.version as String
+                property("installhook.apm.class", "com.cognifide.apm.tools.ApmInstallHook")
             }
         }
     }

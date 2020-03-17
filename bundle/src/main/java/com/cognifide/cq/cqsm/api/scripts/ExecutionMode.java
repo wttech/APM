@@ -39,5 +39,10 @@ public enum ExecutionMode {
 	/**
 	 * Executed only after scheduled date
 	 */
-	ON_SCHEDULE
+	ON_SCHEDULE,
+
+	/**
+	 * Executed always after successfully package installation
+	 */
+	ON_HOOK
 }

@@ -30,12 +30,12 @@ public interface ScriptHistory {
 
   String getLastLocalDryRunPath();
 
-  String getLastRemoteAutomaticRunPath();
+  String getLastRemoteRunPath();
 
   HistoryEntry getLastLocalRun();
 
   HistoryEntry getLastLocalDryRun();
 
-  HistoryEntry getLastRemoteAutomaticRun();
+  HistoryEntry getLastRemoteRun();
 
 }

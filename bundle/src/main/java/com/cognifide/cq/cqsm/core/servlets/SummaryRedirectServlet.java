@@ -74,7 +74,7 @@ public class SummaryRedirectServlet extends SlingAllMethodsServlet {
       case "localrun":
         return scriptHistory.getLastLocalRunPath();
       case "remoteautomaticrun":
-        return scriptHistory.getLastRemoteAutomaticRunPath();
+        return scriptHistory.getLastRemoteRunPath();
       default:
         return StringUtils.EMPTY;
     }
