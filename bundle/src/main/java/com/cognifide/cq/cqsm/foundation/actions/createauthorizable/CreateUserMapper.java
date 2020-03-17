@@ -19,7 +19,7 @@
  */
 package com.cognifide.cq.cqsm.foundation.actions.createauthorizable;
 
-import static com.cognifide.cq.cqsm.foundation.actions.CommonFlags.IGNORE_IF_EXISTS;
+import static com.cognifide.cq.cqsm.foundation.actions.CommonFlags.IF_NOT_EXISTS;
 import static com.cognifide.cq.cqsm.foundation.actions.createauthorizable.CreateAuthorizableStrategy.USER;
 
 import com.cognifide.cq.cqsm.api.actions.Action;
@@ -40,7 +40,7 @@ public class CreateUserMapper {
   @Mapping(
       examples = {
           "CREATE-USER 'author'",
-          "CREATE-USER 'author' password= 'p@$$w0rd' --IGNORE-IF-EXISTS",
+          "CREATE-USER 'author' password= 'p@$$w0rd' --IF-NOT-EXISTS",
           "CREATE-USER 'author' path= '/home/users/client/domain'"
       },
       reference = REFERENCE
@@ -49,9 +49,9 @@ public class CreateUserMapper {
       @Required(value = "userId", description = "user's login e.g.: 'author'") String userId,
       @Named(value = "password", description = "user's password e.g.: 'p@$$w0rd'") String password,
       @Named(value = "path", description = "user's home e.g.: '/home/users/domain'") String path,
-      @Flags({
-          @Flag(value = IGNORE_IF_EXISTS, description = "script doesn't fail if user already exists")}) List<String> flags) {
-    return new CreateAuthorizable(userId, password, path, flags.contains(IGNORE_IF_EXISTS), USER);
+      @Flags({@Flag(value = IF_NOT_EXISTS, description = "action is executed only if user doesn't exist, "
+          + "and script doesn't fail in that case")}) List<String> flags) {
+    return new CreateAuthorizable(userId, password, path, flags.contains(IF_NOT_EXISTS), USER);
   }
 
 }
