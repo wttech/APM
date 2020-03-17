@@ -25,6 +25,7 @@ import static com.cognifide.cq.cqsm.core.utils.ServletUtils.writeJson;
 import static com.cognifide.cq.cqsm.core.utils.SuccessMessage.successMessage;
 
 import com.cognifide.cq.cqsm.api.executors.Mode;
+import com.cognifide.cq.cqsm.api.logger.Position;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.logger.ProgressEntry;
 import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
@@ -73,7 +74,8 @@ public class ScriptValidationServlet extends SlingAllMethodsServlet {
         ProgressEntry progressEntry = progress.getLastError();
         ErrorMessageBuilder errorMessageBuilder = errorMessageBuilder("Script does not pass validation");
         if (CollectionUtils.isNotEmpty(progressEntry.getMessages())) {
-          errorMessageBuilder.addErrors(progressEntry.getMessages());
+          String positionPrefix = getPositionPrefix(progressEntry);
+          progressEntry.getMessages().forEach(error -> errorMessageBuilder.addError(positionPrefix + error));
         }
 
         writeJson(response, errorMessageBuilder.build());
@@ -82,5 +84,13 @@ public class ScriptValidationServlet extends SlingAllMethodsServlet {
       response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
       writeJson(response, errorMessage("Script cannot be validated because of error: " + e.getMessage()));
     }
+  }
+
+  private String getPositionPrefix(ProgressEntry progressEntry) {
+    Position position = progressEntry.getPosition();
+    if (position != null) {
+      return String.format("Invalid line [%d]: ", position.getLine());
+    }
+    return "";
   }
 }

@@ -20,7 +20,7 @@
 
 package com.cognifide.cq.cqsm.core.actions;
 
-import com.cognifide.apm.antlr.argument.Arguments;
+import com.cognifide.apm.grammar.argument.Arguments;
 import com.cognifide.cq.cqsm.api.actions.Action;
 import java.util.List;
 import lombok.AccessLevel;

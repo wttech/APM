@@ -31,6 +31,8 @@ public class ProgressEntry {
 
   private final String authorizable;
 
+  private final Position position;
+
   private final String command;
 
   private final List<String> messages;
@@ -39,12 +41,13 @@ public class ProgressEntry {
 
   private final Status status;
 
-  public ProgressEntry(String authorizable, String command, List<String> messages, List<String> parameters,
-      Status status) {
-    this.authorizable = defaultString(authorizable);
+  public ProgressEntry(Status status, List<String> messages, String command, String authorizable,
+      List<String> parameters, Position position) {
+    this.status = status != null ? status : Status.SUCCESS;
     this.command = defaultString(command);
+    this.position = position;
     this.messages = messages != null ? ImmutableList.copyOf(messages) : Collections.emptyList();
     this.parameters = parameters != null ? ImmutableList.copyOf(parameters) : Collections.emptyList();
-    this.status = status != null ? status : Status.SUCCESS;
+    this.authorizable = defaultString(authorizable);
   }
 }

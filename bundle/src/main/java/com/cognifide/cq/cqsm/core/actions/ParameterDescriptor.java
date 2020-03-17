@@ -20,8 +20,8 @@
 
 package com.cognifide.cq.cqsm.core.actions;
 
-import com.cognifide.apm.antlr.ApmType;
-import com.cognifide.apm.antlr.argument.Arguments;
+import com.cognifide.apm.grammar.ApmType;
+import com.cognifide.apm.grammar.argument.Arguments;
 import com.cognifide.cq.cqsm.api.actions.annotations.Flags;
 import com.cognifide.cq.cqsm.api.actions.annotations.Named;
 import com.cognifide.cq.cqsm.api.actions.annotations.Required;

@@ -19,8 +19,8 @@
  */
 package com.cognifide.cq.cqsm.core.scripts;
 
-import com.cognifide.apm.antlr.ReferenceFinder;
-import com.cognifide.apm.antlr.ScriptRunner;
+import com.cognifide.apm.grammar.ReferenceFinder;
+import com.cognifide.apm.grammar.ScriptRunner;
 import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
 import com.cognifide.cq.cqsm.api.actions.ActionFactory;
 import com.cognifide.cq.cqsm.api.actions.ActionResult;
