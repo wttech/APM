@@ -24,6 +24,7 @@ import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.IntStream
 import org.antlr.v4.runtime.Recognizer
 import org.antlr.v4.runtime.Token
+import org.apache.commons.lang.StringUtils
 
 object InvalidSyntaxMessageFactory {
 
@@ -34,7 +35,7 @@ object InvalidSyntaxMessageFactory {
     private fun underlineError(recognizer: Recognizer<*, *>, offendingToken: Token?, line: Int, charPositionInLine: Int): List<String> {
         val errorLine = getErrorLine(recognizer, line)
         val invalidLine = "Invalid line [$line:$charPositionInLine]: $errorLine"
-        return if (offendingToken != null) {
+        return if (offendingToken != null && StringUtils.isNotBlank(offendingToken.text)) {
             listOf(invalidLine, "Invalid sequence: ${offendingToken.text}")
         } else {
             listOf(invalidLine)

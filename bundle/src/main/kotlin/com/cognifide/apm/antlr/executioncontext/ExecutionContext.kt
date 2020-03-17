@@ -97,15 +97,15 @@ class ExecutionContext private constructor(
         return variableHolder.authorizable
     }
 
-    fun resolveArguments(arguments: ComplexArgumentsContext): Arguments {
+    fun resolveArguments(arguments: ComplexArgumentsContext?): Arguments {
         return argumentResolver.resolve(arguments)
     }
 
-    fun resolveArguments(arguments: NamedArgumentsContext): Arguments {
+    fun resolveArguments(arguments: NamedArgumentsContext?): Arguments {
         return argumentResolver.resolve(arguments)
     }
 
-    fun resolveArgument(argument: ArgumentContext): ApmType {
+    fun resolveArgument(argument: ArgumentContext?): ApmType {
         return argumentResolver.resolve(argument)
     }
 

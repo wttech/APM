@@ -105,7 +105,7 @@ public class ScriptManagerImpl implements ScriptManager {
     final SessionSavingPolicy savingPolicy = context.getSavingPolicy();
 
     eventManager.trigger(Event.BEFORE_EXECUTE, script, mode, progress);
-    ScriptRunner scriptRunner = new ScriptRunner(scriptFinder, resolver,
+    ScriptRunner scriptRunner = new ScriptRunner(scriptFinder, resolver, mode == Mode.VALIDATION,
         (executionContext, commandName, arguments) -> {
           try {
             context.setCurrentAuthorizable(executionContext.getAuthorizable());

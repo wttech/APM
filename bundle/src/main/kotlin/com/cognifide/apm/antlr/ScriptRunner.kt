@@ -39,6 +39,7 @@ import org.apache.sling.api.resource.ResourceResolver
 class ScriptRunner(
         private val scriptFinder: ScriptFinder,
         private val resourceResolver: ResourceResolver,
+        private val validateOnly: Boolean = false,
         private val actionInvoker: ActionInvoker) {
 
     @JvmOverloads
@@ -69,11 +70,10 @@ class ScriptRunner(
         }
 
         override fun visitRequireVariable(ctx: RequireVariableContext) {
-            val notFound = readValues(ctx.argument()).filterIsInstance<ApmString>()
-                    .filter { it.string != null && executionContext.getVariable(it.string!!) == null }
-                    .map { "Variable \"${it.string}\" not found" }
-            if (notFound.isNotEmpty()) {
-                executionContext.progress.addEntry(Status.ERROR, notFound, "require")
+            val variableName = ctx.IDENTIFIER().toString()
+            if (executionContext.getVariable(variableName) == null) {
+                val status = if (validateOnly) Status.WARNING else Status.ERROR
+                executionContext.progress.addEntry(status, "Variable \"$variableName\" is required", "require")
             }
         }
 
@@ -110,6 +110,14 @@ class ScriptRunner(
 
         override fun visitGenericCommand(ctx: GenericCommandContext) {
             val commandName = getIdentifier(ctx.commandName().identifier()).toUpperCase()
+            if (validateOnly) {
+                visitGenericCommandValidateMode(ctx, commandName)
+            } else {
+                visitGenericCommandRunMode(ctx, commandName)
+            }
+        }
+
+        private fun visitGenericCommandRunMode(ctx: GenericCommandContext, commandName: String) {
             try {
                 if (ctx.body() != null) {
                     executionContext.createLocalContext()
@@ -121,6 +129,27 @@ class ScriptRunner(
                 }
             } catch (e: ArgumentResolverException) {
                 executionContext.progress.addEntry(Status.ERROR, "Action failed: ${e.message}", commandName)
+            } finally {
+                if (ctx.body() != null) {
+                    executionContext.removeLocalContext()
+                }
+            }
+        }
+
+        private fun visitGenericCommandValidateMode(ctx: GenericCommandContext, commandName: String) {
+            try {
+                if (ctx.body() != null) {
+                    executionContext.createLocalContext()
+                }
+                try {
+                    val arguments = executionContext.resolveArguments(ctx.complexArguments())
+                    actionInvoker.runAction(executionContext, commandName, arguments)
+                } catch (e: ArgumentResolverException) {
+                    executionContext.progress.addEntry(Status.WARNING, "Couldn't invoke action: ${e.message}", commandName)
+                }
+                if (ctx.body() != null) {
+                    visit(ctx.body())
+                }
             } finally {
                 if (ctx.body() != null) {
                     executionContext.removeLocalContext()

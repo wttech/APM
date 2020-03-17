@@ -127,9 +127,6 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
             if (ctx.STRING_LITERAL() != null) {
                 return ApmString(ctx.STRING_LITERAL().toPlainString())
             }
-            if (ctx.IDENTIFIER() != null) {
-                return ApmString(ctx.IDENTIFIER().toString())
-            }
             throw ArgumentResolverException("Found invalid string value $ctx")
         }
 

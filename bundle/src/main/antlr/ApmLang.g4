@@ -54,7 +54,6 @@ numberValue
 
 stringValue
     : STRING_LITERAL
-    | IDENTIFIER
     ;
 
 value
@@ -82,7 +81,7 @@ command
     | IMPORT_SCRIPT path (AS name)? # ImportScript
     | FOR_EACH IDENTIFIER IN argument EOL? body # ForEach
     | DEFINE IDENTIFIER argument # DefineVariable
-    | REQUIRE argument # RequireVariable
+    | REQUIRE IDENTIFIER # RequireVariable
     | commandName complexArguments? EOL? body? # GenericCommand
     ;
 
