@@ -20,7 +20,8 @@
 
 package com.cognifide.apm.grammar
 
-import com.cognifide.apm.grammar.ApmLangParser.*
+import com.cognifide.apm.grammar.antlr.ApmLangBaseVisitor
+import com.cognifide.apm.grammar.antlr.ApmLangParser.*
 import com.cognifide.apm.grammar.argument.ArgumentResolverException
 import com.cognifide.apm.grammar.argument.Arguments
 import com.cognifide.apm.grammar.argument.toPlainString

@@ -20,7 +20,7 @@
 
 package com.cognifide.apm.grammar.common
 
-import com.cognifide.apm.grammar.ApmLangBaseVisitor
+import com.cognifide.apm.grammar.antlr.ApmLangBaseVisitor
 
 open class ListBaseVisitor<T> : ApmLangBaseVisitor<MutableList<T>>() {
 

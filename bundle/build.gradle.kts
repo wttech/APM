@@ -90,8 +90,8 @@ tasks.compileKotlin {
 
 tasks.generateGrammarSource {
     maxHeapSize = "64m"
-    arguments = arguments + listOf("-visitor", "-long-messages", "-package", "com.cognifide.apm.grammar")
-    outputDirectory = project.file("src/main/generated/com/cognifide/apm/grammar")
+    arguments = arguments + listOf("-visitor", "-long-messages", "-package", "com.cognifide.apm.grammar.antlr")
+    outputDirectory = project.file("src/main/generated/com/cognifide/apm/grammar/antlr")
 }
 
 tasks.test {

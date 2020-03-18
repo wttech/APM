@@ -20,8 +20,8 @@
 
 package com.cognifide.apm.grammar.parsedscript
 
-import com.cognifide.apm.grammar.ApmLangLexer
-import com.cognifide.apm.grammar.ApmLangParser
+import com.cognifide.apm.grammar.antlr.ApmLangLexer
+import com.cognifide.apm.grammar.antlr.ApmLangParser
 import org.antlr.v4.runtime.*
 
 object ApmLangParserFactory {

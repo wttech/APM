@@ -20,8 +20,8 @@
 
 package com.cognifide.apm.grammar.executioncontext
 
-import com.cognifide.apm.grammar.ApmLangParser.*
 import com.cognifide.apm.grammar.ApmType
+import com.cognifide.apm.grammar.antlr.ApmLangParser.*
 import com.cognifide.apm.grammar.argument.ArgumentResolver
 import com.cognifide.apm.grammar.argument.Arguments
 import com.cognifide.apm.grammar.common.StackWithRoot

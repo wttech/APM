@@ -20,7 +20,7 @@
 
 package com.cognifide.apm.grammar.common
 
-import com.cognifide.apm.grammar.ApmLangParser
+import com.cognifide.apm.grammar.antlr.ApmLangParser
 
 fun getIdentifier(ctx: ApmLangParser.IdentifierContext) = when {
     ctx.IDENTIFIER() != null -> ctx.IDENTIFIER().toString()
