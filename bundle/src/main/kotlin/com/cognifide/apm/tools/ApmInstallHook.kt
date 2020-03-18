@@ -22,51 +22,40 @@ package com.cognifide.apm.tools
 
 import com.cognifide.cq.cqsm.api.executors.Mode
 import com.cognifide.cq.cqsm.api.logger.Progress
-import com.cognifide.cq.cqsm.api.scripts.ExecutionMode
 import com.cognifide.cq.cqsm.api.scripts.ScriptFinder
 import com.cognifide.cq.cqsm.api.scripts.ScriptManager
-import com.cognifide.cq.cqsm.core.scripts.ScriptFilters.filterByExecutionMode
+import com.cognifide.cq.cqsm.core.scripts.ScriptFilters.filterOnHook
 import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper.getResourceResolverForService
 import org.apache.jackrabbit.vault.packaging.InstallContext
 import org.apache.jackrabbit.vault.packaging.InstallHook
 import org.apache.jackrabbit.vault.packaging.PackageException
 import org.apache.sling.api.resource.ResourceResolverFactory
-import org.osgi.framework.Bundle
-import org.osgi.framework.BundleContext
-import org.osgi.framework.FrameworkUtil
-import org.osgi.framework.ServiceReference
+import org.apache.sling.settings.SlingSettingsService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.util.*
 
-class ApmInstallHook : InstallHook {
+class ApmInstallHook : InstallHook, OsgiAwareInstallHook() {
 
     private val logger: Logger = LoggerFactory.getLogger(ApmInstallHook::class.java)
 
-    private var currentBundle: Bundle
-    private var bundleContext: BundleContext
-
-    init {
-        currentBundle = FrameworkUtil.getBundle(this.javaClass)
-                ?: throw IllegalStateException("The class ${this.javaClass} was not loaded through a bundle classloader")
-
-        bundleContext = currentBundle.bundleContext
-                ?: throw IllegalStateException("Could not get bundle context for bundle $currentBundle")
-    }
-
     override fun execute(context: InstallContext) {
         if (context.phase == InstallContext.Phase.INSTALLED) {
-            installScripts()
+            val currentEnvironment = getCurrentEnvironment()
+            val currentHook = getCurrentHook(context)
+
+            installScripts(currentEnvironment, currentHook)
         }
     }
 
-    private fun installScripts() {
+    private fun installScripts(currentEnvironment: String, currentHook: String) {
         val resolverFactory = getService(ResourceResolverFactory::class.java)
         val scriptFinder = getService(ScriptFinder::class.java)
         val scriptManager = getService(ScriptManager::class.java)
 
         try {
             getResourceResolverForService(resolverFactory).use { resolver ->
-                scriptFinder.findAll(filterByExecutionMode(ExecutionMode.ON_HOOK), resolver).forEach { script ->
+                scriptFinder.findAll(filterOnHook(currentEnvironment, currentHook), resolver).forEach { script ->
                     val progress: Progress = scriptManager.process(script, Mode.AUTOMATIC_RUN, resolver)
                     logStatus(script.path, progress.isSuccess)
                 }
@@ -76,11 +65,25 @@ class ApmInstallHook : InstallHook {
         }
     }
 
-    private fun <T> getService(clazz: Class<T>): T {
-        val serviceReference: ServiceReference<T> = bundleContext.getServiceReference(clazz)
-                ?: throw PackageException("Could not find service ${clazz.name} in OSGI service registry")
-        return bundleContext.getService(serviceReference)
-                ?: throw PackageException("Could not receive instance of ${clazz.name}")
+    private fun getCurrentHook(context: InstallContext): String {
+        val properties = context.`package`?.metaInf?.properties ?: Properties()
+        val hookPropertyKey = properties.entries.asSequence()
+                .filter { entry -> entry.value == this::class.java.name }
+                .map { entry -> entry.key as String }
+                .firstOrNull() ?: ""
+        val hookRegex = Regex("installhook\\.(\\w+)\\.class")
+        val result = hookRegex.matchEntire(hookPropertyKey)
+        return result?.groups?.get(1)?.value ?: ""
+    }
+
+    private fun getCurrentEnvironment(): String {
+        val slingSettingsService = getService(SlingSettingsService::class.java)
+        val runModes = slingSettingsService.runModes
+        return when {
+            runModes.contains("author") -> "author"
+            runModes.contains("publish") -> "publish"
+            else -> ""
+        }
     }
 
     private fun logStatus(scriptPath: String, success: Boolean) {

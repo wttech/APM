@@ -71,6 +71,16 @@ public class ScriptImpl implements Script {
   }
 
   @Override
+  public String getExecutionHook() {
+    return scriptContent.getExecutionHook();
+  }
+
+  @Override
+  public String getExecutionEnvironment() {
+    return scriptContent.getExecutionEnvironment();
+  }
+
+  @Override
   public Date getExecutionSchedule() {
     return scriptContent.getExecutionSchedule();
   }
