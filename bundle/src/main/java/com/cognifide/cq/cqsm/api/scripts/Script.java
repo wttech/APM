@@ -39,6 +39,10 @@ public interface Script {
 	 */
 	ExecutionMode getExecutionMode();
 
+	String getExecutionEnvironment();
+
+	String getExecutionHook();
+
 	/**
 	 * Get date after which script will be executed by schedule executor
 	 */

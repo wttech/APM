@@ -32,16 +32,19 @@ import org.apache.sling.models.annotations.Optional;
 @Getter
 public class ScriptContent {
 
+  public static final String CQSM_FILE = "cqsm:File";
+
+  public static final String CQSM_EXECUTION_ENABLED = "cqsm:executionEnabled";
 
   public static final String CQSM_EXECUTION_MODE = "cqsm:executionMode";
+
+  public static final String CQSM_EXECUTION_ENVIRONMENT = "cqsm:executionEnvironment";
+
+  public static final String CQSM_EXECUTION_HOOK = "cqsm:executionHook";
 
   public static final String CQSM_EXECUTION_SCHEDULE = "cqsm:executionSchedule";
 
   public static final String CQSM_EXECUTION_LAST = "cqsm:executionLast";
-
-  public static final String CQSM_EXECUTION_ENABLED = "cqsm:executionEnabled";
-
-  public static final String CQSM_FILE = "cqsm:File";
 
   public static final String CQSM_PUBLISH_RUN = "cqsm:publishRun";
 
@@ -50,19 +53,24 @@ public class ScriptContent {
   public static final String CQSM_VERIFIED = "cqsm:verified";
 
   @Inject
-  @Named(CQSM_VERIFIED)
+  @Named(CQSM_EXECUTION_ENABLED)
   @Optional
-  private Boolean verified;
-
-  @Inject
-  @Named(CQSM_PUBLISH_RUN)
-  @Optional
-  private Boolean publishRun;
+  private Boolean executionEnabled;
 
   @Inject
   @Named(CQSM_EXECUTION_MODE)
   @Optional
   private String executionMode;
+
+  @Inject
+  @Named(CQSM_EXECUTION_ENVIRONMENT)
+  @Optional
+  private String executionEnvironment;
+
+  @Inject
+  @Named(CQSM_EXECUTION_HOOK)
+  @Optional
+  private String executionHook;
 
   @Inject
   @Named(CQSM_EXECUTION_SCHEDULE)
@@ -75,9 +83,19 @@ public class ScriptContent {
   private Date executionLast;
 
   @Inject
-  @Named(CQSM_EXECUTION_ENABLED)
+  @Named(CQSM_PUBLISH_RUN)
   @Optional
-  private Boolean executionEnabled;
+  private Boolean publishRun;
+
+  @Inject
+  @Named(CQSM_REPLICATED_BY)
+  @Optional
+  private String replicatedBy;
+
+  @Inject
+  @Named(CQSM_VERIFIED)
+  @Optional
+  private Boolean verified;
 
   @Inject
   @Named(JcrConstants.JCR_LASTMODIFIED)
@@ -89,8 +107,4 @@ public class ScriptContent {
   @Optional
   private String data; //FIXME lazy load would be better here
 
-  @Inject
-  @Named(CQSM_REPLICATED_BY)
-  @Optional
-  private String replicatedBy;
 }

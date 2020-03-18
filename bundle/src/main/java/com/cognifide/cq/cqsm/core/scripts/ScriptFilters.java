@@ -19,6 +19,10 @@
  */
 package com.cognifide.cq.cqsm.core.scripts;
 
+import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
+import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
+
 import com.cognifide.cq.cqsm.api.scripts.ExecutionMode;
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import java.util.Collections;
@@ -35,44 +39,63 @@ import org.apache.sling.api.resource.ResourceResolver;
  */
 public class ScriptFilters {
 
-	public static Predicate filterByExecutionMode(final ExecutionMode mode) {
-		return filterByExecutionMode(Collections.singletonList(mode));
-	}
+  public static Predicate filterByExecutionMode(final ExecutionMode mode) {
+    return filterByExecutionMode(Collections.singletonList(mode));
+  }
 
-	public static Predicate filterExecutionEnabled(final boolean flag) {
-		return script -> ((Script) script).isExecutionEnabled() == flag;
-	}
+  public static Predicate filterOnHook(final String environment, final String currentHook) {
+    return new AllPredicate(new Predicate[]{
+        filterExecutionEnabled(true),
+        filterByExecutionMode(Collections.singletonList(ExecutionMode.ON_HOOK)),
+        o -> {
+          final Script script = (Script) o;
+          return isBlankOrEquals(script.getExecutionEnvironment(), environment);
+        },
+        o -> {
+          final Script script = (Script) o;
+          return isBlankOrEquals(script.getExecutionHook(), currentHook);
+        }
+    });
+  }
 
-	public static Predicate filterByExecutionMode(final List<ExecutionMode> modes) {
-		return script -> modes.contains(((Script) script).getExecutionMode());
-	}
+  private static boolean isBlankOrEquals(String property, String value) {
+    return isBlank(property) || (isNotBlank(property) && equalsIgnoreCase(property, value));
+  }
 
-	public static Predicate filterOnSchedule(final Date date) {
-		return new AllPredicate(new Predicate[]{
-				filterExecutionEnabled(true),
-				filterByExecutionMode(ExecutionMode.ON_SCHEDULE),
-				o -> {
-					final Script script = (Script) o;
-					return (script.getExecutionLast() == null) && script.getExecutionSchedule().before(date);
-				}
-		});
-	}
+  public static Predicate filterExecutionEnabled(final boolean flag) {
+    return script -> ((Script) script).isExecutionEnabled() == flag;
+  }
 
-	public static Predicate filterOnModify(final ResourceResolver resolver) {
-		return new AllPredicate(new Predicate[]{
-				filterExecutionEnabled(true),
-				filterByExecutionMode(ExecutionMode.ON_MODIFY),
-				script -> ((Script) script).isContentModified(resolver)
-		});
-	}
+  public static Predicate filterByExecutionMode(final List<ExecutionMode> modes) {
+    return script -> modes.contains(((Script) script).getExecutionMode());
+  }
 
-	public static Predicate filterOnStart(final ResourceResolver resolver) {
-		return new AllPredicate(new Predicate[]{
-				filterExecutionEnabled(true),
-				new OrPredicate(
-						filterByExecutionMode(ExecutionMode.ON_START),
-						filterOnModify(resolver)
-				)
-		});
-	}
+  public static Predicate filterOnSchedule(final Date date) {
+    return new AllPredicate(new Predicate[]{
+        filterExecutionEnabled(true),
+        filterByExecutionMode(ExecutionMode.ON_SCHEDULE),
+        o -> {
+          final Script script = (Script) o;
+          return (script.getExecutionLast() == null) && script.getExecutionSchedule().before(date);
+        }
+    });
+  }
+
+  public static Predicate filterOnModify(final ResourceResolver resolver) {
+    return new AllPredicate(new Predicate[]{
+        filterExecutionEnabled(true),
+        filterByExecutionMode(ExecutionMode.ON_MODIFY),
+        script -> ((Script) script).isContentModified(resolver)
+    });
+  }
+
+  public static Predicate filterOnStart(final ResourceResolver resolver) {
+    return new AllPredicate(new Predicate[]{
+        filterExecutionEnabled(true),
+        new OrPredicate(
+            filterByExecutionMode(ExecutionMode.ON_START),
+            filterOnModify(resolver)
+        )
+    });
+  }
 }

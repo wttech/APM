@@ -9,7 +9,7 @@ FOR-EACH group IN $groups BEGIN
   # No authorizable available here
 
   CREATE-GROUP $group --IF-NOT-EXISTS BEGIN  # Puts authorizable group on the stack
-    ALLOW "/content/site/en" [READ] --IF-EXISTS
+    ALLOW "/content/site/en" ["READ"] --IF-EXISTS
   END # Removes group from the stack
 
   # No authorizable available here
@@ -19,13 +19,13 @@ END
 
 FOR-GROUP "test_group_1" BEGIN  # Puts authorizable "test-group_1" on the stack
   # Authorizable set to "test-group1"
-  ALLOW "/content/site/fr" [READ] --IF-EXISTS
+  ALLOW "/content/site/fr" ["READ"] --IF-EXISTS
 
   CREATE-USER "test_user_1" --IF-NOT-EXISTS BEGIN # Puts authorizable "test_user_1" on the stack
     ADD-TO-GROUP ["test_group_1"]
   END # Removes "test_user_1" from the stack
 
-  ALLOW "/content/site/hr" [READ] --IF-EXISTS
+  ALLOW "/content/site/hr" ["READ"] --IF-EXISTS
 END  # Removes "test_group_1" from the stack
 
 # No authorizable available here
