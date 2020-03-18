@@ -25,13 +25,16 @@ import static com.cognifide.cq.cqsm.core.utils.ServletUtils.writeJson;
 import static com.cognifide.cq.cqsm.core.utils.SuccessMessage.successMessage;
 
 import com.cognifide.cq.cqsm.api.executors.Mode;
+import com.cognifide.cq.cqsm.api.logger.Position;
 import com.cognifide.cq.cqsm.api.logger.Progress;
+import com.cognifide.cq.cqsm.api.logger.ProgressEntry;
 import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.utils.ErrorMessage.ErrorMessageBuilder;
 import java.io.IOException;
 import javax.servlet.Servlet;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
@@ -40,13 +43,13 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 @Component(
-		immediate = true,
-		service = Servlet.class,
-		property = {
-				Property.PATH + "/bin/cqsm/validate",
-				Property.DESCRIPTION + "CQSM Validation Servlet",
-				Property.VENDOR
-		}
+    immediate = true,
+    service = Servlet.class,
+    property = {
+        Property.PATH + "/bin/cqsm/validate",
+        Property.DESCRIPTION + "CQSM Validation Servlet",
+        Property.VENDOR
+    }
 )
 public class ScriptValidationServlet extends SlingAllMethodsServlet {
 
@@ -68,10 +71,11 @@ public class ScriptValidationServlet extends SlingAllMethodsServlet {
       if (progress.isSuccess()) {
         writeJson(response, successMessage("Script passes validation"));
       } else {
-        String lastError = progress.getLastError().getLastMessageText();
+        ProgressEntry progressEntry = progress.getLastError();
         ErrorMessageBuilder errorMessageBuilder = errorMessageBuilder("Script does not pass validation");
-        if (StringUtils.isNotBlank(lastError)) {
-          errorMessageBuilder.addError(lastError);
+        if (CollectionUtils.isNotEmpty(progressEntry.getMessages())) {
+          String positionPrefix = getPositionPrefix(progressEntry);
+          progressEntry.getMessages().forEach(error -> errorMessageBuilder.addError(positionPrefix + error));
         }
 
         writeJson(response, errorMessageBuilder.build());
@@ -80,5 +84,13 @@ public class ScriptValidationServlet extends SlingAllMethodsServlet {
       response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
       writeJson(response, errorMessage("Script cannot be validated because of error: " + e.getMessage()));
     }
+  }
+
+  private String getPositionPrefix(ProgressEntry progressEntry) {
+    Position position = progressEntry.getPosition();
+    if (position != null) {
+      return String.format("Invalid line [%d]: ", position.getLine());
+    }
+    return "";
   }
 }

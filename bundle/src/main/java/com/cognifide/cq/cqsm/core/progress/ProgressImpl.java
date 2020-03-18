@@ -22,10 +22,11 @@ package com.cognifide.cq.cqsm.core.progress;
 import static java.lang.String.format;
 import static java.util.Collections.singletonList;
 
-import com.cognifide.apm.antlr.argument.Arguments;
+import com.cognifide.apm.grammar.argument.Arguments;
 import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
 import com.cognifide.cq.cqsm.api.actions.ActionResult;
 import com.cognifide.cq.cqsm.api.logger.Message;
+import com.cognifide.cq.cqsm.api.logger.Position;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.logger.ProgressEntry;
 import com.cognifide.cq.cqsm.api.logger.Status;
@@ -57,24 +58,18 @@ public class ProgressImpl implements Progress {
     return Lists.newLinkedList(entries);
   }
 
-  public void addEntry(Status status, List<String> messages, String command, String authorizable,
-      Arguments arguments) {
-    this.entries.add(new ProgressEntry(authorizable, command, messages, toParameters(arguments), status));
-  }
-
-  public void addEntry(Status status, String message, String command, String authorizable,
-      Arguments arguments) {
-    this.entries.add(new ProgressEntry(authorizable, command, singletonList(message), toParameters(arguments), status));
+  @Override
+  public void addEntry(Status status, List<String> messages, String command, String authorizable, Arguments arguments,
+      Position position) {
+    this.entries.add(new ProgressEntry(status, messages, command, authorizable, toParameters(arguments), position));
   }
 
   @Override
   public void addEntry(ActionDescriptor descriptor, ActionResult result) {
     this.entries.add(
-        new ProgressEntry(result.getAuthorizable(),
-            descriptor.getCommand(),
-            toMessages(result.getMessages()),
-            toParameters(descriptor.getArguments()),
-            result.getStatus())
+        new ProgressEntry(result.getStatus(), toMessages(result.getMessages()), descriptor.getCommand(),
+            result.getAuthorizable(), toParameters(descriptor.getArguments()), null
+        )
     );
   }
 
@@ -83,6 +78,9 @@ public class ProgressImpl implements Progress {
   }
 
   private List<String> toParameters(Arguments arguments) {
+    if (arguments == null) {
+      return Collections.emptyList();
+    }
     final List<String> parameters = new ArrayList<>();
     arguments.getRequired().forEach(it -> parameters.add(it.toString()));
     arguments.getNamed().forEach((key, value) -> parameters.add(format("%s= %s", key, value)));
@@ -111,7 +109,7 @@ public class ProgressImpl implements Progress {
   }
 
   private ProgressEntry shortEntry(String command, List<String> messages, Status status) {
-    return new ProgressEntry("", command, messages, Collections.emptyList(), status);
+    return new ProgressEntry(status, messages, command, "", Collections.emptyList(), null);
   }
 
   @Override

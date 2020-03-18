@@ -20,10 +20,10 @@
 
 package com.cognifide.cq.cqsm.core.actions
 
-import com.cognifide.apm.antlr.ApmList
-import com.cognifide.apm.antlr.ApmString
-import com.cognifide.apm.antlr.ApmType
-import com.cognifide.apm.antlr.argument.Arguments
+import com.cognifide.apm.grammar.ApmList
+import com.cognifide.apm.grammar.ApmString
+import com.cognifide.apm.grammar.ApmType
+import com.cognifide.apm.grammar.argument.Arguments
 import com.cognifide.cq.cqsm.api.actions.Action
 import com.cognifide.cq.cqsm.api.actions.annotations.Mapper
 import com.cognifide.cq.cqsm.api.exceptions.InvalidActionMapperException

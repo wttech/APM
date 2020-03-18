@@ -19,8 +19,8 @@
  */
 package com.cognifide.cq.cqsm.core.scripts;
 
-import com.cognifide.apm.antlr.ReferenceFinder;
-import com.cognifide.apm.antlr.ScriptRunner;
+import com.cognifide.apm.grammar.ReferenceFinder;
+import com.cognifide.apm.grammar.ScriptRunner;
 import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
 import com.cognifide.cq.cqsm.api.actions.ActionFactory;
 import com.cognifide.cq.cqsm.api.actions.ActionResult;
@@ -105,7 +105,7 @@ public class ScriptManagerImpl implements ScriptManager {
     final SessionSavingPolicy savingPolicy = context.getSavingPolicy();
 
     eventManager.trigger(Event.BEFORE_EXECUTE, script, mode, progress);
-    ScriptRunner scriptRunner = new ScriptRunner(scriptFinder, resolver,
+    ScriptRunner scriptRunner = new ScriptRunner(scriptFinder, resolver, mode == Mode.VALIDATION,
         (executionContext, commandName, arguments) -> {
           try {
             context.setCurrentAuthorizable(executionContext.getAuthorizable());

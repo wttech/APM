@@ -63,6 +63,12 @@ allprojects {
                         }
                         developers {
                             developer {
+                                name.set("Marcin Jędraszczyk")
+                                email.set("marcin.jedraszczyk@cognifide.com")
+                                organization.set("Cognifide")
+                                organizationUrl.set("https://www.cognifide.com")
+                            }
+                            developer {
                                 name.set("Katarzyna Wielgosz")
                                 email.set("katarzyna.wielgosz@cognifide.com")
                                 organization.set("Cognifide")
@@ -71,12 +77,6 @@ allprojects {
                             developer {
                                 name.set("Piotr Wilczyński")
                                 email.set("piotr.wilczynski@cognifide.com")
-                                organization.set("Cognifide")
-                                organizationUrl.set("https://www.cognifide.com")
-                            }
-                            developer {
-                                name.set("Marcin Jędraszczyk")
-                                email.set("marcin.jedraszczyk@cognifide.com")
                                 organization.set("Cognifide")
                                 organizationUrl.set("https://www.cognifide.com")
                             }

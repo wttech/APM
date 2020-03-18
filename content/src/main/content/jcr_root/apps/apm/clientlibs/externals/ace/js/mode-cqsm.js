@@ -21,7 +21,7 @@ ace.define("ace/mode/cqsm_highlight_rules",["require","exports","module","ace/li
 	
 	var CqsmHighlightRules = function() {
 		// var actions = [];
-		var keywords = [];
+		var keywords = ["begin", "BEGIN", "end", "END", "in", "IN"];
 
 		for (var i = 0; i < CqsmReference.length; i++) {
 			var reference = CqsmReference[i];

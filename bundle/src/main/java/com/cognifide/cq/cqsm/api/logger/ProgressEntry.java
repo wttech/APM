@@ -25,12 +25,13 @@ import com.google.common.collect.ImmutableList;
 import java.util.Collections;
 import java.util.List;
 import lombok.Getter;
-import org.apache.commons.collections.CollectionUtils;
 
 @Getter
 public class ProgressEntry {
 
   private final String authorizable;
+
+  private final Position position;
 
   private final String command;
 
@@ -40,21 +41,13 @@ public class ProgressEntry {
 
   private final Status status;
 
-  public ProgressEntry(String authorizable, String command, List<String> messages, List<String> parameters,
-      Status status) {
-    this.authorizable = defaultString(authorizable);
+  public ProgressEntry(Status status, List<String> messages, String command, String authorizable,
+      List<String> parameters, Position position) {
+    this.status = status != null ? status : Status.SUCCESS;
     this.command = defaultString(command);
+    this.position = position;
     this.messages = messages != null ? ImmutableList.copyOf(messages) : Collections.emptyList();
     this.parameters = parameters != null ? ImmutableList.copyOf(parameters) : Collections.emptyList();
-    this.status = status != null ? status : Status.SUCCESS;
-  }
-
-  public String getLastMessageText() {
-    String message = null;
-    if (CollectionUtils.isNotEmpty(messages)) {
-      message = messages.get(messages.size() - 1);
-    }
-
-    return message;
+    this.authorizable = defaultString(authorizable);
   }
 }
