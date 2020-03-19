@@ -25,7 +25,7 @@
     cqsm:verified="true"
     cqsm:executionMode="ON_HOOK"
     cqsm:executionHook="apm"
-    cqsm:executionEnvironment="publish"
+    cqsm:executionEnvironment="PUBLISH"
     jcr:encoding="UTF-8"
     jcr:mixinTypes="[cqsm:File]"
     jcr:primaryType="nt:resource"/>

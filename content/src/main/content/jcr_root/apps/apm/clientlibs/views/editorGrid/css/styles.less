@@ -17,10 +17,31 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-.apm-view {
-  height: 100%;
+.apm-editor-grid {
+  display: grid;
+  grid-template-areas: "console console console details" "console console console execution";
 
-  form {
-    height: 100%;
+  .apm-editor-console {
+    grid-area: console;
+    padding: 10px 0;
   }
+
+  .apm-editor-details {
+    grid-area: details;
+  }
+
+  .apm-editor-execution {
+    grid-area: execution;
+  }
+
+  @media screen and (max-width: 768px) {
+    grid-template-areas: "details" "console" "execution";
+  }
+}
+
+#ace {
+  min-width: 480px;
+  min-height: 340px;
+  width: 100%;
+  height: 100%;
 }

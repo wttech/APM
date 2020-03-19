@@ -20,13 +20,14 @@
 
 package com.cognifide.apm.tools
 
+import org.apache.jackrabbit.vault.packaging.InstallHook
 import org.apache.jackrabbit.vault.packaging.PackageException
 import org.osgi.framework.Bundle
 import org.osgi.framework.BundleContext
 import org.osgi.framework.FrameworkUtil
 import org.osgi.framework.ServiceReference
 
-open class OsgiAwareInstallHook {
+abstract class OsgiAwareInstallHook : InstallHook {
 
     protected var currentBundle: Bundle
     protected var bundleContext: BundleContext
