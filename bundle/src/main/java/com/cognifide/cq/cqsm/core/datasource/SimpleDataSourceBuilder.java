@@ -25,8 +25,10 @@ import com.adobe.granite.ui.components.ds.ValueMapResource;
 import com.day.cq.commons.jcr.JcrConstants;
 import com.google.common.collect.ImmutableMap;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceMetadata;
@@ -40,15 +42,28 @@ class SimpleDataSourceBuilder {
   private static final String CONFIGURATION_PATH_PROP = "value";
 
   private final ResourceResolver resourceResolver;
-  private final List<Resource> options = new ArrayList<>();
+  private final List<Option> options = new ArrayList<>();
+
+  public SimpleDataSourceBuilder addOption(Option option) {
+    options.add(option);
+    return this;
+  }
 
   public SimpleDataSourceBuilder addOption(String name, String value) {
-    options.add(createDataSourceItem(resourceResolver, name, value));
+    options.add(new Option(name, value));
+    return this;
+  }
+
+  public SimpleDataSourceBuilder addOptions(Collection<Option> options) {
+    options.addAll(options);
     return this;
   }
 
   public SimpleDataSource build() {
-    return new SimpleDataSource(options.iterator());
+    List<Resource> resources = options.stream()
+        .map(option -> createDataSourceItem(resourceResolver, option.name, option.value))
+        .collect(Collectors.toList());
+    return new SimpleDataSource(resources.iterator());
   }
 
   private Resource createDataSourceItem(ResourceResolver resolver, String name, String value) {
@@ -58,5 +73,12 @@ class SimpleDataSourceBuilder {
     );
     ValueMapDecorator result = new ValueMapDecorator(valueMap);
     return new ValueMapResource(resolver, new ResourceMetadata(), JcrConstants.NT_RESOURCE, result);
+  }
+
+  @RequiredArgsConstructor
+  public static class Option {
+
+    private final String name;
+    private final String value;
   }
 }

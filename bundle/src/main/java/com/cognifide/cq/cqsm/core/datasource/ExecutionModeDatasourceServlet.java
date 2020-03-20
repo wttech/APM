@@ -36,6 +36,6 @@ import org.osgi.service.component.annotations.Component;
 public class ExecutionModeDatasourceServlet extends AbstractDatasourceServlet<ExecutionMode> {
 
   public ExecutionModeDatasourceServlet() {
-    super(ExecutionMode.values());
+    super(ExecutionMode.values(), null);
   }
 }

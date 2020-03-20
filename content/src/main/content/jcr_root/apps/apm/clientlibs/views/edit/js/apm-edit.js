@@ -168,7 +168,7 @@
         });
 
         this.displayResponseFeedback = function (response) {
-          this.$validateButton.blur()
+          this.$validateButton.blur();
           const isErrorMessage = response.type === 'error';
           const variant = isErrorMessage ? 'error' : 'success';
 

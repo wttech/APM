@@ -20,6 +20,7 @@
 package com.cognifide.cq.cqsm.core.datasource;
 
 import com.adobe.granite.ui.components.ds.DataSource;
+import com.cognifide.cq.cqsm.core.datasource.SimpleDataSourceBuilder.Option;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.lang.WordUtils;
@@ -29,19 +30,25 @@ import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 
 public abstract class AbstractDatasourceServlet<E> extends SlingSafeMethodsServlet {
 
+  private final Option emptyOption;
   private final List<E> options;
 
-  protected AbstractDatasourceServlet(List<E> options) {
+  protected AbstractDatasourceServlet(List<E> options, Option emptyOption) {
+    this.emptyOption = emptyOption;
     this.options = options;
   }
 
-  protected AbstractDatasourceServlet(E[] options) {
+  protected AbstractDatasourceServlet(E[] options, Option emptyOption) {
+    this.emptyOption = emptyOption;
     this.options = Arrays.asList(options);
   }
 
   @Override
   protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) {
     SimpleDataSourceBuilder builder = new SimpleDataSourceBuilder(request.getResourceResolver());
+    if (emptyOption != null) {
+      builder.addOption(emptyOption);
+    }
     options.forEach(item -> builder.addOption(getName(item.toString()), item.toString()));
     request.setAttribute(DataSource.class.getName(), builder.build());
   }

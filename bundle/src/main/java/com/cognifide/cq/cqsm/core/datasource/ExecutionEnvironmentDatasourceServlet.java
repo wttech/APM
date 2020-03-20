@@ -21,6 +21,7 @@ package com.cognifide.cq.cqsm.core.datasource;
 
 import com.cognifide.cq.cqsm.api.scripts.ExecutionEnvironment;
 import com.cognifide.cq.cqsm.core.Property;
+import com.cognifide.cq.cqsm.core.datasource.SimpleDataSourceBuilder.Option;
 import javax.servlet.Servlet;
 import org.osgi.service.component.annotations.Component;
 
@@ -36,6 +37,6 @@ import org.osgi.service.component.annotations.Component;
 public class ExecutionEnvironmentDatasourceServlet extends AbstractDatasourceServlet<ExecutionEnvironment> {
 
   public ExecutionEnvironmentDatasourceServlet() {
-    super(ExecutionEnvironment.values());
+    super(ExecutionEnvironment.values(), new Option("Any", ""));
   }
 }

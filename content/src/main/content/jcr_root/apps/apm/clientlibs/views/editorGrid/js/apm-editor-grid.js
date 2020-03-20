@@ -17,93 +17,157 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-(function (window, $) {
+(function (window, $, Coral) {
 
   const EditorModes = {
-    viewMode: 'apm-editor-view-editorMode',
-    editMode: 'apm-editor-edit-editorMode',
+    viewMode: 'apm-editor-view-mode',
+    editMode: 'apm-editor-edit-mode',
   };
 
-  const Fields = {
+  const FieldNames = {
+    executionEnabled: 'cqsm:executionEnabled',
     executionMode: 'cqsm:executionMode',
     executionEnvironment: 'cqsm:executionEnvironment',
     executionHook: 'cqsm:executionHook',
+    executionSchedule: 'cqsm:executionSchedule',
   };
 
   const ExecutionModes = {
     onHook: 'ON_HOOK',
+    onSchedule: 'ON_SCHEDULE',
   };
 
   class EditorGrid {
-    constructor($element) {
+    constructor($element, fields) {
       this.$element = $element;
-      this.$fields = EditorGrid.toObjectWithJQueryFields($element.find(':-foundation-submittable'));
-      this.fields = EditorGrid.toObjectWithCoralFields($element.find(':-foundation-submittable'));
       this.editorMode = this.$element.hasClass(EditorModes.viewMode) ? EditorModes.viewMode : EditorModes.editMode;
+      this.fields = {
+        executionEnabled: fields[FieldNames.executionEnabled],
+        executionMode: fields[FieldNames.executionMode],
+        executionEnvironment: fields[FieldNames.executionEnvironment],
+        executionHook: fields[FieldNames.executionHook],
+        executionSchedule: fields[FieldNames.executionSchedule],
+      };
 
       this.init();
     }
 
     init() {
-      if (this.editorMode === EditorModes.viewMode) {
+      if (this.editorMode === EditorModes.editMode) {
+        this.fields.executionEnabled.on('foundation-field-change', this.updateFields.bind(this));
+        this.fields.executionMode.on('foundation-field-change', this.updateFields.bind(this));
+      } else {
         this.disableFields(this.fields, true);
       }
-      this.$fields[Fields.executionMode].on('foundation-field-change', this.updateFields.bind(this));
+      // timeout is needed because field.getValue() doesn't return any value at start
+      const timeout = setTimeout(this.updateFields.bind(this), 500);
     }
 
-    disableFields(fieldNames, disabled) {
-      fieldNames.forEach((fieldName) => this.fields[fieldName].setDisabled(disabled));
+    disableFields(fields, disabled) {
+      $.each(fields, (index, field) => field.setDisabled(disabled));
+    }
+
+    showFields(fields) {
+      const showFields = $.map(fields, (value) => value);
+      $.each(this.fields, (index, field) => {
+        if (showFields.includes(field)) {
+          field.show();
+          field.setDisabled(false);
+        } else {
+          field.hide();
+          field.setDisabled(true);
+        }
+      });
     }
 
     updateFields() {
-      this.disableFields([Fields.executionEnvironment, Fields.executionHook], true);
-      const executionMode = this.fields[Fields.executionMode].getValue();
-      if (executionMode === ExecutionModes.onHook) {
-        this.disableFields([Fields.executionEnvironment, Fields.executionHook], false)
+      const executionEnabled = this.fields.executionEnabled.getValue();
+      if (executionEnabled === 'false') {
+        this.showFields([this.fields.executionEnabled]);
+      } else {
+        const executionMode = this.fields.executionMode.getValue();
+        if (executionMode === ExecutionModes.onHook) {
+          this.showFields([this.fields.executionEnabled, this.fields.executionMode, this.fields.executionEnvironment,
+            this.fields.executionHook])
+        } else if (executionMode === ExecutionModes.onSchedule) {
+          this.showFields([this.fields.executionEnabled, this.fields.executionMode, this.fields.executionSchedule]);
+        } else {
+          this.showFields([this.fields.executionEnabled, this.fields.executionMode]);
+        }
       }
-    }
-
-    static toObjectWithCoralFields($fields) {
-      const fields = {};
-      $fields.each((index, element) => {
-        const $element = $(element);
-        if ($element.hasClass('coral-Form-field')) {
-          const field = $element.adaptTo('foundation-field');
-          let name = field.getName();
-          if (!name) {
-            name = $element.find('input').attr('name') || '';
-            name = name.replace('@Delete', '');
-          }
-          if (name !== '') {
-            fields[name] = field;
-          }
-        }
-      });
-      return fields;
-    }
-
-    static toObjectWithJQueryFields($fields) {
-      const fields = {};
-      $fields.each((index, element) => {
-        const $element = $(element);
-        if ($element.hasClass('coral-Form-field')) {
-          const field = $element.adaptTo('foundation-field');
-          let name = field.getName();
-          if (!name) {
-            name = $element.find('input').attr('name') || '';
-            name = name.replace('@Delete', '');
-          }
-          if (name !== '') {
-            fields[name] = $element;
-          }
-        }
-      });
-      return fields;
     }
   }
 
-  $(document).ready(() => {
-    const editorGrids = [];
-    $('.apm-editor-grid').each(() => editorGrids.push(new EditorGrid($('.apm-editor-grid'))));
+  class Field {
+    constructor($element, name) {
+      this.$element = $element;
+      this.name = name;
+      this.field = $element.adaptTo('foundation-field');
+    }
+
+    on(event, callback) {
+      this.$element.on(event, callback);
+    }
+
+    setDisabled(disabled) {
+      this.field.setDisabled(disabled);
+    }
+
+    hide() {
+      this.$element.parent('.coral-Form-fieldwrapper').hide();
+    }
+
+    show() {
+      this.$element.parent('.coral-Form-fieldwrapper').show();
+    }
+
+    getValue() {
+      return this.field.getValue();
+    }
+
+    static getName($element) {
+      const field = $element.adaptTo('foundation-field');
+      return field.getName();
+    }
+
+    static loadFields($fields, fieldNames, callback) {
+      const names = $.map(fieldNames, (value) => value);
+      const fields = {};
+      $fields.each((index, element) => {
+        const $element = $(element);
+        if ($element.hasClass('coral-Form-field')) {
+          Coral.commons.ready(element, () => {
+            const field = Field.toField($element);
+            if (field != null && names.includes(field.name)) {
+              fields[field.name] = field;
+              if (Object.keys(fields).length === names.length) {
+                callback(fields)
+              }
+            }
+          });
+        }
+      });
+      return fields;
+    }
+
+    static toField($element) {
+      if ($element.hasClass('coral-Form-field')) {
+        const name = Field.getName($element);
+        if (name !== undefined && name !== '') {
+          return new Field($element, name)
+        }
+      }
+      return null;
+    }
+  }
+
+  const editorGrids = [];
+
+  $(document).on('foundation-contentloaded', (event) => {
+    $('.apm-editor-grid', event.target).each((index, element) => {
+      const $element = $(element);
+      const $fields = $element.find(':-foundation-submittable');
+      Field.loadFields($fields, FieldNames, (fields) => editorGrids.push(new EditorGrid($element, fields)));
+    });
   });
-})(window, jQuery);
+})(window, jQuery, Coral);
