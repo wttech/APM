@@ -24,9 +24,7 @@ import static org.apache.commons.lang.StringUtils.defaultString;
 import com.google.common.collect.ImmutableList;
 import java.util.Collections;
 import java.util.List;
-import lombok.Getter;
 
-@Getter
 public class ProgressEntry {
 
   private final String authorizable;
@@ -49,5 +47,29 @@ public class ProgressEntry {
     this.messages = messages != null ? ImmutableList.copyOf(messages) : Collections.emptyList();
     this.parameters = parameters != null ? ImmutableList.copyOf(parameters) : Collections.emptyList();
     this.authorizable = defaultString(authorizable);
+  }
+
+  public String getAuthorizable() {
+    return authorizable;
+  }
+
+  public Position getPosition() {
+    return position;
+  }
+
+  public String getCommand() {
+    return command;
+  }
+
+  public List<String> getMessages() {
+    return messages;
+  }
+
+  public List<String> getParameters() {
+    return parameters;
+  }
+
+  public Status getStatus() {
+    return status;
   }
 }

@@ -23,7 +23,38 @@
 
   .apm-editor-console {
     grid-area: console;
+    display: flex;
+    flex-flow: column nowrap;
     padding: 10px 0;
+
+    #ace {
+      min-width: 480px;
+      min-height: 340px;
+      width: 100%;
+      flex-grow: 1;
+    }
+
+    .apm-console-logger {
+      max-height: 150px;
+      overflow: auto;
+
+      &.hidden {
+        display: none;
+      }
+
+      .apm-console-log {
+        border-bottom: 1px dotted rgb(208, 208, 208);
+        padding: 10px;
+
+        &.apm-console-log-error {
+          background-color: rgba(221, 52, 52, 0.7);
+        }
+
+        &:last-child {
+          border-bottom: 0;
+        }
+      }
+    }
   }
 
   .apm-editor-details {
@@ -37,11 +68,4 @@
   @media screen and (max-width: 768px) {
     grid-template-areas: "details" "console" "execution";
   }
-}
-
-#ace {
-  min-width: 480px;
-  min-height: 340px;
-  width: 100%;
-  height: 100%;
 }

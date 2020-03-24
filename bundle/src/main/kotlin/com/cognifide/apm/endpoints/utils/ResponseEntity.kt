@@ -18,20 +18,28 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.cq.cqsm.core.scripts;
+package com.cognifide.apm.endpoints.utils
 
-import java.util.List;
+import javax.servlet.http.HttpServletResponse
 
-public class ValidationException extends RuntimeException {
+class ResponseEntity<T>(val statusCode: Int, val body: T)
 
-  private final List<String> validationErrors;
+fun badRequest(body: ErrorBody.() -> Unit): ResponseEntity<Any> {
+    return error(HttpServletResponse.SC_BAD_REQUEST, body)
+}
 
-  public ValidationException(String message, List<String> validationErrors) {
-    super(message);
-    this.validationErrors = validationErrors;
-  }
+fun internalServerError(body: ErrorBody.() -> Unit): ResponseEntity<Any> {
+    return error(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, body)
+}
 
-  public List<String> getValidationErrors() {
-    return validationErrors;
-  }
+fun ok(body: SuccessBody.() -> Unit): ResponseEntity<Any> {
+    return success(200, body)
+}
+
+fun error(statusCode: Int, body: ErrorBody.() -> Unit): ResponseEntity<Any> {
+    return ResponseEntity(statusCode, ErrorBody().apply(body))
+}
+
+fun success(statusCode: Int, body: SuccessBody.() -> Unit): ResponseEntity<Any> {
+    return ResponseEntity(statusCode, SuccessBody().apply(body))
 }

@@ -18,20 +18,13 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.cq.cqsm.core.scripts;
+package com.cognifide.apm.endpoints.utils
 
-import java.util.List;
+import org.apache.sling.models.annotations.Source
+import org.apache.sling.models.spi.injectorspecific.InjectAnnotation
 
-public class ValidationException extends RuntimeException {
-
-  private final List<String> validationErrors;
-
-  public ValidationException(String message, List<String> validationErrors) {
-    super(message);
-    this.validationErrors = validationErrors;
-  }
-
-  public List<String> getValidationErrors() {
-    return validationErrors;
-  }
-}
+@Target(AnnotationTarget.FIELD, AnnotationTarget.VALUE_PARAMETER)
+@Retention(AnnotationRetention.RUNTIME)
+@InjectAnnotation
+@Source("apm-request-parameter")
+annotation class RequestParameter(val value: String, val optional: Boolean = true, val fileName: Boolean = false)

@@ -1,6 +1,7 @@
 plugins {
     id("com.cognifide.aem.bundle")
     kotlin("jvm")
+    id("org.jetbrains.kotlin.plugin.noarg") version "1.3.70"
     antlr
     groovy
     java
@@ -15,6 +16,10 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
+//noArg {
+//    annotation("org.apache.sling.models.annotations.Model")
+//}
+
 aem {
     tasks {
         bundle {
@@ -28,7 +33,8 @@ aem {
             exportPackage("com.cognifide.cq.cqsm.api.*")
             exportPackage("com.cognifide.cq.cqsm.core.models.*")
             exportPackage("com.cognifide.apm.tools.*")
-            attribute("Sling-Model-Packages", "com.cognifide.cq.cqsm.core.models,com.cognifide.cq.cqsm.core.scripts,com.cognifide.cq.cqsm.api.history,com.cognifide.cq.cqsm.core.history")
+            exportPackage("com.cognifide.apm.endpoints.*")
+            attribute("Sling-Model-Packages", "com.cognifide.apm.endpoints,com.cognifide.cq.cqsm.core.models,com.cognifide.cq.cqsm.core.scripts,com.cognifide.cq.cqsm.api.history,com.cognifide.cq.cqsm.core.history")
             attribute("Sling-Nodetypes", "CQ-INF/nodetypes/cqsm_nodetypes.cnd")
             attribute("CQ-Security-Management-Actions", "com.cognifide.cq.cqsm.foundation.actions")
         }

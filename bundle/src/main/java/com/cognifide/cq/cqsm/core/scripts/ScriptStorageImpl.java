@@ -39,7 +39,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.jcr.Binary;
@@ -107,27 +106,6 @@ public class ScriptStorageImpl implements ScriptStorage {
     scriptManager.process(script, Mode.VALIDATION, resolver);
     scriptManager.getEventManager().trigger(Event.AFTER_SAVE, script);
     return script;
-  }
-
-  @Override
-  public List<Script> saveAll(Map<String, InputStream> files, boolean overwrite, ResourceResolver resolver)
-      throws RepositoryException, PersistenceException {
-
-    List<FileDescriptor> fileDescriptors = files.entrySet().stream()
-        .map(entry -> createFileDescriptor(entry.getKey(), getSavePath(), entry.getValue()))
-        .collect(Collectors.toList());
-
-    validate(fileDescriptors);
-
-    List<Script> scripts = fileDescriptors.stream()
-        .map(fileDescriptor -> saveScript(resolver, fileDescriptor, overwrite))
-        .collect(Collectors.toList());
-
-    for (Script script : scripts) {
-      scriptManager.process(script, Mode.VALIDATION, resolver);
-      scriptManager.getEventManager().trigger(Event.AFTER_SAVE, script);
-    }
-    return scripts;
   }
 
   @Override

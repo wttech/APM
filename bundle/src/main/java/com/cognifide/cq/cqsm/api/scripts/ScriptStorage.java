@@ -19,14 +19,10 @@
  */
 package com.cognifide.cq.cqsm.api.scripts;
 
+import java.io.InputStream;
+import javax.jcr.RepositoryException;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
-
-import java.io.InputStream;
-import java.util.List;
-import java.util.Map;
-
-import javax.jcr.RepositoryException;
 
 public interface ScriptStorage {
 
@@ -44,13 +40,6 @@ public interface ScriptStorage {
 	 * Save script, for example from upload
 	 */
 	Script save(String fileName, InputStream input, boolean overwrite, ResourceResolver resolver)
-			throws RepositoryException, PersistenceException;
-
-	/**
-	 * Batch save multiple scripts at once (with some 'include' dependencies between them)
-	 * Map definition: key - should be a file name, value - file content in CQSM language
-	 */
-	List<Script> saveAll(Map<String, InputStream> files, boolean overwrite, ResourceResolver resolver)
 			throws RepositoryException, PersistenceException;
 
 }
