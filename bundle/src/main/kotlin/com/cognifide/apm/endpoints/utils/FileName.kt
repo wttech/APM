@@ -18,20 +18,8 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.cq.cqsm.core.scripts;
+package com.cognifide.apm.endpoints.utils
 
-import java.util.List;
-
-public class ValidationException extends RuntimeException {
-
-  private final List<String> validationErrors;
-
-  public ValidationException(String message, List<String> validationErrors) {
-    super(message);
-    this.validationErrors = validationErrors;
-  }
-
-  public List<String> getValidationErrors() {
-    return validationErrors;
-  }
-}
+@Target(AnnotationTarget.FIELD, AnnotationTarget.VALUE_PARAMETER)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class FileName

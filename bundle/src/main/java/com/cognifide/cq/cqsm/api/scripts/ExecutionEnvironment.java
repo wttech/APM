@@ -1,4 +1,4 @@
-/*
+/*-
  * ========================LICENSE_START=================================
  * AEM Permission Management
  * %%
@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,21 +17,9 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
+package com.cognifide.cq.cqsm.api.scripts;
 
-package com.cognifide.cq.cqsm.core.scripts;
+public enum ExecutionEnvironment {
 
-import java.util.List;
-
-public class ValidationException extends RuntimeException {
-
-  private final List<String> validationErrors;
-
-  public ValidationException(String message, List<String> validationErrors) {
-    super(message);
-    this.validationErrors = validationErrors;
-  }
-
-  public List<String> getValidationErrors() {
-    return validationErrors;
-  }
+  AUTHOR, PUBLISH
 }

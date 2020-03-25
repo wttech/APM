@@ -22,19 +22,27 @@
 
     const SHOW_REFERENCES_URL = '/apm/references.html';
 
+    const fieldNames = [
+      'cqsm:executionEnabled',
+      'cqsm:executionMode',
+      'cqsm:executionEnvironment',
+      'cqsm:executionHook',
+      'cqsm:executionSchedule',
+    ];
+
     function Console($el) {
       this.uiHelper = $(window).adaptTo('foundation-ui');
       this.$el = $el;
+      this.$form = $el.find('#script-form');
+      this.$executionEnabled = this.$form.find('coral-checkbox[name="cqsm:executionEnabled"]');
       this.$textArea = this.$el.find('#cqsm').eq(0);
-      this.$validationAlertContainer = $('<div class="validation-alert" />');
-      this.$textArea.parent().append(this.$validationAlertContainer);
       this.$fileName = this.$el.find('#fname').eq(0);
       this.$showReference = this.$el.find('#showReference').eq(0);
       this.$validateButton = this.$el.find('#validateButton').eq(0);
       this.$saveButton = this.$el.find('#saveButton').eq(0);
       this.$saveAndCloseButton = this.$el.find('#saveAndCloseButton').eq(0);
       this.$cancelButton = this.$el.find('#cancelButton').eq(0);
-      this.$lastSavedOn = this.$el.find('.lastSavedOn').eq(0);
+      this.$logger = this.$el.find('.apm-console-logger');
       this.initialValue = this.$textArea.val();
       this.savePath = this.$el.find('#script-form').attr('action');
       this.editor = this.initEditor();
@@ -58,76 +66,56 @@
       getOverwrite: function () {
         return this.isFileNameLocked() ? 'true' : 'false';
       },
+      getExecutionEnabled: function () {
+        return !this.$executionEnabled.prop('checked');
+      },
       fileUpload: function () {
-        let self = this,
-            boundary = '-----------------------------' +
-                Math.floor(Math.random() * Math.pow(10, 8)),
-            value = this.$textArea.val(),
-            params = {
-              file: {
-                type: 'text/plain',
-                filename: this.getFileName(),
-                content: value
-              }
-            },
-            content = [],
-            file,
-            mimeHeader;
+        const self = this;
+        const value = this.$textArea.val();
 
-        for (file in params) {
-          if (params.hasOwnProperty(file)) {
-            mimeHeader = 'Content-Disposition: form-data; name="' + file + '"; ';
-            content.push('--' + boundary);
-
-            if (params[file].filename) {
-              if (this.savePath.endsWith('/' + params[file].filename)) {
-                mimeHeader += 'filename="' + this.savePath + '";';
-              } else {
-                mimeHeader += 'filename="' + this.savePath + '/' + params[file].filename + '";';
-              }
-            }
-            content.push(mimeHeader);
-
-            if (params[file].type) {
-              content.push('Content-Type: ' + params[file].type);
-            }
-
-            content.push('');
-            content.push(params[file].content);
-            content.push('--' + boundary);
-          }
+        let fileName = this.getFileName();
+        if (this.savePath.endsWith('/' + fileName)) {
+          fileName = this.savePath;
+        } else {
+          fileName = this.savePath + '/' + fileName;
         }
+
+        const originalFormData = new FormData(this.$form.get(0));
+
+        const formData = new FormData();
+        $.each(fieldNames, (index, fieldName) => {
+          const originalValue = originalFormData.get(fieldName);
+          if (originalValue) {
+            formData.append(fieldName, originalValue);
+          }
+        });
+        formData.append('cqsm:executionEnabled', this.getExecutionEnabled());
+        formData.append('overwrite', this.getOverwrite());
+        formData.append('file', new Blob([value], {type: 'text/plain'}), fileName);
 
         $.ajax({
           type: 'POST',
           async: false,
-          url: '/bin/cqsm/fileUpload?overwrite=' + this.getOverwrite(),
+          url: '/bin/apm/script/upload',
           dataType: 'json',
           processData: false,
-          contentType: 'multipart/form-data; boundary=' + boundary,
-          data: content.join('\r\n'),
+          contentType: false,
+          data: formData,
           success: function (data) {
-            const scripts = data.uploadedScripts;
-            if (scripts.length > 0) {
-              if (!self.isFileNameLocked()) {
-                  self.changeFileName(scripts[0].name);
-              }
-              self.initialValue = value;
-              self.createMode = false;
-              self.$lastSavedOn.text('Last saved on: ' + new Date().toLocaleString());
-              self.displayResponseFeedback(data);
-            } else {
-              self.displayResponseFeedback({
-                type:'error',
-                message: 'Error while saving: ' + self.getFileName()
-              });
+            const script = data.uploadedScript;
+            if (!self.isFileNameLocked()) {
+              self.changeFileName(script.name);
             }
+            self.initialValue = value;
+            self.createMode = false;
+            self.showInfo(data);
           },
-          error: function(response) {
-            self.displayResponseFeedback(response.responseJSON);
+          error: function (response) {
+            self.showError(response.responseJSON);
           }
         });
       },
+
       initEditor: function () {
         let editor = null;
 
@@ -167,26 +155,31 @@
           window.location.href = document.referrer;
         });
 
-        this.displayResponseFeedback = function (response) {
-          this.$validateButton.blur()
-          const isErrorMessage = response.type === 'error';
-          const variant = isErrorMessage ? 'error' : 'success';
+        this.showInfo = function (response) {
+          this.$validateButton.blur();
 
-          let text = '';
+          self.uiHelper.notify('info', response.message, 'success');
+          self.log('info', response.message);
+        };
 
-          if (isErrorMessage) {
-            text = 'error';
-            if (response.errors) {
-              response.message += '<ul>';
-              response.errors.forEach(function(error) {
-                response.message += '<li>' + error;
-              });
-              response.message += '</ul>';
-            }
-            self.uiHelper.notify(text, response.message, variant);
-          } else {
-            text = 'info';
-            self.uiHelper.notify(text, response.message, variant);
+        this.showError = function (response) {
+          this.$validateButton.blur();
+
+          const text = 'error';
+          let message = response.message;
+          if (response.errors) {
+            message += '<ul>';
+            response.errors.forEach((error) => message += '<li>' + error);
+            message += '</ul>';
+          }
+          self.uiHelper.notify('error', message, 'error');
+          self.log('error', message);
+        };
+
+        this.log = function (type, message) {
+          this.$logger.prepend(`<div class="apm-console-log apm-console-log-${type}">${message}</div>`);
+          if (this.$logger.hasClass('hidden')) {
+            this.$logger.removeClass('hidden');
           }
         };
 
@@ -194,15 +187,19 @@
           $.ajax({
             type: 'POST',
             async: false,
-            url: '/bin/cqsm/validate',
+            url: '/bin/apm/script/validate',
             data: {
               content: self.$textArea.val()
             },
             success: function (response) {
-              self.displayResponseFeedback(response);
+              if (response.valid) {
+                self.showInfo(response);
+              } else {
+                self.showError(response);
+              }
             },
             error: function (response) {
-              self.displayResponseFeedback(response.responseJSON);
+              self.showError(response.responseJSON);
             }
           });
         });

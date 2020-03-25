@@ -27,7 +27,6 @@ import com.cognifide.cq.cqsm.api.scripts.ScriptManager
 import com.cognifide.cq.cqsm.core.scripts.ScriptFilters.filterOnHook
 import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper.getResourceResolverForService
 import org.apache.jackrabbit.vault.packaging.InstallContext
-import org.apache.jackrabbit.vault.packaging.InstallHook
 import org.apache.jackrabbit.vault.packaging.PackageException
 import org.apache.sling.api.resource.ResourceResolverFactory
 import org.apache.sling.settings.SlingSettingsService
@@ -35,7 +34,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.*
 
-class ApmInstallHook : InstallHook, OsgiAwareInstallHook() {
+class ApmInstallHook : OsgiAwareInstallHook() {
 
     private val logger: Logger = LoggerFactory.getLogger(ApmInstallHook::class.java)
 
@@ -80,8 +79,8 @@ class ApmInstallHook : InstallHook, OsgiAwareInstallHook() {
         val slingSettingsService = getService(SlingSettingsService::class.java)
         val runModes = slingSettingsService.runModes
         return when {
-            runModes.contains("author") -> "author"
-            runModes.contains("publish") -> "publish"
+            runModes.contains("author") -> "AUTHOR"
+            runModes.contains("publish") -> "PUBLISH"
             else -> ""
         }
     }

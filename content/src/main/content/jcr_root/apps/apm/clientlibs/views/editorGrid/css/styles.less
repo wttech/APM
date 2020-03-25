@@ -1,0 +1,71 @@
+/*-
+ * ========================LICENSE_START=================================
+ * AEM Permission Management
+ * %%
+ * Copyright (C) 2013 - 2016 Cognifide Limited
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * =========================LICENSE_END==================================
+ */
+.apm-editor-grid {
+  display: grid;
+  grid-template-areas: "console console console details" "console console console execution" "console console console nothing";
+
+  .apm-editor-console {
+    grid-area: console;
+    display: flex;
+    flex-flow: column nowrap;
+    padding: 10px 0;
+
+    #ace {
+      min-width: 480px;
+      min-height: 340px;
+      width: 100%;
+      flex-grow: 1;
+    }
+
+    .apm-console-logger {
+      max-height: 150px;
+      overflow: auto;
+
+      &.hidden {
+        display: none;
+      }
+
+      .apm-console-log {
+        border-bottom: 1px dotted rgb(208, 208, 208);
+        padding: 10px;
+
+        &.apm-console-log-error {
+          background-color: rgba(221, 52, 52, 0.7);
+        }
+
+        &:last-child {
+          border-bottom: 0;
+        }
+      }
+    }
+  }
+
+  .apm-editor-details {
+    grid-area: details;
+  }
+
+  .apm-editor-execution {
+    grid-area: execution;
+  }
+
+  @media screen and (max-width: 768px) {
+    grid-template-areas: "details" "console" "execution";
+  }
+}

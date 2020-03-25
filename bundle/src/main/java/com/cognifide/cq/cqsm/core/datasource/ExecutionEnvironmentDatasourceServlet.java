@@ -17,21 +17,26 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
+package com.cognifide.cq.cqsm.core.datasource;
 
-package com.cognifide.cq.cqsm.core.scripts;
+import com.cognifide.cq.cqsm.api.scripts.ExecutionEnvironment;
+import com.cognifide.cq.cqsm.core.Property;
+import com.cognifide.cq.cqsm.core.datasource.SimpleDataSourceBuilder.Option;
+import javax.servlet.Servlet;
+import org.osgi.service.component.annotations.Component;
 
-import java.util.List;
+@Component(
+    immediate = true,
+    service = Servlet.class,
+    property = {
+        Property.RESOURCE_TYPE + "apm/datasource/executionEnvironments",
+        Property.DESCRIPTION + "Provides execution environments",
+        Property.VENDOR
+    }
+)
+public class ExecutionEnvironmentDatasourceServlet extends AbstractDatasourceServlet<ExecutionEnvironment> {
 
-public class ValidationException extends RuntimeException {
-
-  private final List<String> validationErrors;
-
-  public ValidationException(String message, List<String> validationErrors) {
-    super(message);
-    this.validationErrors = validationErrors;
-  }
-
-  public List<String> getValidationErrors() {
-    return validationErrors;
+  public ExecutionEnvironmentDatasourceServlet() {
+    super(ExecutionEnvironment.values(), new Option("Any", ""));
   }
 }

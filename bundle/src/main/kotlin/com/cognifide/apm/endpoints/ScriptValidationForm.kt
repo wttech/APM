@@ -18,20 +18,14 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.cq.cqsm.core.scripts;
+package com.cognifide.apm.endpoints
 
-import java.util.List;
+import com.cognifide.apm.endpoints.utils.RequestParameter
+import org.apache.sling.api.SlingHttpServletRequest
+import org.apache.sling.models.annotations.Model
+import javax.inject.Inject
 
-public class ValidationException extends RuntimeException {
-
-  private final List<String> validationErrors;
-
-  public ValidationException(String message, List<String> validationErrors) {
-    super(message);
-    this.validationErrors = validationErrors;
-  }
-
-  public List<String> getValidationErrors() {
-    return validationErrors;
-  }
-}
+@Model(adaptables = [SlingHttpServletRequest::class])
+class ScriptValidationForm @Inject constructor(
+        @param:RequestParameter("content", optional = false) val content: String
+)

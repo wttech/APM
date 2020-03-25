@@ -24,7 +24,7 @@
   <jcr:content
     cqsm:verified="true"
     cqsm:executionMode="ON_HOOK"
-    cqsm:executionEnvironment="author"
+    cqsm:executionEnvironment="AUTHOR"
     jcr:encoding="UTF-8"
     jcr:mixinTypes="[cqsm:File]"
     jcr:primaryType="nt:resource"/>

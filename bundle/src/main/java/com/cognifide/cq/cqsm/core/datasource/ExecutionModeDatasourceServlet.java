@@ -17,21 +17,25 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
+package com.cognifide.cq.cqsm.core.datasource;
 
-package com.cognifide.cq.cqsm.core.scripts;
+import com.cognifide.cq.cqsm.api.scripts.ExecutionMode;
+import com.cognifide.cq.cqsm.core.Property;
+import javax.servlet.Servlet;
+import org.osgi.service.component.annotations.Component;
 
-import java.util.List;
+@Component(
+    immediate = true,
+    service = Servlet.class,
+    property = {
+        Property.RESOURCE_TYPE + "apm/datasource/executionModes",
+        Property.DESCRIPTION + "Provides execution modes",
+        Property.VENDOR
+    }
+)
+public class ExecutionModeDatasourceServlet extends AbstractDatasourceServlet<ExecutionMode> {
 
-public class ValidationException extends RuntimeException {
-
-  private final List<String> validationErrors;
-
-  public ValidationException(String message, List<String> validationErrors) {
-    super(message);
-    this.validationErrors = validationErrors;
-  }
-
-  public List<String> getValidationErrors() {
-    return validationErrors;
+  public ExecutionModeDatasourceServlet() {
+    super(ExecutionMode.values(), null);
   }
 }

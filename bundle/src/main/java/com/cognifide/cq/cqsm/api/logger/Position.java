@@ -20,14 +20,15 @@
 
 package com.cognifide.cq.cqsm.api.logger;
 
-import lombok.Getter;
-
-@Getter
 public class Position {
 
   private final int line;
 
   public Position(int line) {
     this.line = line;
+  }
+
+  public int getLine() {
+    return line;
   }
 }

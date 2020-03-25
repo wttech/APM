@@ -20,10 +20,16 @@
 package com.cognifide.cq.cqsm.core.scripts;
 
 import static com.cognifide.cq.cqsm.core.scripts.FileDescriptor.createFileDescriptor;
+import static com.cognifide.cq.cqsm.core.scripts.ScriptContent.CQSM_EXECUTION_ENABLED;
+import static com.cognifide.cq.cqsm.core.scripts.ScriptContent.CQSM_EXECUTION_ENVIRONMENT;
+import static com.cognifide.cq.cqsm.core.scripts.ScriptContent.CQSM_EXECUTION_HOOK;
+import static com.cognifide.cq.cqsm.core.scripts.ScriptContent.CQSM_EXECUTION_MODE;
+import static com.cognifide.cq.cqsm.core.scripts.ScriptContent.CQSM_EXECUTION_SCHEDULE;
 import static java.lang.String.format;
 
 import com.cognifide.cq.cqsm.api.executors.Mode;
 import com.cognifide.cq.cqsm.api.scripts.Event;
+import com.cognifide.cq.cqsm.api.scripts.ExecutionMetadata;
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
 import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
@@ -34,12 +40,12 @@ import com.day.cq.commons.jcr.JcrConstants;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.jcr.Binary;
@@ -96,38 +102,17 @@ public class ScriptStorageImpl implements ScriptStorage {
   }
 
   @Override
-  public Script save(String fileName, InputStream input, boolean overwrite, ResourceResolver resolver)
-      throws RepositoryException, PersistenceException {
+  public Script save(String fileName, InputStream input, ExecutionMetadata executionMetadata, boolean overwrite,
+      ResourceResolver resolver) throws RepositoryException, PersistenceException {
 
     FileDescriptor fileDescriptor = createFileDescriptor(fileName, getSavePath(), input);
 
     validate(Collections.singletonList(fileDescriptor));
 
-    Script script = saveScript(resolver, fileDescriptor, overwrite);
+    Script script = saveScript(fileDescriptor, executionMetadata, overwrite, resolver);
     scriptManager.process(script, Mode.VALIDATION, resolver);
     scriptManager.getEventManager().trigger(Event.AFTER_SAVE, script);
     return script;
-  }
-
-  @Override
-  public List<Script> saveAll(Map<String, InputStream> files, boolean overwrite, ResourceResolver resolver)
-      throws RepositoryException, PersistenceException {
-
-    List<FileDescriptor> fileDescriptors = files.entrySet().stream()
-        .map(entry -> createFileDescriptor(entry.getKey(), getSavePath(), entry.getValue()))
-        .collect(Collectors.toList());
-
-    validate(fileDescriptors);
-
-    List<Script> scripts = fileDescriptors.stream()
-        .map(fileDescriptor -> saveScript(resolver, fileDescriptor, overwrite))
-        .collect(Collectors.toList());
-
-    for (Script script : scripts) {
-      scriptManager.process(script, Mode.VALIDATION, resolver);
-      scriptManager.getEventManager().trigger(Event.AFTER_SAVE, script);
-    }
-    return scripts;
   }
 
   @Override
@@ -135,26 +120,32 @@ public class ScriptStorageImpl implements ScriptStorage {
     return SCRIPT_PATH;
   }
 
-  private Script saveScript(ResourceResolver resolver, FileDescriptor file, boolean overwrite) {
+  private Script saveScript(FileDescriptor descriptor, ExecutionMetadata executionMetadata, boolean overwrite,
+      ResourceResolver resolver) {
     Script result = null;
     try {
       final Session session = resolver.adaptTo(Session.class);
       final ValueFactory valueFactory = session.getValueFactory();
-      final Binary binary = valueFactory.createBinary(file.getInputStream());
-      final Node saveNode = session.getNode(file.getPath());
+      final Binary binary = valueFactory.createBinary(descriptor.getInputStream());
+      final Node saveNode = session.getNode(descriptor.getPath());
 
       final Node fileNode, contentNode;
-      if (overwrite && saveNode.hasNode(file.getName())) {
-        fileNode = saveNode.getNode(file.getName());
+      if (overwrite && saveNode.hasNode(descriptor.getName())) {
+        fileNode = saveNode.getNode(descriptor.getName());
         contentNode = fileNode.getNode(JcrConstants.JCR_CONTENT);
       } else {
-        fileNode = saveNode.addNode(generateFileName(file.getName(), saveNode), JcrConstants.NT_FILE);
+        fileNode = saveNode.addNode(generateFileName(descriptor.getName(), saveNode), JcrConstants.NT_FILE);
         contentNode = fileNode.addNode(JcrConstants.JCR_CONTENT, JcrConstants.NT_RESOURCE);
       }
 
       contentNode.setProperty(JcrConstants.JCR_DATA, binary);
       contentNode.setProperty(JcrConstants.JCR_ENCODING, SCRIPT_ENCODING.name());
-      removeProp(contentNode, ScriptContent.CQSM_EXECUTION_LAST);
+      contentNode.setProperty(CQSM_EXECUTION_ENABLED, executionMetadata.isExecutionEnabled());
+      setOrRemoveProperty(contentNode, CQSM_EXECUTION_MODE, executionMetadata.getExecutionMode());
+      setOrRemoveProperty(contentNode, CQSM_EXECUTION_ENVIRONMENT, executionMetadata.getExecutionEnvironment());
+      setOrRemoveProperty(contentNode, CQSM_EXECUTION_HOOK, executionMetadata.getExecutionHook());
+      setOrRemoveProperty(contentNode, CQSM_EXECUTION_SCHEDULE, executionMetadata.getExecutionSchedule());
+      removeProperty(contentNode, ScriptContent.CQSM_EXECUTION_LAST);
       JcrUtils.setLastModified(contentNode, Calendar.getInstance());
       session.save();
       result = scriptFinder.find(fileNode.getPath(), resolver);
@@ -164,7 +155,22 @@ public class ScriptStorageImpl implements ScriptStorage {
     return result;
   }
 
-  private void removeProp(Node contentNode, String propName) throws RepositoryException {
+  private void setOrRemoveProperty(Node node, String name, Object value) throws RepositoryException {
+    if (value == null) {
+      removeProperty(node, name);
+    } else if (value instanceof LocalDateTime) {
+      LocalDateTime localDateTime = (LocalDateTime) value;
+      Calendar calendar = Calendar.getInstance();
+      calendar.clear();
+      calendar.set(localDateTime.getYear(), localDateTime.getMonthValue() - 1, localDateTime.getDayOfMonth(),
+          localDateTime.getHour(), localDateTime.getMinute(), localDateTime.getSecond());
+      node.setProperty(name, calendar);
+    } else {
+      node.setProperty(name, value.toString());
+    }
+  }
+
+  private void removeProperty(Node contentNode, String propName) throws RepositoryException {
     if (contentNode.hasProperty(propName)) {
       contentNode.getProperty(propName).remove();
     }

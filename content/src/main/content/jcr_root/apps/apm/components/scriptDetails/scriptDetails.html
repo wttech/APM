@@ -18,8 +18,16 @@
     =========================LICENSE_END==================================
 */-->
 <sly data-sly-use.model="com.cognifide.cq.cqsm.core.models.ConsoleModel">
-  <div id="ace"></div>
-  <textarea rows="12" cols="80" name="cqsm" id="cqsm">${model.content}</textarea>
-  <div class="apm-console-logger hidden"></div>
+  <div class="coral-Form-fieldwrapper">
+    <label class="coral-Form-fieldlabel" id="label-aligned-textfield-0">Name</label>
+    <input is="coral-textfield" class="coral-Form-field" placeholder="Enter script name" value="${model.fileName}"
+           name="fname" id="fname" labelledby="label-aligned-textfield-0"
+           data-sly-attribute.disabled="${model.edit ? 'disabled' : ''}">
+  </div>
+  <div class="coral-Form-fieldwrapper">
+    <label class="coral-Form-fieldlabel" id="label-aligned-textfield-1">Extension</label>
+    <input is="coral-textfield" class="coral-Form-field" name="name" value=".cqsm"
+           labelledby="label-aligned-textfield-1" disabled>
+  </div>
 </sly>
 

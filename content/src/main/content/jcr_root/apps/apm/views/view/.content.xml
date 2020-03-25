@@ -16,7 +16,7 @@
       <clientlibs
         jcr:primaryType="nt:unstructured"
         sling:resourceType="granite/ui/components/coral/foundation/includeclientlibs"
-        categories="[apm-view]"/>
+        categories="[apm-view, apm-editor-grid]"/>
     </head>
     <title
       jcr:primaryType="nt:unstructured"
@@ -39,20 +39,96 @@
       granite:class="apm-view-form"
       granite:rel="apm-view"
       jcr:primaryType="nt:unstructured"
-      sling:resourceType="granite/ui/components/coral/foundation/container"
-      margin="true">
+      sling:resourceType="granite/ui/components/coral/foundation/container">
       <items jcr:primaryType="nt:unstructured">
         <form
           granite:class="cache-warmup-form"
           jcr:primaryType="nt:unstructured"
           sling:resourceType="granite/ui/components/coral/foundation/form"
           action="${requestPathInfo.resourcePath}"
+          dataPath="${requestPathInfo.suffix}/jcr:content"
           method="post"
-          style="vertical">
+          style="aligned">
           <items jcr:primaryType="nt:unstructured">
-            <console
+            <grid
+              granite:class="apm-editor-grid apm-editor-view-mode"
               jcr:primaryType="nt:unstructured"
-              sling:resourceType="apm/components/console"/>
+              sling:resourceType="granite/ui/components/coral/foundation/container"
+              maximized="true">
+              <items jcr:primaryType="nt:unstructured">
+                <console
+                  granite:class="apm-editor-console"
+                  jcr:primaryType="nt:unstructured"
+                  sling:resourceType="granite/ui/components/coral/foundation/form/fieldset">
+                  <items jcr:primaryType="nt:unstructured">
+                    <console
+                      jcr:primaryType="nt:unstructured"
+                      sling:resourceType="apm/components/console"/>
+                  </items>
+                </console>
+                <details
+                  granite:class="apm-editor-details"
+                  jcr:primaryType="nt:unstructured"
+                  sling:resourceType="granite/ui/components/coral/foundation/form/fieldset"
+                  jcr:title="Details">
+                  <items jcr:primaryType="nt:unstructured">
+                    <details
+                      jcr:primaryType="nt:unstructured"
+                      sling:resourceType="apm/components/scriptDetails"/>
+                  </items>
+                </details>
+                <execution
+                  granite:class="apm-editor-execution"
+                  jcr:primaryType="nt:unstructured"
+                  sling:resourceType="granite/ui/components/coral/foundation/form/fieldset"
+                  jcr:title="Execution">
+                  <items jcr:primaryType="nt:unstructured">
+                    <disabled
+                      jcr:primaryType="nt:unstructured"
+                      sling:resourceType="granite/ui/components/coral/foundation/form/checkbox"
+                      text="Disabled"
+                      fieldLabel="Execution"
+                      name="cqsm:executionEnabled"
+                      value="false"
+                      uncheckedValue="true"/>
+                    <mode
+                      jcr:primaryType="nt:unstructured"
+                      sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                      emptyText="None"
+                      emptyOption="true"
+                      fieldLabel="Mode"
+                      name="cqsm:executionMode">
+                      <datasource
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="apm/datasource/executionModes"/>
+                    </mode>
+                    <environment
+                      jcr:primaryType="nt:unstructured"
+                      sling:resourceType="granite/ui/components/coral/foundation/form/select"
+                      emptyText="Any"
+                      emptyOption="true"
+                      fieldLabel="Environment"
+                      name="cqsm:executionEnvironment">
+                      <datasource
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="apm/datasource/executionEnvironments"/>
+                    </environment>
+                    <hook
+                      jcr:primaryType="nt:unstructured"
+                      sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                      fieldLabel="Hook"
+                      name="cqsm:executionHook"/>
+                    <schedule
+                      jcr:primaryType="nt:unstructured"
+                      sling:resourceType="granite/ui/components/coral/foundation/form/datepicker"
+                      fieldLabel="Schedule"
+                      name="cqsm:executionSchedule"
+                      type="datetime"
+                      valueFormat="YYYY-MM-DD[T]HH:mm:ss"/>
+                  </items>
+                </execution>
+              </items>
+            </grid>
           </items>
         </form>
       </items>
