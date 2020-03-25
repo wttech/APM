@@ -1,4 +1,4 @@
-![AEM Permission Managment](src/main/wiki/assets/misc/apmLogo.png)
+![AEM Permission Managment](src/main/wiki/assets/misc/apm-logo-blue.svg)
 # AEM Permission Management
 
 ## Documentation Module

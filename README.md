@@ -5,7 +5,7 @@
 
 # AEM Permission Management
 <p align="center">
-  <img src="misc/apmLogo.png" alt="APM Logo"/>
+  <img src="misc/apm-logo-blue.svg" alt="APM Logo"/>
 </p>
 
 APM (**A**EM **P**ermission **M**anagement) is an AEM based tool focused on streamlining the permission configuration. It provides a rich UX console tailored for administrators. They can write human readable scripts that handle user/group creation/deletion and permissions application, both in bulk. Through it's flexible grammar, exposed API, and high extensibility it vastly improves **permission**-based implementations.

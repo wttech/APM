@@ -83,6 +83,7 @@ tasks.rat {
     excludes.add("**/*.war")
     excludes.add("**/*.zip")
     excludes.add("**/*.xml")
+    excludes.add("**/*.svg")
 
     // Module
     excludes.add("**/documentation/*")

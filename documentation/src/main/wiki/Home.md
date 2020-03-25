@@ -1,4 +1,4 @@
-![logo](https://github.com/Cognifide/APM/raw/master/misc/apmLogo.png)
+![logo](https://github.com/Cognifide/APM/raw/master/misc/apm-logo-blue.svg)
 ## Getting started
 
 ### What is APM
