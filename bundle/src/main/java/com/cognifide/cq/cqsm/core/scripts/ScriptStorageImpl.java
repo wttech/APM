@@ -25,6 +25,7 @@ import static com.cognifide.cq.cqsm.core.scripts.ScriptContent.CQSM_EXECUTION_EN
 import static com.cognifide.cq.cqsm.core.scripts.ScriptContent.CQSM_EXECUTION_HOOK;
 import static com.cognifide.cq.cqsm.core.scripts.ScriptContent.CQSM_EXECUTION_MODE;
 import static com.cognifide.cq.cqsm.core.scripts.ScriptContent.CQSM_EXECUTION_SCHEDULE;
+import static com.cognifide.cq.cqsm.core.scripts.ScriptContent.CQSM_FILE;
 import static java.lang.String.format;
 
 import com.cognifide.cq.cqsm.api.executors.Mode;
@@ -138,6 +139,7 @@ public class ScriptStorageImpl implements ScriptStorage {
         contentNode = fileNode.addNode(JcrConstants.JCR_CONTENT, JcrConstants.NT_RESOURCE);
       }
 
+      contentNode.addMixin(CQSM_FILE);
       contentNode.setProperty(JcrConstants.JCR_DATA, binary);
       contentNode.setProperty(JcrConstants.JCR_ENCODING, SCRIPT_ENCODING.name());
       contentNode.setProperty(CQSM_EXECUTION_ENABLED, executionMetadata.isExecutionEnabled());
