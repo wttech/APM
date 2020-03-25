@@ -140,7 +140,8 @@
                       sling:resourceType="granite/ui/components/coral/foundation/form/datepicker"
                       fieldLabel="Schedule"
                       name="cqsm:executionSchedule"
-                      type="datetime"/>
+                      type="datetime"
+                      valueFormat="YYYY-MM-DD[T]HH:mm:ss"/>
                   </items>
                 </execution>
               </items>

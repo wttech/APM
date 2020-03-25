@@ -35,6 +35,8 @@ import org.osgi.service.component.annotations.Component
 import java.io.InputStream
 import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.Type
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Component(
         immediate = true,
@@ -55,19 +57,24 @@ class RequestParameterInjector : Injector, StaticInjectAnnotationProcessorFactor
             val annotation = annotatedElement.getAnnotation(RequestParameter::class.java)
             if (annotation != null && type is Class<*>) {
                 val parameterName = annotation.value
-                return getValue(adaptable, type, StringUtils.defaultString(parameterName, fieldName), annotation)
+                return getValue(adaptable, type, StringUtils.defaultString(parameterName, fieldName), annotatedElement)
             }
         }
         return null
     }
 
-    private fun getValue(request: SlingHttpServletRequest, fieldClass: Class<*>, fieldName: String, annotation: RequestParameter): Any? {
+    private fun getValue(request: SlingHttpServletRequest, fieldClass: Class<*>, fieldName: String, annotatedElement: AnnotatedElement): Any? {
         val parameterValue = request.getRequestParameter(fieldName) ?: return null
         return when {
-            annotation.fileName -> parameterValue.fileName
+            annotatedElement.isAnnotationPresent(FileName::class.java) -> parameterValue.fileName
             fieldClass.name in listOf("java.lang.Integer", "int") -> Ints.tryParse(parameterValue.string)
             fieldClass.name in listOf("java.lang.Boolean", "boolean") -> "true" == parameterValue.string
             fieldClass == InputStream::class.java -> parameterValue.inputStream
+            fieldClass == LocalDateTime::class.java -> {
+                val dateFormat = annotatedElement.getAnnotation(DateFormat::class.java)?.value
+                        ?: DateTimeFormatter.ISO_LOCAL_DATE_TIME.toString()
+                LocalDateTime.parse(parameterValue.string, DateTimeFormatter.ofPattern(dateFormat))
+            }
             Enum::class.java.isAssignableFrom(fieldClass) -> {
                 fieldClass.enumConstants.firstOrNull { it.toString() == parameterValue.string }
             }

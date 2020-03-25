@@ -20,20 +20,30 @@
 
 package com.cognifide.apm.endpoints
 
+import com.cognifide.apm.endpoints.utils.DateFormat
+import com.cognifide.apm.endpoints.utils.FileName
 import com.cognifide.apm.endpoints.utils.RequestParameter
 import com.cognifide.cq.cqsm.api.scripts.ExecutionEnvironment
+import com.cognifide.cq.cqsm.api.scripts.ExecutionMetadata
 import com.cognifide.cq.cqsm.api.scripts.ExecutionMode
 import org.apache.sling.api.SlingHttpServletRequest
 import org.apache.sling.models.annotations.Model
 import java.io.InputStream
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 @Model(adaptables = [SlingHttpServletRequest::class])
 class ScriptUploadForm @Inject constructor(
         @param:RequestParameter("file", optional = false) val file: InputStream,
-        @param:RequestParameter("file", optional = false, fileName = true) val fileName: String,
+        @param:RequestParameter("file", optional = false) @param:FileName val fileName: String,
         @param:RequestParameter("overwrite") val overwrite: Boolean,
         @param:RequestParameter("cqsm:executionEnabled") val executionEnabled: Boolean,
         @param:RequestParameter("cqsm:executionMode") val executionMode: ExecutionMode,
-        @param:RequestParameter("cqsm:executionEnvironment") val executionEnvironment: ExecutionEnvironment?
-)
+        @param:RequestParameter("cqsm:executionEnvironment") val executionEnvironment: ExecutionEnvironment?,
+        @param:RequestParameter("cqsm:executionHook") val executionHook: String?,
+        @param:RequestParameter("cqsm:executionSchedule") @param:DateFormat("yyyy-MM-dd'T'HH:mm:ss") val executionSchedule: LocalDateTime?
+) {
+    fun toExecutionMetadata(): ExecutionMetadata {
+        return ExecutionMetadata(executionEnabled, executionMode, executionEnvironment, executionHook, executionSchedule)
+    }
+}

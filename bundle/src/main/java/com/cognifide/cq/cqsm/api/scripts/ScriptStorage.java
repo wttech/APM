@@ -37,9 +37,10 @@ public interface ScriptStorage {
 	void remove(Script script, ResourceResolver resolver) throws RepositoryException;
 
 	/**
-	 * Save script, for example from upload
-	 */
-	Script save(String fileName, InputStream input, boolean overwrite, ResourceResolver resolver)
-			throws RepositoryException, PersistenceException;
+   * Save script, for example from upload
+   */
+  Script save(String fileName, InputStream input, ExecutionMetadata executionMetadata, boolean overwrite,
+      ResourceResolver resolver)
+      throws RepositoryException, PersistenceException;
 
 }
