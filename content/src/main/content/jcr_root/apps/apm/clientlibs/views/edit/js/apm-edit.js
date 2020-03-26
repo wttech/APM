@@ -189,6 +189,7 @@
             async: false,
             url: '/bin/apm/script/validate',
             data: {
+              path: self.savePath,
               content: self.$textArea.val()
             },
             success: function (response) {

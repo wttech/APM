@@ -55,7 +55,7 @@ class ScriptValidationServlet : AbstractFormServlet<ScriptValidationForm>(Script
     }
 
     override fun doPost(form: ScriptValidationForm, resourceResolver: ResourceResolver): ResponseEntity<Any> {
-        val progress = scriptManager.evaluate(form.content, Mode.VALIDATION, resourceResolver)
+        val progress = scriptManager.evaluate(form.path, form.content, Mode.VALIDATION, resourceResolver)
         return if (progress.isSuccess) {
             ok {
                 message = "Script passes validation"
@@ -84,8 +84,6 @@ class ScriptValidationServlet : AbstractFormServlet<ScriptValidationForm>(Script
 
     private fun positionPrefix(progressEntry: ProgressEntry): String {
         val position = progressEntry.position
-        return if (position != null) {
-            String.format("Invalid line [%d]: ", position.line)
-        } else ""
+        return if (position != null) "Invalid line ${position.line}: " else ""
     }
 }

@@ -22,14 +22,11 @@ package com.cognifide.cq.cqsm.api.scripts;
 import com.cognifide.cq.cqsm.api.exceptions.ExecutionException;
 import com.cognifide.cq.cqsm.api.executors.Mode;
 import com.cognifide.cq.cqsm.api.logger.Progress;
-
-import org.apache.sling.api.resource.PersistenceException;
-import org.apache.sling.api.resource.ResourceResolver;
-
 import java.util.List;
 import java.util.Map;
-
 import javax.jcr.RepositoryException;
+import org.apache.sling.api.resource.PersistenceException;
+import org.apache.sling.api.resource.ResourceResolver;
 
 public interface ScriptManager {
 
@@ -51,12 +48,14 @@ public interface ScriptManager {
 	/**
 	 * Fail-safe script content execution in concrete mode
 	 */
-	Progress evaluate(String scriptContent, Mode mode, ResourceResolver resolver)
+	Progress evaluate(String path, String content, Mode mode, ResourceResolver resolver)
 			throws RepositoryException, PersistenceException;
+
 	/**
 	 * Fail-safe script content execution in concrete mode
 	 */
-	Progress evaluate(String scriptContent, Mode mode, Map<String, String> customDefinitions, ResourceResolver resolver)
+	Progress evaluate(String path, String content, Mode mode, Map<String, String> customDefinitions,
+			ResourceResolver resolver)
 			throws RepositoryException, PersistenceException;
 
 	/**

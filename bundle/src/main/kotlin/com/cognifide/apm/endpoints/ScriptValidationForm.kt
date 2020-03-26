@@ -27,5 +27,6 @@ import javax.inject.Inject
 
 @Model(adaptables = [SlingHttpServletRequest::class])
 class ScriptValidationForm @Inject constructor(
+        @param:RequestParameter("path", optional = false) val path: String,
         @param:RequestParameter("content", optional = false) val content: String
 )

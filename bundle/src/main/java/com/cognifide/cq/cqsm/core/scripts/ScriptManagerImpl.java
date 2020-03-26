@@ -174,21 +174,21 @@ public class ScriptManagerImpl implements ScriptManager {
   }
 
   @Override
-  public Progress evaluate(String scriptContent, Mode mode, ResourceResolver resolver)
+  public Progress evaluate(String path, String content, Mode mode, ResourceResolver resolver)
       throws RepositoryException, PersistenceException {
-    return evaluate(scriptContent, mode, Maps.newHashMap(), resolver);
+    return evaluate(path, content, mode, Maps.newHashMap(), resolver);
   }
 
   @Override
-  public Progress evaluate(String scriptContent, Mode mode, Map<String, String> customDefinitions,
+  public Progress evaluate(String path, String content, Mode mode, Map<String, String> customDefinitions,
       ResourceResolver resolver) throws RepositoryException, PersistenceException {
-    Script script = scriptFinder.find(ScriptManager.FILE_FOR_EVALUATION, false, resolver);
+    Script script = scriptFinder.find(path + "/" + ScriptManager.FILE_FOR_EVALUATION, false, resolver);
     if (script != null) {
       scriptStorage.remove(script, resolver);
     }
 
-    InputStream stream = new ByteArrayInputStream(scriptContent.getBytes(StandardCharsets.UTF_8));
-    script = scriptStorage.save(FILE_FOR_EVALUATION, stream, ExecutionMetadata.onDemand(), true, resolver);
+    InputStream stream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
+    script = scriptStorage.save(path + "/" + FILE_FOR_EVALUATION, stream, ExecutionMetadata.onDemand(), true, resolver);
 
     Progress progress = process(script, mode, customDefinitions, resolver);
     scriptStorage.remove(script, resolver);
