@@ -72,7 +72,7 @@ import org.slf4j.LoggerFactory;
     immediate = true,
     service = History.class,
     property = {
-        Property.DESCRIPTION + "CQSM History Service",
+        Property.DESCRIPTION + "APM History Service",
         Property.VENDOR
     }
 )

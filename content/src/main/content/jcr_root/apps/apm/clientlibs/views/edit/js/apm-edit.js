@@ -23,18 +23,18 @@
     const SHOW_REFERENCES_URL = '/apm/references.html';
 
     const fieldNames = [
-      'cqsm:executionEnabled',
-      'cqsm:executionMode',
-      'cqsm:executionEnvironment',
-      'cqsm:executionHook',
-      'cqsm:executionSchedule',
+      'apm:executionEnabled',
+      'apm:executionMode',
+      'apm:executionEnvironment',
+      'apm:executionHook',
+      'apm:executionSchedule',
     ];
 
     function Console($el) {
       this.uiHelper = $(window).adaptTo('foundation-ui');
       this.$el = $el;
       this.$form = $el.find('#script-form');
-      this.$executionEnabled = this.$form.find('coral-checkbox[name="cqsm:executionEnabled"]');
+      this.$executionEnabled = this.$form.find('coral-checkbox[name="apm:executionEnabled"]');
       this.$textArea = this.$el.find('#cqsm').eq(0);
       this.$fileName = this.$el.find('#fname').eq(0);
       this.$showReference = this.$el.find('#showReference').eq(0);
@@ -89,7 +89,7 @@
             formData.append(fieldName, originalValue);
           }
         });
-        formData.append('cqsm:executionEnabled', this.getExecutionEnabled());
+        formData.append('apm:executionEnabled', this.getExecutionEnabled());
         formData.append('overwrite', this.getOverwrite());
         formData.append('file', new Blob([value], {type: 'text/plain'}), fileName);
 
