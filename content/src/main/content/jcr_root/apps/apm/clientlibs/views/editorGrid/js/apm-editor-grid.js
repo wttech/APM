@@ -72,7 +72,7 @@
       $.each(this.fields, (index, field) => {
         if (showFields.includes(field)) {
           field.show();
-          field.setDisabled(false);
+          field.setDisabled(this.editorMode === EditorModes.editMode ? false : true);
         } else {
           field.hide();
           field.setDisabled(true);

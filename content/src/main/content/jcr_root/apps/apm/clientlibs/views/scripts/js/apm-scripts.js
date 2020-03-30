@@ -304,7 +304,8 @@
   }
 
   function isScriptInvalidOrNonExecutable(selection) {
-    return selection.items._container.innerHTML.indexOf('script-is-invalid') > -1;
+    const innerHTML = selection.items._container.innerHTML;
+    return innerHTML.indexOf('script-is-invalid') > -1 || innerHTML.indexOf('execution-disabled') > -1;
   }
 
 })(window, jQuery);

@@ -38,7 +38,7 @@ class ScriptUploadForm @Inject constructor(
         @param:RequestParameter("file", optional = false) @param:FileName val fileName: String,
         @param:RequestParameter("overwrite") val overwrite: Boolean,
         @param:RequestParameter("cqsm:executionEnabled") val executionEnabled: Boolean,
-        @param:RequestParameter("cqsm:executionMode") val executionMode: ExecutionMode,
+        @param:RequestParameter("cqsm:executionMode") val executionMode: ExecutionMode?,
         @param:RequestParameter("cqsm:executionEnvironment") val executionEnvironment: ExecutionEnvironment?,
         @param:RequestParameter("cqsm:executionHook") val executionHook: String?,
         @param:RequestParameter("cqsm:executionSchedule") @param:DateFormat("yyyy-MM-dd'T'HH:mm:ss") val executionSchedule: LocalDateTime?

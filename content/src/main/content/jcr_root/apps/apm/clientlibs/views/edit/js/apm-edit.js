@@ -86,12 +86,12 @@
         $.each(fieldNames, (index, fieldName) => {
           const originalValue = originalFormData.get(fieldName);
           if (originalValue) {
-            formData.append(fieldName, originalValue);
+            formData.set(fieldName, originalValue);
           }
         });
-        formData.append('cqsm:executionEnabled', this.getExecutionEnabled());
-        formData.append('overwrite', this.getOverwrite());
-        formData.append('file', new Blob([value], {type: 'text/plain'}), fileName);
+        formData.set('cqsm:executionEnabled', this.getExecutionEnabled());
+        formData.set('overwrite', this.getOverwrite());
+        formData.set('file', new Blob([value], {type: 'text/plain'}), fileName);
 
         $.ajax({
           type: 'POST',
@@ -165,7 +165,6 @@
         this.showError = function (response) {
           this.$validateButton.blur();
 
-          const text = 'error';
           let message = response.message;
           if (response.errors) {
             message += '<ul>';
