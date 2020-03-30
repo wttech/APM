@@ -78,6 +78,9 @@ public final class ScriptsRowModel {
   private List<ScriptRun> runs = new ArrayList<>();
 
   @Getter
+  private String execution;
+
+  @Getter
   private boolean isExecutionEnabled;
 
   @PostConstruct
@@ -93,6 +96,7 @@ public final class ScriptsRowModel {
         this.runs.add(createScriptRun("runOnAuthor", script, scriptHistory.getLastLocalRun()));
         this.runs.add(createScriptRun("runOnPublish", script, scriptHistory.getLastRemoteRun()));
         this.runs.add(createScriptRun("dryRun", script, scriptHistory.getLastLocalDryRun()));
+        this.execution = script.getExecutionMode().label();
         this.isExecutionEnabled = script.isExecutionEnabled();
       });
     }
