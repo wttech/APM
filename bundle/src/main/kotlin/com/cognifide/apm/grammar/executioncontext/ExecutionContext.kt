@@ -21,6 +21,7 @@
 package com.cognifide.apm.grammar.executioncontext
 
 import com.cognifide.apm.grammar.ApmType
+import com.cognifide.apm.grammar.ScriptExecutionException
 import com.cognifide.apm.grammar.antlr.ApmLangParser.*
 import com.cognifide.apm.grammar.argument.ArgumentResolver
 import com.cognifide.apm.grammar.argument.Arguments
@@ -63,6 +64,10 @@ class ExecutionContext private constructor(
     fun loadScript(path: String): ParsedScript {
         val absolutePath = resolveAbsolutePath(path)
         return parsedScripts[absolutePath] ?: fetchScript(absolutePath)
+    }
+
+    fun scriptIsOnStack(parsedScript: ParsedScript): Boolean {
+        return runScripts.find { runScript -> runScript.parsedScript == parsedScript } != null
     }
 
     fun createScriptContext(parsedScript: ParsedScript) {
@@ -111,7 +116,7 @@ class ExecutionContext private constructor(
 
     private fun fetchScript(path: String): ParsedScript {
         val script = scriptFinder.find(path, resourceResolver)
-                ?: throw ExecutionContextException("Script not found $path")
+                ?: throw ScriptExecutionException("Script not found $path")
         val parsedScript = ParsedScript.create(script)
         registerScript(parsedScript)
         return parsedScript
