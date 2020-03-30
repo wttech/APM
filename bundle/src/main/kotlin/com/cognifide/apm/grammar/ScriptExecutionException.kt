@@ -18,6 +18,6 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm.grammar.executioncontext
+package com.cognifide.apm.grammar
 
-class ExecutionContextException(message: String) : RuntimeException(message)
+class ScriptExecutionException(message: String) : RuntimeException(message)

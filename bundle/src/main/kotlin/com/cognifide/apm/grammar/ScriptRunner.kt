@@ -27,7 +27,6 @@ import com.cognifide.apm.grammar.argument.Arguments
 import com.cognifide.apm.grammar.argument.toPlainString
 import com.cognifide.apm.grammar.common.getIdentifier
 import com.cognifide.apm.grammar.executioncontext.ExecutionContext
-import com.cognifide.apm.grammar.executioncontext.ExecutionContextException
 import com.cognifide.apm.grammar.parsedscript.InvalidSyntaxException
 import com.cognifide.apm.grammar.parsedscript.InvalidSyntaxMessageFactory
 import com.cognifide.apm.grammar.utils.ImportScript
@@ -58,7 +57,7 @@ class ScriptRunner(
             progress.addEntry(Status.ERROR, errorMessages)
         } catch (e: ArgumentResolverException) {
             progress.addEntry(Status.ERROR, e.message)
-        } catch (e: ExecutionContextException) {
+        } catch (e: ScriptExecutionException) {
             progress.addEntry(Status.ERROR, e.message)
         }
         return progress
@@ -101,6 +100,8 @@ class ScriptRunner(
             val path = ctx.path().STRING_LITERAL().toPlainString()
             val arguments = executionContext.resolveArguments(ctx.namedArguments())
             val loadScript = executionContext.loadScript(path)
+            if (executionContext.scriptIsOnStack(loadScript))
+                throw ScriptExecutionException("Found cyclic reference to ${loadScript.path}")
             val result = RequiredVariablesChecker().checkNamedArguments(loadScript, arguments)
             if (result.isValid) {
                 executionContext.createScriptContext(loadScript)
