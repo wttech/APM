@@ -21,6 +21,7 @@ package com.cognifide.cq.cqsm.core.scripts;
 
 import com.cognifide.cq.cqsm.api.history.History;
 import com.cognifide.cq.cqsm.api.history.ScriptHistory;
+import com.cognifide.cq.cqsm.api.scripts.ExecutionEnvironment;
 import com.cognifide.cq.cqsm.api.scripts.ExecutionMode;
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.day.cq.commons.jcr.JcrConstants;
@@ -66,8 +67,7 @@ public class ScriptImpl implements Script {
   @Override
   public ExecutionMode getExecutionMode() {
     return (scriptContent.getExecutionMode() == null) ?
-        ExecutionMode.ON_DEMAND :
-        ExecutionMode.valueOf(scriptContent.getExecutionMode());
+        ExecutionMode.ON_DEMAND : ExecutionMode.valueOf(scriptContent.getExecutionMode());
   }
 
   @Override
@@ -76,8 +76,9 @@ public class ScriptImpl implements Script {
   }
 
   @Override
-  public String getExecutionEnvironment() {
-    return scriptContent.getExecutionEnvironment();
+  public ExecutionEnvironment getExecutionEnvironment() {
+    return (scriptContent.getExecutionEnvironment() == null) ?
+        null : ExecutionEnvironment.valueOf(scriptContent.getExecutionEnvironment());
   }
 
   @Override

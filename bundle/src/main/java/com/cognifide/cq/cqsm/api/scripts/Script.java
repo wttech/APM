@@ -39,7 +39,7 @@ public interface Script {
 	 */
 	ExecutionMode getExecutionMode();
 
-	String getExecutionEnvironment();
+	ExecutionEnvironment getExecutionEnvironment();
 
 	String getExecutionHook();
 

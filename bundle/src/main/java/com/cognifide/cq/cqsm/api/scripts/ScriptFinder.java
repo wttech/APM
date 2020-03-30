@@ -19,10 +19,9 @@
  */
 package com.cognifide.cq.cqsm.api.scripts;
 
-import org.apache.commons.collections.Predicate;
-import org.apache.sling.api.resource.ResourceResolver;
-
 import java.util.List;
+import java.util.function.Predicate;
+import org.apache.sling.api.resource.ResourceResolver;
 
 public interface ScriptFinder {
 
@@ -44,6 +43,6 @@ public interface ScriptFinder {
 	/**
 	 * Find scripts that matched filter
 	 */
-	List<Script> findAll(Predicate filter, ResourceResolver resolver);
+	List<Script> findAll(Predicate<Script> filter, ResourceResolver resolver);
 
 }

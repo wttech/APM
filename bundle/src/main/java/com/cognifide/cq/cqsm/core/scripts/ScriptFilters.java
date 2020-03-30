@@ -19,18 +19,15 @@
  */
 package com.cognifide.cq.cqsm.core.scripts;
 
-import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
 import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.apache.commons.lang.StringUtils.isNotBlank;
 
+import com.cognifide.cq.cqsm.api.scripts.ExecutionEnvironment;
 import com.cognifide.cq.cqsm.api.scripts.ExecutionMode;
 import com.cognifide.cq.cqsm.api.scripts.Script;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.collections.functors.AllPredicate;
-import org.apache.commons.collections.functors.OrPredicate;
+import java.util.function.Predicate;
+import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.resource.ResourceResolver;
 
 /**
@@ -39,63 +36,41 @@ import org.apache.sling.api.resource.ResourceResolver;
  */
 public class ScriptFilters {
 
-  public static Predicate filterByExecutionMode(final ExecutionMode mode) {
-    return filterByExecutionMode(Collections.singletonList(mode));
+  public static Predicate<Script> onHook(final ExecutionEnvironment environment, final String currentHook) {
+    return enabled()
+        .and(withExecutionMode(ExecutionMode.ON_HOOK))
+        .and(script -> script.getExecutionEnvironment() == null || environment == script.getExecutionEnvironment())
+        .and(
+            script -> isBlank(script.getExecutionHook()) || StringUtils.equals(currentHook, script.getExecutionHook()));
   }
 
-  public static Predicate filterOnHook(final String environment, final String currentHook) {
-    return new AllPredicate(new Predicate[]{
-        filterExecutionEnabled(true),
-        filterByExecutionMode(Collections.singletonList(ExecutionMode.ON_HOOK)),
-        o -> {
-          final Script script = (Script) o;
-          return isBlankOrEquals(script.getExecutionEnvironment(), environment);
-        },
-        o -> {
-          final Script script = (Script) o;
-          return isBlankOrEquals(script.getExecutionHook(), currentHook);
-        }
-    });
+  private static Predicate<Script> withExecutionMode(final ExecutionMode mode) {
+    return script -> script.getExecutionMode() == mode;
   }
 
-  private static boolean isBlankOrEquals(String property, String value) {
-    return isBlank(property) || (isNotBlank(property) && equalsIgnoreCase(property, value));
+  private static Predicate<Script> withExecutionMode(final List<ExecutionMode> modes) {
+    return script -> modes.contains(script.getExecutionMode());
   }
 
-  public static Predicate filterExecutionEnabled(final boolean flag) {
-    return script -> ((Script) script).isExecutionEnabled() == flag;
-  }
-
-  public static Predicate filterByExecutionMode(final List<ExecutionMode> modes) {
-    return script -> modes.contains(((Script) script).getExecutionMode());
+  private static Predicate<Script> enabled() {
+    return script -> script.isExecutionEnabled();
   }
 
   public static Predicate filterOnSchedule(final Date date) {
-    return new AllPredicate(new Predicate[]{
-        filterExecutionEnabled(true),
-        filterByExecutionMode(ExecutionMode.ON_SCHEDULE),
-        o -> {
-          final Script script = (Script) o;
-          return (script.getExecutionLast() == null) && script.getExecutionSchedule().before(date);
-        }
-    });
+    return enabled()
+        .and(withExecutionMode(ExecutionMode.ON_SCHEDULE))
+        .and(script -> script.getExecutionLast() == null && script.getExecutionSchedule().before(date));
   }
 
   public static Predicate filterOnModify(final ResourceResolver resolver) {
-    return new AllPredicate(new Predicate[]{
-        filterExecutionEnabled(true),
-        filterByExecutionMode(ExecutionMode.ON_MODIFY),
-        script -> ((Script) script).isContentModified(resolver)
-    });
+    return enabled()
+        .and(withExecutionMode(ExecutionMode.ON_MODIFY))
+        .and(script -> script.isContentModified(resolver));
   }
 
   public static Predicate filterOnStart(final ResourceResolver resolver) {
-    return new AllPredicate(new Predicate[]{
-        filterExecutionEnabled(true),
-        new OrPredicate(
-            filterByExecutionMode(ExecutionMode.ON_START),
-            filterOnModify(resolver)
-        )
-    });
+    return enabled()
+        .and(withExecutionMode(ExecutionMode.ON_START))
+        .or(filterOnModify(resolver));
   }
 }

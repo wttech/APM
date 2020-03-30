@@ -22,9 +22,10 @@ package com.cognifide.apm.tools
 
 import com.cognifide.cq.cqsm.api.executors.Mode
 import com.cognifide.cq.cqsm.api.logger.Progress
+import com.cognifide.cq.cqsm.api.scripts.ExecutionEnvironment
 import com.cognifide.cq.cqsm.api.scripts.ScriptFinder
 import com.cognifide.cq.cqsm.api.scripts.ScriptManager
-import com.cognifide.cq.cqsm.core.scripts.ScriptFilters.filterOnHook
+import com.cognifide.cq.cqsm.core.scripts.ScriptFilters.onHook
 import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper.getResourceResolverForService
 import org.apache.jackrabbit.vault.packaging.InstallContext
 import org.apache.jackrabbit.vault.packaging.PackageException
@@ -47,14 +48,14 @@ class ApmInstallHook : OsgiAwareInstallHook() {
         }
     }
 
-    private fun installScripts(currentEnvironment: String, currentHook: String) {
+    private fun installScripts(currentEnvironment: ExecutionEnvironment, currentHook: String) {
         val resolverFactory = getService(ResourceResolverFactory::class.java)
         val scriptFinder = getService(ScriptFinder::class.java)
         val scriptManager = getService(ScriptManager::class.java)
 
         try {
             getResourceResolverForService(resolverFactory).use { resolver ->
-                scriptFinder.findAll(filterOnHook(currentEnvironment, currentHook), resolver).forEach { script ->
+                scriptFinder.findAll(onHook(currentEnvironment, currentHook), resolver).forEach { script ->
                     val progress: Progress = scriptManager.process(script, Mode.AUTOMATIC_RUN, resolver)
                     logStatus(script.path, progress.isSuccess)
                 }
@@ -75,13 +76,13 @@ class ApmInstallHook : OsgiAwareInstallHook() {
         return result?.groups?.get(1)?.value ?: ""
     }
 
-    private fun getCurrentEnvironment(): String {
+    private fun getCurrentEnvironment(): ExecutionEnvironment {
         val slingSettingsService = getService(SlingSettingsService::class.java)
         val runModes = slingSettingsService.runModes
         return when {
-            runModes.contains("author") -> "AUTHOR"
-            runModes.contains("publish") -> "PUBLISH"
-            else -> ""
+            runModes.contains("author") -> ExecutionEnvironment.AUTHOR
+            runModes.contains("publish") -> ExecutionEnvironment.PUBLISH
+            else -> ExecutionEnvironment.AUTHOR
         }
     }
 
