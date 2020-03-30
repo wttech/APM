@@ -52,13 +52,22 @@ open class JsonObject {
     }
 }
 
-class SuccessBody(message: String = "") : JsonObject() {
-    var message: Any? by PropertyDelegate(properties, "message", message)
+class SuccessBody(initialMessage: String = "") : JsonObject() {
+    var message: Any? by PropertyDelegate(properties, "message", initialMessage)
+
+    init {
+        message = initialMessage
+    }
 }
 
-class ErrorBody(message: String = "", errors: List<String> = listOf()) : JsonObject() {
-    var message: String? by PropertyDelegate(properties, "message", message)
-    var errors: List<String>? by PropertyDelegate(properties, "errors", errors)
+class ErrorBody(initMessage: String = "", initErrors: List<String> = listOf()) : JsonObject() {
+    var message: String? by PropertyDelegate(properties, "message", initMessage)
+    var errors: List<String>? by PropertyDelegate(properties, "errors", initErrors)
+
+    init {
+        message = initMessage
+        errors = initErrors
+    }
 }
 
 private class PropertyDelegate<T>(

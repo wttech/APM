@@ -21,6 +21,7 @@ package com.cognifide.apm.endpoints
 
 import com.cognifide.apm.endpoints.utils.AbstractFormServlet
 import com.cognifide.apm.endpoints.utils.ResponseEntity
+import com.cognifide.apm.endpoints.utils.badRequest
 import com.cognifide.apm.endpoints.utils.ok
 import com.cognifide.cq.cqsm.api.executors.Mode
 import com.cognifide.cq.cqsm.api.logger.Progress
@@ -28,6 +29,7 @@ import com.cognifide.cq.cqsm.api.logger.ProgressEntry
 import com.cognifide.cq.cqsm.api.logger.Status
 import com.cognifide.cq.cqsm.api.scripts.ScriptManager
 import com.cognifide.cq.cqsm.core.Property
+import com.cognifide.cq.cqsm.core.scripts.ScriptStorageException
 import org.apache.sling.api.resource.ResourceResolver
 import org.apache.sling.models.factory.ModelFactory
 import org.osgi.service.component.annotations.Component
@@ -55,18 +57,25 @@ class ScriptValidationServlet : AbstractFormServlet<ScriptValidationForm>(Script
     }
 
     override fun doPost(form: ScriptValidationForm, resourceResolver: ResourceResolver): ResponseEntity<Any> {
-        val progress = scriptManager.evaluate(form.path, form.content, Mode.VALIDATION, resourceResolver)
-        return if (progress.isSuccess) {
-            ok {
-                message = "Script passes validation"
-                "valid" set true
+        return try {
+            val progress = scriptManager.evaluate(form.path, form.content, Mode.VALIDATION, resourceResolver)
+            if (progress.isSuccess) {
+                ok {
+                    message = "Script passes validation"
+                    "valid" set true
+                }
+            } else {
+                val validationErrors = transformToValidationErrors(progress)
+                ok {
+                    message = "Script does not pass validation"
+                    "valid" set false
+                    "errors" set validationErrors
+                }
             }
-        } else {
-            val validationErrors = transformToValidationErrors(progress)
-            ok {
-                message = "Script does not pass validation"
-                "valid" set false
-                "errors" set validationErrors
+        } catch (e: ScriptStorageException) {
+            badRequest {
+                message = e.message ?: "Errors while saving script"
+                errors = e.errors
             }
         }
     }

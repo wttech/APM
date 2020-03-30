@@ -54,6 +54,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.api.JackrabbitSession;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -182,9 +183,9 @@ public class ScriptManagerImpl implements ScriptManager {
   @Override
   public Progress evaluate(String path, String content, Mode mode, Map<String, String> customDefinitions,
       ResourceResolver resolver) throws RepositoryException, PersistenceException {
-    Script script = scriptFinder.find(path + "/" + ScriptManager.FILE_FOR_EVALUATION, false, resolver);
+    Script script = scriptFinder.find(path, false, resolver);
     if (script != null) {
-      scriptStorage.remove(script, resolver);
+      path = StringUtils.substringBeforeLast(path, "/");
     }
 
     InputStream stream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
