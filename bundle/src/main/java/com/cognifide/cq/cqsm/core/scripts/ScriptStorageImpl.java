@@ -194,7 +194,7 @@ public class ScriptStorageImpl implements ScriptStorage {
         .flatMap(fileDescriptor -> validate(fileDescriptor).stream())
         .collect(Collectors.toList());
     if (!validationErrors.isEmpty()) {
-      throw new ValidationException("Validation errors", validationErrors);
+      throw new ScriptStorageException("Script errors", validationErrors);
     }
   }
 

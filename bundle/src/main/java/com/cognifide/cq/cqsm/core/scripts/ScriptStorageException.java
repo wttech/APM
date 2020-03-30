@@ -22,16 +22,16 @@ package com.cognifide.cq.cqsm.core.scripts;
 
 import java.util.List;
 
-public class ValidationException extends RuntimeException {
+public class ScriptStorageException extends RuntimeException {
 
-  private final List<String> validationErrors;
+  private final List<String> errors;
 
-  public ValidationException(String message, List<String> validationErrors) {
+  public ScriptStorageException(String message, List<String> errors) {
     super(message);
-    this.validationErrors = validationErrors;
+    this.errors = errors;
   }
 
-  public List<String> getValidationErrors() {
-    return validationErrors;
+  public List<String> getErrors() {
+    return errors;
   }
 }

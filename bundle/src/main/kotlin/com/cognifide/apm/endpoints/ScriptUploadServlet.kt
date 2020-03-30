@@ -25,8 +25,8 @@ import com.cognifide.apm.endpoints.utils.badRequest
 import com.cognifide.apm.endpoints.utils.ok
 import com.cognifide.cq.cqsm.api.scripts.ScriptStorage
 import com.cognifide.cq.cqsm.core.Property
+import com.cognifide.cq.cqsm.core.scripts.ScriptStorageException
 import com.cognifide.cq.cqsm.core.scripts.ScriptUtils
-import com.cognifide.cq.cqsm.core.scripts.ValidationException
 import org.apache.sling.api.resource.ResourceResolver
 import org.apache.sling.models.factory.ModelFactory
 import org.osgi.service.component.annotations.Component
@@ -60,9 +60,10 @@ class ScriptUploadServlet : AbstractFormServlet<ScriptUploadForm>(ScriptUploadFo
                 message = "File successfully saved"
                 "uploadedScript" set ScriptUtils.asMap(script)
             }
-        } catch (e: ValidationException) {
+        } catch (e: ScriptStorageException) {
             badRequest {
-                message = e.message ?: "Validation errors"
+                message = e.message ?: "Errors while saving script"
+                errors = e.errors
             }
         }
     }
