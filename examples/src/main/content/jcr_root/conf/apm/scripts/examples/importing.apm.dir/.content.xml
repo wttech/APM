@@ -24,8 +24,9 @@
   jcr:primaryType="nt:file">
   <jcr:content
     apm:verified="true"
+    apm:executionMode="ON_HOOK"
+    apm:executionEnvironment="AUTHOR"
     jcr:encoding="UTF-8"
-    jcr:lastModifiedBy="admin"
     jcr:mixinTypes="[apm:Script]"
     jcr:primaryType="nt:resource"/>
 </jcr:root>
