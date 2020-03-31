@@ -73,7 +73,7 @@ tasks.rat {
     excludes.add("**/clientlibs/externals/ace/js/**")
     excludes.add("**/clientlibs/js/json2.js")
 
-    excludes.add("**/*.cqsm")
+    excludes.add("**/*.apm")
     excludes.add("**/*.jar")
     excludes.add("**/*.json")
     excludes.add("**/*.md")
