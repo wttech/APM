@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,30 +19,38 @@
  */
 package com.cognifide.cq.cqsm.api.scripts;
 
+import org.apache.commons.lang.WordUtils;
+
 public enum ExecutionMode {
 
-	/**
-	 * Executed only by using user interface
-	 */
-	ON_DEMAND,
+  /**
+   * Executed only by using user interface
+   */
+  ON_DEMAND,
 
-	/**
-	 * Executed always on bundle start / update
-	 */
-	ON_START,
+  /**
+   * Executed always on bundle start / update
+   */
+  ON_START,
 
-	/**
-	 * Executed only once or if script content changed
-	 */
-	ON_MODIFY,
+  /**
+   * Executed only once or if script content changed
+   */
+  ON_MODIFY,
 
-	/**
-	 * Executed only after scheduled date
-	 */
-	ON_SCHEDULE,
+  /**
+   * Executed only after scheduled date
+   */
+  ON_SCHEDULE,
 
-	/**
-	 * Executed always after successfully package installation
-	 */
-	ON_HOOK
+  /**
+   * Executed always after successfully package installation
+   */
+  ON_HOOK;
+
+  public String label() {
+    String words = toString().replace('_', ' ');
+    words = WordUtils.capitalizeFully(words.toLowerCase());
+    return words;
+  }
 }

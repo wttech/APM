@@ -165,7 +165,6 @@
         this.showError = function (response) {
           this.$validateButton.blur();
 
-          const text = 'error';
           let message = response.message;
           if (response.errors) {
             message += '<ul>';

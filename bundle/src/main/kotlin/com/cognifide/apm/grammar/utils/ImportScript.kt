@@ -20,14 +20,18 @@
 
 package com.cognifide.apm.grammar.utils
 
+import com.cognifide.apm.grammar.ScriptExecutionException
 import com.cognifide.apm.grammar.antlr.ApmLangBaseVisitor
 import com.cognifide.apm.grammar.antlr.ApmLangParser
 import com.cognifide.apm.grammar.argument.ArgumentResolver
 import com.cognifide.apm.grammar.argument.toPlainString
 import com.cognifide.apm.grammar.executioncontext.ExecutionContext
 import com.cognifide.apm.grammar.executioncontext.VariableHolder
+import com.cognifide.apm.grammar.parsedscript.ParsedScript
 
 class ImportScript(private val executionContext: ExecutionContext) {
+
+    private val visitedScripts: MutableSet<ParsedScript> = mutableSetOf()
 
     fun import(ctx: ApmLangParser.ImportScriptContext): Result {
         val path = getPath(ctx)
@@ -62,6 +66,10 @@ class ImportScript(private val executionContext: ExecutionContext) {
             val namespace = getNamespace(ctx)
             val importScriptVisitor = ImportScriptVisitor()
             val parsedScript = executionContext.loadScript(path)
+
+            if (parsedScript !in visitedScripts) visitedScripts.add(parsedScript)
+            else throw ScriptExecutionException("Found cyclic reference to ${parsedScript.path}")
+
             importScriptVisitor.visit(parsedScript.apm)
             val scriptVariableHolder = importScriptVisitor.variableHolder
             scriptVariableHolder.toMap().forEach { (name, value) -> variableHolder[namespace + name] = value }
