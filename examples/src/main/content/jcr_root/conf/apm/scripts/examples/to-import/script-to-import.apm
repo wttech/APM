@@ -1,0 +1,3 @@
+# Script to be used by importing.apm script
+
+DEFINE var 'imported value'

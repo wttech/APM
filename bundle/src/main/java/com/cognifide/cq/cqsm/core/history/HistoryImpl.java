@@ -72,7 +72,7 @@ import org.slf4j.LoggerFactory;
     immediate = true,
     service = History.class,
     property = {
-        Property.DESCRIPTION + "CQSM History Service",
+        Property.DESCRIPTION + "APM History Service",
         Property.VENDOR
     }
 )
@@ -277,7 +277,7 @@ public class HistoryImpl implements History {
     if (!parent.hasNode(SCRIPT_NODE_NAME)) {
       Node source = session.getNode(script.getPath());
       Node file = JcrUtil.copy(source, parent, SCRIPT_NODE_NAME);
-      file.addMixin(ScriptContent.CQSM_FILE);
+      file.addMixin(ScriptContent.APM_SCRIPT);
       return file;
     }
     return parent.getNode(SCRIPT_NODE_NAME);

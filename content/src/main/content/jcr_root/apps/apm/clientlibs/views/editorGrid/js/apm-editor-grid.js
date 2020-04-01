@@ -25,11 +25,11 @@
   };
 
   const FieldNames = {
-    executionEnabled: 'cqsm:executionEnabled',
-    executionMode: 'cqsm:executionMode',
-    executionEnvironment: 'cqsm:executionEnvironment',
-    executionHook: 'cqsm:executionHook',
-    executionSchedule: 'cqsm:executionSchedule',
+    executionEnabled: 'apm:executionEnabled',
+    executionMode: 'apm:executionMode',
+    executionEnvironment: 'apm:executionEnvironment',
+    executionHook: 'apm:executionHook',
+    executionSchedule: 'apm:executionSchedule',
   };
 
   const ExecutionModes = {

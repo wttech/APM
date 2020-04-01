@@ -27,5 +27,5 @@ public final class Cqsm {
 
 	public static final String VENDOR_NAME = "Cognifide";
 
-	public static final String FILE_EXT = ".cqsm";
+	public static final String FILE_EXT = ".apm";
 }

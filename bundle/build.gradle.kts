@@ -35,7 +35,7 @@ aem {
             exportPackage("com.cognifide.apm.tools.*")
             exportPackage("com.cognifide.apm.endpoints.*")
             attribute("Sling-Model-Packages", "com.cognifide.apm.endpoints,com.cognifide.cq.cqsm.core.models,com.cognifide.cq.cqsm.core.scripts,com.cognifide.cq.cqsm.api.history,com.cognifide.cq.cqsm.core.history")
-            attribute("Sling-Nodetypes", "CQ-INF/nodetypes/cqsm_nodetypes.cnd")
+            attribute("Sling-Nodetypes", "CQ-INF/nodetypes/apm_nodetypes.cnd")
             attribute("CQ-Security-Management-Actions", "com.cognifide.cq.cqsm.foundation.actions")
         }
     }

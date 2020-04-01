@@ -45,43 +45,43 @@ public class ModifiableScriptWrapper implements ModifiableScript {
 
 	@Override
 	public void setExecutionSchedule(Date date) throws PersistenceException {
-		setProperty(ScriptContent.CQSM_EXECUTION_SCHEDULE, date);
+		setProperty(ScriptContent.APM_EXECUTION_SCHEDULE, date);
 	}
 
 	@Override
 	public void setExecuted(Boolean flag) throws PersistenceException {
-		setProperty(ScriptContent.CQSM_EXECUTION_LAST, flag ? new Date() : null);
+		setProperty(ScriptContent.APM_EXECUTION_LAST, flag ? new Date() : null);
 	}
 
 	@Override
 	public void setExecutionEnabled(Boolean flag) throws PersistenceException {
-		setProperty(ScriptContent.CQSM_EXECUTION_ENABLED, flag);
+		setProperty(ScriptContent.APM_EXECUTION_ENABLED, flag);
 	}
 
 	@Override
 	public void setPublishRun(Boolean flag) throws PersistenceException {
-		setProperty(ScriptContent.CQSM_PUBLISH_RUN, flag);
+		setProperty(ScriptContent.APM_PUBLISH_RUN, flag);
 	}
 
   @Override
   public void setReplicatedBy(String userId) throws PersistenceException {
-    setProperty(ScriptContent.CQSM_REPLICATED_BY, userId);
+    setProperty(ScriptContent.APM_REPLICATED_BY, userId);
   }
 
 	@Override
 	public void setExecutionMode(ExecutionMode mode) throws PersistenceException {
-		setProperty(ScriptContent.CQSM_EXECUTION_MODE, mode.name());
+		setProperty(ScriptContent.APM_EXECUTION_MODE, mode.name());
 	}
 
 	@Override
 	public void setValid(Boolean flag) throws PersistenceException {
-		setProperty(ScriptContent.CQSM_VERIFIED, flag);
+		setProperty(ScriptContent.APM_VERIFIED, flag);
 	}
 
 	public void setProperty(String name, Object value) throws PersistenceException {
 		Resource resource = resolver.getResource(script.getPath());
 		ModifiableValueMap vm = resource.getChild(JcrConstants.JCR_CONTENT).adaptTo(ModifiableValueMap.class);
-		ResourceMixinUtil.addMixin(vm, ScriptContent.CQSM_FILE);
+		ResourceMixinUtil.addMixin(vm, ScriptContent.APM_SCRIPT);
 		vm.put(name, convertValue(value));
 
 		resource.getResourceResolver().commit();

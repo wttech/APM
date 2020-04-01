@@ -32,68 +32,68 @@ import org.apache.sling.models.annotations.Optional;
 @Getter
 public class ScriptContent {
 
-  public static final String CQSM_FILE = "cqsm:File";
+  public static final String APM_SCRIPT = "apm:Script";
 
-  public static final String CQSM_EXECUTION_ENABLED = "cqsm:executionEnabled";
+  public static final String APM_EXECUTION_ENABLED = "apm:executionEnabled";
 
-  public static final String CQSM_EXECUTION_MODE = "cqsm:executionMode";
+  public static final String APM_EXECUTION_MODE = "apm:executionMode";
 
-  public static final String CQSM_EXECUTION_ENVIRONMENT = "cqsm:executionEnvironment";
+  public static final String APM_EXECUTION_ENVIRONMENT = "apm:executionEnvironment";
 
-  public static final String CQSM_EXECUTION_HOOK = "cqsm:executionHook";
+  public static final String APM_EXECUTION_HOOK = "apm:executionHook";
 
-  public static final String CQSM_EXECUTION_SCHEDULE = "cqsm:executionSchedule";
+  public static final String APM_EXECUTION_SCHEDULE = "apm:executionSchedule";
 
-  public static final String CQSM_EXECUTION_LAST = "cqsm:executionLast";
+  public static final String APM_EXECUTION_LAST = "apm:executionLast";
 
-  public static final String CQSM_PUBLISH_RUN = "cqsm:publishRun";
+  public static final String APM_PUBLISH_RUN = "apm:publishRun";
 
-  public static final String CQSM_REPLICATED_BY = "cqsm:replicatedBy";
+  public static final String APM_REPLICATED_BY = "apm:replicatedBy";
 
-  public static final String CQSM_VERIFIED = "cqsm:verified";
+  public static final String APM_VERIFIED = "apm:verified";
 
   @Inject
-  @Named(CQSM_EXECUTION_ENABLED)
+  @Named(APM_EXECUTION_ENABLED)
   @Optional
   private Boolean executionEnabled;
 
   @Inject
-  @Named(CQSM_EXECUTION_MODE)
+  @Named(APM_EXECUTION_MODE)
   @Optional
   private String executionMode;
 
   @Inject
-  @Named(CQSM_EXECUTION_ENVIRONMENT)
+  @Named(APM_EXECUTION_ENVIRONMENT)
   @Optional
   private String executionEnvironment;
 
   @Inject
-  @Named(CQSM_EXECUTION_HOOK)
+  @Named(APM_EXECUTION_HOOK)
   @Optional
   private String executionHook;
 
   @Inject
-  @Named(CQSM_EXECUTION_SCHEDULE)
+  @Named(APM_EXECUTION_SCHEDULE)
   @Optional
   private Date executionSchedule;
 
   @Inject
-  @Named(CQSM_EXECUTION_LAST)
+  @Named(APM_EXECUTION_LAST)
   @Optional
   private Date executionLast;
 
   @Inject
-  @Named(CQSM_PUBLISH_RUN)
+  @Named(APM_PUBLISH_RUN)
   @Optional
   private Boolean publishRun;
 
   @Inject
-  @Named(CQSM_REPLICATED_BY)
+  @Named(APM_REPLICATED_BY)
   @Optional
   private String replicatedBy;
 
   @Inject
-  @Named(CQSM_VERIFIED)
+  @Named(APM_VERIFIED)
   @Optional
   private Boolean verified;
 
