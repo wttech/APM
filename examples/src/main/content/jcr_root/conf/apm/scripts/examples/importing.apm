@@ -1,5 +1,0 @@
-# This script provides examples of how scripts can be imported or run from a given script.
-
-# This can be done using relative path as well as absolute path
-IMPORT 'to-import/script-to-import.apm'
-RUN '/conf/apm/scripts/examples/to-import/script-to-import.apm'

@@ -1,0 +1,8 @@
+# This script provides examples of how scripts can be imported or run from a given script.
+# Notice that both actions can be done using relative path as well as absolute path
+
+# Use IMPORT command to load definitions from another script (see DEFINE command for further information)
+IMPORT 'to-import/script-to-import.apm'
+
+# Use RUN command to run another script
+RUN '/conf/apm/scripts/examples/to-import/script-to-import.apm'

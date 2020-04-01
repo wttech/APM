@@ -23,7 +23,6 @@
     <jcr:content
         apm:verified="true"
         jcr:encoding="UTF-8"
-        jcr:lastModifiedBy="admin"
         jcr:mixinTypes="[apm:Script]"
         jcr:primaryType="nt:resource"/>
 </jcr:root>

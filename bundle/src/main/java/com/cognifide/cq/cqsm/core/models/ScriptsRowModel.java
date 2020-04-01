@@ -117,7 +117,7 @@ public final class ScriptsRowModel {
 
   public static boolean isScript(Resource resource) {
     return Optional.ofNullable(resource.getChild(JcrConstants.JCR_CONTENT))
-        .map(child -> getArrayProperty(child, JcrConstants.JCR_MIXINTYPES).contains(ScriptContent.CQSM_FILE))
+        .map(child -> getArrayProperty(child, JcrConstants.JCR_MIXINTYPES).contains(ScriptContent.APM_SCRIPT))
         .orElse(false);
   }
 

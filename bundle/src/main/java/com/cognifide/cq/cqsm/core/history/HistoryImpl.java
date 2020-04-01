@@ -277,7 +277,7 @@ public class HistoryImpl implements History {
     if (!parent.hasNode(SCRIPT_NODE_NAME)) {
       Node source = session.getNode(script.getPath());
       Node file = JcrUtil.copy(source, parent, SCRIPT_NODE_NAME);
-      file.addMixin(ScriptContent.CQSM_FILE);
+      file.addMixin(ScriptContent.APM_SCRIPT);
       return file;
     }
     return parent.getNode(SCRIPT_NODE_NAME);
