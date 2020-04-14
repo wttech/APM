@@ -78,6 +78,9 @@ public final class ScriptsRowModel {
   private List<ScriptRun> runs = new ArrayList<>();
 
   @Getter
+  private String execution;
+
+  @Getter
   private boolean isExecutionEnabled;
 
   @PostConstruct
@@ -93,6 +96,7 @@ public final class ScriptsRowModel {
         this.runs.add(createScriptRun("runOnAuthor", script, scriptHistory.getLastLocalRun()));
         this.runs.add(createScriptRun("runOnPublish", script, scriptHistory.getLastRemoteRun()));
         this.runs.add(createScriptRun("dryRun", script, scriptHistory.getLastLocalDryRun()));
+        this.execution = script.getExecutionMode().label();
         this.isExecutionEnabled = script.isExecutionEnabled();
       });
     }
@@ -113,7 +117,7 @@ public final class ScriptsRowModel {
 
   public static boolean isScript(Resource resource) {
     return Optional.ofNullable(resource.getChild(JcrConstants.JCR_CONTENT))
-        .map(child -> getArrayProperty(child, JcrConstants.JCR_MIXINTYPES).contains(ScriptContent.CQSM_FILE))
+        .map(child -> getArrayProperty(child, JcrConstants.JCR_MIXINTYPES).contains(ScriptContent.APM_SCRIPT))
         .orElse(false);
   }
 

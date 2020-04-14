@@ -18,14 +18,14 @@
   ~ limitations under the License.
   ~ =========================LICENSE_END==================================
   -->
-<jcr:root xmlns:cqsm="http://www.cognifide.com/cqsm/1.1" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+<jcr:root xmlns:apm="http://www.cognifide.com/apm/1.1" xmlns:jcr="http://www.jcp.org/jcr/1.0"
   xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
   jcr:primaryType="nt:file">
   <jcr:content
-    cqsm:verified="true"
-    cqsm:executionMode="ON_HOOK"
-    cqsm:executionHook="otherHook"
+    apm:verified="true"
+    apm:executionMode="ON_HOOK"
+    apm:executionHook="otherHook"
     jcr:encoding="UTF-8"
-    jcr:mixinTypes="[cqsm:File]"
+    jcr:mixinTypes="[apm:Script]"
     jcr:primaryType="nt:resource"/>
 </jcr:root>

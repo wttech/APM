@@ -20,12 +20,12 @@
 package com.cognifide.cq.cqsm.core.scripts;
 
 import static com.cognifide.cq.cqsm.core.scripts.FileDescriptor.createFileDescriptor;
-import static com.cognifide.cq.cqsm.core.scripts.ScriptContent.CQSM_EXECUTION_ENABLED;
-import static com.cognifide.cq.cqsm.core.scripts.ScriptContent.CQSM_EXECUTION_ENVIRONMENT;
-import static com.cognifide.cq.cqsm.core.scripts.ScriptContent.CQSM_EXECUTION_HOOK;
-import static com.cognifide.cq.cqsm.core.scripts.ScriptContent.CQSM_EXECUTION_MODE;
-import static com.cognifide.cq.cqsm.core.scripts.ScriptContent.CQSM_EXECUTION_SCHEDULE;
-import static com.cognifide.cq.cqsm.core.scripts.ScriptContent.CQSM_FILE;
+import static com.cognifide.cq.cqsm.core.scripts.ScriptContent.APM_EXECUTION_ENABLED;
+import static com.cognifide.cq.cqsm.core.scripts.ScriptContent.APM_EXECUTION_ENVIRONMENT;
+import static com.cognifide.cq.cqsm.core.scripts.ScriptContent.APM_EXECUTION_HOOK;
+import static com.cognifide.cq.cqsm.core.scripts.ScriptContent.APM_EXECUTION_MODE;
+import static com.cognifide.cq.cqsm.core.scripts.ScriptContent.APM_EXECUTION_SCHEDULE;
+import static com.cognifide.cq.cqsm.core.scripts.ScriptContent.APM_SCRIPT;
 import static java.lang.String.format;
 
 import com.cognifide.cq.cqsm.api.executors.Mode;
@@ -139,15 +139,15 @@ public class ScriptStorageImpl implements ScriptStorage {
         contentNode = fileNode.addNode(JcrConstants.JCR_CONTENT, JcrConstants.NT_RESOURCE);
       }
 
-      contentNode.addMixin(CQSM_FILE);
+      contentNode.addMixin(APM_SCRIPT);
       contentNode.setProperty(JcrConstants.JCR_DATA, binary);
       contentNode.setProperty(JcrConstants.JCR_ENCODING, SCRIPT_ENCODING.name());
-      contentNode.setProperty(CQSM_EXECUTION_ENABLED, executionMetadata.isExecutionEnabled());
-      setOrRemoveProperty(contentNode, CQSM_EXECUTION_MODE, executionMetadata.getExecutionMode());
-      setOrRemoveProperty(contentNode, CQSM_EXECUTION_ENVIRONMENT, executionMetadata.getExecutionEnvironment());
-      setOrRemoveProperty(contentNode, CQSM_EXECUTION_HOOK, executionMetadata.getExecutionHook());
-      setOrRemoveProperty(contentNode, CQSM_EXECUTION_SCHEDULE, executionMetadata.getExecutionSchedule());
-      removeProperty(contentNode, ScriptContent.CQSM_EXECUTION_LAST);
+      contentNode.setProperty(APM_EXECUTION_ENABLED, executionMetadata.isExecutionEnabled());
+      setOrRemoveProperty(contentNode, APM_EXECUTION_MODE, executionMetadata.getExecutionMode());
+      setOrRemoveProperty(contentNode, APM_EXECUTION_ENVIRONMENT, executionMetadata.getExecutionEnvironment());
+      setOrRemoveProperty(contentNode, APM_EXECUTION_HOOK, executionMetadata.getExecutionHook());
+      setOrRemoveProperty(contentNode, APM_EXECUTION_SCHEDULE, executionMetadata.getExecutionSchedule());
+      removeProperty(contentNode, ScriptContent.APM_EXECUTION_LAST);
       JcrUtils.setLastModified(contentNode, Calendar.getInstance());
       session.save();
       result = scriptFinder.find(fileNode.getPath(), resolver);
@@ -194,7 +194,7 @@ public class ScriptStorageImpl implements ScriptStorage {
         .flatMap(fileDescriptor -> validate(fileDescriptor).stream())
         .collect(Collectors.toList());
     if (!validationErrors.isEmpty()) {
-      throw new ValidationException("Validation errors", validationErrors);
+      throw new ScriptStorageException("Script errors", validationErrors);
     }
   }
 

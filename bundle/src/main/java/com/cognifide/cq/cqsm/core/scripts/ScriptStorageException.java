@@ -18,6 +18,20 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm.grammar.executioncontext
+package com.cognifide.cq.cqsm.core.scripts;
 
-class ExecutionContextException(message: String) : RuntimeException(message)
+import java.util.List;
+
+public class ScriptStorageException extends RuntimeException {
+
+  private final List<String> errors;
+
+  public ScriptStorageException(String message, List<String> errors) {
+    super(message);
+    this.errors = errors;
+  }
+
+  public List<String> getErrors() {
+    return errors;
+  }
+}

@@ -25,11 +25,11 @@
   };
 
   const FieldNames = {
-    executionEnabled: 'cqsm:executionEnabled',
-    executionMode: 'cqsm:executionMode',
-    executionEnvironment: 'cqsm:executionEnvironment',
-    executionHook: 'cqsm:executionHook',
-    executionSchedule: 'cqsm:executionSchedule',
+    executionEnabled: 'apm:executionEnabled',
+    executionMode: 'apm:executionMode',
+    executionEnvironment: 'apm:executionEnvironment',
+    executionHook: 'apm:executionHook',
+    executionSchedule: 'apm:executionSchedule',
   };
 
   const ExecutionModes = {
@@ -72,7 +72,7 @@
       $.each(this.fields, (index, field) => {
         if (showFields.includes(field)) {
           field.show();
-          field.setDisabled(false);
+          field.setDisabled(this.editorMode === EditorModes.editMode ? false : true);
         } else {
           field.hide();
           field.setDisabled(true);

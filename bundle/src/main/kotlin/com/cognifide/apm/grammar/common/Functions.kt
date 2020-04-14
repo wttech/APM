@@ -20,10 +20,11 @@
 
 package com.cognifide.apm.grammar.common
 
+import com.cognifide.apm.grammar.ScriptExecutionException
 import com.cognifide.apm.grammar.antlr.ApmLangParser
 
 fun getIdentifier(ctx: ApmLangParser.IdentifierContext) = when {
     ctx.IDENTIFIER() != null -> ctx.IDENTIFIER().toString()
     ctx.EXTENDED_IDENTIFIER() != null -> ctx.EXTENDED_IDENTIFIER().toString()
-    else -> throw RuntimeException("Cannot resolve identifier")
+    else -> throw ScriptExecutionException("Cannot resolve identifier")
 }

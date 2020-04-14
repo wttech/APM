@@ -3,5 +3,4 @@ jdk:
   - openjdk8
 notifications:
   email:
-    - mateusz.chrominski@cognifide.com
     - piotr.wilczynski@cognifide.com
