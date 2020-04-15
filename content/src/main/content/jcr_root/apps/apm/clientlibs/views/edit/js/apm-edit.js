@@ -61,7 +61,7 @@
         return this.initialValue !== this.$textArea.val();
       },
       getFileName: function () {
-        return this.$fileName.val() + '.cqsm';
+        return this.$fileName.val() + '.apm';
       },
       getOverwrite: function () {
         return this.isFileNameLocked() ? 'true' : 'false';
