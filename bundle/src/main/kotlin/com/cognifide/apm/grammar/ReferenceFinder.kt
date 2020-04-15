@@ -35,22 +35,57 @@ class ReferenceFinder(
         private val resourceResolver: ResourceResolver) {
 
     fun findReferences(script: Script): List<Script> {
-        val references = mutableListOf<Script>()
-        val parsedScript = ParsedScript.create(script).apm
-        val executionContext = ExecutionContext.create(scriptFinder, resourceResolver, script, ProgressImpl(resourceResolver.userID))
-        findReferences(references, parsedScript, executionContext)
-        return references.toList()
+        val referenceGraph = ReferenceGraph()
+        fillReferenceGraph(referenceGraph, script)
+        return referenceGraph.getAllReferences().remove(script)
     }
 
-    private fun findReferences(references: MutableList<Script>, ctx: ApmLangParser.ApmContext, executionContext: ExecutionContext): MutableSet<Script> {
+    fun getReferenceGraph(vararg scripts: Script): ReferenceGraph {
+        val referenceGraph = ReferenceGraph()
+        scripts.forEach {
+            fillReferenceGraph(referenceGraph, it)
+        }
+        return referenceGraph
+    }
+
+    private fun fillReferenceGraph(referenceGraph: ReferenceGraph, script: Script): ReferenceGraph {
+        val root = referenceGraph.addRoot(script)
+        val parsedScript = ParsedScript.create(script).apm
+        val executionContext = ExecutionContext.create(scriptFinder, resourceResolver, script, ProgressImpl(resourceResolver.userID))
+        findReferences(referenceGraph, root, listOf(script), parsedScript, executionContext)
+        return referenceGraph
+    }
+
+    fun <T> List<T>.add(value: T): List<T> {
+        val mutable = this.toMutableList()
+        mutable.add(value)
+        return mutable.toList()
+    }
+
+    fun <T> List<T>.remove(value: T): List<T> {
+        val mutable = this.toMutableList()
+        mutable.remove(value)
+        return mutable.toList()
+    }
+
+    private fun findReferences(
+            referenceGraph: ReferenceGraph, parent: ReferenceGraph.TreeNode, ancestors: List<Script>,
+            ctx: ApmLangParser.ApmContext, executionContext: ExecutionContext): MutableSet<Script> {
+
         val internalVisitor = InternalVisitor(executionContext)
         internalVisitor.visitApm(ctx)
 
         internalVisitor.scripts.forEach {
-            if (!references.contains(it)) {
-                references.add(it)
-                val parsedScript = executionContext.loadScript(it.path)
-                findReferences(references, parsedScript.apm, executionContext)
+            when {
+                ancestors.contains(it) -> parent.addChild(referenceGraph.CyclicNode(it))
+                referenceGraph.contains(it) -> parent.addChild(referenceGraph.getNode(it)!!)
+                else -> {
+                    val node = parent.addChild(it)
+                    val parsedScript = executionContext.loadScript(it.path)
+                    executionContext.createScriptContext(parsedScript)
+                    findReferences(referenceGraph, node, ancestors.add(it), parsedScript.apm, executionContext)
+                    executionContext.removeScriptContext()
+                }
             }
         }
         return internalVisitor.scripts
@@ -75,4 +110,6 @@ class ReferenceFinder(
             }
         }
     }
+
+
 }

@@ -28,30 +28,85 @@ import spock.lang.Specification
 
 class ReferenceFinderTest extends Specification {
 
-    ScriptFinder scriptFinder = Mock(ScriptFinder)
+    ScriptFinder scriptFinder = Stub(ScriptFinder) {
+        find(_, _) >> {
+            args -> createScript(args[0])
+        }
+    }
     ResourceResolver resourceResolver = Mock(ResourceResolver)
 
     def "return all scripts included and imported to given script (recursively)"() {
         given:
-        Script script = createScript("/import-and-run.apm")
-        scriptFinder.find("/import-a.apm", resourceResolver) >> createScript("/import-a.apm")
-        scriptFinder.find("/import-b.apm", resourceResolver) >> createScript("/import-b.apm")
-        scriptFinder.find("/import-c.apm", resourceResolver) >> createScript("/import-c.apm")
-        scriptFinder.find("/run-a.apm", resourceResolver) >> createScript("/run-a.apm")
-        scriptFinder.find("/run-b.apm", resourceResolver) >> createScript("/run-b.apm")
-        scriptFinder.find("/run-c.apm", resourceResolver) >> createScript("/run-c.apm")
+        Script script = createScript("/import-and-run1.apm")
         ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resourceResolver)
 
         when:
         List<Script> references = referenceFinder.findReferences(script)
 
         then:
-        references == [scriptFinder.find("/import-a.apm", resourceResolver),
-                       scriptFinder.find("/import-b.apm", resourceResolver),
-                       scriptFinder.find("/import-c.apm", resourceResolver),
-                       scriptFinder.find("/run-b.apm", resourceResolver),
-                       scriptFinder.find("/run-c.apm", resourceResolver),
-                       scriptFinder.find("/run-a.apm", resourceResolver)]
+        references.collect { it.toString() } == [
+                "/includes/import-a.apm",
+                "/includes/import-b.apm",
+                "/includes/import-c.apm",
+                "/includes/run-b.apm",
+                "/includes/run-c.apm",
+                "/includes/run-a.apm"
+        ]
+    }
+
+    def "return reference graph for given script"() {
+        given:
+        Script script = createScript("/import-and-run1.apm")
+        ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resourceResolver)
+
+        when:
+        ReferenceGraph referenceGraph = referenceFinder.getReferenceGraph(script)
+
+        then:
+        printReferenceGraph(referenceGraph) == """\
+            /import-and-run1.apm
+            |- /includes/import-a.apm
+            |  |- /includes/import-b.apm
+            |  |  |- /includes/import-c.apm
+            |  |- /includes/run-b.apm
+            |  |  |- /includes/import-b.apm
+            |  |  |  |- /includes/import-c.apm
+            |  |  |- /includes/run-c.apm
+            |- /includes/import-b.apm
+            |  |- /includes/import-c.apm
+            |- /includes/run-a.apm
+        """.stripIndent()
+    }
+
+    def "return reference graph for given scripts"() {
+        given:
+        Script script1 = createScript("/import-and-run1.apm")
+        Script script2 = createScript("/import-and-run2.apm")
+        ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resourceResolver)
+
+        when:
+        ReferenceGraph referenceGraph = referenceFinder.getReferenceGraph(script1, script2)
+
+        then:
+        printReferenceGraph(referenceGraph) == """\
+            /import-and-run1.apm
+            |- /includes/import-a.apm
+            |  |- /includes/import-b.apm
+            |  |  |- /includes/import-c.apm
+            |  |- /includes/run-b.apm
+            |  |  |- /includes/import-b.apm
+            |  |  |  |- /includes/import-c.apm
+            |  |  |- /includes/run-c.apm
+            |- /includes/import-b.apm
+            |  |- /includes/import-c.apm
+            |- /includes/run-a.apm
+            /import-and-run2.apm
+            |- /includes/cycle-a.apm
+            |  |- /includes/cycle-b.apm
+            |  |  |- /includes/cycle-c.apm
+            |  |  |  |- /includes/cycle-a.apm <error - found cycle>
+            |- /includes/run-a.apm
+        """.stripIndent()
     }
 
     private Script createScript(String file) {
@@ -59,6 +114,28 @@ class ReferenceFinderTest extends Specification {
         def script = Mock(Script)
         script.path >> file
         script.data >> content
+        script.toString() >> file
         return script
+    }
+
+    private String printReferenceGraph(ReferenceGraph referenceGraph) {
+        StringBuilder result = new StringBuilder()
+        referenceGraph.roots.forEach {
+            result.append(it.script.path).append("\n")
+            appendChildren(result, "|- ", it.children)
+        }
+        return result.toString()
+    }
+
+
+    private void appendChildren(StringBuilder result, String prefix, List<ReferenceGraph.TreeNode> children) {
+        children.forEach {
+            result.append(prefix).append(it.script.path)
+            if (it instanceof ReferenceGraph.CyclicNode) {
+                result.append(" <error - found cycle>")
+            }
+            result.append("\n")
+            appendChildren(result, "|  ${prefix}", it.children)
+        }
     }
 }
