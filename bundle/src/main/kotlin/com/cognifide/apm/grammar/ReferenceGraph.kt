@@ -24,12 +24,12 @@ import com.cognifide.cq.cqsm.api.scripts.Script
 import kotlin.streams.toList
 
 class ReferenceGraph(
-        private val references: MutableMap<Script, TreeNode> = mutableMapOf(),
-        val roots: MutableList<TreeNode> = mutableListOf()
+        private val references: MutableMap<Script, Node> = mutableMapOf(),
+        val roots: MutableList<TreeRoot> = mutableListOf()
 ) {
 
-    fun addRoot(script: Script): TreeNode {
-        val root = TreeNode(script)
+    fun addRoot(script: Script): Node {
+        val root = TreeRoot(script)
         references[script] = root
         roots.add(root)
         return root
@@ -39,7 +39,7 @@ class ReferenceGraph(
         return references.keys.stream().distinct().toList()
     }
 
-    fun getNode(script: Script): TreeNode? {
+    fun getNode(script: Script): Node? {
         return references[script]
     }
 
@@ -47,23 +47,54 @@ class ReferenceGraph(
         return references.containsKey(script)
     }
 
-    open inner class TreeNode(
+    open inner class Node(
             val script: Script,
-            val children: MutableList<TreeNode> = mutableListOf()
+            val children: MutableList<Node> = mutableListOf()
     ) {
 
-        fun addChild(value: Script): TreeNode {
-            val child = TreeNode(value)
+        open fun isValid(): Boolean = true
+
+        fun addChild(value: Script): Node {
+            val child = Node(value)
             children.add(child)
             references[value] = child
             return child
         }
 
-        fun addChild(child: TreeNode): TreeNode {
+        fun addChild(child: Node): Node {
             children.add(child)
             return child
         }
     }
 
-    inner class CyclicNode(value: Script) : TreeNode(value)
+    inner class TreeRoot(value: Script) : Node(value) {
+        private var _invalidDescendants: List<Node>? = null
+        val invalidDescendants: List<Node>
+            get() {
+                if (_invalidDescendants == null) {
+                    val foundInvalidDescendants = mutableListOf<Node>()
+                    children.forEach { findInvalidDescendants(foundInvalidDescendants, it) }
+                    _invalidDescendants = foundInvalidDescendants.toList()
+                }
+                return _invalidDescendants as List<Node>
+            }
+
+        override fun isValid(): Boolean {
+            return invalidDescendants.isEmpty()
+        }
+
+        private fun findInvalidDescendants(foundInvalidDescendants: MutableList<Node>, node: Node) {
+            if (!node.isValid()) foundInvalidDescendants.add(node)
+            if (node.children.isEmpty()) return
+            return node.children.forEach { findInvalidDescendants(foundInvalidDescendants, it) }
+        }
+    }
+
+    inner class CyclicNode(value: Script) : Node(value) {
+        override fun isValid(): Boolean = false
+    }
+
+    inner class NonExistingNode(value: Script) : Node(value) {
+        override fun isValid(): Boolean = false
+    }
 }

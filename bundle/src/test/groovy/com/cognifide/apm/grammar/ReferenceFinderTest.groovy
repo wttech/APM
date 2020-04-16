@@ -54,6 +54,19 @@ class ReferenceFinderTest extends Specification {
         ]
     }
 
+    def "error found in script's tree"() {
+        given:
+        Script script = createScript("/import-and-run2.apm")
+        ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resourceResolver)
+
+        when:
+        referenceFinder.findReferences(script)
+
+        then:
+        def e = thrown(ScriptExecutionException.class)
+        e.message == "Found cycle: /includes/cycle-a.apm"
+    }
+
     def "return reference graph for given script"() {
         given:
         Script script = createScript("/import-and-run1.apm")
@@ -105,12 +118,17 @@ class ReferenceFinderTest extends Specification {
             |  |- /includes/cycle-b.apm
             |  |  |- /includes/cycle-c.apm
             |  |  |  |- /includes/cycle-a.apm <error - found cycle>
+            |- /includes/non-existing.apm <error - script doesn't exist>
             |- /includes/run-a.apm
         """.stripIndent()
     }
 
     private Script createScript(String file) {
-        def content = IOUtils.toString(getClass().getResourceAsStream(file))
+        def stream = getClass().getResourceAsStream(file)
+        if (stream == null) {
+            return null
+        }
+        def content = IOUtils.toString(stream)
         def script = Mock(Script)
         script.path >> file
         script.data >> content
@@ -128,11 +146,14 @@ class ReferenceFinderTest extends Specification {
     }
 
 
-    private void appendChildren(StringBuilder result, String prefix, List<ReferenceGraph.TreeNode> children) {
+    private void appendChildren(StringBuilder result, String prefix, List<ReferenceGraph.Node> children) {
         children.forEach {
             result.append(prefix).append(it.script.path)
             if (it instanceof ReferenceGraph.CyclicNode) {
                 result.append(" <error - found cycle>")
+            }
+            if (it instanceof ReferenceGraph.NonExistingNode) {
+                result.append(" <error - script doesn't exist>")
             }
             result.append("\n")
             appendChildren(result, "|  ${prefix}", it.children)

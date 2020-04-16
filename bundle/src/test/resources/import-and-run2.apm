@@ -17,5 +17,6 @@
  # limitations under the License.
  # =========================LICENSE_END==================================
 RUN '/includes/cycle-a.apm'
+RUN '/includes/non-existing.apm'
 
 RUN '/includes/run-a.apm' AS namespace
