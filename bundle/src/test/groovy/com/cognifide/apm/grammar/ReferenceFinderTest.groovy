@@ -64,7 +64,7 @@ class ReferenceFinderTest extends Specification {
 
         then:
         def e = thrown(ScriptExecutionException.class)
-        e.message == "Found cycle: /includes/cycle-a.apm"
+        e.message == "Script doesn't exist: /includes/non-existing.apm"
     }
 
     def "return reference graph for given script"() {
