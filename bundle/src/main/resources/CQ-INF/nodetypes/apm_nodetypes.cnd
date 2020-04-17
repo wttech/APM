@@ -27,6 +27,7 @@
   - apm:executionHook (string)
   - apm:executionSchedule (date)
   - apm:executionLast (date)
+  - apm:checksum (string)
   - apm:publishRun (boolean)
   - apm:replicatedBy (string)
   - apm:verified (string)

@@ -77,7 +77,7 @@ public class ScriptStorageImpl implements ScriptStorage {
 
   private static final Logger LOG = LoggerFactory.getLogger(ScriptStorageImpl.class);
 
-  private static final Pattern FILE_NAME_PATTERN = Pattern.compile("[\\da-zA-Z\\-]+\\.cqsm");
+  private static final Pattern FILE_NAME_PATTERN = Pattern.compile("[\\da-zA-Z\\-]+\\.apm");
 
   private static final Pattern PATH_PATTERN = Pattern.compile("/[\\da-zA-Z\\-/]+");
 

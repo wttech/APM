@@ -19,6 +19,8 @@
  */
 package com.cognifide.cq.cqsm.core.scripts;
 
+import static com.cognifide.apm.services.ChecksumProviderKt.applyChecksum;
+
 import com.cognifide.apm.grammar.ReferenceFinder;
 import com.cognifide.apm.grammar.ScriptRunner;
 import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
@@ -84,7 +86,7 @@ public class ScriptManagerImpl implements ScriptManager {
   @Reference
   private ScriptFinder scriptFinder;
 
-  private EventManager eventManager = new EventManager();
+  private final EventManager eventManager = new EventManager();
 
   private Map<String, String> predefinedDefinitions;
 
@@ -116,9 +118,7 @@ public class ScriptManagerImpl implements ScriptManager {
             executionContext.setAuthorizable(context.getCurrentAuthorizableIfExists());
             progress.addEntry(descriptor, result);
 
-            if ((Status.ERROR == result.getStatus()) && (Mode.DRY_RUN != mode)) {
-              eventManager.trigger(Event.AFTER_EXECUTE, script, mode, progress);
-            } else {
+            if ((Status.ERROR != result.getStatus()) || (Mode.DRY_RUN == mode)) {
               savingPolicy.save(context.getSession(), SessionSavingMode.EVERY_ACTION);
             }
           } catch (RepositoryException | ActionCreationException e) {
@@ -135,8 +135,6 @@ public class ScriptManagerImpl implements ScriptManager {
     if (progress.isSuccess()) {
       savingPolicy.save(context.getSession(), SessionSavingMode.SINGLE);
     }
-
-    eventManager.trigger(Event.AFTER_EXECUTE, script, mode, progress);
     return progress;
   }
 
@@ -157,11 +155,16 @@ public class ScriptManagerImpl implements ScriptManager {
       progress = new ProgressImpl(resolver.getUserID());
       progress.addEntry(Status.ERROR, e.getMessage());
     }
-    process(script, mode, progress.isSuccess(), resolver);
+
+    updateScriptProperties(script, mode, progress.isSuccess(), resolver);
+    applyChecksum(scriptFinder, resolver, script);
+    script.refresh();
+    eventManager.trigger(Event.AFTER_EXECUTE, script, mode, progress);
+
     return progress;
   }
 
-  private void process(final Script script, final Mode mode, final boolean success,
+  private void updateScriptProperties(final Script script, final Mode mode, final boolean success,
       ResourceResolver resolver) throws PersistenceException {
     final ModifiableScript modifiableScript = new ModifiableScriptWrapper(resolver, script);
 

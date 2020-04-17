@@ -25,10 +25,8 @@ import com.cognifide.cq.cqsm.api.scripts.ExecutionEnvironment;
 import com.cognifide.cq.cqsm.api.scripts.ExecutionMode;
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import java.util.Date;
-import java.util.List;
 import java.util.function.Predicate;
 import org.apache.commons.lang.StringUtils;
-import org.apache.sling.api.resource.ResourceResolver;
 
 /**
  * Due to the ResourceResolver dependency these filters should not be used lazy
@@ -36,9 +34,17 @@ import org.apache.sling.api.resource.ResourceResolver;
  */
 public class ScriptFilters {
 
-  public static Predicate<Script> onHook(final ExecutionEnvironment environment, final String currentHook) {
+  public static Predicate<Script> onInstall(final ExecutionEnvironment environment, final String currentHook) {
     return enabled()
-        .and(withExecutionMode(ExecutionMode.ON_HOOK))
+        .and(withExecutionMode(ExecutionMode.ON_INSTALL))
+        .and(script -> script.getExecutionEnvironment() == null || environment == script.getExecutionEnvironment())
+        .and(
+            script -> isBlank(script.getExecutionHook()) || StringUtils.equals(currentHook, script.getExecutionHook()));
+  }
+
+  public static Predicate<Script> onInstallModified(final ExecutionEnvironment environment, final String currentHook) {
+    return enabled()
+        .and(withExecutionMode(ExecutionMode.ON_INSTALL_MODIFIED))
         .and(script -> script.getExecutionEnvironment() == null || environment == script.getExecutionEnvironment())
         .and(
             script -> isBlank(script.getExecutionHook()) || StringUtils.equals(currentHook, script.getExecutionHook()));
@@ -48,29 +54,28 @@ public class ScriptFilters {
     return script -> script.getExecutionMode() == mode;
   }
 
-  private static Predicate<Script> withExecutionMode(final List<ExecutionMode> modes) {
-    return script -> modes.contains(script.getExecutionMode());
-  }
-
   private static Predicate<Script> enabled() {
     return script -> script.isExecutionEnabled();
   }
 
-  public static Predicate filterOnSchedule(final Date date) {
+  public static Predicate<Script> onSchedule(final Date date) {
     return enabled()
         .and(withExecutionMode(ExecutionMode.ON_SCHEDULE))
         .and(script -> script.getExecutionLast() == null && script.getExecutionSchedule().before(date));
   }
 
-  public static Predicate filterOnModify(final ResourceResolver resolver) {
+  public static Predicate<Script> onModify() {
     return enabled()
-        .and(withExecutionMode(ExecutionMode.ON_MODIFY))
-        .and(script -> script.isContentModified(resolver));
+        .and(withExecutionMode(ExecutionMode.ON_MODIFY));
   }
 
-  public static Predicate filterOnStart(final ResourceResolver resolver) {
+  public static Predicate<Script> onStart() {
     return enabled()
-        .and(withExecutionMode(ExecutionMode.ON_START))
-        .or(filterOnModify(resolver));
+        .and(withExecutionMode(ExecutionMode.ON_START));
+  }
+
+  public static Predicate<Script> noChecksum() {
+    return enabled()
+        .and(script -> StringUtils.isBlank(script.getChecksum()));
   }
 }

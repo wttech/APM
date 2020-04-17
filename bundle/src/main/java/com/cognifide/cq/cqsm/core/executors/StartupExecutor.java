@@ -19,9 +19,8 @@
  */
 package com.cognifide.cq.cqsm.core.executors;
 
-import static com.cognifide.cq.cqsm.core.scripts.ScriptFilters.filterOnStart;
+import static com.cognifide.cq.cqsm.core.scripts.ScriptFilters.onStart;
 
-import com.cognifide.cq.cqsm.api.history.History;
 import com.cognifide.cq.cqsm.api.scripts.EventListener;
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
@@ -53,9 +52,6 @@ public class StartupExecutor extends AbstractExecutor {
   private EventListener eventListener;
 
   @Reference
-  private History history;
-
-  @Reference
   private ScriptManager scriptManager;
 
   @Reference
@@ -70,7 +66,7 @@ public class StartupExecutor extends AbstractExecutor {
   }
 
   private void runOnStartup(ResourceResolver resolver) throws PersistenceException {
-    final List<Script> scripts = scriptFinder.findAll(filterOnStart(resolver), resolver);
+    final List<Script> scripts = scriptFinder.findAll(onStart(), resolver);
     if (!scripts.isEmpty()) {
       logger.info("Startup script executor is trying to execute scripts on startup: {}", scripts.size());
       logger.info(MessagingUtils.describeScripts(scripts));

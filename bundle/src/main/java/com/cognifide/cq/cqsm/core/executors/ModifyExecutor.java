@@ -19,11 +19,11 @@
  */
 package com.cognifide.cq.cqsm.core.executors;
 
-import static com.cognifide.cq.cqsm.core.scripts.ScriptFilters.filterOnModify;
+import static com.cognifide.cq.cqsm.core.scripts.ScriptFilters.onModify;
 
+import com.cognifide.apm.services.ModifiedScriptFinder;
 import com.cognifide.cq.cqsm.api.scripts.EventListener;
 import com.cognifide.cq.cqsm.api.scripts.Script;
-import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
 import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
@@ -55,7 +55,7 @@ public class ModifyExecutor extends AbstractExecutor {
   private ScriptManager scriptManager;
 
   @Reference
-  private ScriptFinder scriptFinder;
+  private ModifiedScriptFinder modifiedScriptFinder;
 
   @Reference
   private ResourceResolverFactory resolverFactory;
@@ -66,8 +66,7 @@ public class ModifyExecutor extends AbstractExecutor {
   }
 
   private void runModified(ResourceResolver resolver) throws PersistenceException {
-    final List<Script> scripts = scriptFinder.findAll(filterOnModify(resolver), resolver);
-
+    final List<Script> scripts = modifiedScriptFinder.findAll(onModify(), resolver);
     if (!scripts.isEmpty()) {
       logger.info("Executor will try to run following scripts: {}", scripts.size());
       logger.info(MessagingUtils.describeScripts(scripts));

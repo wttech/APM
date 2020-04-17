@@ -46,6 +46,8 @@ public class ScriptContent {
 
   public static final String APM_EXECUTION_LAST = "apm:executionLast";
 
+  public static final String APM_CHECKSUM = "apm:checksum";
+
   public static final String APM_PUBLISH_RUN = "apm:publishRun";
 
   public static final String APM_REPLICATED_BY = "apm:replicatedBy";
@@ -81,6 +83,11 @@ public class ScriptContent {
   @Named(APM_EXECUTION_LAST)
   @Optional
   private Date executionLast;
+
+  @Inject
+  @Named(APM_CHECKSUM)
+  @Optional
+  private String checksum;
 
   @Inject
   @Named(APM_PUBLISH_RUN)

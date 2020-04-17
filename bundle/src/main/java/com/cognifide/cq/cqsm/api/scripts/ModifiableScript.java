@@ -58,4 +58,6 @@ public interface ModifiableScript {
    * Set replicated by user
    */
   void setReplicatedBy(String userId) throws PersistenceException;
+
+  void setChecksum(String checksum) throws PersistenceException;
 }

@@ -20,9 +20,10 @@
 package com.cognifide.cq.cqsm.api.scripts;
 
 import java.util.Date;
-import org.apache.sling.api.resource.ResourceResolver;
 
 public interface Script {
+
+	void refresh();
 
 	/**
 	 * Get validation status
@@ -52,11 +53,6 @@ public interface Script {
 	 * Get last execution date
 	 */
 	Date getExecutionLast();
-
-	/**
-	 * Check whether content is modified in the meantime
-	 */
-	boolean isContentModified(ResourceResolver resolver);
 
 	/**
 	 * Check run on publish

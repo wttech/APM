@@ -34,7 +34,7 @@ public enum ExecutionMode {
   ON_START,
 
   /**
-   * Executed only once or if script content changed
+   * Executed only once or if script content's changed
    */
   ON_MODIFY,
 
@@ -46,7 +46,12 @@ public enum ExecutionMode {
   /**
    * Executed always after successfully package installation
    */
-  ON_HOOK;
+  ON_INSTALL,
+
+  /**
+   * Executed after successfully package installation if script content's changed
+   */
+  ON_INSTALL_MODIFIED;
 
   public String label() {
     String words = toString().replace('_', ' ');

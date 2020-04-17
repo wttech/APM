@@ -21,7 +21,7 @@
 package com.cognifide.apm.grammar
 
 import com.cognifide.cq.cqsm.api.scripts.Script
-import kotlin.streams.toList
+import java.util.*
 
 class ReferenceGraph(
         private val references: MutableMap<Script, Node> = mutableMapOf(),
@@ -36,7 +36,11 @@ class ReferenceGraph(
     }
 
     fun getAllReferences(): List<Script> {
-        return references.keys.stream().distinct().toList()
+        return references.keys.distinct().toList()
+    }
+
+    fun getRoot(script: Script): TreeRoot? {
+        return roots.find { it.script == script }
     }
 
     fun getNode(script: Script): Node? {
@@ -67,27 +71,17 @@ class ReferenceGraph(
         }
     }
 
-    inner class TreeRoot(value: Script) : Node(value) {
-        private var _invalidDescendants: List<Node>? = null
+    inner class TreeRoot(value: Script) : Node(value), Iterable<Node> {
+        val descendants: List<Node>
+            get() = this.filter { it != this }
         val invalidDescendants: List<Node>
-            get() {
-                if (_invalidDescendants == null) {
-                    val foundInvalidDescendants = mutableListOf<Node>()
-                    children.forEach { findInvalidDescendants(foundInvalidDescendants, it) }
-                    _invalidDescendants = foundInvalidDescendants.toList()
-                }
-                return _invalidDescendants as List<Node>
-            }
+            get() = this.filter { it != this && !it.isValid() }
 
         override fun isValid(): Boolean {
             return invalidDescendants.isEmpty()
         }
 
-        private fun findInvalidDescendants(foundInvalidDescendants: MutableList<Node>, node: Node) {
-            if (!node.isValid()) foundInvalidDescendants.add(node)
-            if (node.children.isEmpty()) return
-            return node.children.forEach { findInvalidDescendants(foundInvalidDescendants, it) }
-        }
+        override fun iterator(): Iterator<Node> = TreeIterator(this)
     }
 
     inner class CyclicNode(value: Script) : Node(value) {
@@ -96,5 +90,23 @@ class ReferenceGraph(
 
     inner class NonExistingNode(value: Script) : Node(value) {
         override fun isValid(): Boolean = false
+    }
+
+    class TreeIterator(root: Node) : Iterator<Node> {
+
+        private val queue = LinkedList<Node>()
+
+        init {
+            queue.add(root)
+        }
+
+        override fun hasNext(): Boolean = queue.isNotEmpty()
+
+        override fun next(): Node {
+            val next = queue.pop()
+            queue.addAll(next.children)
+            return next
+        }
+
     }
 }

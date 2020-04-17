@@ -33,7 +33,8 @@
   };
 
   const ExecutionModes = {
-    onHook: 'ON_HOOK',
+    onInstall: 'ON_INSTALL',
+    onInstallModified: 'ON_INSTALL_MODIFIED',
     onSchedule: 'ON_SCHEDULE',
   };
 
@@ -86,7 +87,7 @@
         this.showFields([this.fields.executionEnabled]);
       } else {
         const executionMode = this.fields.executionMode.getValue();
-        if (executionMode === ExecutionModes.onHook) {
+        if (executionMode === ExecutionModes.onInstall || executionMode === ExecutionModes.onInstallModified) {
           this.showFields([this.fields.executionEnabled, this.fields.executionMode, this.fields.executionEnvironment,
             this.fields.executionHook])
         } else if (executionMode === ExecutionModes.onSchedule) {

@@ -133,6 +133,8 @@ class ReferenceFinder(
     }
 
     class NonExistingScript(val scriptPath: String) : Script {
+        override fun refresh() {}
+
         override fun getPath(): String = scriptPath
 
         override fun isValid(): Boolean = false
@@ -148,8 +150,6 @@ class ReferenceFinder(
         override fun getExecutionSchedule(): Date? = null
 
         override fun getExecutionLast(): Date? = null
-
-        override fun isContentModified(resolver: ResourceResolver?): Boolean = false
 
         override fun isPublishRun(): Boolean = false
 

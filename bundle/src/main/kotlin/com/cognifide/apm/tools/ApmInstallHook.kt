@@ -20,15 +20,19 @@
 
 package com.cognifide.apm.tools
 
+import com.cognifide.apm.services.ModifiedScriptFinder
+import com.cognifide.apm.services.applyChecksum
 import com.cognifide.cq.cqsm.api.executors.Mode
 import com.cognifide.cq.cqsm.api.logger.Progress
 import com.cognifide.cq.cqsm.api.scripts.ExecutionEnvironment
+import com.cognifide.cq.cqsm.api.scripts.Script
 import com.cognifide.cq.cqsm.api.scripts.ScriptFinder
 import com.cognifide.cq.cqsm.api.scripts.ScriptManager
-import com.cognifide.cq.cqsm.core.scripts.ScriptFilters.onHook
+import com.cognifide.cq.cqsm.core.scripts.ScriptFilters.*
 import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper.getResourceResolverForService
 import org.apache.jackrabbit.vault.packaging.InstallContext
 import org.apache.jackrabbit.vault.packaging.PackageException
+import org.apache.sling.api.resource.ResourceResolver
 import org.apache.sling.api.resource.ResourceResolverFactory
 import org.apache.sling.settings.SlingSettingsService
 import org.slf4j.Logger
@@ -44,25 +48,41 @@ class ApmInstallHook : OsgiAwareInstallHook() {
             val currentEnvironment = getCurrentEnvironment()
             val currentHook = getCurrentHook(context)
 
-            installScripts(currentEnvironment, currentHook)
+            handleScripts(currentEnvironment, currentHook)
         }
     }
 
-    private fun installScripts(currentEnvironment: ExecutionEnvironment, currentHook: String) {
+    private fun handleScripts(currentEnvironment: ExecutionEnvironment, currentHook: String) {
         val resolverFactory = getService(ResourceResolverFactory::class.java)
         val scriptFinder = getService(ScriptFinder::class.java)
-        val scriptManager = getService(ScriptManager::class.java)
 
         try {
             getResourceResolverForService(resolverFactory).use { resolver ->
-                scriptFinder.findAll(onHook(currentEnvironment, currentHook), resolver).forEach { script ->
-                    val progress: Progress = scriptManager.process(script, Mode.AUTOMATIC_RUN, resolver)
-                    logStatus(script.path, progress.isSuccess)
-                }
+                executeScripts(currentEnvironment, currentHook, resolver)
+                applyChecksum(scriptFinder, resolver)
             }
         } catch (e: Exception) {
             throw PackageException("Could not run scripts", e)
         }
+    }
+
+    private fun executeScripts(currentEnvironment: ExecutionEnvironment, currentHook: String, resolver: ResourceResolver) {
+        val scriptManager = getService(ScriptManager::class.java)
+        val scriptFinder = getService(ScriptFinder::class.java)
+        val modifiedScriptFinder = getService(ModifiedScriptFinder::class.java)
+
+        val scripts = mutableListOf<Script>()
+        scripts.addAll(scriptFinder.findAll(onInstall(currentEnvironment, currentHook), resolver))
+        scripts.addAll(modifiedScriptFinder.findAll(onInstallModified(currentEnvironment, currentHook), resolver))
+        scripts.forEach { script ->
+            val progress: Progress = scriptManager.process(script, Mode.AUTOMATIC_RUN, resolver)
+            logStatus(script.path, progress.isSuccess)
+        }
+    }
+
+    private fun applyChecksum(scriptFinder: ScriptFinder, resolver: ResourceResolver) {
+        val scripts = scriptFinder.findAll(noChecksum(), resolver)
+        applyChecksum(scriptFinder, resolver, *scripts.toTypedArray())
     }
 
     private fun getCurrentHook(context: InstallContext): String {

@@ -52,11 +52,11 @@ import org.osgi.service.component.annotations.Component;
 )
 public class ScriptFinderImpl implements ScriptFinder {
 
+  public static final String ROOT_PATH = "/conf/apm";
+
+  public static final String SCRIPT_PATH = ROOT_PATH + "/scripts";
+
   private static final String QUERY = "SELECT * FROM [nt:resource] WHERE ISDESCENDANTNODE([%s]) AND [jcr:mixinTypes] = 'apm:Script'";
-
-  private static final String ROOT_PATH = "/conf/apm";
-
-  static final String SCRIPT_PATH = ROOT_PATH + "/scripts";
 
   static final String SEARCH_PATHS = "search.paths";
 
