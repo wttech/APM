@@ -16,5 +16,5 @@
  # See the License for the specific language governing permissions and
  # limitations under the License.
  # =========================LICENSE_END==================================
-IMPORT '/import-b.apm'
-RUN '/run-b.apm'
+IMPORT 'import-b.apm'
+RUN 'run-c.apm'

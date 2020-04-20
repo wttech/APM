@@ -19,10 +19,11 @@
  */
 package com.cognifide.cq.cqsm.core.models;
 
+import com.cognifide.cq.cqsm.api.scripts.Script;
+import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
 import java.io.IOException;
-
 import javax.inject.Inject;
-
+import lombok.Getter;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -30,11 +31,6 @@ import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.OSGiService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.cognifide.cq.cqsm.api.scripts.Script;
-import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
-
-import lombok.Getter;
 
 @Model(adaptables = SlingHttpServletRequest.class)
 public final class ConsoleModel {
@@ -45,7 +41,7 @@ public final class ConsoleModel {
 
 	private static final String FILE_NAME_DEFAULT = "filename";
 
-	private static final String CONTENT_FILE = "content.cqsm";
+	private static final String CONTENT_FILE = "content.apm";
 
 	private static final String CONTENT_FILE_CHARSET = "UTF-8";
 

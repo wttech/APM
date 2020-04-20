@@ -20,37 +20,88 @@
 
 package com.cognifide.apm.grammar
 
+import com.cognifide.apm.grammar.ReferenceGraph.CyclicNode
+import com.cognifide.apm.grammar.ReferenceGraph.NonExistingNode
 import com.cognifide.apm.grammar.antlr.ApmLangBaseVisitor
 import com.cognifide.apm.grammar.antlr.ApmLangParser
 import com.cognifide.apm.grammar.argument.toPlainString
 import com.cognifide.apm.grammar.executioncontext.ExecutionContext
 import com.cognifide.apm.grammar.parsedscript.ParsedScript
+import com.cognifide.cq.cqsm.api.scripts.ExecutionEnvironment
+import com.cognifide.cq.cqsm.api.scripts.ExecutionMode
 import com.cognifide.cq.cqsm.api.scripts.Script
 import com.cognifide.cq.cqsm.api.scripts.ScriptFinder
 import com.cognifide.cq.cqsm.core.progress.ProgressImpl
 import org.apache.sling.api.resource.ResourceResolver
+import java.util.*
 
 class ReferenceFinder(
         private val scriptFinder: ScriptFinder,
         private val resourceResolver: ResourceResolver) {
 
     fun findReferences(script: Script): List<Script> {
-        val references = mutableListOf<Script>()
-        val parsedScript = ParsedScript.create(script).apm
-        val executionContext = ExecutionContext.create(scriptFinder, resourceResolver, script, ProgressImpl(resourceResolver.userID))
-        findReferences(references, parsedScript, executionContext)
-        return references.toList()
+        val referenceGraph = ReferenceGraph()
+        fillReferenceGraph(referenceGraph, script)
+        val treeRoot = referenceGraph.roots.first()
+        if (treeRoot.isValid()) {
+            return referenceGraph.getAllReferences().remove(script)
+        } else {
+            val message = when (val invalidDescendant = treeRoot.invalidDescendants.first()) {
+                is NonExistingNode -> "Script doesn't exist: ${invalidDescendant.script.path}"
+                is CyclicNode -> "Found cycle: ${invalidDescendant.script.path}"
+                else -> "Invalid reference to: ${invalidDescendant.script.path}"
+            }
+            throw ScriptExecutionException(message)
+        }
     }
 
-    private fun findReferences(references: MutableList<Script>, ctx: ApmLangParser.ApmContext, executionContext: ExecutionContext): MutableSet<Script> {
+    fun getReferenceGraph(vararg scripts: Script): ReferenceGraph {
+        val referenceGraph = ReferenceGraph()
+        scripts.forEach {
+            fillReferenceGraph(referenceGraph, it)
+        }
+        return referenceGraph
+    }
+
+    private fun fillReferenceGraph(referenceGraph: ReferenceGraph, script: Script): ReferenceGraph {
+        val root = referenceGraph.addRoot(script)
+        val parsedScript = ParsedScript.create(script).apm
+        val executionContext = ExecutionContext.create(scriptFinder, resourceResolver, script, ProgressImpl(resourceResolver.userID))
+        findReferences(referenceGraph, root, listOf(script), parsedScript, executionContext)
+        return referenceGraph
+    }
+
+    fun <T> List<T>.add(value: T): List<T> {
+        val mutable = this.toMutableList()
+        mutable.add(value)
+        return mutable.toList()
+    }
+
+    fun <T> List<T>.remove(value: T): List<T> {
+        val mutable = this.toMutableList()
+        mutable.remove(value)
+        return mutable.toList()
+    }
+
+    private fun findReferences(
+            referenceGraph: ReferenceGraph, parent: ReferenceGraph.Node, ancestors: List<Script>,
+            ctx: ApmLangParser.ApmContext, executionContext: ExecutionContext): MutableSet<Script> {
+
         val internalVisitor = InternalVisitor(executionContext)
         internalVisitor.visitApm(ctx)
 
-        internalVisitor.scripts.forEach {
-            if (!references.contains(it)) {
-                references.add(it)
-                val parsedScript = executionContext.loadScript(it.path)
-                findReferences(references, parsedScript.apm, executionContext)
+        internalVisitor.scripts.forEach { script ->
+            when {
+                script is NonExistingScript -> parent.addChild(referenceGraph.NonExistingNode(script))
+                ancestors.contains(script) -> parent.addChild(referenceGraph.CyclicNode(script))
+                referenceGraph.contains(script) -> parent.addChild(referenceGraph.getNode(script)!!)
+                else -> {
+                    val node = parent.addChild(script)
+                    val parsedScript = executionContext.loadScript(script.path)
+                    executionContext.createScriptContext(parsedScript)
+                    findReferences(referenceGraph, node, ancestors.add(script), parsedScript.apm, executionContext)
+                    executionContext.removeScriptContext()
+                }
             }
         }
         return internalVisitor.scripts
@@ -61,18 +112,56 @@ class ReferenceFinder(
 
         override fun visitImportScript(ctx: ApmLangParser.ImportScriptContext?) {
             val foundPath = ctx?.path()?.STRING_LITERAL()?.toPlainString()
-            if (foundPath != null) {
-                val script = executionContext.loadScript(foundPath).script
-                scripts.add(script)
-            }
+            loadScript(foundPath)
         }
 
         override fun visitRunScript(ctx: ApmLangParser.RunScriptContext?) {
             val foundPath = ctx?.path()?.STRING_LITERAL()?.toPlainString()
+            loadScript(foundPath)
+        }
+
+        private fun loadScript(foundPath: String?) {
             if (foundPath != null) {
-                val script = executionContext.loadScript(foundPath).script
-                scripts.add(script)
+                try {
+                    val script = executionContext.loadScript(foundPath).script
+                    scripts.add(script)
+                } catch (e: ScriptExecutionException) {
+                    scripts.add(NonExistingScript(foundPath))
+                }
             }
         }
     }
+
+    class NonExistingScript(val scriptPath: String) : Script {
+        override fun refresh() {}
+
+        override fun getPath(): String = scriptPath
+
+        override fun isValid(): Boolean = false
+
+        override fun isExecutionEnabled(): Boolean = false
+
+        override fun getExecutionMode(): ExecutionMode = ExecutionMode.ON_DEMAND
+
+        override fun getExecutionEnvironment(): ExecutionEnvironment? = null
+
+        override fun getExecutionHook(): String? = null
+
+        override fun getExecutionSchedule(): Date? = null
+
+        override fun getExecutionLast(): Date? = null
+
+        override fun isPublishRun(): Boolean = false
+
+        override fun getChecksum(): String? = null
+
+        override fun getAuthor(): String? = null
+
+        override fun getLastModified(): Date? = null
+
+        override fun getData(): String? = null
+
+        override fun getReplicatedBy(): String? = null
+    }
+
 }

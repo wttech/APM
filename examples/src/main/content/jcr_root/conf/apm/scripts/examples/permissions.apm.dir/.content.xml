@@ -23,7 +23,7 @@
   jcr:primaryType="nt:file">
   <jcr:content
     apm:verified="true"
-    apm:executionMode="ON_HOOK"
+    apm:executionMode="ON_INSTALL"
     apm:executionEnvironment="AUTHOR"
     jcr:encoding="UTF-8"
     jcr:mixinTypes="[apm:Script]"

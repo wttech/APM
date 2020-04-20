@@ -16,4 +16,7 @@
  # See the License for the specific language governing permissions and
  # limitations under the License.
  # =========================LICENSE_END==================================
-IMPORT '/import-c.apm'
+IMPORT '/includes/import-a.apm' AS namespace
+IMPORT '/includes/import-b.apm' AS deepNamespace
+
+RUN '/includes/run-a.apm'

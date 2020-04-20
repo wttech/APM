@@ -34,9 +34,9 @@ import org.apache.sling.api.resource.ResourceResolver;
 
 public class ModifiableScriptWrapper implements ModifiableScript {
 
-	private ResourceResolver resolver;
+	private final ResourceResolver resolver;
 
-	private Script script;
+	private final Script script;
 
 	public ModifiableScriptWrapper(ResourceResolver resolver, Script script) {
 		this.resolver = resolver;
@@ -76,6 +76,11 @@ public class ModifiableScriptWrapper implements ModifiableScript {
 	@Override
 	public void setValid(Boolean flag) throws PersistenceException {
 		setProperty(ScriptContent.APM_VERIFIED, flag);
+	}
+
+	@Override
+	public void setChecksum(String checksum) throws PersistenceException {
+		setProperty(ScriptContent.APM_CHECKSUM, checksum);
 	}
 
 	public void setProperty(String name, Object value) throws PersistenceException {

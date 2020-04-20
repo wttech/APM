@@ -19,29 +19,26 @@
  */
 package com.cognifide.cq.cqsm.core.scripts;
 
-import com.cognifide.cq.cqsm.api.history.History;
-import com.cognifide.cq.cqsm.api.history.ScriptHistory;
+import com.cognifide.cq.cqsm.api.scripts.ExecutionEnvironment;
 import com.cognifide.cq.cqsm.api.scripts.ExecutionMode;
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.day.cq.commons.jcr.JcrConstants;
 import java.util.Date;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.Optional;
+import org.apache.sling.models.annotations.injectorspecific.Self;
 
 @Model(adaptables = Resource.class)
 public class ScriptImpl implements Script {
 
   private final String path;
 
-  @Inject
-  private History history;
+  @Self
+  private Resource resource;
 
   @Inject
   @Named(JcrConstants.JCR_CONTENT)
@@ -52,10 +49,12 @@ public class ScriptImpl implements Script {
   @Optional
   private String author;
 
-  private String checksum;
-
   public ScriptImpl(Resource resource) {
     this.path = resource.getPath();
+  }
+
+  public void refresh() {
+    scriptContent = resource.getChild(JcrConstants.JCR_CONTENT).adaptTo(ScriptContent.class);
   }
 
   @Override
@@ -66,8 +65,7 @@ public class ScriptImpl implements Script {
   @Override
   public ExecutionMode getExecutionMode() {
     return (scriptContent.getExecutionMode() == null) ?
-        ExecutionMode.ON_DEMAND :
-        ExecutionMode.valueOf(scriptContent.getExecutionMode());
+        ExecutionMode.ON_DEMAND : ExecutionMode.valueOf(scriptContent.getExecutionMode());
   }
 
   @Override
@@ -76,8 +74,9 @@ public class ScriptImpl implements Script {
   }
 
   @Override
-  public String getExecutionEnvironment() {
-    return scriptContent.getExecutionEnvironment();
+  public ExecutionEnvironment getExecutionEnvironment() {
+    return (scriptContent.getExecutionEnvironment() == null) ?
+        null : ExecutionEnvironment.valueOf(scriptContent.getExecutionEnvironment());
   }
 
   @Override
@@ -101,22 +100,13 @@ public class ScriptImpl implements Script {
   }
 
   @Override
-  public boolean isContentModified(ResourceResolver resolver) {
-    ScriptHistory scriptHistory = history.findScriptHistory(resolver, this);
-    return StringUtils.equals(scriptHistory.getLastChecksum(), getChecksum());
-  }
-
-  @Override
   public String getPath() {
     return path;
   }
 
   @Override
   public String getChecksum() {
-    if (checksum == null) {
-      checksum = DigestUtils.md5Hex(scriptContent.getData());
-    }
-    return checksum;
+    return scriptContent.getChecksum();
   }
 
   @Override

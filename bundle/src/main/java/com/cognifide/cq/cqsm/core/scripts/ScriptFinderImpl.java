@@ -27,12 +27,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Spliterator;
 import java.util.Spliterators;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.jcr.query.Query;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.resource.Resource;
@@ -53,11 +52,11 @@ import org.osgi.service.component.annotations.Component;
 )
 public class ScriptFinderImpl implements ScriptFinder {
 
+  public static final String ROOT_PATH = "/conf/apm";
+
+  public static final String SCRIPT_PATH = ROOT_PATH + "/scripts";
+
   private static final String QUERY = "SELECT * FROM [nt:resource] WHERE ISDESCENDANTNODE([%s]) AND [jcr:mixinTypes] = 'apm:Script'";
-
-  private static final String ROOT_PATH = "/conf/apm";
-
-  static final String SCRIPT_PATH = ROOT_PATH + "/scripts";
 
   static final String SEARCH_PATHS = "search.paths";
 
@@ -69,9 +68,10 @@ public class ScriptFinderImpl implements ScriptFinder {
   }
 
   @Override
-  public List<Script> findAll(Predicate filter, ResourceResolver resolver) {
-    final List<Script> scripts = findAll(resolver);
-    CollectionUtils.filter(scripts, filter);
+  public List<Script> findAll(Predicate<Script> filter, ResourceResolver resolver) {
+    final List<Script> scripts = findAll(resolver).stream()
+        .filter(filter)
+        .collect(Collectors.toList());
     return scripts;
   }
 

@@ -19,7 +19,7 @@
  */
 package com.cognifide.cq.cqsm.core.executors;
 
-import static com.cognifide.cq.cqsm.core.scripts.ScriptFilters.filterOnSchedule;
+import static com.cognifide.cq.cqsm.core.scripts.ScriptFilters.onSchedule;
 
 import com.cognifide.cq.cqsm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
@@ -78,7 +78,7 @@ public class ScheduleExecutor extends AbstractExecutor implements Runnable {
   }
 
   private void runScheduled(ResourceResolver resolver) throws PersistenceException {
-    final List<Script> scripts = scriptFinder.findAll(filterOnSchedule(new Date()), resolver);
+    final List<Script> scripts = scriptFinder.findAll(onSchedule(new Date()), resolver);
     if (scripts.isEmpty()) {
       return;
     }

@@ -30,17 +30,17 @@ import org.apache.sling.api.resource.ResourceResolver;
 
 public interface ScriptManager {
 
-	String FILE_FOR_EVALUATION = "evaluation.cqsm";
+  String FILE_FOR_EVALUATION = "evaluation.apm";
 
-	/**
-	 * Fail-safe execution of script in concrete mode (dry run, automatic execution, validation)
-	 */
-	Progress process(final Script script, final Mode mode, ResourceResolver resolver)
-			throws RepositoryException, PersistenceException;
+  /**
+   * Fail-safe execution of script in concrete mode (dry run, automatic execution, validation)
+   */
+  Progress process(final Script script, final Mode mode, ResourceResolver resolver)
+      throws RepositoryException, PersistenceException;
 
 
-	/**
-	 * Fail-safe execution of script in concrete mode (dry run, automatic execution, validation)
+  /**
+   * Fail-safe execution of script in concrete mode (dry run, automatic execution, validation)
 	 */
 	Progress process(final Script script, final Mode mode, Map<String, String> customDefinitions, ResourceResolver resolver)
 			throws RepositoryException, PersistenceException;
