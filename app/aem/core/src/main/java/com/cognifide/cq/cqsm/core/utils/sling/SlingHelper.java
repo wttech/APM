@@ -36,7 +36,7 @@ public final class SlingHelper {
 
   private static final String OPERATE_ERROR_MESSAGE = "Error occurred while operating on data from repository.";
 
-  private static final String SUBSERVICE_NAME = "cqsm";
+  private static final String SUBSERVICE_NAME = "apm";
 
   private SlingHelper() {
     // hidden constructor

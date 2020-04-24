@@ -11,4 +11,4 @@
           service.ranking="0"
           queue.type="UNORDERED"
           queue.keepJobs="{Boolean}true"
-          queue.name="CQ Security Manager Script Runner"/>
+          queue.name="AEM Permission Manager Script Runner"/>

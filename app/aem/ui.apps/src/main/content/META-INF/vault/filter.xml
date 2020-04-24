@@ -6,7 +6,7 @@
     <exclude pattern="/conf/apm/scripts(/.*)?"/>
     <exclude pattern="/conf/apm/history(/.*)?"/>
   </filter>
-  <filter root="/home/users/system/cqsm-system-user"/>
+  <filter root="/home/users/system/apm-system-user"/>
   <filter root="/rep:policy"/>
   <filter root="/oak:index/apmHistory" mode="update"/>
   <filter root="/oak:index/apmScripts" mode="update"/>

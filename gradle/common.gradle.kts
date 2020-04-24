@@ -22,7 +22,7 @@ allprojects {
     repositories {
         mavenLocal()
         jcenter()
-        maven { url = uri("https://repo.adobe.com/nexus/content/groups/public") }
+        maven ("https://repo.adobe.com/nexus/content/groups/public")
     }
 
     afterEvaluate {
