@@ -47,6 +47,8 @@ tasks.withType<RatTask>().configureEach {
     excludes.add("**/*.zip")
     excludes.add("**/*.xml")
     excludes.add("**/*.svg")
+    excludes.add("**/*.png")
+    excludes.add("**/*.cnd")
 
     // Module
     excludes.add("**/documentation/*")
