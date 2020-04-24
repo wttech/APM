@@ -19,9 +19,9 @@
  */
 package com.cognifide.cq.cqsm.core.scripts;
 
-import com.cognifide.cq.cqsm.api.scripts.Script;
-import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
-import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
+import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.ScriptFinder;
+import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.cq.cqsm.core.Property;
 import java.util.List;
 import java.util.Objects;

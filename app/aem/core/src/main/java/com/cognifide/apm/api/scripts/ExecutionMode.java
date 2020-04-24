@@ -17,9 +17,45 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.cq.cqsm.api.scripts;
+package com.cognifide.apm.api.scripts;
 
-public enum ExecutionEnvironment {
+import org.apache.commons.lang.WordUtils;
 
-  AUTHOR, PUBLISH
+public enum ExecutionMode {
+
+  /**
+   * Executed only by using user interface
+   */
+  ON_DEMAND,
+
+  /**
+   * Executed always on bundle start / update
+   */
+  ON_START,
+
+  /**
+   * Executed only once or if script content's changed
+   */
+  ON_MODIFY,
+
+  /**
+   * Executed only after scheduled date
+   */
+  ON_SCHEDULE,
+
+  /**
+   * Executed always after successfully package installation
+   */
+  ON_INSTALL,
+
+  /**
+   * Executed after successfully package installation if script content's changed
+   */
+  ON_INSTALL_MODIFIED;
+
+  public String label() {
+    String words = toString().replace('_', ' ');
+    words = WordUtils.capitalizeFully(words.toLowerCase());
+    return words;
+  }
 }

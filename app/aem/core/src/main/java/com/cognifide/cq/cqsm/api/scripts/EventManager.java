@@ -19,7 +19,8 @@
  */
 package com.cognifide.cq.cqsm.api.scripts;
 
-import com.cognifide.cq.cqsm.api.executors.Mode;
+import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.Mode;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import java.util.Collections;
 import java.util.HashSet;

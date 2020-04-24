@@ -22,8 +22,8 @@ package com.cognifide.apm.services
 
 import com.cognifide.apm.grammar.ReferenceFinder
 import com.cognifide.cq.cqsm.api.history.History
-import com.cognifide.cq.cqsm.api.scripts.Script
-import com.cognifide.cq.cqsm.api.scripts.ScriptFinder
+import com.cognifide.apm.api.scripts.Script
+import com.cognifide.apm.api.services.ScriptFinder
 import com.cognifide.cq.cqsm.core.Property
 import org.apache.sling.api.resource.ResourceResolver
 import org.osgi.service.component.annotations.Component

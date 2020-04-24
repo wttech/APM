@@ -23,7 +23,7 @@ Moreover, the configuration of `sling-bundle-plugin` needs to be enhanced with t
 ### Implementing new @Mapping method
 The actions available within the tool are collected based on the methods annotated with `@Mapping` that are placed within the `@Mapper` annotated class.
 
-Adding new action, or it's variation means implementing new method that will return `com.cognifide.cq.cqsm.api.actions.Action` interface object.
+Adding new action, or it's variation means implementing new method that will return `com.cognifide.apm.api.actions.Action` interface object.
 
 ```java
 @Mapping(
@@ -43,7 +43,7 @@ The `args` property defines the paramaters to be injected into the method. They 
 The `reference` property is used for the on-the-fly documentation provided within the tool. It's recommended to provide the description so that the documentation is quickly available whevener required.
 
 ### Implementing new Action object
-com.cognifide.cq.cqsm.api.actions.Action
+com.cognifide.apm.api.actions.Action
 `Action` is an interface for the action class responsible for actual action execution. Distinction between `simulate()` and `execute()` is introduced to address both execution modes:
 * `simulate` for dry-run,
 * `execute` for regular run.

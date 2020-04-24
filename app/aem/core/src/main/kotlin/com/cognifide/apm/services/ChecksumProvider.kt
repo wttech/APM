@@ -23,8 +23,8 @@ package com.cognifide.apm.services
 import com.cognifide.apm.grammar.ReferenceFinder
 import com.cognifide.apm.grammar.ReferenceGraph
 import com.cognifide.cq.cqsm.api.scripts.ModifiableScript
-import com.cognifide.cq.cqsm.api.scripts.Script
-import com.cognifide.cq.cqsm.api.scripts.ScriptFinder
+import com.cognifide.apm.api.scripts.Script
+import com.cognifide.apm.api.services.ScriptFinder
 import com.cognifide.cq.cqsm.core.scripts.ModifiableScriptWrapper
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.sling.api.resource.ResourceResolver

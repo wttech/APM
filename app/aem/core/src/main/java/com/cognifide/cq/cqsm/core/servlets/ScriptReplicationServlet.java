@@ -21,8 +21,8 @@ package com.cognifide.cq.cqsm.core.servlets;
 
 import com.cognifide.cq.cqsm.api.exceptions.ExecutionException;
 import com.cognifide.cq.cqsm.api.scripts.ModifiableScript;
-import com.cognifide.cq.cqsm.api.scripts.Script;
-import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
+import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.cq.cqsm.api.scripts.ScriptReplicator;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.scripts.ModifiableScriptWrapper;

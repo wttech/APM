@@ -1,5 +1,6 @@
 rootProject.name = "apm"
 
+include(":app:aem:api")
 include(":app:aem:core")
 include(":app:aem:checks")
 include(":app:aem:ui.apps")

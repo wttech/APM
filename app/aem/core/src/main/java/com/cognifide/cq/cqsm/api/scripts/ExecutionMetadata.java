@@ -20,6 +20,8 @@
 
 package com.cognifide.cq.cqsm.api.scripts;
 
+import com.cognifide.apm.api.scripts.ExecutionEnvironment;
+import com.cognifide.apm.api.scripts.ExecutionMode;
 import java.time.LocalDateTime;
 
 public class ExecutionMetadata {

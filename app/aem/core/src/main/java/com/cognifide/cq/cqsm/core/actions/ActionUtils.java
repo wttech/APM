@@ -19,7 +19,7 @@
  */
 package com.cognifide.cq.cqsm.core.actions;
 
-import com.cognifide.cq.cqsm.api.actions.ActionResult;
+import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.cq.cqsm.api.exceptions.ActionExecutionException;
 import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
 import java.util.Iterator;

@@ -17,24 +17,14 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.cq.cqsm.api.executors;
+package com.cognifide.apm.api.services;
 
-import com.cognifide.cq.cqsm.api.actions.ActionFactory;
-import com.cognifide.cq.cqsm.core.actions.executor.ActionExecutor;
-import com.cognifide.cq.cqsm.core.actions.executor.DryRunActionExecutor;
-import com.cognifide.cq.cqsm.core.actions.executor.RunActionExecutor;
-import com.cognifide.cq.cqsm.core.actions.executor.ValidationActionExecutor;
 import java.io.Serializable;
 import org.apache.commons.lang.StringUtils;
 
 public enum Mode implements Serializable {
 
 	RUN {
-		@Override
-		public ActionExecutor getExecutor(Context context, ActionFactory actionFactory) {
-			return new RunActionExecutor(context, actionFactory);
-		}
-
 		@Override
 		public boolean isRun() {
 			return true;
@@ -45,15 +35,11 @@ public enum Mode implements Serializable {
 			return "run";
 		}
 	},
+
 	AUTOMATIC_RUN {
 		@Override
-		public ActionExecutor getExecutor(Context context, ActionFactory actionFactory) {
-			return RUN.getExecutor(context, actionFactory);
-		}
-
-		@Override
 		public boolean isRun() {
-			return RUN.isRun();
+			return true;
 		}
 
 		@Override
@@ -61,23 +47,15 @@ public enum Mode implements Serializable {
 			return "automatic run";
 		}
 	},
-	DRY_RUN {
-		@Override
-		public ActionExecutor getExecutor(Context context, ActionFactory actionFactory) {
-			return new DryRunActionExecutor(context, actionFactory);
-		}
 
+	DRY_RUN {
 		@Override
 		public String getName() {
 			return "dry run";
 		}
 	},
-	VALIDATION {
-		@Override
-		public ValidationActionExecutor getExecutor(Context context, ActionFactory actionFactory) {
-			return new ValidationActionExecutor(context, actionFactory);
-		}
 
+	VALIDATION {
 		@Override
 		public String getName() {
 			return "validation";
@@ -86,10 +64,6 @@ public enum Mode implements Serializable {
 
 	public static Mode fromString(String modeName, Mode defaultMode) {
 		return (StringUtils.isEmpty(modeName)) ? defaultMode : Mode.valueOf(modeName.toUpperCase());
-	}
-
-	public ActionExecutor getExecutor(Context context, ActionFactory actionFactory) {
-		throw new IllegalArgumentException("Cannot create action executor in mode: " + name());
 	}
 
 	public boolean isRun() {

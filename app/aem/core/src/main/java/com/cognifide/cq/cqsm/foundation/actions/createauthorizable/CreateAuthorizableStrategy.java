@@ -19,8 +19,8 @@
  */
 package com.cognifide.cq.cqsm.foundation.actions.createauthorizable;
 
-import com.cognifide.cq.cqsm.api.actions.ActionResult;
-import com.cognifide.cq.cqsm.api.executors.Context;
+import com.cognifide.apm.api.actions.ActionResult;
+import com.cognifide.apm.api.actions.Context;
 import com.cognifide.cq.cqsm.foundation.RandomPasswordGenerator;
 import com.cognifide.cq.cqsm.foundation.actions.MockPrincipal;
 import javax.jcr.RepositoryException;

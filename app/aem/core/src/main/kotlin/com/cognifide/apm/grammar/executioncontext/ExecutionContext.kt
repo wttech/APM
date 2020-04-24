@@ -28,8 +28,8 @@ import com.cognifide.apm.grammar.argument.Arguments
 import com.cognifide.apm.grammar.common.StackWithRoot
 import com.cognifide.apm.grammar.parsedscript.ParsedScript
 import com.cognifide.cq.cqsm.api.logger.Progress
-import com.cognifide.cq.cqsm.api.scripts.Script
-import com.cognifide.cq.cqsm.api.scripts.ScriptFinder
+import com.cognifide.apm.api.scripts.Script
+import com.cognifide.apm.api.services.ScriptFinder
 import org.apache.commons.lang.StringUtils
 import org.apache.jackrabbit.api.security.user.Authorizable
 import org.apache.sling.api.resource.ResourceResolver

@@ -17,7 +17,7 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.cq.cqsm.api.actions;
+package com.cognifide.apm.api.actions;
 
 import com.cognifide.cq.cqsm.api.logger.Message;
 import com.cognifide.cq.cqsm.api.logger.Status;

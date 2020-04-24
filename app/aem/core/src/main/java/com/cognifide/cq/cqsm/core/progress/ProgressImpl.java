@@ -24,7 +24,7 @@ import static java.util.Collections.singletonList;
 
 import com.cognifide.apm.grammar.argument.Arguments;
 import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
-import com.cognifide.cq.cqsm.api.actions.ActionResult;
+import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.cq.cqsm.api.logger.Message;
 import com.cognifide.cq.cqsm.api.logger.Position;
 import com.cognifide.cq.cqsm.api.logger.Progress;

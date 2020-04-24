@@ -19,6 +19,7 @@
  */
 package com.cognifide.cq.cqsm.api.scripts;
 
+import com.cognifide.apm.api.scripts.ExecutionMode;
 import java.util.Date;
 import org.apache.sling.api.resource.PersistenceException;
 

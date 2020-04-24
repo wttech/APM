@@ -20,8 +20,8 @@
 
 package com.cognifide.apm.grammar
 
-import com.cognifide.cq.cqsm.api.scripts.Script
-import com.cognifide.cq.cqsm.api.scripts.ScriptFinder
+import com.cognifide.apm.api.scripts.Script
+import com.cognifide.apm.api.services.ScriptFinder
 import org.apache.commons.io.IOUtils
 import org.apache.sling.api.resource.ResourceResolver
 import spock.lang.Specification

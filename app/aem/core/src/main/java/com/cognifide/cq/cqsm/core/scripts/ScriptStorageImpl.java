@@ -28,12 +28,12 @@ import static com.cognifide.cq.cqsm.core.scripts.ScriptContent.APM_EXECUTION_SCH
 import static com.cognifide.cq.cqsm.core.scripts.ScriptContent.APM_SCRIPT;
 import static java.lang.String.format;
 
-import com.cognifide.cq.cqsm.api.executors.Mode;
+import com.cognifide.apm.api.services.Mode;
 import com.cognifide.cq.cqsm.api.scripts.Event;
 import com.cognifide.cq.cqsm.api.scripts.ExecutionMetadata;
-import com.cognifide.cq.cqsm.api.scripts.Script;
-import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
-import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
+import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.ScriptFinder;
+import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.cq.cqsm.api.scripts.ScriptStorage;
 import com.cognifide.cq.cqsm.core.Cqsm;
 import com.cognifide.cq.cqsm.core.Property;

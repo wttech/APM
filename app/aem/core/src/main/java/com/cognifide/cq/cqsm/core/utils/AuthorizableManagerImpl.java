@@ -23,7 +23,7 @@ package com.cognifide.cq.cqsm.core.utils;
 import static java.lang.String.format;
 
 import com.cognifide.cq.cqsm.api.exceptions.ActionExecutionException;
-import com.cognifide.cq.cqsm.api.utils.AuthorizableManager;
+import com.cognifide.apm.api.actions.AuthorizableManager;
 import com.cognifide.cq.cqsm.foundation.actions.MockGroup;
 import com.cognifide.cq.cqsm.foundation.actions.MockUser;
 import java.security.Principal;

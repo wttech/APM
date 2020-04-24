@@ -22,9 +22,9 @@ package com.cognifide.cq.cqsm.core.actions;
 
 import com.cognifide.apm.grammar.ApmType;
 import com.cognifide.apm.grammar.argument.Arguments;
-import com.cognifide.cq.cqsm.api.actions.annotations.Flags;
-import com.cognifide.cq.cqsm.api.actions.annotations.Named;
-import com.cognifide.cq.cqsm.api.actions.annotations.Required;
+import com.cognifide.apm.api.actions.annotations.Flags;
+import com.cognifide.apm.api.actions.annotations.Named;
+import com.cognifide.apm.api.actions.annotations.Required;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;

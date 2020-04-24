@@ -19,7 +19,7 @@
  */
 package com.cognifide.cq.cqsm.foundation.actions.clearfromgroups;
 
-import com.cognifide.cq.cqsm.api.actions.ActionResult;
+import com.cognifide.apm.api.actions.ActionResult;
 
 public enum ClearFromGroupOperationTypes {
   ALL_PARENTS {

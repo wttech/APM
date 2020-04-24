@@ -19,6 +19,7 @@
  */
 package com.cognifide.cq.cqsm.api.scripts;
 
+import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.exceptions.ExecutionException;
 import com.day.cq.replication.ReplicationException;
 import javax.jcr.RepositoryException;

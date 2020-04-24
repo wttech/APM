@@ -22,10 +22,10 @@ package com.cognifide.cq.cqsm.core.actions
 
 
 import com.cognifide.cq.cqsm.api.actions.ActionDescriptor
-import com.cognifide.cq.cqsm.api.actions.annotations.Flags
-import com.cognifide.cq.cqsm.api.actions.annotations.Mapper
-import com.cognifide.cq.cqsm.api.actions.annotations.Mapping
-import com.cognifide.cq.cqsm.api.actions.annotations.Named
+import com.cognifide.apm.api.actions.annotations.Flags
+import com.cognifide.apm.api.actions.annotations.Mapper
+import com.cognifide.apm.api.actions.annotations.Mapping
+import com.cognifide.apm.api.actions.annotations.Named
 
 @Mapper("mapper")
 class MapperWithWrongReturnType {

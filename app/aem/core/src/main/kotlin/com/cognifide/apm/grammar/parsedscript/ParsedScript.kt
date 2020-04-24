@@ -21,7 +21,7 @@
 package com.cognifide.apm.grammar.parsedscript
 
 import com.cognifide.apm.grammar.antlr.ApmLangParser.ApmContext
-import com.cognifide.cq.cqsm.api.scripts.Script
+import com.cognifide.apm.api.scripts.Script
 
 class ParsedScript(val script: Script, val apm: ApmContext) {
 

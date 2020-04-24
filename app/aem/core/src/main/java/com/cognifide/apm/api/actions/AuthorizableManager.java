@@ -18,7 +18,7 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.cq.cqsm.api.utils;
+package com.cognifide.apm.api.actions;
 
 import com.cognifide.cq.cqsm.api.exceptions.ActionExecutionException;
 import java.security.Principal;

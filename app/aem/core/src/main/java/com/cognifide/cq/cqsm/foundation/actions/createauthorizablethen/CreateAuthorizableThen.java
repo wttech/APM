@@ -19,9 +19,9 @@
  */
 package com.cognifide.cq.cqsm.foundation.actions.createauthorizablethen;
 
-import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.ActionResult;
-import com.cognifide.cq.cqsm.api.executors.Context;
+import com.cognifide.apm.api.actions.Action;
+import com.cognifide.apm.api.actions.ActionResult;
+import com.cognifide.apm.api.actions.Context;
 import com.cognifide.cq.cqsm.api.logger.Status;
 import com.cognifide.cq.cqsm.foundation.actions.createauthorizable.CreateAuthorizable;
 import com.cognifide.cq.cqsm.foundation.actions.createauthorizable.CreateAuthorizableStrategy;

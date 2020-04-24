@@ -20,14 +20,15 @@
 
 package com.cognifide.cq.cqsm.core.actions
 
-import com.cognifide.cq.cqsm.api.actions.Action
-import com.cognifide.cq.cqsm.api.actions.ActionResult
-import com.cognifide.cq.cqsm.api.actions.annotations.Flags
-import com.cognifide.cq.cqsm.api.actions.annotations.Mapper
-import com.cognifide.cq.cqsm.api.actions.annotations.Mapping
-import com.cognifide.cq.cqsm.api.actions.annotations.Named
+import com.cognifide.apm.api.actions.Action
+import com.cognifide.apm.api.actions.ActionResult
+import com.cognifide.apm.api.actions.Context
+import com.cognifide.apm.api.actions.annotations.Flags
+import com.cognifide.apm.api.actions.annotations.Mapper
+import com.cognifide.apm.api.actions.annotations.Mapping
+import com.cognifide.apm.api.actions.annotations.Named
 import com.cognifide.cq.cqsm.api.exceptions.ActionExecutionException
-import com.cognifide.cq.cqsm.api.executors.Context
+import com.cognifide.cq.cqsm.api.executors.ContextImpl
 
 @Mapper("sample")
 class SampleMapper {

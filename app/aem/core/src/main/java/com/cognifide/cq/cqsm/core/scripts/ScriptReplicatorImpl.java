@@ -19,11 +19,13 @@
  */
 package com.cognifide.cq.cqsm.core.scripts;
 
+import com.cognifide.apm.api.services.ScriptFinder;
+import com.cognifide.apm.grammar.ReferenceFinder;
 import com.cognifide.cq.cqsm.api.exceptions.ExecutionException;
 import com.cognifide.cq.cqsm.api.scripts.Event;
 import com.cognifide.cq.cqsm.api.scripts.EventManager;
-import com.cognifide.cq.cqsm.api.scripts.Script;
-import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
+import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.cq.cqsm.api.scripts.ScriptReplicator;
 import com.cognifide.cq.cqsm.core.Property;
 import com.day.cq.replication.ReplicationActionType;
@@ -50,7 +52,7 @@ public class ScriptReplicatorImpl implements ScriptReplicator {
 	private Replicator replicator;
 
 	@Reference
-	private ScriptManager scriptManager;
+	private ScriptFinder scriptFinder;
 
 	private final EventManager eventManager = new EventManager();
 
@@ -62,7 +64,7 @@ public class ScriptReplicatorImpl implements ScriptReplicator {
 
 		final List<Script> includes = new LinkedList<>();
 		includes.add(script);
-		includes.addAll(scriptManager.findIncludes(script, resolver));
+		includes.addAll(new ReferenceFinder(scriptFinder, resolver).findReferences(script));
 
 		final Session session = resolver.adaptTo(Session.class);
 

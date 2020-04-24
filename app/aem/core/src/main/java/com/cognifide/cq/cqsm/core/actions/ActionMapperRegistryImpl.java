@@ -20,7 +20,7 @@
 
 package com.cognifide.cq.cqsm.core.actions;
 
-import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
+import com.cognifide.apm.api.actions.annotations.Mapper;
 import com.cognifide.cq.cqsm.api.exceptions.InvalidActionMapperException;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.actions.scanner.AnnotatedClassRegistry;

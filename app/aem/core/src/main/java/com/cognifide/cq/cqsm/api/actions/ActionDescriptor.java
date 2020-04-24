@@ -19,6 +19,7 @@
  */
 package com.cognifide.cq.cqsm.api.actions;
 
+import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.grammar.argument.Arguments;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

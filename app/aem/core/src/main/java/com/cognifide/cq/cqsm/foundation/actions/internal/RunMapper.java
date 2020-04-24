@@ -19,10 +19,10 @@
  */
 package com.cognifide.cq.cqsm.foundation.actions.internal;
 
-import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
-import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
-import com.cognifide.cq.cqsm.api.actions.annotations.Required;
+import com.cognifide.apm.api.actions.Action;
+import com.cognifide.apm.api.actions.annotations.Mapper;
+import com.cognifide.apm.api.actions.annotations.Mapping;
+import com.cognifide.apm.api.actions.annotations.Required;
 import com.cognifide.cq.cqsm.foundation.actions.ActionGroup;
 import org.apache.commons.lang.NotImplementedException;
 

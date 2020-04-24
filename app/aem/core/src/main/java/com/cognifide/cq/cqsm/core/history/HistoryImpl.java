@@ -26,7 +26,7 @@ import static org.apache.jackrabbit.commons.JcrUtils.getOrCreateUniqueByPath;
 
 import com.cognifide.actions.api.ActionSendException;
 import com.cognifide.actions.api.ActionSubmitter;
-import com.cognifide.cq.cqsm.api.executors.Mode;
+import com.cognifide.apm.api.services.Mode;
 import com.cognifide.cq.cqsm.api.history.History;
 import com.cognifide.cq.cqsm.api.history.HistoryEntry;
 import com.cognifide.cq.cqsm.api.history.InstanceDetails;
@@ -34,7 +34,7 @@ import com.cognifide.cq.cqsm.api.history.InstanceDetails.InstanceType;
 import com.cognifide.cq.cqsm.api.history.ScriptHistory;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.progress.ProgressHelper;
-import com.cognifide.cq.cqsm.api.scripts.Script;
+import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.utils.InstanceTypeProvider;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.history.HistoryEntryWriter.HistoryEntryWriterBuilder;

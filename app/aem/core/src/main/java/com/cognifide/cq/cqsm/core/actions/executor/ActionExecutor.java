@@ -20,8 +20,8 @@
 package com.cognifide.cq.cqsm.core.actions.executor;
 
 import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
-import com.cognifide.cq.cqsm.api.actions.ActionResult;
-import com.cognifide.cq.cqsm.api.executors.Context;
+import com.cognifide.apm.api.actions.ActionResult;
+import com.cognifide.apm.api.actions.Context;
 
 public interface ActionExecutor {
 

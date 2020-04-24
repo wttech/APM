@@ -17,18 +17,21 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.cq.cqsm.api.actions.annotations;
+package com.cognifide.apm.api.actions.annotations;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.METHOD)
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Mapping {
+@Inherited
+public @interface Mapper {
 
-	String[] examples() default {};
+  String value();
 
-	String reference() default "";
+  String group() default "";
+
 }

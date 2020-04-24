@@ -18,7 +18,7 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.cq.cqsm.api.actions.annotations;
+package com.cognifide.apm.api.actions.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
-public @interface Flag {
+public @interface Named {
 
   String value();
 

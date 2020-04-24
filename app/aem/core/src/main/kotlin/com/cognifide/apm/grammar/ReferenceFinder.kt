@@ -27,10 +27,10 @@ import com.cognifide.apm.grammar.antlr.ApmLangParser
 import com.cognifide.apm.grammar.argument.toPlainString
 import com.cognifide.apm.grammar.executioncontext.ExecutionContext
 import com.cognifide.apm.grammar.parsedscript.ParsedScript
-import com.cognifide.cq.cqsm.api.scripts.ExecutionEnvironment
-import com.cognifide.cq.cqsm.api.scripts.ExecutionMode
-import com.cognifide.cq.cqsm.api.scripts.Script
-import com.cognifide.cq.cqsm.api.scripts.ScriptFinder
+import com.cognifide.apm.api.scripts.ExecutionEnvironment
+import com.cognifide.apm.api.scripts.ExecutionMode
+import com.cognifide.apm.api.scripts.Script
+import com.cognifide.apm.api.services.ScriptFinder
 import com.cognifide.cq.cqsm.core.progress.ProgressImpl
 import org.apache.sling.api.resource.ResourceResolver
 import java.util.*

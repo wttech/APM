@@ -22,13 +22,13 @@ package com.cognifide.cq.cqsm.foundation.actions.createauthorizable;
 import static com.cognifide.cq.cqsm.foundation.actions.CommonFlags.IF_NOT_EXISTS;
 import static com.cognifide.cq.cqsm.foundation.actions.createauthorizable.CreateAuthorizableStrategy.GROUP;
 
-import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.annotations.Flag;
-import com.cognifide.cq.cqsm.api.actions.annotations.Flags;
-import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
-import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
-import com.cognifide.cq.cqsm.api.actions.annotations.Named;
-import com.cognifide.cq.cqsm.api.actions.annotations.Required;
+import com.cognifide.apm.api.actions.Action;
+import com.cognifide.apm.api.actions.annotations.Flag;
+import com.cognifide.apm.api.actions.annotations.Flags;
+import com.cognifide.apm.api.actions.annotations.Mapper;
+import com.cognifide.apm.api.actions.annotations.Mapping;
+import com.cognifide.apm.api.actions.annotations.Named;
+import com.cognifide.apm.api.actions.annotations.Required;
 import com.cognifide.cq.cqsm.foundation.actions.ActionGroup;
 import java.util.List;
 

@@ -19,9 +19,9 @@
  */
 package com.cognifide.cq.cqsm.core.scripts;
 
-import com.cognifide.cq.cqsm.api.scripts.ExecutionEnvironment;
-import com.cognifide.cq.cqsm.api.scripts.ExecutionMode;
-import com.cognifide.cq.cqsm.api.scripts.Script;
+import com.cognifide.apm.api.scripts.ExecutionEnvironment;
+import com.cognifide.apm.api.scripts.ExecutionMode;
+import com.cognifide.apm.api.scripts.Script;
 import com.day.cq.commons.jcr.JcrConstants;
 import java.util.Date;
 import javax.inject.Inject;

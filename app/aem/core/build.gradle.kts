@@ -22,6 +22,7 @@ aem {
         jar {
             bundle {
                 exportPackage("com.cognifide.cq.cqsm.*") //TODO repair after extraction of API
+                exportPackage("com.cognifide.apm.api.*") //TODO repair after extraction of API
 //                exportPackage("com.cognifide.cq.cqsm.foundation.actions.*")
 //                exportPackage("com.cognifide.cq.cqsm.api.*")
 //                exportPackage("com.cognifide.cq.cqsm.core.models.*")

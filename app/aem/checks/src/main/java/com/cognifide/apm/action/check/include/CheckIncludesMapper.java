@@ -19,9 +19,9 @@
  */
 package com.cognifide.apm.action.check.include;
 
-import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
-import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
+import com.cognifide.apm.api.actions.Action;
+import com.cognifide.apm.api.actions.annotations.Mapper;
+import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.cq.cqsm.foundation.actions.ActionGroup;
 import java.util.Collections;
 import java.util.List;

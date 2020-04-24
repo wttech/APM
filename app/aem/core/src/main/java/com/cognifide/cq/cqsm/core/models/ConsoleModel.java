@@ -19,8 +19,8 @@
  */
 package com.cognifide.cq.cqsm.core.models;
 
-import com.cognifide.cq.cqsm.api.scripts.Script;
-import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
+import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.ScriptFinder;
 import java.io.IOException;
 import javax.inject.Inject;
 import lombok.Getter;

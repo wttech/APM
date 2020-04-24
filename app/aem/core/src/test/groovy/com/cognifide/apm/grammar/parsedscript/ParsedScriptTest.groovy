@@ -20,7 +20,7 @@
 
 package com.cognifide.apm.grammar.parsedscript
 
-import com.cognifide.cq.cqsm.api.scripts.Script
+import com.cognifide.apm.api.scripts.Script
 import org.apache.commons.io.IOUtils
 import spock.lang.Specification
 import spock.lang.Unroll

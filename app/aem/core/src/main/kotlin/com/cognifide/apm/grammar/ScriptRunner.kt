@@ -34,8 +34,8 @@ import com.cognifide.apm.grammar.utils.RequiredVariablesChecker
 import com.cognifide.cq.cqsm.api.logger.Position
 import com.cognifide.cq.cqsm.api.logger.Progress
 import com.cognifide.cq.cqsm.api.logger.Status
-import com.cognifide.cq.cqsm.api.scripts.Script
-import com.cognifide.cq.cqsm.api.scripts.ScriptFinder
+import com.cognifide.apm.api.scripts.Script
+import com.cognifide.apm.api.services.ScriptFinder
 import org.antlr.v4.runtime.ParserRuleContext
 import org.apache.sling.api.resource.ResourceResolver
 

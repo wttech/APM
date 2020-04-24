@@ -19,7 +19,7 @@
  */
 package com.cognifide.cq.cqsm.core.datasource;
 
-import com.cognifide.cq.cqsm.api.scripts.ExecutionMode;
+import com.cognifide.apm.api.scripts.ExecutionMode;
 import com.cognifide.cq.cqsm.core.Property;
 import javax.servlet.Servlet;
 import org.osgi.service.component.annotations.Component;

@@ -21,9 +21,9 @@ package com.cognifide.cq.cqsm.core.scripts;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
-import com.cognifide.cq.cqsm.api.scripts.ExecutionEnvironment;
-import com.cognifide.cq.cqsm.api.scripts.ExecutionMode;
-import com.cognifide.cq.cqsm.api.scripts.Script;
+import com.cognifide.apm.api.scripts.ExecutionEnvironment;
+import com.cognifide.apm.api.scripts.ExecutionMode;
+import com.cognifide.apm.api.scripts.Script;
 import java.util.Date;
 import java.util.function.Predicate;
 import org.apache.commons.lang.StringUtils;

@@ -19,8 +19,9 @@
  */
 package com.cognifide.cq.cqsm.api.executors;
 
+import com.cognifide.apm.api.actions.Context;
 import com.cognifide.cq.cqsm.api.exceptions.ActionExecutionException;
-import com.cognifide.cq.cqsm.api.utils.AuthorizableManager;
+import com.cognifide.apm.api.actions.AuthorizableManager;
 import com.cognifide.cq.cqsm.core.sessions.SessionSavingPolicy;
 import com.cognifide.cq.cqsm.core.utils.AuthorizableManagerImpl;
 import javax.jcr.RepositoryException;
@@ -33,7 +34,7 @@ import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.apache.jackrabbit.api.security.user.Group;
 import org.apache.jackrabbit.api.security.user.User;
 
-public final class Context {
+public final class ContextImpl implements Context {
 
   @Getter
   private final AccessControlManager accessControlManager;
@@ -50,17 +51,19 @@ public final class Context {
   @Setter
   private Authorizable currentAuthorizable;
 
-  public Context(final JackrabbitSession session) throws RepositoryException {
+  public ContextImpl(final JackrabbitSession session) throws RepositoryException {
     this.session = session;
     this.accessControlManager = session.getAccessControlManager();
     this.authorizableManager = new AuthorizableManagerImpl(session.getUserManager());
     this.savingPolicy = new SessionSavingPolicy();
   }
 
+  @Override
   public ValueFactory getValueFactory() throws RepositoryException {
     return session.getValueFactory();
   }
 
+  @Override
   public Authorizable getCurrentAuthorizable() throws ActionExecutionException {
     if (currentAuthorizable == null) {
       throw new ActionExecutionException("Current authorizable not set.");
@@ -68,10 +71,12 @@ public final class Context {
     return currentAuthorizable;
   }
 
+  @Override
   public Authorizable getCurrentAuthorizableIfExists() {
     return currentAuthorizable;
   }
 
+  @Override
   public Group getCurrentGroup() throws ActionExecutionException {
     if (getCurrentAuthorizable() instanceof User) {
       throw new ActionExecutionException("Current authorizable is not a group");
@@ -79,6 +84,7 @@ public final class Context {
     return (Group) currentAuthorizable;
   }
 
+  @Override
   public User getCurrentUser() throws ActionExecutionException {
     if (getCurrentAuthorizable() instanceof Group) {
       throw new ActionExecutionException("Current authorizable is not a user");
@@ -86,6 +92,7 @@ public final class Context {
     return (User) currentAuthorizable;
   }
 
+  @Override
   public void clearCurrentAuthorizable() {
     this.currentAuthorizable = null;
   }

@@ -17,7 +17,7 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.cq.cqsm.api.scripts;
+package com.cognifide.apm.api.scripts;
 
 import java.util.Date;
 

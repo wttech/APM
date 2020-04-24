@@ -22,7 +22,7 @@ package com.cognifide.cq.cqsm.core.servlets;
 
 import com.cognifide.cq.cqsm.api.history.History;
 import com.cognifide.cq.cqsm.api.history.ScriptHistory;
-import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
+import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.history.ScriptHistoryImpl;
 import java.io.IOException;

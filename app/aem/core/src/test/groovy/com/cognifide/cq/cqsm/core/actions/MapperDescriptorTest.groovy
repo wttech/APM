@@ -24,8 +24,8 @@ import com.cognifide.apm.grammar.ApmList
 import com.cognifide.apm.grammar.ApmString
 import com.cognifide.apm.grammar.ApmType
 import com.cognifide.apm.grammar.argument.Arguments
-import com.cognifide.cq.cqsm.api.actions.Action
-import com.cognifide.cq.cqsm.api.actions.annotations.Mapper
+import com.cognifide.apm.api.actions.Action
+import com.cognifide.apm.api.actions.annotations.Mapper
 import com.cognifide.cq.cqsm.api.exceptions.InvalidActionMapperException
 import spock.lang.Specification
 import spock.lang.Unroll

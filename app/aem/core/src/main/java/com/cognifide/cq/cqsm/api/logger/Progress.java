@@ -21,13 +21,11 @@ package com.cognifide.cq.cqsm.api.logger;
 
 import com.cognifide.apm.grammar.argument.Arguments;
 import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
-import com.cognifide.cq.cqsm.api.actions.ActionResult;
+import com.cognifide.apm.api.actions.ActionResult;
 import java.io.Serializable;
 import java.util.List;
 
-public interface Progress extends Serializable {
-
-  List<ProgressEntry> getEntries();
+public interface Progress extends Serializable, ExecutionResult {
 
   void addEntry(ActionDescriptor descriptor, ActionResult result);
 
@@ -42,9 +40,4 @@ public interface Progress extends Serializable {
   void addEntry(Status status, List<String> messages, String command, String authorizable, Arguments arguments,
       Position position);
 
-  boolean isSuccess();
-
-  ProgressEntry getLastError();
-
-  String getExecutor();
 }

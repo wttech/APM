@@ -19,10 +19,10 @@
  */
 package com.cognifide.cq.cqsm.foundation.actions.removeall;
 
-import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.ActionResult;
+import com.cognifide.apm.api.actions.Action;
+import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.cq.cqsm.api.exceptions.ActionExecutionException;
-import com.cognifide.cq.cqsm.api.executors.Context;
+import com.cognifide.apm.api.actions.Context;
 import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
 import com.cognifide.cq.cqsm.foundation.permissions.utils.JackrabbitAccessControlListUtil;
 import java.security.Principal;

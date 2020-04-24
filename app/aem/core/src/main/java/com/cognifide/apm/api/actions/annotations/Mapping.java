@@ -17,16 +17,19 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.cq.cqsm.api.actions;
+package com.cognifide.apm.api.actions.annotations;
 
-import com.cognifide.cq.cqsm.api.exceptions.ActionExecutionException;
-import com.cognifide.cq.cqsm.api.executors.Context;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public interface Action {
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Mapping {
 
-	ActionResult simulate(final Context context) throws ActionExecutionException;
+	String[] examples() default {};
 
-	ActionResult execute(final Context context) throws ActionExecutionException;
+	String reference() default "";
 
-	boolean isGeneric();
 }

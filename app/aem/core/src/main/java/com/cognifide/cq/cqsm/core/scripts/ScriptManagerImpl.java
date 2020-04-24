@@ -25,23 +25,25 @@ import com.cognifide.apm.grammar.ReferenceFinder;
 import com.cognifide.apm.grammar.ScriptRunner;
 import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
 import com.cognifide.cq.cqsm.api.actions.ActionFactory;
-import com.cognifide.cq.cqsm.api.actions.ActionResult;
+import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
 import com.cognifide.cq.cqsm.api.exceptions.ExecutionException;
-import com.cognifide.cq.cqsm.api.executors.Context;
-import com.cognifide.cq.cqsm.api.executors.Mode;
+import com.cognifide.apm.api.actions.Context;
+import com.cognifide.cq.cqsm.api.executors.ContextImpl;
+import com.cognifide.apm.api.services.Mode;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.logger.Status;
 import com.cognifide.cq.cqsm.api.scripts.Event;
 import com.cognifide.cq.cqsm.api.scripts.EventManager;
 import com.cognifide.cq.cqsm.api.scripts.ExecutionMetadata;
 import com.cognifide.cq.cqsm.api.scripts.ModifiableScript;
-import com.cognifide.cq.cqsm.api.scripts.Script;
-import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
-import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
+import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.ScriptFinder;
+import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.cq.cqsm.api.scripts.ScriptStorage;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.actions.executor.ActionExecutor;
+import com.cognifide.cq.cqsm.core.actions.executor.ActionExecutorFactory;
 import com.cognifide.cq.cqsm.core.progress.ProgressImpl;
 import com.cognifide.cq.cqsm.core.sessions.SessionSavingMode;
 import com.cognifide.cq.cqsm.core.sessions.SessionSavingPolicy;
@@ -214,14 +216,8 @@ public class ScriptManagerImpl implements ScriptManager {
     return eventManager;
   }
 
-  @Override
-  public List<Script> findIncludes(Script script, ResourceResolver resolver) throws ExecutionException {
-    ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resolver);
-    return referenceFinder.findReferences(script);
-  }
-
   private ActionExecutor createExecutor(Mode mode, ResourceResolver resolver) throws RepositoryException {
-    final Context context = new Context((JackrabbitSession) resolver.adaptTo(Session.class));
-    return mode.getExecutor(context, actionFactory);
+    final Context context = new ContextImpl((JackrabbitSession) resolver.adaptTo(Session.class));
+    return ActionExecutorFactory.create(mode, context, actionFactory);
   }
 }

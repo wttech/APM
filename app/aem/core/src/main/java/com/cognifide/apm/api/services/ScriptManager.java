@@ -17,12 +17,11 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.cq.cqsm.api.scripts;
+package com.cognifide.apm.api.services;
 
-import com.cognifide.cq.cqsm.api.exceptions.ExecutionException;
-import com.cognifide.cq.cqsm.api.executors.Mode;
+import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.logger.Progress;
-import java.util.List;
+import com.cognifide.cq.cqsm.api.scripts.EventManager;
 import java.util.Map;
 import javax.jcr.RepositoryException;
 import org.apache.sling.api.resource.PersistenceException;
@@ -67,9 +66,4 @@ public interface ScriptManager {
 	 * Get predefined variables accessible in script via syntax: ${definitionName}
 	 */
 	Map<String, String> getPredefinedDefinitions();
-
-	/**
-	 * Find all nested scripts in specified
-	 */
-	List<Script> findIncludes(Script script, ResourceResolver resolver) throws ExecutionException;
 }

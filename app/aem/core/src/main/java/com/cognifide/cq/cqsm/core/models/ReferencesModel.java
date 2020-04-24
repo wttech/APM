@@ -21,7 +21,7 @@
 package com.cognifide.cq.cqsm.core.models;
 
 import com.cognifide.cq.cqsm.api.actions.ActionFactory;
-import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
+import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.cq.cqsm.core.actions.CommandDescription;
 import java.util.List;
 import java.util.Map;

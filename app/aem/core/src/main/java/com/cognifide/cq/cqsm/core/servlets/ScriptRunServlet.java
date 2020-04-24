@@ -19,12 +19,12 @@
  */
 package com.cognifide.cq.cqsm.core.servlets;
 
-import com.cognifide.cq.cqsm.api.executors.Mode;
+import com.cognifide.apm.api.services.Mode;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.progress.ProgressHelper;
-import com.cognifide.cq.cqsm.api.scripts.Script;
-import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
-import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
+import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.ScriptFinder;
+import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.utils.ServletUtils;
 import java.io.IOException;

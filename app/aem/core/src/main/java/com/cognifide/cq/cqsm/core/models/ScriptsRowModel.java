@@ -24,7 +24,7 @@ import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 import com.cognifide.cq.cqsm.api.history.History;
 import com.cognifide.cq.cqsm.api.history.HistoryEntry;
 import com.cognifide.cq.cqsm.api.history.ScriptHistory;
-import com.cognifide.cq.cqsm.api.scripts.Script;
+import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.cq.cqsm.core.scripts.ScriptContent;
 import com.cognifide.cq.cqsm.core.scripts.ScriptImpl;
 import com.cognifide.cq.cqsm.core.utils.CalendarUtils;

@@ -19,7 +19,7 @@
  */
 package com.cognifide.cq.cqsm.core.servlets;
 
-import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
+import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.utils.ServletUtils;
 import java.io.IOException;

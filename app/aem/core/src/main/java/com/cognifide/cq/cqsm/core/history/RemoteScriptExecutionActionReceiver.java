@@ -23,13 +23,13 @@ import static com.cognifide.cq.cqsm.core.history.HistoryImpl.REPLICATE_ACTION;
 import static com.google.common.base.Preconditions.checkState;
 
 import com.cognifide.actions.api.ActionReceiver;
-import com.cognifide.cq.cqsm.api.executors.Mode;
+import com.cognifide.apm.api.services.Mode;
 import com.cognifide.cq.cqsm.api.history.History;
 import com.cognifide.cq.cqsm.api.history.InstanceDetails;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.logger.ProgressEntry;
 import com.cognifide.cq.cqsm.api.progress.ProgressHelper;
-import com.cognifide.cq.cqsm.api.scripts.Script;
+import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.utils.InstanceTypeProvider;
 import com.cognifide.cq.cqsm.core.progress.ProgressImpl;
 import com.cognifide.cq.cqsm.core.scripts.ScriptImpl;

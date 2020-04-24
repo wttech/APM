@@ -19,10 +19,10 @@
  */
 package com.cognifide.cq.cqsm.core.executors;
 
-import com.cognifide.cq.cqsm.api.scripts.ExecutionMode;
-import com.cognifide.cq.cqsm.api.scripts.Script;
-import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
-import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
+import com.cognifide.apm.api.scripts.ExecutionMode;
+import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.ScriptFinder;
+import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper;
 import org.apache.sling.api.SlingConstants;

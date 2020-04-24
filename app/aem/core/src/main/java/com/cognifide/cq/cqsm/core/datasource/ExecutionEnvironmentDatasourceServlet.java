@@ -19,7 +19,7 @@
  */
 package com.cognifide.cq.cqsm.core.datasource;
 
-import com.cognifide.cq.cqsm.api.scripts.ExecutionEnvironment;
+import com.cognifide.apm.api.scripts.ExecutionEnvironment;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.datasource.SimpleDataSourceBuilder.Option;
 import javax.servlet.Servlet;

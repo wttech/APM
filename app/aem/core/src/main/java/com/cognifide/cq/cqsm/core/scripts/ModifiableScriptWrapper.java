@@ -19,9 +19,9 @@
  */
 package com.cognifide.cq.cqsm.core.scripts;
 
-import com.cognifide.cq.cqsm.api.scripts.ExecutionMode;
+import com.cognifide.apm.api.scripts.ExecutionMode;
 import com.cognifide.cq.cqsm.api.scripts.ModifiableScript;
-import com.cognifide.cq.cqsm.api.scripts.Script;
+import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.cq.cqsm.core.utils.ResourceMixinUtil;
 import java.util.Calendar;
 import java.util.Date;

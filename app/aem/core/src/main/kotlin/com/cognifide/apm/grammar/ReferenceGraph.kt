@@ -20,7 +20,7 @@
 
 package com.cognifide.apm.grammar
 
-import com.cognifide.cq.cqsm.api.scripts.Script
+import com.cognifide.apm.api.scripts.Script
 import java.util.*
 
 class ReferenceGraph(

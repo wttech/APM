@@ -19,7 +19,7 @@
  */
 package com.cognifide.cq.cqsm.core.utils;
 
-import com.cognifide.cq.cqsm.api.scripts.Script;
+import com.cognifide.apm.api.scripts.Script;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;

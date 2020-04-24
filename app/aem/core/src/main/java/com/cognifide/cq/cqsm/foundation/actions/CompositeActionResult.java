@@ -19,7 +19,7 @@
  */
 package com.cognifide.cq.cqsm.foundation.actions;
 
-import com.cognifide.cq.cqsm.api.actions.ActionResult;
+import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.cq.cqsm.api.logger.Message;
 import com.cognifide.cq.cqsm.api.logger.Status;
 import java.util.LinkedList;

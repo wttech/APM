@@ -22,9 +22,9 @@ package com.cognifide.cq.cqsm.core.executors;
 import static com.cognifide.cq.cqsm.core.scripts.ScriptFilters.onStart;
 
 import com.cognifide.cq.cqsm.api.scripts.EventListener;
-import com.cognifide.cq.cqsm.api.scripts.Script;
-import com.cognifide.cq.cqsm.api.scripts.ScriptFinder;
-import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
+import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.ScriptFinder;
+import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
 import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper;

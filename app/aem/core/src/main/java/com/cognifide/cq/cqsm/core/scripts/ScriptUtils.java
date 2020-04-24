@@ -21,7 +21,7 @@
 package com.cognifide.cq.cqsm.core.scripts;
 
 import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
-import com.cognifide.cq.cqsm.api.scripts.Script;
+import com.cognifide.apm.api.scripts.Script;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.util.ArrayList;

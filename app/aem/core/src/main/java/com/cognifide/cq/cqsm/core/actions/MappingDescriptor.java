@@ -21,9 +21,9 @@
 package com.cognifide.cq.cqsm.core.actions;
 
 import com.cognifide.apm.grammar.argument.Arguments;
-import com.cognifide.cq.cqsm.api.actions.Action;
-import com.cognifide.cq.cqsm.api.actions.annotations.Mapper;
-import com.cognifide.cq.cqsm.api.actions.annotations.Mapping;
+import com.cognifide.apm.api.actions.Action;
+import com.cognifide.apm.api.actions.annotations.Mapper;
+import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.cq.cqsm.core.actions.ParameterDescriptor.NamedParameterDescriptor;
 import com.cognifide.cq.cqsm.core.actions.ParameterDescriptor.RequiredParameterDescriptor;
 import com.google.common.collect.ImmutableList;

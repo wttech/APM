@@ -1,4 +1,4 @@
-/*-
+/*
  * ========================LICENSE_START=================================
  * AEM Permission Management
  * %%
@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,32 +17,20 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.cq.cqsm.api.scripts;
 
-import java.util.List;
-import java.util.function.Predicate;
-import org.apache.sling.api.resource.ResourceResolver;
+package com.cognifide.apm.api.actions.annotations;
 
-public interface ScriptFinder {
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-	/**
-	 * Find script by relative or absolute path
-	 */
-	Script find(String path, ResourceResolver resolver);
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.PARAMETER)
+public @interface Required {
 
-	/**
-	 * Find script by relative or absolute path
-	 */
-	Script find(String path, boolean skipIgnored, ResourceResolver resolver);
+  String value() default "";
 
-	/**
-	 * Find all available scripts
-	 */
-	List<Script> findAll(ResourceResolver resolver);
-
-	/**
-	 * Find scripts that matched filter
-	 */
-	List<Script> findAll(Predicate<Script> filter, ResourceResolver resolver);
+  String description() default "";
 
 }

@@ -23,8 +23,8 @@ import static com.cognifide.cq.cqsm.core.scripts.ScriptFilters.onModify;
 
 import com.cognifide.apm.services.ModifiedScriptFinder;
 import com.cognifide.cq.cqsm.api.scripts.EventListener;
-import com.cognifide.cq.cqsm.api.scripts.Script;
-import com.cognifide.cq.cqsm.api.scripts.ScriptManager;
+import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
 import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper;
