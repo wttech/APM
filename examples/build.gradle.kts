@@ -1,5 +1,3 @@
-import com.cognifide.gradle.aem.pkg.tasks.Compose
-
 /*
  * ========================LICENSE_START=================================
  * AEM Permission Management
@@ -30,10 +28,9 @@ description = "AEM Permission Management :: Examples"
 
 aem {
     tasks {
-        compose {
-            duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        packageCompose {
             vaultDefinition {
-                version = rootProject.version as String
+                version.set(rootProject.version as String)
                 property("installhook.apm.class", "com.cognifide.apm.tools.ApmInstallHook")
             }
         }
@@ -43,8 +40,7 @@ aem {
 publishing {
     publications {
         create<MavenPublication>("apm") {
-            val apmContent by tasks.named(Compose.NAME, Compose::class)
-            artifact(apmContent)
+            artifact(common.publicationArtifact("packageCompose"))
             afterEvaluate {
                 artifactId = "apm-examples"
                 version = rootProject.version

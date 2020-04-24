@@ -18,31 +18,11 @@
  * =========================LICENSE_END==================================
  */
 
-import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-import org.gradle.api.tasks.testing.logging.TestLogEvent
-
 allprojects {
     repositories {
         mavenLocal()
         jcenter()
-        maven { url = uri("https://repo.adobe.com/nexus/content/groups/public") }
-    }
-
-    plugins.withId("java") {
-        tasks.withType<Test>().configureEach {
-            failFast = true
-            useJUnitPlatform()
-            testLogging {
-                events = setOf(TestLogEvent.FAILED)
-                exceptionFormat = TestExceptionFormat.SHORT
-            }
-
-            dependencies {
-                "testImplementation"("org.junit.jupiter:junit-jupiter-api:5.3.2")
-                "testRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:5.3.2")
-                "testImplementation"("io.wcm:io.wcm.testing.aem-mock.junit5:2.3.2")
-            }
-        }
+        maven ("https://repo.adobe.com/nexus/content/groups/public")
     }
 
     afterEvaluate {

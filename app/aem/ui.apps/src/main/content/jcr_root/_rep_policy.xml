@@ -1,0 +1,7 @@
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:rep="internal"
+  jcr:primaryType="rep:ACL">
+    <allow
+        jcr:primaryType="rep:GrantACE"
+        rep:principalName="apm-system-user"
+        rep:privileges="{Name}[jcr:all]"/>
+</jcr:root>

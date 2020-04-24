@@ -21,13 +21,16 @@
 repositories {
     mavenLocal()
     jcenter()
-    maven { url = uri("https://repo.adobe.com/nexus/content/groups/public") }
-    maven { url = uri("https://plugins.gradle.org/m2") }
-    maven { url = uri("https://dl.bintray.com/cognifide/maven-public") }
+    gradlePluginPortal()
+    maven("https://dl.bintray.com/cognifide/maven-public")
+    maven("https://repo.adobe.com/nexus/content/groups/public")
+    maven("https://plugins.gradle.org/m2")
 }
 
 dependencies {
-    implementation("com.cognifide.gradle:aem-plugin:6.2.0")
     implementation("com.moowork.gradle:gradle-node-plugin:1.2.0")
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.70")
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.72")
+    implementation("org.apache.sling:org.apache.sling.caconfig.bnd-plugin:1.0.2")
+    implementation("com.cognifide.gradle:environment-plugin:0.1.12")
+    implementation("com.cognifide.gradle:aem-plugin:13.0.0")
 }
