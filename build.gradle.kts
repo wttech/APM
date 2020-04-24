@@ -1,14 +1,15 @@
+import org.nosphere.apache.rat.RatTask
 import pl.allegro.tech.build.axion.release.domain.TagNameSerializationConfig
 import pl.allegro.tech.build.axion.release.domain.scm.ScmPosition
 
 plugins {
     id("pl.allegro.tech.build.axion-release") version "1.10.1"
-    id("org.nosphere.apache.rat") version "0.4.0"
+    id("org.nosphere.apache.rat") version "0.6.0"
     `maven-publish`
     signing
 }
 
-defaultTasks = listOf(":app:aemSatisfy", ":app:aemDeploy")
+//defaultTasks = listOf(":app:aemSatisfy", ":app:aemDeploy")
 description = "AEM Permission Management :: Root"
 
 scmVersion {
@@ -19,13 +20,14 @@ scmVersion {
     })
 }
 
+defaultTasks(":app:aem:all:packageDeploy")
 project.version = scmVersion.version
 
 allprojects {
     group = "com.cognifide.aem"
 }
 
-tasks.rat {
+tasks.withType<RatTask>().configureEach {
     // Files that don't require a license header
     excludes.add("**/LICENSE")
     excludes.add(".travis.yml")

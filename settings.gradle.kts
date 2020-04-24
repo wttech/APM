@@ -1,11 +1,9 @@
 rootProject.name = "apm"
 
-include(":app")
-include(":app:content")
-include(":app:bundle")
-include(":app:bundle:main")
-include(":app:bundle:main:core")
-include(":app:bundle:extension")
-include(":app:bundle:extension:checks")
+include(":app:aem:core")
+include(":app:aem:checks")
+include(":app:aem:ui.apps")
+include(":app:aem:all")
+include("env")
 include("examples")
 include("documentation")
