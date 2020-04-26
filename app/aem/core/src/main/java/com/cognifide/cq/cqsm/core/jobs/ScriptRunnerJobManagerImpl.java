@@ -93,7 +93,7 @@ public class ScriptRunnerJobManagerImpl implements ScriptRunnerJobManager {
     ExecutionSummary executionSummary = jobResultsCache.get(id);
     if (executionSummary != null) {
       if (executionSummary.isFinished()) {
-        return new JobProgressOutput(FINISHED, executionSummary.getPath(), executionSummary.getProgress().getEntries());
+        return new JobProgressOutput(FINISHED, executionSummary.getPath(), executionSummary.getResult().getEntries());
       } else {
         return new JobProgressOutput(RUNNING);
       }

@@ -20,6 +20,7 @@
 package com.cognifide.cq.cqsm.core.executors;
 
 import com.cognifide.apm.api.services.Mode;
+import com.cognifide.cq.cqsm.api.logger.ExecutionResult;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ScriptManager;
@@ -42,8 +43,8 @@ abstract class AbstractExecutor {
     try {
       getScriptManager().process(script, Mode.VALIDATION, resolver);
       if (script.isValid()) {
-        final Progress progress = getScriptManager().process(script, Mode.AUTOMATIC_RUN, resolver);
-        logStatus(scriptPath, progress.isSuccess(), executorType);
+        final ExecutionResult result = getScriptManager().process(script, Mode.AUTOMATIC_RUN, resolver);
+        logStatus(scriptPath, result.isSuccess(), executorType);
       } else {
         logger.warn("{} executor cannot execute script which is not valid: {}", executorType.toString(), scriptPath);
       }

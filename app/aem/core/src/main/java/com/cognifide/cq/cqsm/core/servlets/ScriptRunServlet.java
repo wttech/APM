@@ -20,6 +20,7 @@
 package com.cognifide.cq.cqsm.core.servlets;
 
 import com.cognifide.apm.api.services.Mode;
+import com.cognifide.cq.cqsm.api.logger.ExecutionResult;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.progress.ProgressHelper;
 import com.cognifide.apm.api.scripts.Script;
@@ -86,13 +87,13 @@ public class ScriptRunServlet extends SlingAllMethodsServlet {
 
 		try {
 			final Mode mode = Mode.fromString(modeName, Mode.DRY_RUN);
-			final Progress progressLogger = scriptManager.process(script, mode, resolver);
+			final ExecutionResult result = scriptManager.process(script, mode, resolver);
 
-			if (progressLogger.isSuccess()) {
-				ServletUtils.writeJson(response, ProgressHelper.toJson(progressLogger.getEntries()));
+			if (result.isSuccess()) {
+				ServletUtils.writeJson(response, ProgressHelper.toJson(result.getEntries()));
 			} else {
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-				ServletUtils.writeJson(response, ProgressHelper.toJson(progressLogger.getLastError()));
+				ServletUtils.writeJson(response, ProgressHelper.toJson(result.getLastError()));
 			}
 
 		} catch (RepositoryException e) {

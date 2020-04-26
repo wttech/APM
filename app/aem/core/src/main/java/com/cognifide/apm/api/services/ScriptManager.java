@@ -20,6 +20,7 @@
 package com.cognifide.apm.api.services;
 
 import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.cq.cqsm.api.logger.ExecutionResult;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.scripts.EventManager;
 import java.util.Map;
@@ -34,26 +35,26 @@ public interface ScriptManager {
   /**
    * Fail-safe execution of script in concrete mode (dry run, automatic execution, validation)
    */
-  Progress process(final Script script, final Mode mode, ResourceResolver resolver)
+  ExecutionResult process(Script script, Mode mode, ResourceResolver resolver)
       throws RepositoryException, PersistenceException;
 
 
   /**
    * Fail-safe execution of script in concrete mode (dry run, automatic execution, validation)
 	 */
-	Progress process(final Script script, final Mode mode, Map<String, String> customDefinitions, ResourceResolver resolver)
+	ExecutionResult process(Script script, Mode mode, Map<String, String> customDefinitions, ResourceResolver resolver)
 			throws RepositoryException, PersistenceException;
 
 	/**
 	 * Fail-safe script content execution in concrete mode
 	 */
-	Progress evaluate(String path, String content, Mode mode, ResourceResolver resolver)
+	ExecutionResult evaluate(String path, String content, Mode mode, ResourceResolver resolver)
 			throws RepositoryException, PersistenceException;
 
 	/**
 	 * Fail-safe script content execution in concrete mode
 	 */
-	Progress evaluate(String path, String content, Mode mode, Map<String, String> customDefinitions,
+	ExecutionResult evaluate(String path, String content, Mode mode, Map<String, String> customDefinitions,
 			ResourceResolver resolver)
 			throws RepositoryException, PersistenceException;
 

@@ -24,10 +24,10 @@ import com.cognifide.apm.endpoints.utils.ResponseEntity
 import com.cognifide.apm.endpoints.utils.badRequest
 import com.cognifide.apm.endpoints.utils.ok
 import com.cognifide.apm.api.services.Mode
-import com.cognifide.cq.cqsm.api.logger.Progress
 import com.cognifide.cq.cqsm.api.logger.ProgressEntry
 import com.cognifide.cq.cqsm.api.logger.Status
 import com.cognifide.apm.api.services.ScriptManager
+import com.cognifide.cq.cqsm.api.logger.ExecutionResult
 import com.cognifide.cq.cqsm.core.Property
 import com.cognifide.cq.cqsm.core.scripts.ScriptStorageException
 import org.apache.sling.api.resource.ResourceResolver
@@ -58,14 +58,14 @@ class ScriptValidationServlet : AbstractFormServlet<ScriptValidationForm>(Script
 
     override fun doPost(form: ScriptValidationForm, resourceResolver: ResourceResolver): ResponseEntity<Any> {
         return try {
-            val progress = scriptManager.evaluate(form.path, form.content, Mode.VALIDATION, resourceResolver)
-            if (progress.isSuccess) {
+            val result = scriptManager.evaluate(form.path, form.content, Mode.VALIDATION, resourceResolver)
+            if (result.isSuccess) {
                 ok {
                     message = "Script passes validation"
                     "valid" set true
                 }
             } else {
-                val validationErrors = transformToValidationErrors(progress)
+                val validationErrors = transformToValidationErrors(result)
                 ok {
                     message = "Script does not pass validation"
                     "valid" set false
@@ -80,8 +80,8 @@ class ScriptValidationServlet : AbstractFormServlet<ScriptValidationForm>(Script
         }
     }
 
-    private fun transformToValidationErrors(progress: Progress): List<String> {
-        return progress.entries.filter { it.status == Status.ERROR }
+    private fun transformToValidationErrors(result: ExecutionResult): List<String> {
+        return result.entries.filter { it.status == Status.ERROR }
                 .filter { it.messages.isNotEmpty() }
                 .flatMap { transformToErrors(it) }
     }

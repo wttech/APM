@@ -19,6 +19,7 @@
  */
 package com.cognifide.cq.cqsm.core.jobs;
 
+import com.cognifide.cq.cqsm.api.logger.ExecutionResult;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.core.Property;
 import com.google.common.cache.Cache;
@@ -64,15 +65,15 @@ public class JobResultsCache {
 	public static class ExecutionSummary implements Serializable {
 
 		private final boolean finished;
-		private final Progress progress;
+		private final ExecutionResult result;
 		private final String path;
 
 		public static ExecutionSummary running() {
 			return new ExecutionSummary(false, null, null);
 		}
 
-		public static ExecutionSummary finished(Progress progress, String path) {
-			return  new ExecutionSummary(true, progress, path);
+		public static ExecutionSummary finished(ExecutionResult result, String path) {
+			return  new ExecutionSummary(true, result, path);
 		}
 	}
 }

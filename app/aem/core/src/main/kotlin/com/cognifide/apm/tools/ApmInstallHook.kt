@@ -23,11 +23,11 @@ package com.cognifide.apm.tools
 import com.cognifide.apm.services.ModifiedScriptFinder
 import com.cognifide.apm.services.applyChecksum
 import com.cognifide.apm.api.services.Mode
-import com.cognifide.cq.cqsm.api.logger.Progress
 import com.cognifide.apm.api.scripts.ExecutionEnvironment
 import com.cognifide.apm.api.scripts.Script
 import com.cognifide.apm.api.services.ScriptFinder
 import com.cognifide.apm.api.services.ScriptManager
+import com.cognifide.cq.cqsm.api.logger.ExecutionResult
 import com.cognifide.cq.cqsm.core.scripts.ScriptFilters.*
 import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper.getResourceResolverForService
 import org.apache.jackrabbit.vault.packaging.InstallContext
@@ -75,8 +75,8 @@ class ApmInstallHook : OsgiAwareInstallHook() {
         scripts.addAll(scriptFinder.findAll(onInstall(currentEnvironment, currentHook), resolver))
         scripts.addAll(modifiedScriptFinder.findAll(onInstallModified(currentEnvironment, currentHook), resolver))
         scripts.forEach { script ->
-            val progress: Progress = scriptManager.process(script, Mode.AUTOMATIC_RUN, resolver)
-            logStatus(script.path, progress.isSuccess)
+            val result: ExecutionResult = scriptManager.process(script, Mode.AUTOMATIC_RUN, resolver)
+            logStatus(script.path, result.isSuccess)
         }
     }
 

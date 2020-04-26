@@ -23,6 +23,7 @@ import static com.cognifide.cq.cqsm.core.utils.sling.SlingHelper.resolveDefault;
 
 import com.cognifide.apm.api.services.Mode;
 import com.cognifide.cq.cqsm.api.history.History;
+import com.cognifide.cq.cqsm.api.logger.ExecutionResult;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ScriptFinder;
@@ -79,9 +80,9 @@ public class ScriptRunnerJobConsumer implements JobConsumer {
       final Script script = getScript(job, resolver);
       if (script != null && mode != null) {
         try {
-          Progress progressLogger = scriptManager.process(script, mode, resolver);
+          ExecutionResult executionResult = scriptManager.process(script, mode, resolver);
           String summaryPath = getSummaryPath(script, mode);
-          jobResultsCache.put(id, ExecutionSummary.finished(progressLogger, summaryPath));
+          jobResultsCache.put(id, ExecutionSummary.finished(executionResult, summaryPath));
           result = JobResult.OK;
         } catch (RepositoryException | PersistenceException e) {
           LOG.error("Script manager failed to process script", e);

@@ -31,6 +31,7 @@ import com.cognifide.cq.cqsm.api.exceptions.ExecutionException;
 import com.cognifide.apm.api.actions.Context;
 import com.cognifide.cq.cqsm.api.executors.ContextImpl;
 import com.cognifide.apm.api.services.Mode;
+import com.cognifide.cq.cqsm.api.logger.ExecutionResult;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.logger.Status;
 import com.cognifide.cq.cqsm.api.scripts.Event;
