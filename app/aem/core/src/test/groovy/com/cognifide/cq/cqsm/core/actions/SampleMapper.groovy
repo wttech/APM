@@ -27,8 +27,7 @@ import com.cognifide.apm.api.actions.annotations.Flags
 import com.cognifide.apm.api.actions.annotations.Mapper
 import com.cognifide.apm.api.actions.annotations.Mapping
 import com.cognifide.apm.api.actions.annotations.Named
-import com.cognifide.cq.cqsm.api.exceptions.ActionExecutionException
-import com.cognifide.cq.cqsm.api.executors.ContextImpl
+import com.cognifide.apm.api.exceptions.ActionExecutionException
 
 @Mapper("sample")
 class SampleMapper {

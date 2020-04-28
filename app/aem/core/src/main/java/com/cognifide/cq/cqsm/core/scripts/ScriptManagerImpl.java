@@ -19,44 +19,44 @@
  */
 package com.cognifide.cq.cqsm.core.scripts;
 
-import static com.cognifide.apm.services.ChecksumProviderKt.applyChecksum;
+import static com.cognifide.apm.core.services.ChecksumProviderKt.applyChecksum;
 
-import com.cognifide.apm.grammar.ReferenceFinder;
-import com.cognifide.apm.grammar.ScriptRunner;
+import com.cognifide.apm.api.actions.ActionResult;
+import com.cognifide.apm.api.actions.Context;
+import com.cognifide.apm.api.actions.SessionSavingMode;
+import com.cognifide.apm.api.actions.SessionSavingPolicy;
+import com.cognifide.apm.api.exceptions.ActionCreationException;
+import com.cognifide.apm.api.exceptions.ExecutionException;
+import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.DefinitionsProvider;
+import com.cognifide.apm.api.services.ExecutionMode;
+import com.cognifide.apm.api.services.ScriptFinder;
+import com.cognifide.apm.api.services.ScriptManager;
+import com.cognifide.apm.api.status.Status;
+import com.cognifide.apm.core.grammar.ScriptRunner;
 import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
 import com.cognifide.cq.cqsm.api.actions.ActionFactory;
-import com.cognifide.apm.api.actions.ActionResult;
-import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
-import com.cognifide.cq.cqsm.api.exceptions.ExecutionException;
-import com.cognifide.apm.api.actions.Context;
 import com.cognifide.cq.cqsm.api.executors.ContextImpl;
-import com.cognifide.apm.api.services.Mode;
-import com.cognifide.cq.cqsm.api.logger.ExecutionResult;
 import com.cognifide.cq.cqsm.api.logger.Progress;
-import com.cognifide.cq.cqsm.api.logger.Status;
 import com.cognifide.cq.cqsm.api.scripts.Event;
 import com.cognifide.cq.cqsm.api.scripts.EventManager;
 import com.cognifide.cq.cqsm.api.scripts.ExecutionMetadata;
+import com.cognifide.cq.cqsm.api.scripts.ExtendedScriptManager;
 import com.cognifide.cq.cqsm.api.scripts.ModifiableScript;
-import com.cognifide.apm.api.scripts.Script;
-import com.cognifide.apm.api.services.ScriptFinder;
-import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.cq.cqsm.api.scripts.ScriptStorage;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.actions.executor.ActionExecutor;
 import com.cognifide.cq.cqsm.core.actions.executor.ActionExecutorFactory;
 import com.cognifide.cq.cqsm.core.progress.ProgressImpl;
-import com.cognifide.cq.cqsm.core.sessions.SessionSavingMode;
-import com.cognifide.cq.cqsm.core.sessions.SessionSavingPolicy;
 import com.google.common.collect.Maps;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import org.apache.commons.lang.StringUtils;
@@ -65,18 +65,20 @@ import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Component(
     immediate = true,
-    service = ScriptManager.class,
+    service = {ScriptManager.class, ExtendedScriptManager.class},
     property = {
         Property.DESCRIPTION + "CQSM Script Manager Service",
         Property.VENDOR
     }
 )
-public class ScriptManagerImpl implements ScriptManager {
+public class ScriptManagerImpl implements ExtendedScriptManager {
 
   private static final Logger LOG = LoggerFactory.getLogger(ScriptManagerImpl.class);
 
@@ -89,11 +91,16 @@ public class ScriptManagerImpl implements ScriptManager {
   @Reference
   private ScriptFinder scriptFinder;
 
+  @Reference(
+      cardinality = ReferenceCardinality.MULTIPLE,
+      policy = ReferencePolicy.DYNAMIC,
+      service = DefinitionsProvider.class
+  )
+  private final Set<DefinitionsProvider> definitionsProviders = new CopyOnWriteArraySet<>();
+
   private final EventManager eventManager = new EventManager();
 
-  private Map<String, String> predefinedDefinitions;
-
-  private Progress execute(Script script, final Mode mode, Map<String, String> customDefinitions,
+  private Progress execute(Script script, final ExecutionMode mode, Map<String, String> customDefinitions,
       ResourceResolver resolver) throws ExecutionException, RepositoryException {
     if (script == null) {
       throw new ExecutionException("Script is not specified");
@@ -112,7 +119,7 @@ public class ScriptManagerImpl implements ScriptManager {
     final SessionSavingPolicy savingPolicy = context.getSavingPolicy();
 
     eventManager.trigger(Event.BEFORE_EXECUTE, script, mode, progress);
-    ScriptRunner scriptRunner = new ScriptRunner(scriptFinder, resolver, mode == Mode.VALIDATION,
+    ScriptRunner scriptRunner = new ScriptRunner(scriptFinder, resolver, mode == ExecutionMode.VALIDATION,
         (executionContext, commandName, arguments) -> {
           try {
             context.setCurrentAuthorizable(executionContext.getAuthorizable());
@@ -121,7 +128,7 @@ public class ScriptManagerImpl implements ScriptManager {
             executionContext.setAuthorizable(context.getCurrentAuthorizableIfExists());
             progress.addEntry(descriptor, result);
 
-            if ((Status.ERROR != result.getStatus()) || (Mode.DRY_RUN == mode)) {
+            if ((Status.ERROR != result.getStatus()) || (ExecutionMode.DRY_RUN == mode)) {
               savingPolicy.save(context.getSession(), SessionSavingMode.EVERY_ACTION);
             }
           } catch (RepositoryException | ActionCreationException e) {
@@ -131,7 +138,10 @@ public class ScriptManagerImpl implements ScriptManager {
         });
 
     try {
-      scriptRunner.execute(script, progress, customDefinitions);
+      Map<String, String> definitions = new HashMap<>();
+      definitions.putAll(getPredefinedDefinitions());
+      definitions.putAll(customDefinitions);
+      scriptRunner.execute(script, progress, definitions);
     } catch (RuntimeException e) {
       progress.addEntry(Status.ERROR, e.getMessage());
     }
@@ -142,13 +152,13 @@ public class ScriptManagerImpl implements ScriptManager {
   }
 
   @Override
-  public synchronized Progress process(final Script script, final Mode mode, ResourceResolver resolver)
+  public synchronized Progress process(final Script script, final ExecutionMode mode, ResourceResolver resolver)
       throws RepositoryException, PersistenceException {
     return process(script, mode, Maps.newHashMap(), resolver);
   }
 
   @Override
-  public Progress process(Script script, final Mode mode, final Map<String, String> customDefinitions,
+  public Progress process(Script script, final ExecutionMode mode, final Map<String, String> customDefinitions,
       ResourceResolver resolver) throws RepositoryException, PersistenceException {
     Progress progress;
     try {
@@ -167,27 +177,27 @@ public class ScriptManagerImpl implements ScriptManager {
     return progress;
   }
 
-  private void updateScriptProperties(final Script script, final Mode mode, final boolean success,
+  private void updateScriptProperties(final Script script, final ExecutionMode mode, final boolean success,
       ResourceResolver resolver) throws PersistenceException {
     final ModifiableScript modifiableScript = new ModifiableScriptWrapper(resolver, script);
 
-    if (Arrays.asList(Mode.RUN, Mode.AUTOMATIC_RUN).contains(mode)) {
+    if (Arrays.asList(ExecutionMode.RUN, ExecutionMode.AUTOMATIC_RUN).contains(mode)) {
       modifiableScript.setExecuted(true);
     }
 
-    if (Mode.VALIDATION.equals(mode)) {
+    if (ExecutionMode.VALIDATION.equals(mode)) {
       modifiableScript.setValid(success);
     }
   }
 
   @Override
-  public Progress evaluate(String path, String content, Mode mode, ResourceResolver resolver)
+  public Progress evaluate(String path, String content, ExecutionMode mode, ResourceResolver resolver)
       throws RepositoryException, PersistenceException {
     return evaluate(path, content, mode, Maps.newHashMap(), resolver);
   }
 
   @Override
-  public Progress evaluate(String path, String content, Mode mode, Map<String, String> customDefinitions,
+  public Progress evaluate(String path, String content, ExecutionMode mode, Map<String, String> customDefinitions,
       ResourceResolver resolver) throws RepositoryException, PersistenceException {
     Script script = scriptFinder.find(path, false, resolver);
     if (script != null) {
@@ -205,10 +215,8 @@ public class ScriptManagerImpl implements ScriptManager {
 
   @Override
   public Map<String, String> getPredefinedDefinitions() {
-    if (predefinedDefinitions == null) {
-      predefinedDefinitions = Collections.synchronizedMap(new TreeMap<>());
-      eventManager.trigger(Event.INIT_DEFINITIONS);
-    }
+    Map<String, String> predefinedDefinitions = new HashMap<>();
+    definitionsProviders.forEach(provider -> predefinedDefinitions.putAll(provider.getPredefinedDefinitions()));
     return predefinedDefinitions;
   }
 
@@ -217,7 +225,7 @@ public class ScriptManagerImpl implements ScriptManager {
     return eventManager;
   }
 
-  private ActionExecutor createExecutor(Mode mode, ResourceResolver resolver) throws RepositoryException {
+  private ActionExecutor createExecutor(ExecutionMode mode, ResourceResolver resolver) throws RepositoryException {
     final Context context = new ContextImpl((JackrabbitSession) resolver.adaptTo(Session.class));
     return ActionExecutorFactory.create(mode, context, actionFactory);
   }

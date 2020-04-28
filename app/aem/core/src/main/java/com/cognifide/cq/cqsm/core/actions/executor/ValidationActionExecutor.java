@@ -19,11 +19,12 @@
  */
 package com.cognifide.cq.cqsm.core.actions.executor;
 
+import com.cognifide.apm.api.actions.ActionResult;
+import com.cognifide.apm.api.actions.Context;
+import com.cognifide.apm.api.exceptions.ActionException;
 import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
 import com.cognifide.cq.cqsm.api.actions.ActionFactory;
-import com.cognifide.apm.api.actions.ActionResult;
-import com.cognifide.cq.cqsm.api.exceptions.ActionException;
-import com.cognifide.apm.api.actions.Context;
+import com.cognifide.cq.cqsm.api.actions.ActionResultImpl;
 
 public final class ValidationActionExecutor extends AbstractActionExecutor {
 
@@ -33,7 +34,7 @@ public final class ValidationActionExecutor extends AbstractActionExecutor {
 
 	@Override
 	public ActionResult execute(ActionDescriptor actionDescriptor) {
-		final ActionResult result = new ActionResult();
+		final ActionResult result = new ActionResultImpl();
 
 		try {
 			createAction(actionDescriptor);

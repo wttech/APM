@@ -19,10 +19,10 @@
  */
 package com.cognifide.cq.cqsm.core.servlets;
 
-import com.cognifide.apm.api.scripts.ExecutionMode;
-import com.cognifide.cq.cqsm.api.scripts.ModifiableScript;
+import com.cognifide.apm.api.scripts.LaunchMode;
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ScriptFinder;
+import com.cognifide.cq.cqsm.api.scripts.ModifiableScript;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.scripts.ModifiableScriptWrapper;
 import com.cognifide.cq.cqsm.core.utils.ServletUtils;
@@ -68,7 +68,7 @@ public class ScriptConfigServlet extends SlingAllMethodsServlet {
 		try {
 			final String executionMode = request.getParameter("executionMode");
 			if (executionMode != null) {
-				modifiableScript.setExecutionMode(ExecutionMode.valueOf(executionMode.toUpperCase()));
+				modifiableScript.setExecutionMode(LaunchMode.valueOf(executionMode.toUpperCase()));
 			}
 
 			final String executionEnabled = request.getParameter("executionEnabled");

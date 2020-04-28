@@ -19,14 +19,14 @@
  */
 package com.cognifide.cq.cqsm.core.scripts.listeners;
 
-import com.cognifide.apm.api.services.Mode;
+import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.ExecutionMode;
 import com.cognifide.cq.cqsm.api.history.History;
 import com.cognifide.cq.cqsm.api.history.HistoryEntry;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.scripts.Event;
 import com.cognifide.cq.cqsm.api.scripts.EventListener;
-import com.cognifide.apm.api.scripts.Script;
-import com.cognifide.apm.api.services.ScriptManager;
+import com.cognifide.cq.cqsm.api.scripts.ExtendedScriptManager;
 import com.cognifide.cq.cqsm.api.utils.InstanceTypeProvider;
 import javax.jcr.RepositoryException;
 import org.osgi.service.component.annotations.Activate;
@@ -43,7 +43,7 @@ public class HistoryReplicateListener implements EventListener {
 	private static final Logger LOG = LoggerFactory.getLogger(HistoryReplicateListener.class);
 
 	@Reference
-	private ScriptManager scriptManager;
+	private ExtendedScriptManager scriptManager;
 
 	@Reference
 	private InstanceTypeProvider instanceTypeProvider;
@@ -59,7 +59,7 @@ public class HistoryReplicateListener implements EventListener {
 	}
 
 	@Override
-	public void handle(Script script, Mode mode, Progress progress) {
+	public void handle(Script script, ExecutionMode mode, Progress progress) {
 		if (mode.isRun()) {
 			try {
         HistoryEntry entry = history.logLocal(script, mode, progress);

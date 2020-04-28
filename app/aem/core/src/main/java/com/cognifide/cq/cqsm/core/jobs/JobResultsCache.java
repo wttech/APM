@@ -19,8 +19,7 @@
  */
 package com.cognifide.cq.cqsm.core.jobs;
 
-import com.cognifide.cq.cqsm.api.logger.ExecutionResult;
-import com.cognifide.cq.cqsm.api.logger.Progress;
+import com.cognifide.apm.api.services.ExecutionResult;
 import com.cognifide.cq.cqsm.core.Property;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;

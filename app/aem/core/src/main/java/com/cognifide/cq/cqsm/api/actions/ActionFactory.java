@@ -19,8 +19,8 @@
  */
 package com.cognifide.cq.cqsm.api.actions;
 
-import com.cognifide.apm.grammar.argument.Arguments;
-import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
+import com.cognifide.apm.api.exceptions.ActionCreationException;
+import com.cognifide.apm.core.grammar.argument.Arguments;
 import com.cognifide.cq.cqsm.core.actions.CommandDescription;
 import java.util.List;
 

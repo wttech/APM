@@ -21,8 +21,8 @@ package com.cognifide.cq.cqsm.core.scripts;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
-import com.cognifide.apm.api.scripts.ExecutionEnvironment;
-import com.cognifide.apm.api.scripts.ExecutionMode;
+import com.cognifide.apm.api.scripts.LaunchEnvironment;
+import com.cognifide.apm.api.scripts.LaunchMode;
 import com.cognifide.apm.api.scripts.Script;
 import java.util.Date;
 import java.util.function.Predicate;
@@ -34,44 +34,44 @@ import org.apache.commons.lang.StringUtils;
  */
 public class ScriptFilters {
 
-  public static Predicate<Script> onInstall(final ExecutionEnvironment environment, final String currentHook) {
+  public static Predicate<Script> onInstall(final LaunchEnvironment environment, final String currentHook) {
     return enabled()
-        .and(withExecutionMode(ExecutionMode.ON_INSTALL))
-        .and(script -> script.getExecutionEnvironment() == null || environment == script.getExecutionEnvironment())
+        .and(withExecutionMode(LaunchMode.ON_INSTALL))
+        .and(script -> script.getLaunchEnvironment() == null || environment == script.getLaunchEnvironment())
         .and(
-            script -> isBlank(script.getExecutionHook()) || StringUtils.equals(currentHook, script.getExecutionHook()));
+            script -> isBlank(script.getLaunchHook()) || StringUtils.equals(currentHook, script.getLaunchHook()));
   }
 
-  public static Predicate<Script> onInstallModified(final ExecutionEnvironment environment, final String currentHook) {
+  public static Predicate<Script> onInstallModified(final LaunchEnvironment environment, final String currentHook) {
     return enabled()
-        .and(withExecutionMode(ExecutionMode.ON_INSTALL_MODIFIED))
-        .and(script -> script.getExecutionEnvironment() == null || environment == script.getExecutionEnvironment())
+        .and(withExecutionMode(LaunchMode.ON_INSTALL_MODIFIED))
+        .and(script -> script.getLaunchEnvironment() == null || environment == script.getLaunchEnvironment())
         .and(
-            script -> isBlank(script.getExecutionHook()) || StringUtils.equals(currentHook, script.getExecutionHook()));
+            script -> isBlank(script.getLaunchHook()) || StringUtils.equals(currentHook, script.getLaunchHook()));
   }
 
-  private static Predicate<Script> withExecutionMode(final ExecutionMode mode) {
-    return script -> script.getExecutionMode() == mode;
+  private static Predicate<Script> withExecutionMode(final LaunchMode mode) {
+    return script -> script.getLaunchMode() == mode;
   }
 
   private static Predicate<Script> enabled() {
-    return script -> script.isExecutionEnabled();
+    return script -> script.isLaunchEnabled();
   }
 
   public static Predicate<Script> onSchedule(final Date date) {
     return enabled()
-        .and(withExecutionMode(ExecutionMode.ON_SCHEDULE))
-        .and(script -> script.getExecutionLast() == null && script.getExecutionSchedule().before(date));
+        .and(withExecutionMode(LaunchMode.ON_SCHEDULE))
+        .and(script -> script.getLastExecution() == null && script.getLaunchSchedule().before(date));
   }
 
   public static Predicate<Script> onModify() {
     return enabled()
-        .and(withExecutionMode(ExecutionMode.ON_MODIFY));
+        .and(withExecutionMode(LaunchMode.ON_MODIFY));
   }
 
   public static Predicate<Script> onStart() {
     return enabled()
-        .and(withExecutionMode(ExecutionMode.ON_START));
+        .and(withExecutionMode(LaunchMode.ON_START));
   }
 
   public static Predicate<Script> noChecksum() {

@@ -19,7 +19,7 @@
  */
 package com.cognifide.cq.cqsm.api.scriptrunnerjob;
 
-import com.cognifide.cq.cqsm.api.logger.ProgressEntry;
+import com.cognifide.apm.api.services.ExecutionResult.Entry;
 import com.cognifide.cq.cqsm.core.jobs.ScriptRunnerJobStatus;
 import java.util.List;
 import lombok.Getter;
@@ -33,13 +33,13 @@ public class JobProgressOutput {
 	private String path;
 
 	@Getter
-	private List<ProgressEntry> entries;
+	private List<Entry> entries;
 
 	public JobProgressOutput(ScriptRunnerJobStatus status) {
 		this.type = status.toString();
 	}
 
-	public JobProgressOutput(ScriptRunnerJobStatus status, String path, List<ProgressEntry> entries) {
+	public JobProgressOutput(ScriptRunnerJobStatus status, String path, List<Entry> entries) {
 		this.entries = entries;
 		this.path = path;
 		this.type = status.toString();

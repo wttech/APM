@@ -19,9 +19,11 @@
  */
 package com.cognifide.cq.cqsm.api.logger;
 
-import com.cognifide.apm.grammar.argument.Arguments;
-import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
 import com.cognifide.apm.api.actions.ActionResult;
+import com.cognifide.apm.api.services.ExecutionResult;
+import com.cognifide.apm.api.status.Status;
+import com.cognifide.apm.core.grammar.argument.Arguments;
+import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
 import java.io.Serializable;
 import java.util.List;
 

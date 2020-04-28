@@ -20,10 +20,10 @@
 package com.cognifide.cq.cqsm.core.actions.executor;
 
 import com.cognifide.apm.api.actions.Action;
+import com.cognifide.apm.api.actions.Context;
+import com.cognifide.apm.api.exceptions.ActionException;
 import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
 import com.cognifide.cq.cqsm.api.actions.ActionFactory;
-import com.cognifide.cq.cqsm.api.exceptions.ActionException;
-import com.cognifide.apm.api.actions.Context;
 
 public abstract class AbstractActionExecutor implements ActionExecutor {
 

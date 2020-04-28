@@ -19,10 +19,13 @@
  */
 package com.cognifide.cq.cqsm.api.executors;
 
-import com.cognifide.apm.api.actions.Context;
-import com.cognifide.cq.cqsm.api.exceptions.ActionExecutionException;
+import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.apm.api.actions.AuthorizableManager;
-import com.cognifide.cq.cqsm.core.sessions.SessionSavingPolicy;
+import com.cognifide.apm.api.actions.Context;
+import com.cognifide.apm.api.actions.SessionSavingPolicy;
+import com.cognifide.apm.api.exceptions.ActionExecutionException;
+import com.cognifide.cq.cqsm.api.actions.ActionResultImpl;
+import com.cognifide.cq.cqsm.core.sessions.SessionSavingPolicyImpl;
 import com.cognifide.cq.cqsm.core.utils.AuthorizableManagerImpl;
 import javax.jcr.RepositoryException;
 import javax.jcr.ValueFactory;
@@ -55,7 +58,7 @@ public final class ContextImpl implements Context {
     this.session = session;
     this.accessControlManager = session.getAccessControlManager();
     this.authorizableManager = new AuthorizableManagerImpl(session.getUserManager());
-    this.savingPolicy = new SessionSavingPolicy();
+    this.savingPolicy = new SessionSavingPolicyImpl();
   }
 
   @Override
@@ -95,5 +98,10 @@ public final class ContextImpl implements Context {
   @Override
   public void clearCurrentAuthorizable() {
     this.currentAuthorizable = null;
+  }
+
+  @Override
+  public ActionResult createActionResult() {
+    return new ActionResultImpl();
   }
 }

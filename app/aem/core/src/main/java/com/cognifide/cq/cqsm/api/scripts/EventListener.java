@@ -20,8 +20,8 @@
 package com.cognifide.cq.cqsm.api.scripts;
 
 import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.ExecutionMode;
 import com.cognifide.apm.api.services.ScriptManager;
-import com.cognifide.apm.api.services.Mode;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 
 public interface EventListener {
@@ -30,5 +30,5 @@ public interface EventListener {
 	 * Handle event trigerred by {@link ScriptManager}
 	 * If event is not related with execution only first argument is specified, other are nulls
 	 */
-	void handle(Script script, Mode mode, Progress progress);
+	void handle(Script script, ExecutionMode mode, Progress progress);
 }

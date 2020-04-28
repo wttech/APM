@@ -28,12 +28,12 @@ import static com.cognifide.cq.cqsm.core.scripts.ScriptContent.APM_EXECUTION_SCH
 import static com.cognifide.cq.cqsm.core.scripts.ScriptContent.APM_SCRIPT;
 import static java.lang.String.format;
 
-import com.cognifide.apm.api.services.Mode;
+import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.ExecutionMode;
+import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.cq.cqsm.api.scripts.Event;
 import com.cognifide.cq.cqsm.api.scripts.ExecutionMetadata;
-import com.cognifide.apm.api.scripts.Script;
-import com.cognifide.apm.api.services.ScriptFinder;
-import com.cognifide.apm.api.services.ScriptManager;
+import com.cognifide.cq.cqsm.api.scripts.ExtendedScriptManager;
 import com.cognifide.cq.cqsm.api.scripts.ScriptStorage;
 import com.cognifide.cq.cqsm.core.Cqsm;
 import com.cognifide.cq.cqsm.core.Property;
@@ -86,7 +86,7 @@ public class ScriptStorageImpl implements ScriptStorage {
   private static final Charset SCRIPT_ENCODING = StandardCharsets.UTF_8;
 
   @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
-  private volatile ScriptManager scriptManager;
+  private volatile ExtendedScriptManager scriptManager;
 
   @Reference
   private ScriptFinder scriptFinder;
@@ -111,7 +111,7 @@ public class ScriptStorageImpl implements ScriptStorage {
     validate(Collections.singletonList(fileDescriptor));
 
     Script script = saveScript(fileDescriptor, executionMetadata, overwrite, resolver);
-    scriptManager.process(script, Mode.VALIDATION, resolver);
+    scriptManager.process(script, ExecutionMode.VALIDATION, resolver);
     scriptManager.getEventManager().trigger(Event.AFTER_SAVE, script);
     return script;
   }
@@ -143,8 +143,8 @@ public class ScriptStorageImpl implements ScriptStorage {
       contentNode.setProperty(JcrConstants.JCR_DATA, binary);
       contentNode.setProperty(JcrConstants.JCR_ENCODING, SCRIPT_ENCODING.name());
       contentNode.setProperty(APM_EXECUTION_ENABLED, executionMetadata.isExecutionEnabled());
-      setOrRemoveProperty(contentNode, APM_EXECUTION_MODE, executionMetadata.getExecutionMode());
-      setOrRemoveProperty(contentNode, APM_EXECUTION_ENVIRONMENT, executionMetadata.getExecutionEnvironment());
+      setOrRemoveProperty(contentNode, APM_EXECUTION_MODE, executionMetadata.getLaunchMode());
+      setOrRemoveProperty(contentNode, APM_EXECUTION_ENVIRONMENT, executionMetadata.getLaunchEnvironment());
       setOrRemoveProperty(contentNode, APM_EXECUTION_HOOK, executionMetadata.getExecutionHook());
       setOrRemoveProperty(contentNode, APM_EXECUTION_SCHEDULE, executionMetadata.getExecutionSchedule());
       removeProperty(contentNode, ScriptContent.APM_EXECUTION_LAST);

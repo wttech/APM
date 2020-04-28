@@ -21,13 +21,12 @@ package com.cognifide.cq.cqsm.core.jobs;
 
 import static com.cognifide.cq.cqsm.core.utils.sling.SlingHelper.resolveDefault;
 
-import com.cognifide.apm.api.services.Mode;
-import com.cognifide.cq.cqsm.api.history.History;
-import com.cognifide.cq.cqsm.api.logger.ExecutionResult;
-import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.ExecutionMode;
+import com.cognifide.apm.api.services.ExecutionResult;
 import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.apm.api.services.ScriptManager;
+import com.cognifide.cq.cqsm.api.history.History;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.jobs.JobResultsCache.ExecutionSummary;
 import com.cognifide.cq.cqsm.core.utils.sling.ResolveCallback;
@@ -73,7 +72,7 @@ public class ScriptRunnerJobConsumer implements JobConsumer {
   public JobResult process(final Job job) {
     LOG.info("Script runner job consumer started");
     final String id = job.getId();
-    final Mode mode = getMode(job);
+    final ExecutionMode mode = getMode(job);
     final String userId = getUserId(job);
     return resolveDefault(resolverFactory, userId, (ResolveCallback<JobResult>) resolver -> {
       JobResult result = JobResult.FAILED;
@@ -93,22 +92,22 @@ public class ScriptRunnerJobConsumer implements JobConsumer {
     }, JobResult.FAILED);
   }
 
-  private String getSummaryPath(Script script, Mode mode) {
+  private String getSummaryPath(Script script, ExecutionMode mode) {
     return resolveDefault(resolverFactory, (ResolveCallback<String>) resolver -> {
-      if (mode == Mode.DRY_RUN) {
+      if (mode == ExecutionMode.DRY_RUN) {
         return history.findScriptHistory(resolver, script).getLastLocalDryRunPath();
-      } else if (mode == Mode.RUN) {
+      } else if (mode == ExecutionMode.RUN) {
         return history.findScriptHistory(resolver, script).getLastLocalRunPath();
       }
       return StringUtils.EMPTY;
     }, StringUtils.EMPTY);
   }
 
-  private Mode getMode(Job job) {
-    Mode result = null;
+  private ExecutionMode getMode(Job job) {
+    ExecutionMode result = null;
     String modeName = (String) job.getProperty(ScriptRunnerJobManagerImpl.MODE_NAME_PROPERTY_NAME);
     if (StringUtils.isNotBlank(modeName)) {
-      result = StringUtils.isEmpty(modeName) ? Mode.DRY_RUN : Mode.valueOf(modeName.toUpperCase());
+      result = StringUtils.isEmpty(modeName) ? ExecutionMode.DRY_RUN : ExecutionMode.valueOf(modeName.toUpperCase());
     } else {
       LOG.error("Mode is null");
     }

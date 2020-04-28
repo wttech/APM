@@ -14,6 +14,7 @@ aem {
     tasks {
         packageCompose {
             installBundle("org.jetbrains.kotlin:kotlin-osgi-bundle:1.3.72")
+            installBundleProject(":app:aem:api")
             installBundleProject(":app:aem:core")
             vaultDefinition {
                 version.set(rootProject.version as String)

@@ -19,7 +19,7 @@
  */
 package com.cognifide.cq.cqsm.core.datasource;
 
-import com.cognifide.apm.api.scripts.ExecutionEnvironment;
+import com.cognifide.apm.api.scripts.LaunchEnvironment;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.datasource.SimpleDataSourceBuilder.Option;
 import javax.servlet.Servlet;
@@ -34,9 +34,9 @@ import org.osgi.service.component.annotations.Component;
         Property.VENDOR
     }
 )
-public class ExecutionEnvironmentDatasourceServlet extends AbstractDatasourceServlet<ExecutionEnvironment> {
+public class ExecutionEnvironmentDatasourceServlet extends AbstractDatasourceServlet<LaunchEnvironment> {
 
   public ExecutionEnvironmentDatasourceServlet() {
-    super(ExecutionEnvironment.values(), new Option("Any", ""));
+    super(LaunchEnvironment.values(), new Option("Any", ""));
   }
 }

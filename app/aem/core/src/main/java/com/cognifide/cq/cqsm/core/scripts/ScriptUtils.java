@@ -20,7 +20,7 @@
 
 package com.cognifide.cq.cqsm.core.scripts;
 
-import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
+import com.cognifide.apm.api.exceptions.ActionCreationException;
 import com.cognifide.apm.api.scripts.Script;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -95,9 +95,9 @@ public abstract class ScriptUtils {
 		result.put("name", FilenameUtils.getBaseName(script.getPath()));
 		result.put("path", script.getPath());
 		result.put("verified", script.isValid());
-		result.put("executionEnabled", script.isExecutionEnabled());
-		result.put("executionMode", script.getExecutionMode());
-		result.put("executionSchedule", script.getExecutionSchedule());
+		result.put("executionEnabled", script.isLaunchEnabled());
+		result.put("executionMode", script.getLaunchMode());
+		result.put("executionSchedule", script.getLaunchSchedule());
 		return result;
 	}
 }

@@ -20,13 +20,14 @@
 package com.cognifide.cq.cqsm.foundation.actions;
 
 import com.cognifide.apm.api.actions.ActionResult;
+import com.cognifide.apm.api.status.Status;
+import com.cognifide.cq.cqsm.api.actions.ActionResultImpl;
 import com.cognifide.cq.cqsm.api.logger.Message;
-import com.cognifide.cq.cqsm.api.logger.Status;
 import java.util.LinkedList;
 import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
-public class CompositeActionResult extends ActionResult {
+public class CompositeActionResult extends ActionResultImpl {
 
   private static final String MISMATCH_MSG = "Cannot create CompositeActionResult, mismatch of authorizables. Found: {} Expected: {}";
 
@@ -39,7 +40,7 @@ public class CompositeActionResult extends ActionResult {
   private List<Message> mergeMessages(ActionResult[] args) {
     List<Message> result = new LinkedList<>();
     for (ActionResult actionResult : args) {
-      result.addAll(actionResult.getMessages());
+      result.addAll(((ActionResultImpl)actionResult).getMessages());
     }
     return result;
   }

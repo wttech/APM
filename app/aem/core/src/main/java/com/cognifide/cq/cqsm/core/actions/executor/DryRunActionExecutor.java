@@ -20,11 +20,12 @@
 package com.cognifide.cq.cqsm.core.actions.executor;
 
 import com.cognifide.apm.api.actions.Action;
+import com.cognifide.apm.api.actions.ActionResult;
+import com.cognifide.apm.api.actions.Context;
+import com.cognifide.apm.api.exceptions.ActionException;
 import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
 import com.cognifide.cq.cqsm.api.actions.ActionFactory;
-import com.cognifide.apm.api.actions.ActionResult;
-import com.cognifide.cq.cqsm.api.exceptions.ActionException;
-import com.cognifide.apm.api.actions.Context;
+import com.cognifide.cq.cqsm.api.actions.ActionResultImpl;
 
 public final class DryRunActionExecutor extends AbstractActionExecutor {
 
@@ -39,7 +40,7 @@ public final class DryRunActionExecutor extends AbstractActionExecutor {
 
 			return action.simulate(context);
 		} catch (ActionException e) {
-			ActionResult actionResult = new ActionResult();
+			ActionResult actionResult = new ActionResultImpl();
 			actionResult.logError(e.getMessage());
 
 			return actionResult;

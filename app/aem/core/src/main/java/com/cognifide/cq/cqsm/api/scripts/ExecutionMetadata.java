@@ -20,47 +20,47 @@
 
 package com.cognifide.cq.cqsm.api.scripts;
 
-import com.cognifide.apm.api.scripts.ExecutionEnvironment;
-import com.cognifide.apm.api.scripts.ExecutionMode;
+import com.cognifide.apm.api.scripts.LaunchEnvironment;
+import com.cognifide.apm.api.scripts.LaunchMode;
 import java.time.LocalDateTime;
 
 public class ExecutionMetadata {
 
   private final boolean executionEnabled;
-  private final ExecutionMode executionMode;
-  private final ExecutionEnvironment executionEnvironment;
+  private final LaunchMode launchMode;
+  private final LaunchEnvironment launchEnvironment;
   private final String executionHook;
   private final LocalDateTime executionSchedule;
 
   public static ExecutionMetadata disabled() {
-    return new ExecutionMetadata(false, ExecutionMode.ON_DEMAND, null, null, null);
+    return new ExecutionMetadata(false, LaunchMode.ON_DEMAND, null, null, null);
   }
 
   public static ExecutionMetadata onDemand() {
-    return new ExecutionMetadata(true, ExecutionMode.ON_DEMAND, null, null, null);
+    return new ExecutionMetadata(true, LaunchMode.ON_DEMAND, null, null, null);
   }
 
   public static ExecutionMetadata onModify() {
-    return new ExecutionMetadata(true, ExecutionMode.ON_MODIFY, null, null, null);
+    return new ExecutionMetadata(true, LaunchMode.ON_MODIFY, null, null, null);
   }
 
   public static ExecutionMetadata onStart() {
-    return new ExecutionMetadata(true, ExecutionMode.ON_START, null, null, null);
+    return new ExecutionMetadata(true, LaunchMode.ON_START, null, null, null);
   }
 
-  public static ExecutionMetadata onHook(ExecutionEnvironment executionEnvironment, String executionHook) {
-    return new ExecutionMetadata(true, ExecutionMode.ON_DEMAND, executionEnvironment, executionHook, null);
+  public static ExecutionMetadata onHook(LaunchEnvironment launchEnvironment, String executionHook) {
+    return new ExecutionMetadata(true, LaunchMode.ON_DEMAND, launchEnvironment, executionHook, null);
   }
 
   public static ExecutionMetadata onSchedule(LocalDateTime executionSchedule) {
-    return new ExecutionMetadata(true, ExecutionMode.ON_DEMAND, null, null, executionSchedule);
+    return new ExecutionMetadata(true, LaunchMode.ON_DEMAND, null, null, executionSchedule);
   }
 
-  public ExecutionMetadata(boolean executionEnabled, ExecutionMode executionMode,
-      ExecutionEnvironment executionEnvironment, String executionHook, LocalDateTime executionSchedule) {
+  public ExecutionMetadata(boolean executionEnabled, LaunchMode launchMode,
+      LaunchEnvironment launchEnvironment, String executionHook, LocalDateTime executionSchedule) {
     this.executionEnabled = executionEnabled;
-    this.executionMode = executionMode;
-    this.executionEnvironment = executionEnvironment;
+    this.launchMode = launchMode;
+    this.launchEnvironment = launchEnvironment;
     this.executionHook = executionHook;
     this.executionSchedule = executionSchedule;
   }
@@ -69,12 +69,12 @@ public class ExecutionMetadata {
     return executionEnabled;
   }
 
-  public ExecutionMode getExecutionMode() {
-    return executionMode;
+  public LaunchMode getLaunchMode() {
+    return launchMode;
   }
 
-  public ExecutionEnvironment getExecutionEnvironment() {
-    return executionEnvironment;
+  public LaunchEnvironment getLaunchEnvironment() {
+    return launchEnvironment;
   }
 
   public String getExecutionHook() {

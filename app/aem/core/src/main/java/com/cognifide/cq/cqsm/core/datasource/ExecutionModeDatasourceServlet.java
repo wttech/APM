@@ -19,7 +19,7 @@
  */
 package com.cognifide.cq.cqsm.core.datasource;
 
-import com.cognifide.apm.api.scripts.ExecutionMode;
+import com.cognifide.apm.api.scripts.LaunchMode;
 import com.cognifide.cq.cqsm.core.Property;
 import javax.servlet.Servlet;
 import org.osgi.service.component.annotations.Component;
@@ -33,9 +33,9 @@ import org.osgi.service.component.annotations.Component;
         Property.VENDOR
     }
 )
-public class ExecutionModeDatasourceServlet extends AbstractDatasourceServlet<ExecutionMode> {
+public class ExecutionModeDatasourceServlet extends AbstractDatasourceServlet<LaunchMode> {
 
   public ExecutionModeDatasourceServlet() {
-    super(ExecutionMode.values(), null);
+    super(LaunchMode.values(), null);
   }
 }

@@ -19,9 +19,9 @@
  */
 package com.cognifide.cq.cqsm.core.scripts;
 
-import com.cognifide.apm.api.scripts.ExecutionMode;
-import com.cognifide.cq.cqsm.api.scripts.ModifiableScript;
+import com.cognifide.apm.api.scripts.LaunchMode;
 import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.cq.cqsm.api.scripts.ModifiableScript;
 import com.cognifide.cq.cqsm.core.utils.ResourceMixinUtil;
 import java.util.Calendar;
 import java.util.Date;
@@ -69,7 +69,7 @@ public class ModifiableScriptWrapper implements ModifiableScript {
   }
 
 	@Override
-	public void setExecutionMode(ExecutionMode mode) throws PersistenceException {
+	public void setExecutionMode(LaunchMode mode) throws PersistenceException {
 		setProperty(ScriptContent.APM_EXECUTION_MODE, mode.name());
 	}
 

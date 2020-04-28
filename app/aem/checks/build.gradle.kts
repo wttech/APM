@@ -17,15 +17,15 @@ aem {
     tasks {
         jar {
             bundle {
-                exportPackage("com.cognifide.apm.action.*")
-                attribute("CQ-Security-Management-Actions", "com.cognifide.apm.action")
+//                exportPackage("com.cognifide.apm.action.*")
+                attribute("APM-Actions", "com.cognifide.apm.checks.actions")
             }
         }
     }
 }
 
 dependencies {
-    implementation(project(":app:aem:core"))
+    implementation(project(":app:aem:api"))
 }
 
 tasks {

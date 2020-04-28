@@ -21,8 +21,8 @@ package com.cognifide.cq.cqsm.foundation.actions.allow;
 
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.ActionResult;
-import com.cognifide.cq.cqsm.api.exceptions.ActionExecutionException;
 import com.cognifide.apm.api.actions.Context;
+import com.cognifide.apm.api.exceptions.ActionExecutionException;
 import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
 import com.cognifide.cq.cqsm.foundation.permissions.PermissionActionHelper;
 import com.cognifide.cq.cqsm.foundation.permissions.Restrictions;
@@ -68,7 +68,7 @@ public class Allow implements Action {
   }
 
   private ActionResult process(final Context context, boolean simulate) {
-    ActionResult actionResult = new ActionResult();
+    ActionResult actionResult = context.createActionResult();
     try {
       Authorizable authorizable = context.getCurrentAuthorizable();
       actionResult.setAuthorizable(authorizable.getID());

@@ -21,8 +21,8 @@ package com.cognifide.cq.cqsm.foundation.actions.include;
 
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.ActionResult;
-import com.cognifide.cq.cqsm.api.exceptions.ActionExecutionException;
 import com.cognifide.apm.api.actions.Context;
+import com.cognifide.apm.api.exceptions.ActionExecutionException;
 import com.cognifide.cq.cqsm.core.actions.ActionUtils;
 import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ public class Include implements Action {
   }
 
   private ActionResult process(Context context, boolean execute) {
-    ActionResult actionResult = new ActionResult();
+    ActionResult actionResult = context.createActionResult();
     Group group = null;
     try {
       group = context.getCurrentGroup();

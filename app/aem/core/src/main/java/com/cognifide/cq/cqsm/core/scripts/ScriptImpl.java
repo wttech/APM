@@ -19,8 +19,8 @@
  */
 package com.cognifide.cq.cqsm.core.scripts;
 
-import com.cognifide.apm.api.scripts.ExecutionEnvironment;
-import com.cognifide.apm.api.scripts.ExecutionMode;
+import com.cognifide.apm.api.scripts.LaunchEnvironment;
+import com.cognifide.apm.api.scripts.LaunchMode;
 import com.cognifide.apm.api.scripts.Script;
 import com.day.cq.commons.jcr.JcrConstants;
 import java.util.Date;
@@ -63,34 +63,34 @@ public class ScriptImpl implements Script {
   }
 
   @Override
-  public ExecutionMode getExecutionMode() {
+  public LaunchMode getLaunchMode() {
     return (scriptContent.getExecutionMode() == null) ?
-        ExecutionMode.ON_DEMAND : ExecutionMode.valueOf(scriptContent.getExecutionMode());
+        LaunchMode.ON_DEMAND : LaunchMode.valueOf(scriptContent.getExecutionMode());
   }
 
   @Override
-  public String getExecutionHook() {
+  public String getLaunchHook() {
     return scriptContent.getExecutionHook();
   }
 
   @Override
-  public ExecutionEnvironment getExecutionEnvironment() {
+  public LaunchEnvironment getLaunchEnvironment() {
     return (scriptContent.getExecutionEnvironment() == null) ?
-        null : ExecutionEnvironment.valueOf(scriptContent.getExecutionEnvironment());
+        null : LaunchEnvironment.valueOf(scriptContent.getExecutionEnvironment());
   }
 
   @Override
-  public Date getExecutionSchedule() {
+  public Date getLaunchSchedule() {
     return scriptContent.getExecutionSchedule();
   }
 
   @Override
-  public boolean isExecutionEnabled() {
+  public boolean isLaunchEnabled() {
     return BooleanUtils.isNotFalse(scriptContent.getExecutionEnabled());
   }
 
   @Override
-  public Date getExecutionLast() {
+  public Date getLastExecution() {
     return scriptContent.getExecutionLast();
   }
 

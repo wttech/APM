@@ -20,17 +20,17 @@
 
 package com.cognifide.cq.cqsm.core.actions;
 
-import com.cognifide.apm.grammar.ApmInteger;
-import com.cognifide.apm.grammar.ApmList;
-import com.cognifide.apm.grammar.ApmString;
-import com.cognifide.apm.grammar.ApmType;
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.annotations.Flags;
 import com.cognifide.apm.api.actions.annotations.Mapper;
 import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.apm.api.actions.annotations.Named;
 import com.cognifide.apm.api.actions.annotations.Required;
-import com.cognifide.cq.cqsm.api.exceptions.InvalidActionMapperException;
+import com.cognifide.apm.api.exceptions.InvalidActionMapperException;
+import com.cognifide.apm.core.grammar.ApmInteger;
+import com.cognifide.apm.core.grammar.ApmList;
+import com.cognifide.apm.core.grammar.ApmString;
+import com.cognifide.apm.core.grammar.ApmType;
 import com.cognifide.cq.cqsm.core.actions.ParameterDescriptor.FlagsParameterDescriptor;
 import com.cognifide.cq.cqsm.core.actions.ParameterDescriptor.NamedParameterDescriptor;
 import com.cognifide.cq.cqsm.core.actions.ParameterDescriptor.RequiredParameterDescriptor;

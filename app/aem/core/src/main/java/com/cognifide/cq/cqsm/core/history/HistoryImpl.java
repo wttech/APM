@@ -26,7 +26,8 @@ import static org.apache.jackrabbit.commons.JcrUtils.getOrCreateUniqueByPath;
 
 import com.cognifide.actions.api.ActionSendException;
 import com.cognifide.actions.api.ActionSubmitter;
-import com.cognifide.apm.api.services.Mode;
+import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.ExecutionMode;
 import com.cognifide.cq.cqsm.api.history.History;
 import com.cognifide.cq.cqsm.api.history.HistoryEntry;
 import com.cognifide.cq.cqsm.api.history.InstanceDetails;
@@ -34,7 +35,6 @@ import com.cognifide.cq.cqsm.api.history.InstanceDetails.InstanceType;
 import com.cognifide.cq.cqsm.api.history.ScriptHistory;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.progress.ProgressHelper;
-import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.utils.InstanceTypeProvider;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.history.HistoryEntryWriter.HistoryEntryWriterBuilder;
@@ -108,7 +108,7 @@ public class HistoryImpl implements History {
   private InstanceTypeProvider instanceTypeProvider;
 
   @Override
-  public HistoryEntry logLocal(Script script, Mode mode, Progress progressLogger) {
+  public HistoryEntry logLocal(Script script, ExecutionMode mode, Progress progressLogger) {
     InstanceType instanceDetails = instanceTypeProvider.isOnAuthor() ? InstanceType.AUTHOR : InstanceType.PUBLISH;
     return resolveDefault(resolverFactory, progressLogger.getExecutor(), (ResolveCallback<HistoryEntry>) resolver -> {
       final HistoryEntryWriter historyEntryWriter = createBuilder(resolver, script, mode, progressLogger)
@@ -121,7 +121,7 @@ public class HistoryImpl implements History {
   }
 
   @Override
-  public HistoryEntry logRemote(Script script, Mode mode, Progress progressLogger, InstanceDetails instanceDetails,
+  public HistoryEntry logRemote(Script script, ExecutionMode mode, Progress progressLogger, InstanceDetails instanceDetails,
       Calendar executionTime) {
     return resolveDefault(resolverFactory, progressLogger.getExecutor(), (ResolveCallback<HistoryEntry>) resolver -> {
       final HistoryEntryWriter historyEntryWriter = createBuilder(resolver, script, mode, progressLogger)
@@ -133,7 +133,7 @@ public class HistoryImpl implements History {
     }, null);
   }
 
-  private HistoryEntryWriterBuilder createBuilder(ResourceResolver resolver, Script script, Mode mode,
+  private HistoryEntryWriterBuilder createBuilder(ResourceResolver resolver, Script script, ExecutionMode mode,
       Progress progressLogger) {
     Resource source = resolver.getResource(script.getPath());
     return HistoryEntryWriter.builder()
@@ -201,7 +201,7 @@ public class HistoryImpl implements History {
     return ScriptHistoryImpl.empty(script.getPath());
   }
 
-  private HistoryEntry createHistoryEntry(ResourceResolver resolver, Script script, Mode mode,
+  private HistoryEntry createHistoryEntry(ResourceResolver resolver, Script script, ExecutionMode mode,
       HistoryEntryWriter historyEntryWriter, boolean remote) {
     try {
       Session session = resolver.adaptTo(Session.class);
@@ -230,7 +230,7 @@ public class HistoryImpl implements History {
     return entryResource;
   }
 
-  private Node createHistoryEntryNode(Node scriptHistoryNode, Node parent, Script script, Mode mode, boolean remote)
+  private Node createHistoryEntryNode(Node scriptHistoryNode, Node parent, Script script, ExecutionMode mode, boolean remote)
       throws RepositoryException {
     String modeName = getModeName(mode, remote);
     Node historyEntry = getOrCreateUniqueByPath(parent, modeName, NT_UNSTRUCTURED);
@@ -257,9 +257,9 @@ public class HistoryImpl implements History {
   }
 
   @NotNull
-  private String getModeName(Mode mode, boolean remote) {
+  private String getModeName(ExecutionMode mode, boolean remote) {
     String modeName = (remote ? "Remote" : "Local");
-    if (mode == Mode.AUTOMATIC_RUN || mode == Mode.RUN) {
+    if (mode == ExecutionMode.AUTOMATIC_RUN || mode == ExecutionMode.RUN) {
       modeName += "Run";
     } else {
       modeName += "DryRun";

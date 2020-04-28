@@ -21,7 +21,7 @@
 package com.cognifide.cq.cqsm.core.actions;
 
 import com.cognifide.apm.api.actions.annotations.Mapper;
-import com.cognifide.cq.cqsm.api.exceptions.InvalidActionMapperException;
+import com.cognifide.apm.api.exceptions.InvalidActionMapperException;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.actions.scanner.AnnotatedClassRegistry;
 import com.cognifide.cq.cqsm.core.actions.scanner.RegistryChangedListener;
@@ -54,7 +54,7 @@ public class ActionMapperRegistryImpl implements RegistryChangedListener, Action
 
   private static final Logger LOG = LoggerFactory.getLogger(ActionMapperRegistryImpl.class);
 
-  private static final String BUNDLE_HEADER = "CQ-Security-Management-Actions";
+  private static final String BUNDLE_HEADER = "APM-Actions";
 
   private AnnotatedClassRegistry registry;
 

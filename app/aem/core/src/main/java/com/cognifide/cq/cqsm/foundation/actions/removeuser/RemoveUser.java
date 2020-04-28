@@ -21,8 +21,8 @@ package com.cognifide.cq.cqsm.foundation.actions.removeuser;
 
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.ActionResult;
-import com.cognifide.cq.cqsm.api.exceptions.ActionExecutionException;
 import com.cognifide.apm.api.actions.Context;
+import com.cognifide.apm.api.exceptions.ActionExecutionException;
 import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +53,7 @@ public class RemoveUser implements Action {
   }
 
   private ActionResult process(final Context context, boolean execute) {
-    ActionResult actionResult = new ActionResult();
+    ActionResult actionResult = context.createActionResult();
     List<String> errors = new ArrayList<>();
     LOGGER.info(String.format("Removing users with ids = %s", StringUtils.join(ids, ", ")));
     for (String id : ids) {

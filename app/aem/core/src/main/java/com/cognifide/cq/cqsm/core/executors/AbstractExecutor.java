@@ -19,10 +19,9 @@
  */
 package com.cognifide.cq.cqsm.core.executors;
 
-import com.cognifide.apm.api.services.Mode;
-import com.cognifide.cq.cqsm.api.logger.ExecutionResult;
-import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.ExecutionMode;
+import com.cognifide.apm.api.services.ExecutionResult;
 import com.cognifide.apm.api.services.ScriptManager;
 import javax.jcr.RepositoryException;
 import org.apache.sling.api.resource.PersistenceException;
@@ -41,9 +40,9 @@ abstract class AbstractExecutor {
   void processScript(Script script, ResourceResolver resolver, ExecutorType executorType) throws PersistenceException {
     final String scriptPath = script.getPath();
     try {
-      getScriptManager().process(script, Mode.VALIDATION, resolver);
+      getScriptManager().process(script, ExecutionMode.VALIDATION, resolver);
       if (script.isValid()) {
-        final ExecutionResult result = getScriptManager().process(script, Mode.AUTOMATIC_RUN, resolver);
+        final ExecutionResult result = getScriptManager().process(script, ExecutionMode.AUTOMATIC_RUN, resolver);
         logStatus(scriptPath, result.isSuccess(), executorType);
       } else {
         logger.warn("{} executor cannot execute script which is not valid: {}", executorType.toString(), scriptPath);

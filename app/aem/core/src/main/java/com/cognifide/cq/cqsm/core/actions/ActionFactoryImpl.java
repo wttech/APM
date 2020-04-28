@@ -19,11 +19,11 @@
  */
 package com.cognifide.cq.cqsm.core.actions;
 
-import com.cognifide.apm.grammar.argument.Arguments;
 import com.cognifide.apm.api.actions.Action;
+import com.cognifide.apm.api.exceptions.ActionCreationException;
+import com.cognifide.apm.core.grammar.argument.Arguments;
 import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
 import com.cognifide.cq.cqsm.api.actions.ActionFactory;
-import com.cognifide.cq.cqsm.api.exceptions.ActionCreationException;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.foundation.actions.ActionGroup;
 import java.util.ArrayList;

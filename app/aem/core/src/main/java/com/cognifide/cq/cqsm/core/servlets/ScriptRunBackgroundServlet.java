@@ -19,9 +19,9 @@
  */
 package com.cognifide.cq.cqsm.core.servlets;
 
-import com.cognifide.cq.cqsm.api.scriptrunnerjob.JobProgressOutput;
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ScriptFinder;
+import com.cognifide.cq.cqsm.api.scriptrunnerjob.JobProgressOutput;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.jobs.ScriptRunnerJobManager;
 import com.cognifide.cq.cqsm.core.utils.ServletUtils;
@@ -76,7 +76,7 @@ public class ScriptRunBackgroundServlet extends SlingAllMethodsServlet {
     final Script script = scriptFinder.find(searchPath, resolver);
 
     final boolean isValid = script.isValid();
-    final boolean isExecutable = script.isExecutionEnabled();
+    final boolean isExecutable = script.isLaunchEnabled();
 
     if (!(isValid && isExecutable)) {
       ServletUtils.writeMessage(response, ERROR_RESPONSE_TYPE, String.format("Script '%s' cannot be processed. " +

@@ -4,7 +4,7 @@ Although the tool provides a rich set of available actions, it may be required t
 ### Adding new @Mapper object
 In order to add a new action, first a class annotated with `@Mapper` marker needs to be implemented. It should eventually implement all the methods coming from `com.cognifide.cq.cqsm.api.actions.ActionMapper` interface. There is also a `BasicActionMapper` abstract implementation of such that already carries on the annotation as well as basic implementation of the required methods.
 
-Moreover, the configuration of `sling-bundle-plugin` needs to be enhanced with the `<CQ-Security-Management-Actions>` configuration that will point to a package that should be crawled to find all `@Mapper` implementations
+Moreover, the configuration of `sling-bundle-plugin` needs to be enhanced with the `<APM-Actions>` configuration that will point to a package that should be crawled to find all `@Mapper` implementations
 
 ```xml
 <plugin>
@@ -14,7 +14,7 @@ Moreover, the configuration of `sling-bundle-plugin` needs to be enhanced with t
     <configuration>
         <instructions>
             ...
-            <CQ-Security-Management-Actions>com.cognifide.cq.cqsm.foundation.actions</CQ-Security-Management-Actions>
+            <APM-Actions>com.cognifide.cq.cqsm.foundation.actions</APM-Actions>
         </instructions>
     </configuration>
 </plugin>

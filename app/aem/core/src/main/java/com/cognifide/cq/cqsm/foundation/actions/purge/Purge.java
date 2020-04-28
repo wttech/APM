@@ -21,9 +21,11 @@ package com.cognifide.cq.cqsm.foundation.actions.purge;
 
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.ActionResult;
-import com.cognifide.cq.cqsm.api.exceptions.ActionExecutionException;
 import com.cognifide.apm.api.actions.Context;
-import com.cognifide.cq.cqsm.api.logger.Status;
+import com.cognifide.apm.api.exceptions.ActionExecutionException;
+import com.cognifide.apm.api.status.Status;
+import com.cognifide.cq.cqsm.api.actions.ActionResultImpl;
+import com.cognifide.cq.cqsm.api.logger.Message;
 import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
 import com.cognifide.cq.cqsm.foundation.actions.removeall.RemoveAll;
 import javax.jcr.Node;
@@ -59,7 +61,7 @@ public class Purge implements Action {
   }
 
   private ActionResult process(final Context context, boolean execute) {
-    ActionResult actionResult = new ActionResult();
+    ActionResult actionResult = context.createActionResult();
     try {
       Authorizable authorizable = context.getCurrentAuthorizable();
       actionResult.setAuthorizable(authorizable.getID());
@@ -91,9 +93,17 @@ public class Purge implements Action {
           RemoveAll removeAll = new RemoveAll(parentPath);
           ActionResult removeAllResult = removeAll.execute(context);
           if (Status.ERROR.equals(removeAllResult.getStatus())) {
-            actionResult.logError(removeAllResult);
+            copyErrorMessages(removeAllResult, actionResult);
           }
         }
+      }
+    }
+  }
+
+  private void copyErrorMessages(ActionResult from, ActionResult to) {
+    for (Message msg : ((ActionResultImpl)from).getMessages()) {
+      if (Message.ERROR.equals(msg.getType())) {
+        to.logWarning(msg.getText() + ", continuing");
       }
     }
   }

@@ -19,13 +19,12 @@
  */
 package com.cognifide.cq.cqsm.core.scripts;
 
+import com.cognifide.apm.api.exceptions.ExecutionException;
+import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ScriptFinder;
-import com.cognifide.apm.grammar.ReferenceFinder;
-import com.cognifide.cq.cqsm.api.exceptions.ExecutionException;
+import com.cognifide.apm.core.grammar.ReferenceFinder;
 import com.cognifide.cq.cqsm.api.scripts.Event;
 import com.cognifide.cq.cqsm.api.scripts.EventManager;
-import com.cognifide.apm.api.scripts.Script;
-import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.cq.cqsm.api.scripts.ScriptReplicator;
 import com.cognifide.cq.cqsm.core.Property;
 import com.day.cq.replication.ReplicationActionType;

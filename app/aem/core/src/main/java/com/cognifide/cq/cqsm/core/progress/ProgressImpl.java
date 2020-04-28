@@ -22,15 +22,15 @@ package com.cognifide.cq.cqsm.core.progress;
 import static java.lang.String.format;
 import static java.util.Collections.singletonList;
 
-import com.cognifide.apm.grammar.argument.Arguments;
-import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
 import com.cognifide.apm.api.actions.ActionResult;
+import com.cognifide.apm.api.status.Status;
+import com.cognifide.apm.core.grammar.argument.Arguments;
+import com.cognifide.cq.cqsm.api.actions.ActionDescriptor;
+import com.cognifide.cq.cqsm.api.actions.ActionResultImpl;
 import com.cognifide.cq.cqsm.api.logger.Message;
 import com.cognifide.cq.cqsm.api.logger.Position;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.logger.ProgressEntry;
-import com.cognifide.cq.cqsm.api.logger.Status;
-import com.cognifide.cq.cqsm.api.progress.ProgressHelper;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,7 +54,7 @@ public class ProgressImpl implements Progress {
   }
 
   @Override
-  public List<ProgressEntry> getEntries() {
+  public List<Entry> getEntries() {
     return Lists.newLinkedList(entries);
   }
 
@@ -67,7 +67,7 @@ public class ProgressImpl implements Progress {
   @Override
   public void addEntry(ActionDescriptor descriptor, ActionResult result) {
     this.entries.add(
-        new ProgressEntry(result.getStatus(), toMessages(result.getMessages()), descriptor.getCommand(),
+        new ProgressEntry(result.getStatus(), toMessages(((ActionResultImpl)result).getMessages()), descriptor.getCommand(),
             result.getAuthorizable(), toParameters(descriptor.getArguments()), null
         )
     );
@@ -114,7 +114,7 @@ public class ProgressImpl implements Progress {
 
   @Override
   public boolean isSuccess() {
-    return ProgressHelper.hasNoErrors(entries);
+    return entries.stream().noneMatch(entry -> entry.getStatus() == Status.ERROR);
   }
 
   @Override

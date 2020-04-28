@@ -19,10 +19,8 @@
  */
 package com.cognifide.cq.cqsm.api.progress;
 
+import com.cognifide.apm.api.services.ExecutionResult.Entry;
 import com.cognifide.cq.cqsm.api.logger.ProgressEntry;
-import com.cognifide.cq.cqsm.api.logger.Status;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.util.Arrays;
@@ -32,8 +30,6 @@ public final class ProgressHelper {
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-	private static final IsErrorPredicate IS_ERROR_PREDICATE = new IsErrorPredicate();
-
 	private ProgressHelper() {
 	}
 
@@ -41,23 +37,11 @@ public final class ProgressHelper {
 		return Arrays.asList(GSON.fromJson(executionSummaryJson, ProgressEntry[].class));
 	}
 
-	public static String toJson(List<ProgressEntry> entries) {
+	public static String toJson(List<Entry> entries) {
 		return GSON.toJson(entries.toArray());
 	}
 
-	public static String toJson(ProgressEntry entry) {
+	public static String toJson(Entry entry) {
 		return GSON.toJson(entry);
-	}
-
-	public static boolean hasNoErrors(List<ProgressEntry> entries) {
-		return !Iterables.any(entries, IS_ERROR_PREDICATE);
-	}
-
-	private static class IsErrorPredicate implements Predicate<ProgressEntry> {
-
-		@Override
-		public boolean apply(ProgressEntry input) {
-			return input != null && Status.ERROR == input.getStatus();
-		}
 	}
 }

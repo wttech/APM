@@ -21,8 +21,8 @@ package com.cognifide.cq.cqsm.foundation.actions.removegroup;
 
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.ActionResult;
-import com.cognifide.cq.cqsm.api.exceptions.ActionExecutionException;
 import com.cognifide.apm.api.actions.Context;
+import com.cognifide.apm.api.exceptions.ActionExecutionException;
 import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,9 +53,9 @@ public class RemoveGroup implements Action {
   }
 
   private ActionResult process(final Context context, boolean execute) {
+    ActionResult actionResult = context.createActionResult();
 
     List<String> errors = new ArrayList<>();
-    ActionResult actionResult = new ActionResult();
     LOGGER.info(String.format("Removing groups with ids = %s", StringUtils.join(ids, ", ")));
     for (String id : ids) {
       try {

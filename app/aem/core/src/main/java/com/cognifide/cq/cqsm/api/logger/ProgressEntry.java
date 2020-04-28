@@ -21,11 +21,13 @@ package com.cognifide.cq.cqsm.api.logger;
 
 import static org.apache.commons.lang.StringUtils.defaultString;
 
+import com.cognifide.apm.api.services.ExecutionResult.Entry;
+import com.cognifide.apm.api.status.Status;
 import com.google.common.collect.ImmutableList;
 import java.util.Collections;
 import java.util.List;
 
-public class ProgressEntry {
+public class ProgressEntry implements Entry {
 
   private final String authorizable;
 
@@ -49,6 +51,7 @@ public class ProgressEntry {
     this.authorizable = defaultString(authorizable);
   }
 
+  @Override
   public String getAuthorizable() {
     return authorizable;
   }
@@ -57,18 +60,22 @@ public class ProgressEntry {
     return position;
   }
 
+  @Override
   public String getCommand() {
     return command;
   }
 
+  @Override
   public List<String> getMessages() {
     return messages;
   }
 
+  @Override
   public List<String> getParameters() {
     return parameters;
   }
 
+  @Override
   public Status getStatus() {
     return status;
   }

@@ -20,7 +20,7 @@
 package com.cognifide.cq.cqsm.api.scripts;
 
 import com.cognifide.apm.api.scripts.Script;
-import com.cognifide.apm.api.services.Mode;
+import com.cognifide.apm.api.services.ExecutionMode;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import java.util.Collections;
 import java.util.HashSet;
@@ -69,7 +69,7 @@ public class EventManager {
 		trigger(event, script, null, null);
 	}
 
-	public void trigger(Event event, Script script, Mode mode, Progress progress) {
+	public void trigger(Event event, Script script, ExecutionMode mode, Progress progress) {
 		if (!listeners.containsKey(event)) {
 			return;
 		}

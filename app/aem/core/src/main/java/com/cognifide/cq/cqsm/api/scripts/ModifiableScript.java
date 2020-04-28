@@ -19,7 +19,7 @@
  */
 package com.cognifide.cq.cqsm.api.scripts;
 
-import com.cognifide.apm.api.scripts.ExecutionMode;
+import com.cognifide.apm.api.scripts.LaunchMode;
 import java.util.Date;
 import org.apache.sling.api.resource.PersistenceException;
 
@@ -43,7 +43,7 @@ public interface ModifiableScript {
   /**
    * Set mode related with automatic execution
    */
-  void setExecutionMode(ExecutionMode mode) throws PersistenceException;
+  void setExecutionMode(LaunchMode mode) throws PersistenceException;
 
   /**
    * Set date after which script will be executed by schedule executor

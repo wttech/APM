@@ -12,7 +12,7 @@ plugins {
     signing
 }
 
-description = "AEM Permission Management :: Core"
+description = "AEM Permission Management :: API"
 
 apply(from = rootProject.file("app/common.gradle.kts"))
 apply(from = rootProject.file("app/aem/common.gradle.kts"))
@@ -21,15 +21,7 @@ aem {
     tasks {
         jar {
             bundle {
-                exportPackage("com.cognifide.cq.cqsm.*") //TODO repair after extraction of API
-//                exportPackage("com.cognifide.cq.cqsm.foundation.actions.*")
-//                exportPackage("com.cognifide.cq.cqsm.api.*")
-//                exportPackage("com.cognifide.cq.cqsm.core.models.*")
-                exportPackage("com.cognifide.apm.tools.*")
-                exportPackage("com.cognifide.apm.endpoints.*")
-                attribute("Sling-Model-Packages", "com.cognifide.apm.endpoints,com.cognifide.cq.cqsm.core.models,com.cognifide.cq.cqsm.core.scripts,com.cognifide.cq.cqsm.api.history,com.cognifide.cq.cqsm.core.history")
-                attribute("Sling-Nodetypes", "CQ-INF/nodetypes/apm_nodetypes.cnd")
-                attribute("CQ-Security-Management-Actions", "com.cognifide.cq.cqsm.foundation.actions")
+                exportPackage("com.cognifide.apm.api.*")
             }
         }
     }

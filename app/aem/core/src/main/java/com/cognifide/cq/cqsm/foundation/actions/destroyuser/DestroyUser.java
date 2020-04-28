@@ -21,8 +21,8 @@ package com.cognifide.cq.cqsm.foundation.actions.destroyuser;
 
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.ActionResult;
-import com.cognifide.cq.cqsm.api.exceptions.ActionExecutionException;
 import com.cognifide.apm.api.actions.Context;
+import com.cognifide.apm.api.exceptions.ActionExecutionException;
 import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
 import com.cognifide.cq.cqsm.foundation.actions.CompositeActionResult;
 import com.cognifide.cq.cqsm.foundation.actions.purge.Purge;
@@ -62,7 +62,7 @@ public class DestroyUser implements Action {
       ActionResult removeResult = remove.simulate(context);
       actionResult = new CompositeActionResult(purgeResult, removeFromGroupsResult, removeResult);
     } catch (RepositoryException | ActionExecutionException e) {
-      actionResult = new ActionResult();
+      actionResult = context.createActionResult();
       actionResult.logError(MessagingUtils.createMessage(e));
     }
     return actionResult;
@@ -80,7 +80,7 @@ public class DestroyUser implements Action {
       ActionResult removeResult = remove.execute(context);
       actionResult = new CompositeActionResult(purgeResult, removeFromGroupsResult, removeResult);
     } catch (RepositoryException | ActionExecutionException e) {
-      actionResult = new ActionResult();
+      actionResult = context.createActionResult();
       actionResult.logError(MessagingUtils.createMessage(e));
     }
     return actionResult;

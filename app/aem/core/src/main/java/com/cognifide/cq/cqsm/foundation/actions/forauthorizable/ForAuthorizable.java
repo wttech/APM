@@ -21,8 +21,8 @@ package com.cognifide.cq.cqsm.foundation.actions.forauthorizable;
 
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.ActionResult;
-import com.cognifide.cq.cqsm.api.exceptions.ActionExecutionException;
 import com.cognifide.apm.api.actions.Context;
+import com.cognifide.apm.api.exceptions.ActionExecutionException;
 import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
 import javax.jcr.RepositoryException;
 import org.apache.jackrabbit.api.security.user.Group;
@@ -50,7 +50,7 @@ public class ForAuthorizable implements Action {
   }
 
   public ActionResult process(final Context context) {
-    ActionResult actionResult = new ActionResult();
+    ActionResult actionResult = context.createActionResult();
     try {
 
       if (shouldBeGroup) {

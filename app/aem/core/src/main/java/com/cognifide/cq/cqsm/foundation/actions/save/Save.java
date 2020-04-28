@@ -22,7 +22,7 @@ package com.cognifide.cq.cqsm.foundation.actions.save;
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.apm.api.actions.Context;
-import com.cognifide.cq.cqsm.core.sessions.SessionSavingMode;
+import com.cognifide.apm.api.actions.SessionSavingMode;
 import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
 import javax.jcr.RepositoryException;
 
@@ -39,7 +39,7 @@ public class Save implements Action {
   }
 
   private ActionResult process(final Context context, boolean execute) {
-    ActionResult actionResult = new ActionResult();
+    ActionResult actionResult = context.createActionResult();
     try {
       if (execute) {
         context.getSavingPolicy().save(context.getSession(),

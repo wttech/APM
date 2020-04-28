@@ -63,7 +63,7 @@ public class CreateAuthorizable implements Action {
   }
 
   public ActionResult process(final Context context, boolean simulate) {
-    ActionResult actionResult = new ActionResult();
+    ActionResult actionResult = context.createActionResult();
     try {
       Authorizable authorizable = context.getAuthorizableManager().getAuthorizableIfExists(id);
       LOGGER.info("Creating authorizable with id = " + id);

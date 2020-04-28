@@ -19,9 +19,9 @@
  */
 package com.cognifide.cq.cqsm.api.history;
 
-import com.cognifide.apm.api.services.Mode;
-import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.ExecutionMode;
+import com.cognifide.cq.cqsm.api.logger.Progress;
 import java.util.Calendar;
 import java.util.List;
 import javax.jcr.RepositoryException;
@@ -34,13 +34,13 @@ public interface History {
   /**
    * Save detailed script execution on a remote host as entry
    */
-  HistoryEntry logRemote(Script script, Mode mode, Progress progressLogger, InstanceDetails instanceDetails,
+  HistoryEntry logRemote(Script script, ExecutionMode mode, Progress progressLogger, InstanceDetails instanceDetails,
       Calendar executionTime);
 
   /**
    * Save detailed script execution as entry
    */
-  HistoryEntry logLocal(Script script, Mode mode, Progress progressLogger);
+  HistoryEntry logLocal(Script script, ExecutionMode mode, Progress progressLogger);
 
   /**
    * Replicate log entry from publish to author instance

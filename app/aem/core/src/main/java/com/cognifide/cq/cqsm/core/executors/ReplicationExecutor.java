@@ -19,7 +19,7 @@
  */
 package com.cognifide.cq.cqsm.core.executors;
 
-import com.cognifide.apm.api.scripts.ExecutionMode;
+import com.cognifide.apm.api.scripts.LaunchMode;
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.apm.api.services.ScriptManager;
@@ -83,7 +83,7 @@ public class ReplicationExecutor extends AbstractExecutor implements JobConsumer
   private JobResult runReplicated(ResourceResolver resolver, Script script) {
     JobResult result = JobResult.FAILED;
 
-    if (ExecutionMode.ON_DEMAND.equals(script.getExecutionMode()) && script.isPublishRun()) {
+    if (LaunchMode.ON_DEMAND.equals(script.getLaunchMode()) && script.isPublishRun()) {
       try {
         processScript(script, resolver, ExecutorType.REPLICATION);
         result = JobResult.OK;

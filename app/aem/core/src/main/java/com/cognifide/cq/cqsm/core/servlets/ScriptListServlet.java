@@ -94,9 +94,9 @@ public class ScriptListServlet extends SlingAllMethodsServlet {
 			this.path = script.getPath();
 			this.valid = script.isValid();
 			this.lastModified = script.getLastModified();
-			this.executionMode = script.getExecutionMode().name().toLowerCase();
-			this.executionEnabled = script.isExecutionEnabled();
-			this.executionSchedule = script.getExecutionSchedule();
+			this.executionMode = script.getLaunchMode().name().toLowerCase();
+			this.executionEnabled = script.isLaunchEnabled();
+			this.executionSchedule = script.getLaunchSchedule();
 		}
 
 		@Override

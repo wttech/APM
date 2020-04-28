@@ -20,8 +20,8 @@
 package com.cognifide.cq.cqsm.foundation.actions.clearfromgroups;
 
 import com.cognifide.apm.api.actions.ActionResult;
-import com.cognifide.cq.cqsm.api.exceptions.ActionExecutionException;
 import com.cognifide.apm.api.actions.Context;
+import com.cognifide.apm.api.exceptions.ActionExecutionException;
 import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
 import java.util.Iterator;
 import javax.jcr.RepositoryException;
@@ -44,7 +44,7 @@ public class ClearFromGroupDetacher {
   }
 
   public ActionResult detachMembersFromGroup() {
-    ActionResult actionResult = new ActionResult();
+    ActionResult actionResult = context.createActionResult();
 
     try {
       Authorizable authorizable = context.getCurrentAuthorizable();
@@ -65,7 +65,7 @@ public class ClearFromGroupDetacher {
   }
 
   public ActionResult detachAuthorizableFromParents() {
-    ActionResult actionResult = new ActionResult();
+    ActionResult actionResult = context.createActionResult();
 
     try {
       Authorizable currentAuthorizable = context.getCurrentAuthorizable();

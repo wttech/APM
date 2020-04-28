@@ -21,8 +21,8 @@ package com.cognifide.cq.cqsm.foundation.actions.exclude;
 
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.ActionResult;
-import com.cognifide.cq.cqsm.api.exceptions.ActionExecutionException;
 import com.cognifide.apm.api.actions.Context;
+import com.cognifide.apm.api.exceptions.ActionExecutionException;
 import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +54,7 @@ public class Exclude implements Action {
   }
 
   private ActionResult process(final Context context, boolean execute) {
-    ActionResult actionResult = new ActionResult();
+    ActionResult actionResult = context.createActionResult();
     Group group = null;
     try {
       group = context.getCurrentGroup();

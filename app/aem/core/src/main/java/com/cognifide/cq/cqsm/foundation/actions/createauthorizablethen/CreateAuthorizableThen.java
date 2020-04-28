@@ -22,7 +22,8 @@ package com.cognifide.cq.cqsm.foundation.actions.createauthorizablethen;
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.apm.api.actions.Context;
-import com.cognifide.cq.cqsm.api.logger.Status;
+import com.cognifide.apm.api.status.Status;
+import com.cognifide.cq.cqsm.api.actions.ActionResultImpl;
 import com.cognifide.cq.cqsm.foundation.actions.createauthorizable.CreateAuthorizable;
 import com.cognifide.cq.cqsm.foundation.actions.createauthorizable.CreateAuthorizableStrategy;
 import com.cognifide.cq.cqsm.foundation.actions.forauthorizable.ForAuthorizable;
@@ -51,10 +52,10 @@ public class CreateAuthorizableThen implements Action {
   }
 
   public ActionResult process(final Context context, boolean simulate) {
-    ActionResult actionResult = createAuthorizable.process(context, simulate);
+    ActionResultImpl actionResult = (ActionResultImpl)createAuthorizable.process(context, simulate);
     if (actionResult.getStatus() != Status.ERROR) {
-      ActionResult createActionResult = actionResult;
-      actionResult = forAuthorizable.process(context);
+      ActionResultImpl createActionResult = actionResult;
+      actionResult = (ActionResultImpl)forAuthorizable.process(context);
       actionResult.getMessages().addAll(0, createActionResult.getMessages());
     }
     return actionResult;

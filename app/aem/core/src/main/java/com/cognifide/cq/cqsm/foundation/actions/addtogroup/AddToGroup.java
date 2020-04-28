@@ -21,8 +21,8 @@ package com.cognifide.cq.cqsm.foundation.actions.addtogroup;
 
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.ActionResult;
-import com.cognifide.cq.cqsm.api.exceptions.ActionExecutionException;
 import com.cognifide.apm.api.actions.Context;
+import com.cognifide.apm.api.exceptions.ActionExecutionException;
 import com.cognifide.cq.cqsm.core.actions.ActionUtils;
 import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
 import java.util.ArrayList;
@@ -54,7 +54,7 @@ public class AddToGroup implements Action {
   }
 
   private ActionResult process(final Context context, boolean execute) {
-    ActionResult actionResult = new ActionResult();
+    ActionResult actionResult = context.createActionResult();
     List<String> errors = new ArrayList<>();
     Authorizable authorizable = null;
     try {

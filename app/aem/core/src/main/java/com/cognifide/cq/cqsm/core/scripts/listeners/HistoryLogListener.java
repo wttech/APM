@@ -19,13 +19,13 @@
  */
 package com.cognifide.cq.cqsm.core.scripts.listeners;
 
-import com.cognifide.apm.api.services.Mode;
+import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.ExecutionMode;
 import com.cognifide.cq.cqsm.api.history.History;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.scripts.Event;
 import com.cognifide.cq.cqsm.api.scripts.EventListener;
-import com.cognifide.apm.api.scripts.Script;
-import com.cognifide.apm.api.services.ScriptManager;
+import com.cognifide.cq.cqsm.api.scripts.ExtendedScriptManager;
 import com.cognifide.cq.cqsm.api.utils.InstanceTypeProvider;
 import com.cognifide.cq.cqsm.core.Property;
 import org.osgi.service.component.annotations.Activate;
@@ -43,7 +43,7 @@ import org.osgi.service.component.annotations.Reference;
 public class HistoryLogListener implements EventListener {
 
   @Reference
-  private ScriptManager scriptManager;
+  private ExtendedScriptManager scriptManager;
 
   @Reference
   private InstanceTypeProvider instanceTypeProvider;
@@ -59,8 +59,8 @@ public class HistoryLogListener implements EventListener {
   }
 
   @Override
-  public void handle(Script script, Mode mode, Progress progress) {
-    if (mode != Mode.VALIDATION) {
+  public void handle(Script script, ExecutionMode mode, Progress progress) {
+    if (mode != ExecutionMode.VALIDATION) {
       history.logLocal(script, mode, progress);
     }
   }
