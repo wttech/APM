@@ -20,7 +20,7 @@
 package com.cognifide.cq.cqsm.core.jobs;
 
 import com.cognifide.cq.cqsm.core.Property;
-import com.cognifide.cq.cqsm.core.executors.ReplicationExecutor;
+import com.cognifide.cq.cqsm.core.launchers.ReplicatedScriptLauncher;
 import com.day.cq.replication.ReplicationAction;
 import com.day.cq.replication.ReplicationEvent;
 import java.util.Arrays;
@@ -57,7 +57,7 @@ public class ReplicationConsumer implements EventHandler {
 
   public void run(String scriptPath) {
     Map<String, Object> properties = Collections.singletonMap(SlingConstants.PROPERTY_PATH, scriptPath);
-    jobManager.addJob(ReplicationExecutor.JOB_NAME, properties);
+    jobManager.addJob(ReplicatedScriptLauncher.JOB_NAME, properties);
   }
 
 }

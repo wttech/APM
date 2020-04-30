@@ -17,7 +17,7 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.cq.cqsm.core.executors;
+package com.cognifide.cq.cqsm.core.launchers;
 
 import static com.cognifide.cq.cqsm.core.scripts.ScriptFilters.onSchedule;
 
@@ -25,7 +25,7 @@ import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.cq.cqsm.core.Property;
-import com.cognifide.cq.cqsm.core.executors.ScheduleExecutor.ScheduleExecutorConfiguration;
+import com.cognifide.cq.cqsm.core.launchers.ScheduledScriptLauncher.ScheduleExecutorConfiguration;
 import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
 import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper;
 import java.util.Date;
@@ -45,13 +45,13 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
     immediate = true,
     service = Runnable.class,
     property = {
-        Property.DESCRIPTION + "CQSM Schedule Executor",
+        Property.DESCRIPTION + "Launches scheduled scripts",
         Property.VENDOR,
         Property.SCHEDULER + "0 * * * * ?"
     }
 )
 @Designate(ocd = ScheduleExecutorConfiguration.class)
-public class ScheduleExecutor extends AbstractExecutor implements Runnable {
+public class ScheduledScriptLauncher extends AbstractScriptLauncher implements Runnable {
 
   @Reference
   private ScriptManager scriptManager;
@@ -87,7 +87,7 @@ public class ScheduleExecutor extends AbstractExecutor implements Runnable {
       logger.info(MessagingUtils.describeScripts(scripts));
     }
     for (Script script : scripts) {
-      processScript(script, resolver, ExecutorType.SCHEDULE);
+      processScript(script, resolver, LauncherType.SCHEDULED);
     }
   }
 

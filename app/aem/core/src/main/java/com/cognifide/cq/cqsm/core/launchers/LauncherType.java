@@ -17,12 +17,12 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.cq.cqsm.core.executors;
+package com.cognifide.cq.cqsm.core.launchers;
 
 import org.apache.commons.lang.WordUtils;
 
-enum ExecutorType {
-  SCHEDULE, MODIFY, REPLICATION, STARTUP;
+enum LauncherType {
+  SCHEDULED, MODIFIED, REPLICATED, ON_STARTUP;
 
   @Override
   public String toString() {

@@ -17,7 +17,7 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.cq.cqsm.core.executors;
+package com.cognifide.cq.cqsm.core.launchers;
 
 import com.cognifide.apm.api.scripts.LaunchMode;
 import com.cognifide.apm.api.scripts.Script;
@@ -40,11 +40,12 @@ import org.osgi.service.component.annotations.Reference;
         JobConsumer.class
     },
     property = {
-        Property.TOPIC + ReplicationExecutor.JOB_NAME,
+        Property.TOPIC + ReplicatedScriptLauncher.JOB_NAME,
+        Property.DESCRIPTION + "Launches replicated scripts",
         Property.VENDOR
     }
 )
-public class ReplicationExecutor extends AbstractExecutor implements JobConsumer {
+public class ReplicatedScriptLauncher extends AbstractScriptLauncher implements JobConsumer {
 
   public static final String JOB_NAME = "com/cognifide/cq/cqsm/core/executors/replication/executor";
 
@@ -85,7 +86,7 @@ public class ReplicationExecutor extends AbstractExecutor implements JobConsumer
 
     if (LaunchMode.ON_DEMAND.equals(script.getLaunchMode()) && script.isPublishRun()) {
       try {
-        processScript(script, resolver, ExecutorType.REPLICATION);
+        processScript(script, resolver, LauncherType.REPLICATED);
         result = JobResult.OK;
       } catch (PersistenceException e) {
         logger.error(e.getMessage(), e);

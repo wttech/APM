@@ -17,14 +17,14 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.cq.cqsm.core.executors;
+package com.cognifide.cq.cqsm.core.launchers;
 
 import static com.cognifide.cq.cqsm.core.scripts.ScriptFilters.onStart;
 
-import com.cognifide.cq.cqsm.api.scripts.EventListener;
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.apm.api.services.ScriptManager;
+import com.cognifide.cq.cqsm.api.scripts.EventListener;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.utils.MessagingUtils;
 import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper;
@@ -39,11 +39,11 @@ import org.osgi.service.component.annotations.Reference;
 @Component(
     immediate = true,
     property = {
-        Property.DESCRIPTION + "CQSM Startup Executor",
+        Property.DESCRIPTION + "Launches scripts on bundle startup",
         Property.VENDOR
     }
 )
-public class StartupExecutor extends AbstractExecutor {
+public class OnStartupScriptLauncher extends AbstractScriptLauncher {
 
   /**
    * Reference needed for proper event hook up on activation
@@ -71,7 +71,7 @@ public class StartupExecutor extends AbstractExecutor {
       logger.info("Startup script executor is trying to execute scripts on startup: {}", scripts.size());
       logger.info(MessagingUtils.describeScripts(scripts));
       for (Script script : scripts) {
-        processScript(script, resolver, ExecutorType.STARTUP);
+        processScript(script, resolver, LauncherType.ON_STARTUP);
       }
     } else {
       logger.info("Startup script executor has nothing to do");

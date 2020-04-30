@@ -17,7 +17,7 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.cq.cqsm.core.executors;
+package com.cognifide.cq.cqsm.core.launchers;
 
 import static com.cognifide.cq.cqsm.core.scripts.ScriptFilters.onModify;
 
@@ -39,11 +39,11 @@ import org.osgi.service.component.annotations.Reference;
 @Component(
     immediate = true,
     property = {
-        Property.DESCRIPTION + "CQSM Script Modification Executor",
+        Property.DESCRIPTION + "Launches modified scripts",
         Property.VENDOR
     }
 )
-public class ModifyExecutor extends AbstractExecutor {
+public class ModifiedScriptLauncher extends AbstractScriptLauncher {
 
   /**
    * Reference needed for proper event hook up on activation
@@ -71,7 +71,7 @@ public class ModifyExecutor extends AbstractExecutor {
       logger.info("Executor will try to run following scripts: {}", scripts.size());
       logger.info(MessagingUtils.describeScripts(scripts));
       for (Script script : scripts) {
-        processScript(script, resolver, ExecutorType.MODIFY);
+        processScript(script, resolver, LauncherType.MODIFIED);
       }
     } else {
       logger.info("Executor has not detected any changes");

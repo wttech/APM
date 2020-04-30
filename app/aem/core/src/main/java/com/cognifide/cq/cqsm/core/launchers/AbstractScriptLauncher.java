@@ -17,7 +17,7 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.cq.cqsm.core.executors;
+package com.cognifide.cq.cqsm.core.launchers;
 
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ExecutionMode;
@@ -29,34 +29,34 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-abstract class AbstractExecutor {
+abstract class AbstractScriptLauncher {
 
   protected final Logger logger;
 
-  AbstractExecutor() {
+  AbstractScriptLauncher() {
     logger = LoggerFactory.getLogger(this.getClass());
   }
 
-  void processScript(Script script, ResourceResolver resolver, ExecutorType executorType) throws PersistenceException {
+  void processScript(Script script, ResourceResolver resolver, LauncherType launcherType) throws PersistenceException {
     final String scriptPath = script.getPath();
     try {
       getScriptManager().process(script, ExecutionMode.VALIDATION, resolver);
       if (script.isValid()) {
         final ExecutionResult result = getScriptManager().process(script, ExecutionMode.AUTOMATIC_RUN, resolver);
-        logStatus(scriptPath, result.isSuccess(), executorType);
+        logStatus(scriptPath, result.isSuccess(), launcherType);
       } else {
-        logger.warn("{} executor cannot execute script which is not valid: {}", executorType.toString(), scriptPath);
+        logger.warn("{} executor cannot execute script which is not valid: {}", launcherType.toString(), scriptPath);
       }
     } catch (RepositoryException e) {
       logger.error("Script cannot be processed because of repository error: {}", scriptPath, e);
     }
   }
 
-  private void logStatus(String scriptPath, boolean success, ExecutorType executorType) {
+  private void logStatus(String scriptPath, boolean success, LauncherType launcherType) {
     if (success) {
-      logger.info("{} script successfully executed: {}", executorType.toString(), scriptPath);
+      logger.info("{} script successfully executed: {}", launcherType.toString(), scriptPath);
     } else {
-      logger.error("{} script cannot be executed properly: {}", executorType.toString(), scriptPath);
+      logger.error("{} script cannot be executed properly: {}", launcherType.toString(), scriptPath);
     }
   }
 
