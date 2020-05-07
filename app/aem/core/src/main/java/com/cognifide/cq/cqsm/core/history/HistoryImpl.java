@@ -38,7 +38,7 @@ import com.cognifide.cq.cqsm.api.progress.ProgressHelper;
 import com.cognifide.cq.cqsm.api.utils.InstanceTypeProvider;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.history.HistoryEntryWriter.HistoryEntryWriterBuilder;
-import com.cognifide.cq.cqsm.core.scripts.ScriptContent;
+import com.cognifide.cq.cqsm.core.scripts.ScriptNode;
 import com.cognifide.cq.cqsm.core.utils.sling.ResolveCallback;
 import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper;
 import com.day.cq.commons.jcr.JcrConstants;
@@ -277,7 +277,7 @@ public class HistoryImpl implements History {
     if (!parent.hasNode(SCRIPT_NODE_NAME)) {
       Node source = session.getNode(script.getPath());
       Node file = JcrUtil.copy(source, parent, SCRIPT_NODE_NAME);
-      file.addMixin(ScriptContent.APM_SCRIPT);
+      file.addMixin(ScriptNode.APM_SCRIPT);
       return file;
     }
     return parent.getNode(SCRIPT_NODE_NAME);

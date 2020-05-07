@@ -171,8 +171,7 @@ public class ScriptManagerImpl implements ExtendedScriptManager {
 
     updateScriptProperties(script, mode, progress.isSuccess(), resolver);
     applyChecksum(scriptFinder, resolver, script);
-    script.refresh();
-    eventManager.trigger(Event.AFTER_EXECUTE, script, mode, progress);
+    eventManager.trigger(Event.AFTER_EXECUTE, script.reload(), mode, progress);
 
     return progress;
   }

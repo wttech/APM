@@ -61,7 +61,7 @@ public class ScriptFilters {
   public static Predicate<Script> onSchedule(final Date date) {
     return enabled()
         .and(withExecutionMode(LaunchMode.ON_SCHEDULE))
-        .and(script -> script.getLastExecution() == null && script.getLaunchSchedule().before(date));
+        .and(script -> script.getLastExecuted() == null && script.getLaunchSchedule().before(date));
   }
 
   public static Predicate<Script> onModify() {

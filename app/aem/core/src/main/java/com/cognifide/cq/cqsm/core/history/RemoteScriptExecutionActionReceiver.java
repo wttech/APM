@@ -32,7 +32,7 @@ import com.cognifide.cq.cqsm.api.logger.ProgressEntry;
 import com.cognifide.cq.cqsm.api.progress.ProgressHelper;
 import com.cognifide.cq.cqsm.api.utils.InstanceTypeProvider;
 import com.cognifide.cq.cqsm.core.progress.ProgressImpl;
-import com.cognifide.cq.cqsm.core.scripts.ScriptImpl;
+import com.cognifide.cq.cqsm.core.scripts.ScriptModel;
 import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper;
 import com.day.cq.replication.ReplicationAction;
 import java.util.Calendar;
@@ -66,7 +66,7 @@ public class RemoteScriptExecutionActionReceiver implements ActionReceiver {
 			//FIXME would be lovely to cast ValueMap -> ModifiableEntryBuilder
 			String scriptLocation = valueMap.get(HistoryEntryImpl.SCRIPT_PATH, String.class);
 			Resource scriptResource = resolver.getResource(scriptLocation);
-			Script script = scriptResource.adaptTo(ScriptImpl.class);
+			Script script = scriptResource.adaptTo(ScriptModel.class);
 			InstanceDetails instanceDetails = getInstanceDetails(valueMap);
 			Progress progress = getProgress(valueMap, resolver.getUserID());
 			Calendar executionTime = getCalendar(valueMap);

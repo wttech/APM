@@ -26,7 +26,6 @@ import com.cognifide.cq.cqsm.core.utils.ResourceMixinUtil;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import org.apache.jackrabbit.JcrConstants;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
@@ -44,49 +43,49 @@ public class ModifiableScriptWrapper implements ModifiableScript {
 	}
 
 	@Override
-	public void setExecutionSchedule(Date date) throws PersistenceException {
-		setProperty(ScriptContent.APM_EXECUTION_SCHEDULE, date);
+	public void setLaunchSchedule(Date date) throws PersistenceException {
+		setProperty(ScriptNode.APM_LAUNCH_SCHEDULE, date);
 	}
 
 	@Override
 	public void setExecuted(Boolean flag) throws PersistenceException {
-		setProperty(ScriptContent.APM_EXECUTION_LAST, flag ? new Date() : null);
+		setProperty(ScriptNode.APM_LAST_EXECUTED, flag ? new Date() : null);
 	}
 
 	@Override
-	public void setExecutionEnabled(Boolean flag) throws PersistenceException {
-		setProperty(ScriptContent.APM_EXECUTION_ENABLED, flag);
+	public void setLaunchEnabled(Boolean flag) throws PersistenceException {
+		setProperty(ScriptNode.APM_LAUNCH_ENABLED, flag);
 	}
 
 	@Override
 	public void setPublishRun(Boolean flag) throws PersistenceException {
-		setProperty(ScriptContent.APM_PUBLISH_RUN, flag);
+		setProperty(ScriptNode.APM_PUBLISH_RUN, flag);
 	}
 
   @Override
   public void setReplicatedBy(String userId) throws PersistenceException {
-    setProperty(ScriptContent.APM_REPLICATED_BY, userId);
+    setProperty(ScriptNode.APM_REPLICATED_BY, userId);
   }
 
 	@Override
-	public void setExecutionMode(LaunchMode mode) throws PersistenceException {
-		setProperty(ScriptContent.APM_EXECUTION_MODE, mode.name());
+	public void setLaunchMode(LaunchMode mode) throws PersistenceException {
+		setProperty(ScriptNode.APM_LAUNCH_MODE, mode.name());
 	}
 
 	@Override
 	public void setValid(Boolean flag) throws PersistenceException {
-		setProperty(ScriptContent.APM_VERIFIED, flag);
+		setProperty(ScriptNode.APM_VERIFIED, flag);
 	}
 
 	@Override
 	public void setChecksum(String checksum) throws PersistenceException {
-		setProperty(ScriptContent.APM_CHECKSUM, checksum);
+		setProperty(ScriptNode.APM_CHECKSUM, checksum);
 	}
 
 	public void setProperty(String name, Object value) throws PersistenceException {
 		Resource resource = resolver.getResource(script.getPath());
-		ModifiableValueMap vm = resource.getChild(JcrConstants.JCR_CONTENT).adaptTo(ModifiableValueMap.class);
-		ResourceMixinUtil.addMixin(vm, ScriptContent.APM_SCRIPT);
+		ModifiableValueMap vm = resource.adaptTo(ModifiableValueMap.class);
+		ResourceMixinUtil.addMixin(vm, ScriptNode.APM_SCRIPT);
 		vm.put(name, convertValue(value));
 
 		resource.getResourceResolver().commit();

@@ -25,8 +25,8 @@ import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.cq.cqsm.api.history.History;
 import com.cognifide.cq.cqsm.api.history.HistoryEntry;
 import com.cognifide.cq.cqsm.api.history.ScriptHistory;
-import com.cognifide.cq.cqsm.core.scripts.ScriptContent;
-import com.cognifide.cq.cqsm.core.scripts.ScriptImpl;
+import com.cognifide.cq.cqsm.core.scripts.ScriptModel;
+import com.cognifide.cq.cqsm.core.scripts.ScriptNode;
 import com.cognifide.cq.cqsm.core.utils.CalendarUtils;
 import com.day.cq.commons.jcr.JcrConstants;
 import com.google.common.collect.ImmutableSet;
@@ -88,7 +88,7 @@ public final class ScriptsRowModel {
     this.isFolder = isFolder(resource);
     this.scriptName = defaultIfEmpty(getProperty(resource, JcrConstants.JCR_TITLE), resource.getName());
     if (!isFolder) {
-      Optional.ofNullable(resource.adaptTo(ScriptImpl.class)).ifPresent(script -> {
+      Optional.ofNullable(resource.adaptTo(ScriptModel.class)).ifPresent(script -> {
         ScriptHistory scriptHistory = history.findScriptHistory(resource.getResourceResolver(), script);
         this.author = script.getAuthor();
         this.isValid = script.isValid();
@@ -116,8 +116,8 @@ public final class ScriptsRowModel {
   }
 
   public static boolean isScript(Resource resource) {
-    return Optional.ofNullable(resource.getChild(JcrConstants.JCR_CONTENT))
-        .map(child -> getArrayProperty(child, JcrConstants.JCR_MIXINTYPES).contains(ScriptContent.APM_SCRIPT))
+    return Optional.ofNullable(resource)
+        .map(child -> getArrayProperty(child, JcrConstants.JCR_MIXINTYPES).contains(ScriptNode.APM_SCRIPT))
         .orElse(false);
   }
 

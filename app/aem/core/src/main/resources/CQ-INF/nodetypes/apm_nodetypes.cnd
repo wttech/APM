@@ -21,12 +21,12 @@
 
 [apm:Script]
  mixin
-  - apm:executionEnabled (boolean)
-  - apm:executionMode (string)
-  - apm:executionEnvironment (string)
-  - apm:executionHook (string)
-  - apm:executionSchedule (date)
-  - apm:executionLast (date)
+  - apm:launchEnabled (boolean)
+  - apm:launchMode (string)
+  - apm:launchEnvironment (string)
+  - apm:launchHook (string)
+  - apm:launchSchedule (date)
+  - apm:lastExecuted (date)
   - apm:checksum (string)
   - apm:publishRun (boolean)
   - apm:replicatedBy (string)

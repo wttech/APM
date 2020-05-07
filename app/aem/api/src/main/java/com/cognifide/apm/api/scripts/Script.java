@@ -23,7 +23,7 @@ import java.util.Date;
 
 public interface Script {
 
-	void refresh();
+	Script reload();
 
 	/**
 	 * Get validation status
@@ -52,7 +52,7 @@ public interface Script {
 	/**
 	 * Get last execution date
 	 */
-	Date getLastExecution();
+	Date getLastExecuted();
 
 	/**
 	 * Check run on publish

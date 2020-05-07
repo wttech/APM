@@ -20,11 +20,11 @@
   -->
 <jcr:root xmlns:apm="http://www.cognifide.com/apm/1.1" xmlns:jcr="http://www.jcp.org/jcr/1.0"
   xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+  apm:launchEnabled="false"
+  apm:verified="true"
+  jcr:mixinTypes="[apm:Script]"
   jcr:primaryType="nt:file">
   <jcr:content
-    apm:verified="true"
-    apm:executionEnabled="false"
     jcr:encoding="UTF-8"
-    jcr:mixinTypes="[apm:Script]"
     jcr:primaryType="nt:resource"/>
 </jcr:root>

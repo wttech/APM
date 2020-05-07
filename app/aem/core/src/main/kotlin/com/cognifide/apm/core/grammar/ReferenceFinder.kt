@@ -131,7 +131,7 @@ class ReferenceFinder(
     }
 
     class NonExistingScript(val scriptPath: String) : Script {
-        override fun refresh() {}
+        override fun reload(): Script = this
 
         override fun getPath(): String = scriptPath
 
@@ -147,7 +147,7 @@ class ReferenceFinder(
 
         override fun getLaunchSchedule(): Date? = null
 
-        override fun getLastExecution(): Date? = null
+        override fun getLastExecuted(): Date? = null
 
         override fun isPublishRun(): Boolean = false
 

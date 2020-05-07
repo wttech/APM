@@ -68,12 +68,12 @@ public class ScriptConfigServlet extends SlingAllMethodsServlet {
 		try {
 			final String executionMode = request.getParameter("executionMode");
 			if (executionMode != null) {
-				modifiableScript.setExecutionMode(LaunchMode.valueOf(executionMode.toUpperCase()));
+				modifiableScript.setLaunchMode(LaunchMode.valueOf(executionMode.toUpperCase()));
 			}
 
 			final String executionEnabled = request.getParameter("executionEnabled");
 			if (executionEnabled != null) {
-				modifiableScript.setExecutionEnabled(BooleanUtils.toBoolean(executionEnabled));
+				modifiableScript.setLaunchEnabled(BooleanUtils.toBoolean(executionEnabled));
 			}
 
 			ServletUtils.writeMessage(response, "success", "Script configuration updated");

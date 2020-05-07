@@ -38,17 +38,17 @@ public interface ModifiableScript {
   /**
    * Enable or disable automatic execution
    */
-  void setExecutionEnabled(Boolean flag) throws PersistenceException;
+  void setLaunchEnabled(Boolean flag) throws PersistenceException;
 
   /**
    * Set mode related with automatic execution
    */
-  void setExecutionMode(LaunchMode mode) throws PersistenceException;
+  void setLaunchMode(LaunchMode mode) throws PersistenceException;
 
   /**
    * Set date after which script will be executed by schedule executor
    */
-  void setExecutionSchedule(Date date) throws PersistenceException;
+  void setLaunchSchedule(Date date) throws PersistenceException;
 
   /**
    * Set publish run

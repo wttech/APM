@@ -20,12 +20,12 @@
 package com.cognifide.cq.cqsm.core.scripts;
 
 import static com.cognifide.cq.cqsm.core.scripts.FileDescriptor.createFileDescriptor;
-import static com.cognifide.cq.cqsm.core.scripts.ScriptContent.APM_EXECUTION_ENABLED;
-import static com.cognifide.cq.cqsm.core.scripts.ScriptContent.APM_EXECUTION_ENVIRONMENT;
-import static com.cognifide.cq.cqsm.core.scripts.ScriptContent.APM_EXECUTION_HOOK;
-import static com.cognifide.cq.cqsm.core.scripts.ScriptContent.APM_EXECUTION_MODE;
-import static com.cognifide.cq.cqsm.core.scripts.ScriptContent.APM_EXECUTION_SCHEDULE;
-import static com.cognifide.cq.cqsm.core.scripts.ScriptContent.APM_SCRIPT;
+import static com.cognifide.cq.cqsm.core.scripts.ScriptNode.APM_LAUNCH_ENABLED;
+import static com.cognifide.cq.cqsm.core.scripts.ScriptNode.APM_LAUNCH_ENVIRONMENT;
+import static com.cognifide.cq.cqsm.core.scripts.ScriptNode.APM_LAUNCH_HOOK;
+import static com.cognifide.cq.cqsm.core.scripts.ScriptNode.APM_LAUNCH_MODE;
+import static com.cognifide.cq.cqsm.core.scripts.ScriptNode.APM_LAUNCH_SCHEDULE;
+import static com.cognifide.cq.cqsm.core.scripts.ScriptNode.APM_SCRIPT;
 import static java.lang.String.format;
 
 import com.cognifide.apm.api.scripts.Script;
@@ -139,16 +139,16 @@ public class ScriptStorageImpl implements ScriptStorage {
         contentNode = fileNode.addNode(JcrConstants.JCR_CONTENT, JcrConstants.NT_RESOURCE);
       }
 
-      contentNode.addMixin(APM_SCRIPT);
       contentNode.setProperty(JcrConstants.JCR_DATA, binary);
       contentNode.setProperty(JcrConstants.JCR_ENCODING, SCRIPT_ENCODING.name());
-      contentNode.setProperty(APM_EXECUTION_ENABLED, executionMetadata.isExecutionEnabled());
-      setOrRemoveProperty(contentNode, APM_EXECUTION_MODE, executionMetadata.getLaunchMode());
-      setOrRemoveProperty(contentNode, APM_EXECUTION_ENVIRONMENT, executionMetadata.getLaunchEnvironment());
-      setOrRemoveProperty(contentNode, APM_EXECUTION_HOOK, executionMetadata.getExecutionHook());
-      setOrRemoveProperty(contentNode, APM_EXECUTION_SCHEDULE, executionMetadata.getExecutionSchedule());
-      removeProperty(contentNode, ScriptContent.APM_EXECUTION_LAST);
-      JcrUtils.setLastModified(contentNode, Calendar.getInstance());
+      fileNode.addMixin(APM_SCRIPT);
+      fileNode.setProperty(APM_LAUNCH_ENABLED, executionMetadata.isExecutionEnabled());
+      setOrRemoveProperty(fileNode, APM_LAUNCH_MODE, executionMetadata.getLaunchMode());
+      setOrRemoveProperty(fileNode, APM_LAUNCH_ENVIRONMENT, executionMetadata.getLaunchEnvironment());
+      setOrRemoveProperty(fileNode, APM_LAUNCH_HOOK, executionMetadata.getExecutionHook());
+      setOrRemoveProperty(fileNode, APM_LAUNCH_SCHEDULE, executionMetadata.getExecutionSchedule());
+      removeProperty(fileNode, ScriptNode.APM_LAST_EXECUTED);
+      JcrUtils.setLastModified(fileNode, Calendar.getInstance());
       session.save();
       result = scriptFinder.find(fileNode.getPath(), resolver);
     } catch (RepositoryException e) {
