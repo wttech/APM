@@ -2,4 +2,4 @@
 <jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
     jcr:primaryType="sling:OsgiConfig"
     whitelist.name="apm"
-    whitelist.bundles="[com.cognifide.aem.apm.core]"/>
+    whitelist.bundles="[com.cognifide.apm.core]"/>

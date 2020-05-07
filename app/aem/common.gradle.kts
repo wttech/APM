@@ -4,7 +4,7 @@
 import com.cognifide.gradle.aem.AemExtension
 import com.cognifide.gradle.aem.bundle.tasks.bundle
 
-group = "com.cognifide.aem.apm"
+group = "com.cognifide.apm"
 
 plugins.withId("com.cognifide.aem.common") {
     configure<AemExtension> {
