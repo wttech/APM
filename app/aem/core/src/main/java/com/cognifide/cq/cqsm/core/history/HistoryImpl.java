@@ -116,7 +116,7 @@ public class HistoryImpl implements History {
           .instanceType(instanceDetails.getInstanceName())
           .instanceHostname(getHostname())
           .build();
-      return createHistoryEntry(resolver, script.reload(), mode, historyEntryWriter, false);
+      return createHistoryEntry(resolver, script, mode, historyEntryWriter, false);
     }, null);
   }
 
@@ -129,7 +129,7 @@ public class HistoryImpl implements History {
           .instanceType(instanceDetails.getInstanceType().getInstanceName())
           .instanceHostname(instanceDetails.getHostname())
           .build();
-      return createHistoryEntry(resolver, script.reload(), mode, historyEntryWriter, true);
+      return createHistoryEntry(resolver, script, mode, historyEntryWriter, true);
     }, null);
   }
 

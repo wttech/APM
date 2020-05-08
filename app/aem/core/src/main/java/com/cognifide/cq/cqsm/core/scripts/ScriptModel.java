@@ -37,6 +37,8 @@ import com.day.cq.commons.jcr.JcrConstants;
 import java.util.Date;
 import javax.inject.Inject;
 import javax.inject.Named;
+import lombok.AccessLevel;
+import lombok.Setter;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
@@ -54,6 +56,7 @@ public class ScriptModel implements Script {
   @Inject
   @Named(APM_LAUNCH_ENABLED)
   @Optional
+  @Setter(AccessLevel.PACKAGE)
   private Boolean launchEnabled;
 
   @Inject
@@ -74,31 +77,37 @@ public class ScriptModel implements Script {
   @Inject
   @Named(APM_LAUNCH_SCHEDULE)
   @Optional
+  @Setter(AccessLevel.PACKAGE)
   private Date launchSchedule;
 
   @Inject
   @Named(APM_LAST_EXECUTED)
   @Optional
+  @Setter(AccessLevel.PACKAGE)
   private Date lastExecution;
 
   @Inject
   @Named(APM_CHECKSUM)
   @Optional
+  @Setter(AccessLevel.PACKAGE)
   private String checksum;
 
   @Inject
   @Named(APM_PUBLISH_RUN)
   @Optional
+  @Setter(AccessLevel.PACKAGE)
   private Boolean publishRun;
 
   @Inject
   @Named(APM_REPLICATED_BY)
   @Optional
+  @Setter(AccessLevel.PACKAGE)
   private String replicatedBy;
 
   @Inject
   @Named(APM_VERIFIED)
   @Optional
+  @Setter(AccessLevel.PACKAGE)
   private Boolean verified;
 
   @Inject
@@ -117,10 +126,6 @@ public class ScriptModel implements Script {
     this.path = resource.getPath();
   }
 
-  public Script reload() {
-    return resource.adaptTo(ScriptModel.class);
-  }
-
   @Override
   public boolean isValid() {
     return BooleanUtils.toBoolean(verified);
@@ -129,6 +134,10 @@ public class ScriptModel implements Script {
   @Override
   public LaunchMode getLaunchMode() {
     return (launchMode == null) ? LaunchMode.ON_DEMAND : LaunchMode.valueOf(launchMode);
+  }
+
+  void setLaunchMode(LaunchMode mode) {
+    this.launchMode = mode != null ? mode.toString() : null;
   }
 
   @Override

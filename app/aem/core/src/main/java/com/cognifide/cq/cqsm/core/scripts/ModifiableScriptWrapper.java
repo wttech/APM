@@ -33,73 +33,104 @@ import org.apache.sling.api.resource.ResourceResolver;
 
 public class ModifiableScriptWrapper implements ModifiableScript {
 
-	private final ResourceResolver resolver;
+  private final ResourceResolver resolver;
 
-	private final Script script;
+  private final ScriptModel script;
 
-	public ModifiableScriptWrapper(ResourceResolver resolver, Script script) {
-		this.resolver = resolver;
-		this.script = script;
-	}
+  public ModifiableScriptWrapper(ResourceResolver resolver, Script script) {
+    this.resolver = resolver;
+    if (script instanceof ScriptModel) {
+      this.script = (ScriptModel) script;
+    } else {
+      this.script = null;
+    }
+  }
 
-	@Override
-	public void setLaunchSchedule(Date date) throws PersistenceException {
-		setProperty(ScriptNode.APM_LAUNCH_SCHEDULE, date);
-	}
+  @Override
+  public void setLaunchSchedule(Date date) throws PersistenceException {
+    setProperty(ScriptNode.APM_LAUNCH_SCHEDULE, date);
+    if (script != null) {
+      script.setLaunchSchedule(date);
+    }
+  }
 
-	@Override
-	public void setExecuted(Boolean flag) throws PersistenceException {
-		setProperty(ScriptNode.APM_LAST_EXECUTED, flag ? new Date() : null);
-	}
+  @Override
+  public void setExecuted(boolean flag) throws PersistenceException {
+    final Date date = flag ? new Date() : null;
+    setProperty(ScriptNode.APM_LAST_EXECUTED, date);
+    if (script != null) {
+      script.setLastExecution(date);
+    }
+  }
 
-	@Override
-	public void setLaunchEnabled(Boolean flag) throws PersistenceException {
-		setProperty(ScriptNode.APM_LAUNCH_ENABLED, flag);
-	}
+  @Override
+  public void setLaunchEnabled(boolean flag) throws PersistenceException {
+    setProperty(ScriptNode.APM_LAUNCH_ENABLED, flag);
+    if (script != null) {
+      script.setLaunchEnabled(flag);
+    }
+  }
 
-	@Override
-	public void setPublishRun(Boolean flag) throws PersistenceException {
-		setProperty(ScriptNode.APM_PUBLISH_RUN, flag);
-	}
+  @Override
+  public void setPublishRun(boolean flag) throws PersistenceException {
+    setProperty(ScriptNode.APM_PUBLISH_RUN, flag);
+    if (script != null) {
+      script.setPublishRun(flag);
+    }
+  }
 
   @Override
   public void setReplicatedBy(String userId) throws PersistenceException {
     setProperty(ScriptNode.APM_REPLICATED_BY, userId);
+    if (script != null) {
+      script.setReplicatedBy(userId);
+    }
   }
 
-	@Override
-	public void setLaunchMode(LaunchMode mode) throws PersistenceException {
-		setProperty(ScriptNode.APM_LAUNCH_MODE, mode.name());
-	}
+  @Override
+  public void setLaunchMode(LaunchMode mode) throws PersistenceException {
+    setProperty(ScriptNode.APM_LAUNCH_MODE, mode.name());
+    if (script != null) {
+      script.setLaunchMode(mode);
+    }
+  }
 
-	@Override
-	public void setValid(Boolean flag) throws PersistenceException {
-		setProperty(ScriptNode.APM_VERIFIED, flag);
-	}
+  @Override
+  public void setValid(boolean flag) throws PersistenceException {
+    setProperty(ScriptNode.APM_VERIFIED, flag);
+    if (script != null) {
+      script.setVerified(flag);
+    }
+  }
 
-	@Override
-	public void setChecksum(String checksum) throws PersistenceException {
-		setProperty(ScriptNode.APM_CHECKSUM, checksum);
-	}
+  @Override
+  public void setChecksum(String checksum) throws PersistenceException {
+    setProperty(ScriptNode.APM_CHECKSUM, checksum);
+    if (script != null) {
+      script.setChecksum(checksum);
+    }
+  }
 
-	public void setProperty(String name, Object value) throws PersistenceException {
-		Resource resource = resolver.getResource(script.getPath());
-		ModifiableValueMap vm = resource.adaptTo(ModifiableValueMap.class);
-		ResourceMixinUtil.addMixin(vm, ScriptNode.APM_SCRIPT);
-		vm.put(name, convertValue(value));
+  public void setProperty(String name, Object value) throws PersistenceException {
+    if (script != null) {
+      Resource resource = resolver.getResource(script.getPath());
+      ModifiableValueMap vm = resource.adaptTo(ModifiableValueMap.class);
+      ResourceMixinUtil.addMixin(vm, ScriptNode.APM_SCRIPT);
+      vm.put(name, convertValue(value));
 
-		resource.getResourceResolver().commit();
-	}
+      resource.getResourceResolver().commit();
+    }
+  }
 
-	private Object convertValue(Object obj) {
-		if (obj instanceof Date) {
-			Calendar calendar = new GregorianCalendar();
-			calendar.setTime((Date) obj);
+  private Object convertValue(Object obj) {
+    if (obj instanceof Date) {
+      Calendar calendar = new GregorianCalendar();
+      calendar.setTime((Date) obj);
 
-			return calendar;
-		}
+      return calendar;
+    }
 
-		return obj;
-	}
+    return obj;
+  }
 
 }

@@ -131,7 +131,6 @@ class ReferenceFinder(
     }
 
     class NonExistingScript(val scriptPath: String) : Script {
-        override fun reload(): Script = this
 
         override fun getPath(): String = scriptPath
 

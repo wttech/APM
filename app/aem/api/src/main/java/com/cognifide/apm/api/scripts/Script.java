@@ -23,8 +23,6 @@ import java.util.Date;
 
 public interface Script {
 
-	Script reload();
-
 	/**
 	 * Get validation status
 	 */

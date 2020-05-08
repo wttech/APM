@@ -28,17 +28,17 @@ public interface ModifiableScript {
   /**
    * Set validation status
    */
-  void setValid(Boolean flag) throws PersistenceException;
+  void setValid(boolean flag) throws PersistenceException;
 
   /**
    * Mark after execution
    */
-  void setExecuted(Boolean flag) throws PersistenceException;
+  void setExecuted(boolean flag) throws PersistenceException;
 
   /**
    * Enable or disable automatic execution
    */
-  void setLaunchEnabled(Boolean flag) throws PersistenceException;
+  void setLaunchEnabled(boolean flag) throws PersistenceException;
 
   /**
    * Set mode related with automatic execution
@@ -53,7 +53,7 @@ public interface ModifiableScript {
   /**
    * Set publish run
    */
-  void setPublishRun(Boolean flag) throws PersistenceException;
+  void setPublishRun(boolean flag) throws PersistenceException;
 
   /**
    * Set replicated by user
