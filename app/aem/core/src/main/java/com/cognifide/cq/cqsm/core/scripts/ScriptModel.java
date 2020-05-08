@@ -138,7 +138,7 @@ public class ScriptModel implements Script {
 
   @Override
   public LaunchEnvironment getLaunchEnvironment() {
-    return (launchEnvironment == null) ? null : LaunchEnvironment.valueOf(launchEnvironment);
+    return (launchEnvironment == null) ? LaunchEnvironment.ALL : LaunchEnvironment.valueOf(launchEnvironment);
   }
 
   @Override

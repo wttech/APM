@@ -32,8 +32,8 @@ import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ExecutionMode;
 import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.cq.cqsm.api.scripts.Event;
-import com.cognifide.cq.cqsm.api.scripts.ExecutionMetadata;
 import com.cognifide.cq.cqsm.api.scripts.ExtendedScriptManager;
+import com.cognifide.cq.cqsm.api.scripts.LaunchMetadata;
 import com.cognifide.cq.cqsm.api.scripts.ScriptStorage;
 import com.cognifide.cq.cqsm.core.Cqsm;
 import com.cognifide.cq.cqsm.core.Property;
@@ -103,14 +103,14 @@ public class ScriptStorageImpl implements ScriptStorage {
   }
 
   @Override
-  public Script save(String fileName, InputStream input, ExecutionMetadata executionMetadata, boolean overwrite,
+  public Script save(String fileName, InputStream input, LaunchMetadata launchMetadata, boolean overwrite,
       ResourceResolver resolver) throws RepositoryException, PersistenceException {
 
     FileDescriptor fileDescriptor = createFileDescriptor(fileName, getSavePath(), input);
 
     validate(Collections.singletonList(fileDescriptor));
 
-    Script script = saveScript(fileDescriptor, executionMetadata, overwrite, resolver);
+    Script script = saveScript(fileDescriptor, launchMetadata, overwrite, resolver);
     scriptManager.process(script, ExecutionMode.VALIDATION, resolver);
     scriptManager.getEventManager().trigger(Event.AFTER_SAVE, script);
     return script;
@@ -121,7 +121,7 @@ public class ScriptStorageImpl implements ScriptStorage {
     return SCRIPT_PATH;
   }
 
-  private Script saveScript(FileDescriptor descriptor, ExecutionMetadata executionMetadata, boolean overwrite,
+  private Script saveScript(FileDescriptor descriptor, LaunchMetadata launchMetadata, boolean overwrite,
       ResourceResolver resolver) {
     Script result = null;
     try {
@@ -142,11 +142,11 @@ public class ScriptStorageImpl implements ScriptStorage {
       contentNode.setProperty(JcrConstants.JCR_DATA, binary);
       contentNode.setProperty(JcrConstants.JCR_ENCODING, SCRIPT_ENCODING.name());
       fileNode.addMixin(APM_SCRIPT);
-      fileNode.setProperty(APM_LAUNCH_ENABLED, executionMetadata.isExecutionEnabled());
-      setOrRemoveProperty(fileNode, APM_LAUNCH_MODE, executionMetadata.getLaunchMode());
-      setOrRemoveProperty(fileNode, APM_LAUNCH_ENVIRONMENT, executionMetadata.getLaunchEnvironment());
-      setOrRemoveProperty(fileNode, APM_LAUNCH_HOOK, executionMetadata.getExecutionHook());
-      setOrRemoveProperty(fileNode, APM_LAUNCH_SCHEDULE, executionMetadata.getExecutionSchedule());
+      fileNode.setProperty(APM_LAUNCH_ENABLED, launchMetadata.isExecutionEnabled());
+      setOrRemoveProperty(fileNode, APM_LAUNCH_MODE, launchMetadata.getLaunchMode());
+      setOrRemoveProperty(fileNode, APM_LAUNCH_ENVIRONMENT, launchMetadata.getLaunchEnvironment());
+      setOrRemoveProperty(fileNode, APM_LAUNCH_HOOK, launchMetadata.getExecutionHook());
+      setOrRemoveProperty(fileNode, APM_LAUNCH_SCHEDULE, launchMetadata.getExecutionSchedule());
       removeProperty(fileNode, ScriptNode.APM_LAST_EXECUTED);
       JcrUtils.setLastModified(fileNode, Calendar.getInstance());
       session.save();

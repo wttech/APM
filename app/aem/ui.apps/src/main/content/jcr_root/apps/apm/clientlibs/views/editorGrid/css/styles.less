@@ -19,7 +19,7 @@
  */
 .apm-editor-grid {
   display: grid;
-  grid-template-areas: "console console console details" "console console console execution" "console console console nothing";
+  grid-template-areas: "console console console details" "console console console launch" "console console console nothing";
 
   .apm-editor-console {
     grid-area: console;
@@ -61,11 +61,11 @@
     grid-area: details;
   }
 
-  .apm-editor-execution {
-    grid-area: execution;
+  .apm-editor-launch {
+    grid-area: launch;
   }
 
   @media screen and (max-width: 768px) {
-    grid-template-areas: "details" "console" "execution";
+    grid-template-areas: "details" "console" "launch";
   }
 }

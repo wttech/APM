@@ -25,14 +25,14 @@
   };
 
   const FieldNames = {
-    executionEnabled: 'apm:executionEnabled',
-    executionMode: 'apm:executionMode',
-    executionEnvironment: 'apm:executionEnvironment',
-    executionHook: 'apm:executionHook',
-    executionSchedule: 'apm:executionSchedule',
+    launchEnabled: 'apm:launchEnabled',
+    launchMode: 'apm:launchMode',
+    launchEnvironment: 'apm:launchEnvironment',
+    launchHook: 'apm:launchHook',
+    launchSchedule: 'apm:launchSchedule',
   };
 
-  const ExecutionModes = {
+  const LaunchModes = {
     onInstall: 'ON_INSTALL',
     onInstallModified: 'ON_INSTALL_MODIFIED',
     onSchedule: 'ON_SCHEDULE',
@@ -43,11 +43,11 @@
       this.$element = $element;
       this.editorMode = this.$element.hasClass(EditorModes.viewMode) ? EditorModes.viewMode : EditorModes.editMode;
       this.fields = {
-        executionEnabled: fields[FieldNames.executionEnabled],
-        executionMode: fields[FieldNames.executionMode],
-        executionEnvironment: fields[FieldNames.executionEnvironment],
-        executionHook: fields[FieldNames.executionHook],
-        executionSchedule: fields[FieldNames.executionSchedule],
+        launchEnabled: fields[FieldNames.launchEnabled],
+        launchMode: fields[FieldNames.launchMode],
+        launchEnvironment: fields[FieldNames.launchEnvironment],
+        launchHook: fields[FieldNames.launchHook],
+        launchSchedule: fields[FieldNames.launchSchedule],
       };
 
       this.init();
@@ -55,8 +55,8 @@
 
     init() {
       if (this.editorMode === EditorModes.editMode) {
-        this.fields.executionEnabled.on('foundation-field-change', this.updateFields.bind(this));
-        this.fields.executionMode.on('foundation-field-change', this.updateFields.bind(this));
+        this.fields.launchEnabled.on('foundation-field-change', this.updateFields.bind(this));
+        this.fields.launchMode.on('foundation-field-change', this.updateFields.bind(this));
       } else {
         this.disableFields(this.fields, true);
       }
@@ -82,18 +82,18 @@
     }
 
     updateFields() {
-      const executionEnabled = this.fields.executionEnabled.getValue();
-      if (executionEnabled === 'false') {
-        this.showFields([this.fields.executionEnabled]);
+      const launchEnabled = this.fields.launchEnabled.getValue();
+      if (launchEnabled === 'false') {
+        this.showFields([this.fields.launchEnabled]);
       } else {
-        const executionMode = this.fields.executionMode.getValue();
-        if (executionMode === ExecutionModes.onInstall || executionMode === ExecutionModes.onInstallModified) {
-          this.showFields([this.fields.executionEnabled, this.fields.executionMode, this.fields.executionEnvironment,
-            this.fields.executionHook])
-        } else if (executionMode === ExecutionModes.onSchedule) {
-          this.showFields([this.fields.executionEnabled, this.fields.executionMode, this.fields.executionSchedule]);
+        const launchMode = this.fields.launchMode.getValue();
+        if (launchMode === LaunchModes.onInstall || launchMode === LaunchModes.onInstallModified) {
+          this.showFields([this.fields.launchEnabled, this.fields.launchMode, this.fields.launchEnvironment,
+            this.fields.launchHook])
+        } else if (launchMode === LaunchModes.onSchedule) {
+          this.showFields([this.fields.launchEnabled, this.fields.launchMode, this.fields.launchSchedule]);
         } else {
-          this.showFields([this.fields.executionEnabled, this.fields.executionMode]);
+          this.showFields([this.fields.launchEnabled, this.fields.launchMode]);
         }
       }
     }

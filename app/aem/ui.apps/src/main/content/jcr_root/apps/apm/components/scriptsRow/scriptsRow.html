@@ -40,9 +40,10 @@
   <td is="coral-table-cell" value="${item.author}">
     ${item.author}
   </td>
-  <td is="coral-table-cell" value="${item.executionEnabled ? item.execution : 'Disabled'}" class="execution-${item.executionEnabled ? 'enabled' : 'disabled'}">
-    <sly data-sly-test="${item.executionEnabled}">${item.execution}</sly>
-    <sly data-sly-test="${!item.executionEnabled}">Disabled</sly>
+  <td is="coral-table-cell" value="${item.launchEnabled ? item.launchMode : 'Disabled'}" class="launch-${item.launchEnabled ? 'enabled' : 'disabled'}">
+    <sly data-sly-test="${item.launchEnabled}">${item.launchMode}${item.launchMode != 'On Demand' ? ' ({0})' : '' @ format=[item.launchEnvironment]}</sly>
+    <sly data-sly-test="${!item.folder && !item.launchEnabled}">Disabled</sly>
+    <sly data-sly-test="${item.folder}"></sly>
   </td>
   <td is="coral-table-cell" value="${item.valid ? 'valid' : 'invalid'}">
     <coral-icon data-sly-test="${!item.folder}" icon="${item.valid ? 'check' : 'close'}" role="img"

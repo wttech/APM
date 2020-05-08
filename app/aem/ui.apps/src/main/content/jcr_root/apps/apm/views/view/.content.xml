@@ -46,7 +46,7 @@
           jcr:primaryType="nt:unstructured"
           sling:resourceType="granite/ui/components/coral/foundation/form"
           action="${requestPathInfo.resourcePath}"
-          dataPath="${requestPathInfo.suffix}/jcr:content"
+          dataPath="${requestPathInfo.suffix}"
           method="post"
           style="aligned">
           <items jcr:primaryType="nt:unstructured">
@@ -77,56 +77,11 @@
                       sling:resourceType="apm/components/scriptDetails"/>
                   </items>
                 </details>
-                <execution
-                  granite:class="apm-editor-execution"
+                <launch
                   jcr:primaryType="nt:unstructured"
-                  sling:resourceType="granite/ui/components/coral/foundation/form/fieldset"
-                  jcr:title="Execution">
-                  <items jcr:primaryType="nt:unstructured">
-                    <disabled
-                      jcr:primaryType="nt:unstructured"
-                      sling:resourceType="granite/ui/components/coral/foundation/form/checkbox"
-                      text="Disabled"
-                      fieldLabel="Execution"
-                      name="apm:executionEnabled"
-                      value="false"
-                      uncheckedValue="true"/>
-                    <mode
-                      jcr:primaryType="nt:unstructured"
-                      sling:resourceType="granite/ui/components/coral/foundation/form/select"
-                      emptyText="None"
-                      emptyOption="true"
-                      fieldLabel="Mode"
-                      name="apm:executionMode">
-                      <datasource
-                        jcr:primaryType="nt:unstructured"
-                        sling:resourceType="apm/datasource/executionModes"/>
-                    </mode>
-                    <environment
-                      jcr:primaryType="nt:unstructured"
-                      sling:resourceType="granite/ui/components/coral/foundation/form/select"
-                      emptyText="Any"
-                      emptyOption="true"
-                      fieldLabel="Environment"
-                      name="apm:executionEnvironment">
-                      <datasource
-                        jcr:primaryType="nt:unstructured"
-                        sling:resourceType="apm/datasource/executionEnvironments"/>
-                    </environment>
-                    <hook
-                      jcr:primaryType="nt:unstructured"
-                      sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
-                      fieldLabel="Hook"
-                      name="apm:executionHook"/>
-                    <schedule
-                      jcr:primaryType="nt:unstructured"
-                      sling:resourceType="granite/ui/components/coral/foundation/form/datepicker"
-                      fieldLabel="Schedule"
-                      name="apm:executionSchedule"
-                      type="datetime"
-                      valueFormat="YYYY-MM-DD[T]HH:mm:ss"/>
-                  </items>
-                </execution>
+                  sling:resourceType="granite/ui/components/coral/foundation/include"
+                  path="apm/fragments/scriptLaunch"
+                  resourceType="granite/ui/components/coral/foundation/form/fieldset"/>
               </items>
             </grid>
           </items>

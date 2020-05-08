@@ -24,7 +24,7 @@ import com.cognifide.apm.api.scripts.LaunchEnvironment;
 import com.cognifide.apm.api.scripts.LaunchMode;
 import java.time.LocalDateTime;
 
-public class ExecutionMetadata {
+public class LaunchMetadata {
 
   private final boolean executionEnabled;
   private final LaunchMode launchMode;
@@ -32,31 +32,31 @@ public class ExecutionMetadata {
   private final String executionHook;
   private final LocalDateTime executionSchedule;
 
-  public static ExecutionMetadata disabled() {
-    return new ExecutionMetadata(false, LaunchMode.ON_DEMAND, null, null, null);
+  public static LaunchMetadata disabled() {
+    return new LaunchMetadata(false, LaunchMode.ON_DEMAND, null, null, null);
   }
 
-  public static ExecutionMetadata onDemand() {
-    return new ExecutionMetadata(true, LaunchMode.ON_DEMAND, null, null, null);
+  public static LaunchMetadata onDemand() {
+    return new LaunchMetadata(true, LaunchMode.ON_DEMAND, null, null, null);
   }
 
-  public static ExecutionMetadata onModify() {
-    return new ExecutionMetadata(true, LaunchMode.ON_MODIFY, null, null, null);
+  public static LaunchMetadata onModify() {
+    return new LaunchMetadata(true, LaunchMode.ON_MODIFY, null, null, null);
   }
 
-  public static ExecutionMetadata onStart() {
-    return new ExecutionMetadata(true, LaunchMode.ON_START, null, null, null);
+  public static LaunchMetadata onStart() {
+    return new LaunchMetadata(true, LaunchMode.ON_START, null, null, null);
   }
 
-  public static ExecutionMetadata onHook(LaunchEnvironment launchEnvironment, String executionHook) {
-    return new ExecutionMetadata(true, LaunchMode.ON_DEMAND, launchEnvironment, executionHook, null);
+  public static LaunchMetadata onHook(LaunchEnvironment launchEnvironment, String executionHook) {
+    return new LaunchMetadata(true, LaunchMode.ON_DEMAND, launchEnvironment, executionHook, null);
   }
 
-  public static ExecutionMetadata onSchedule(LocalDateTime executionSchedule) {
-    return new ExecutionMetadata(true, LaunchMode.ON_DEMAND, null, null, executionSchedule);
+  public static LaunchMetadata onSchedule(LocalDateTime executionSchedule) {
+    return new LaunchMetadata(true, LaunchMode.ON_DEMAND, null, null, executionSchedule);
   }
 
-  public ExecutionMetadata(boolean executionEnabled, LaunchMode launchMode,
+  public LaunchMetadata(boolean executionEnabled, LaunchMode launchMode,
       LaunchEnvironment launchEnvironment, String executionHook, LocalDateTime executionSchedule) {
     this.executionEnabled = executionEnabled;
     this.launchMode = launchMode;

@@ -40,8 +40,8 @@ import com.cognifide.cq.cqsm.api.executors.ContextImpl;
 import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.scripts.Event;
 import com.cognifide.cq.cqsm.api.scripts.EventManager;
-import com.cognifide.cq.cqsm.api.scripts.ExecutionMetadata;
 import com.cognifide.cq.cqsm.api.scripts.ExtendedScriptManager;
+import com.cognifide.cq.cqsm.api.scripts.LaunchMetadata;
 import com.cognifide.cq.cqsm.api.scripts.ModifiableScript;
 import com.cognifide.cq.cqsm.api.scripts.ScriptStorage;
 import com.cognifide.cq.cqsm.core.Property;
@@ -204,7 +204,7 @@ public class ScriptManagerImpl implements ExtendedScriptManager {
     }
 
     InputStream stream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
-    script = scriptStorage.save(path + "/" + FILE_FOR_EVALUATION, stream, ExecutionMetadata.onDemand(), true, resolver);
+    script = scriptStorage.save(path + "/" + FILE_FOR_EVALUATION, stream, LaunchMetadata.onDemand(), true, resolver);
 
     Progress progress = process(script, mode, customDefinitions, resolver);
     scriptStorage.remove(script, resolver);

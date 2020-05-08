@@ -36,17 +36,13 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.commons.osgi.PropertiesUtil;
-import org.osgi.service.component.ComponentContext;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 
 @Component(
     immediate = true,
     service = ScriptFinder.class,
     property = {
-        ScriptFinderImpl.SEARCH_PATHS + "=" + ScriptFinderImpl.SCRIPT_PATH,
-        Property.DESCRIPTION + "CQSM Script Finder Service",
+        Property.DESCRIPTION + "APM Script Finder Service",
         Property.VENDOR
     }
 )
@@ -57,15 +53,6 @@ public class ScriptFinderImpl implements ScriptFinder {
   public static final String SCRIPT_PATH = ROOT_PATH + "/scripts";
 
   private static final String QUERY = "SELECT * FROM [nt:file] WHERE ISDESCENDANTNODE([%s]) AND [jcr:mixinTypes] = 'apm:Script'";
-
-  static final String SEARCH_PATHS = "search.paths";
-
-  private String[] searchPaths = new String[]{};
-
-  @Activate
-  protected void activate(final ComponentContext componentContext) {
-    this.searchPaths = PropertiesUtil.toStringArray(componentContext.getProperties().get(SEARCH_PATHS), new String[]{});
-  }
 
   @Override
   public List<Script> findAll(Predicate<Script> filter, ResourceResolver resolver) {
@@ -86,6 +73,7 @@ public class ScriptFinderImpl implements ScriptFinder {
   public Script find(String path, ResourceResolver resolver) {
     return find(path, true, resolver);
   }
+
   @Override
   public Script find(String scriptPath, boolean skipIgnored, ResourceResolver resolver) {
     Script result = null;
@@ -94,12 +82,7 @@ public class ScriptFinderImpl implements ScriptFinder {
       if (isAbsolute(scriptPath)) {
         resource = resolver.getResource(scriptPath);
       } else {
-        resource = Stream.of(searchPaths)
-            .map(searchPath -> searchPath + "/" + scriptPath)
-            .map(path -> resolver.getResource(path))
-            .filter(Objects::nonNull)
-            .findFirst()
-            .orElse(null);
+        resource = resolver.getResource(SCRIPT_PATH + "/" + scriptPath);
       }
       if (resource != null) {
         result = resource.adaptTo(ScriptModel.class);
@@ -109,9 +92,8 @@ public class ScriptFinderImpl implements ScriptFinder {
   }
 
   private Stream<Resource> findScripts(ResourceResolver resolver) {
-    return Stream.of(searchPaths)
-        .map(searchPath -> String.format(QUERY, searchPath))
-        .map(query -> resolver.findResources(query, Query.JCR_SQL2))
+    final String query = String.format(QUERY, SCRIPT_PATH);
+    return Stream.of(resolver.findResources(query, Query.JCR_SQL2))
         .map(resourceIterator -> Spliterators.spliteratorUnknownSize(resourceIterator, Spliterator.ORDERED))
         .flatMap(resourceSpliterator -> StreamSupport.stream(resourceSpliterator, false))
         .filter(Objects::nonNull);

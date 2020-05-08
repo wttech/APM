@@ -40,6 +40,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import lombok.Getter;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.WordUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
@@ -78,10 +79,13 @@ public final class ScriptsRowModel {
   private final List<ScriptRun> runs = new ArrayList<>();
 
   @Getter
-  private String execution;
+  private String launchMode;
 
   @Getter
-  private boolean isExecutionEnabled;
+  private String launchEnvironment;
+
+  @Getter
+  private boolean isLaunchEnabled;
 
   @PostConstruct
   protected void afterCreated() {
@@ -96,10 +100,17 @@ public final class ScriptsRowModel {
         this.runs.add(createScriptRun("runOnAuthor", script, scriptHistory.getLastLocalRun()));
         this.runs.add(createScriptRun("runOnPublish", script, scriptHistory.getLastRemoteRun()));
         this.runs.add(createScriptRun("dryRun", script, scriptHistory.getLastLocalDryRun()));
-        this.execution = script.getLaunchMode().label();
-        this.isExecutionEnabled = script.isLaunchEnabled();
+        this.launchMode = label(script.getLaunchMode());
+        this.launchEnvironment = label(script.getLaunchEnvironment());
+        this.isLaunchEnabled = script.isLaunchEnabled();
       });
     }
+  }
+
+  public String label(Object object) {
+    String words = object.toString().replace('_', ' ');
+    words = WordUtils.capitalizeFully(words.toLowerCase());
+    return words;
   }
 
   @NotNull

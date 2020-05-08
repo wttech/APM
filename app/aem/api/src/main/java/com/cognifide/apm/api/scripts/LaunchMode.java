@@ -19,8 +19,6 @@
  */
 package com.cognifide.apm.api.scripts;
 
-import org.apache.commons.lang.WordUtils;
-
 public enum LaunchMode {
 
   /**
@@ -51,11 +49,5 @@ public enum LaunchMode {
   /**
    * Executed after successfully package installation if script content's changed
    */
-  ON_INSTALL_MODIFIED;
-
-  public String label() {
-    String words = toString().replace('_', ' ');
-    words = WordUtils.capitalizeFully(words.toLowerCase());
-    return words;
-  }
+  ON_INSTALL_MODIFIED
 }

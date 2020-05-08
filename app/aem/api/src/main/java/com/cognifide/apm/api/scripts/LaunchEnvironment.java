@@ -21,5 +21,5 @@ package com.cognifide.apm.api.scripts;
 
 public enum LaunchEnvironment {
 
-  AUTHOR, PUBLISH
+  ALL, AUTHOR, PUBLISH
 }

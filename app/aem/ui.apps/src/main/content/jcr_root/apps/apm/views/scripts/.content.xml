@@ -59,9 +59,9 @@
             jcr:primaryType="nt:unstructured"
             jcr:title="Author"
             sortable="{Boolean}true"/>
-          <executionMode
+          <launchMode
             jcr:primaryType="nt:unstructured"
-            jcr:title="Execution Mode"
+            jcr:title="Launch"
             sortable="{Boolean}true"/>
           <valid
             jcr:primaryType="nt:unstructured"

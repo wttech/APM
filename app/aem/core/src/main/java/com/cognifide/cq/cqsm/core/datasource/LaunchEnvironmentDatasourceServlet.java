@@ -21,7 +21,6 @@ package com.cognifide.cq.cqsm.core.datasource;
 
 import com.cognifide.apm.api.scripts.LaunchEnvironment;
 import com.cognifide.cq.cqsm.core.Property;
-import com.cognifide.cq.cqsm.core.datasource.SimpleDataSourceBuilder.Option;
 import javax.servlet.Servlet;
 import org.osgi.service.component.annotations.Component;
 
@@ -29,14 +28,14 @@ import org.osgi.service.component.annotations.Component;
     immediate = true,
     service = Servlet.class,
     property = {
-        Property.RESOURCE_TYPE + "apm/datasource/executionEnvironments",
-        Property.DESCRIPTION + "Provides execution environments",
+        Property.RESOURCE_TYPE + "apm/datasource/launchEnvironments",
+        Property.DESCRIPTION + "Provides launch environments",
         Property.VENDOR
     }
 )
-public class ExecutionEnvironmentDatasourceServlet extends AbstractDatasourceServlet<LaunchEnvironment> {
+public class LaunchEnvironmentDatasourceServlet extends AbstractDatasourceServlet<LaunchEnvironment> {
 
-  public ExecutionEnvironmentDatasourceServlet() {
-    super(LaunchEnvironment.values(), new Option("Any", ""));
+  public LaunchEnvironmentDatasourceServlet() {
+    super(LaunchEnvironment.values(), null);
   }
 }

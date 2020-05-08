@@ -23,18 +23,18 @@
     const SHOW_REFERENCES_URL = '/apm/references.html';
 
     const fieldNames = [
-      'apm:executionEnabled',
-      'apm:executionMode',
-      'apm:executionEnvironment',
-      'apm:executionHook',
-      'apm:executionSchedule',
+      'apm:launchEnabled',
+      'apm:launchMode',
+      'apm:launchEnvironment',
+      'apm:launchHook',
+      'apm:launchSchedule',
     ];
 
     function Console($el) {
       this.uiHelper = $(window).adaptTo('foundation-ui');
       this.$el = $el;
       this.$form = $el.find('#script-form');
-      this.$executionEnabled = this.$form.find('coral-checkbox[name="apm:executionEnabled"]');
+      this.$launchEnabled = this.$form.find('coral-checkbox[name="apm:launchEnabled"]');
       this.$textArea = this.$el.find('#cqsm').eq(0);
       this.$fileName = this.$el.find('#fname').eq(0);
       this.$showReference = this.$el.find('#showReference').eq(0);
@@ -66,8 +66,8 @@
       getOverwrite: function () {
         return this.isFileNameLocked() ? 'true' : 'false';
       },
-      getExecutionEnabled: function () {
-        return !this.$executionEnabled.prop('checked');
+      getLaunchEnabled: function () {
+        return !this.$launchEnabled.prop('checked');
       },
       fileUpload: function () {
         const self = this;
@@ -89,7 +89,7 @@
             formData.set(fieldName, originalValue);
           }
         });
-        formData.set('apm:executionEnabled', this.getExecutionEnabled());
+        formData.set('apm:launchEnabled', this.getLaunchEnabled());
         formData.set('overwrite', this.getOverwrite());
         formData.set('file', new Blob([value], {type: 'text/plain'}), fileName);
 

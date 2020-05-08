@@ -40,7 +40,7 @@ public interface ScriptStorage {
 	/**
 	 * Save script, for example from upload
 	 */
-	Script save(String fileName, InputStream input, ExecutionMetadata executionMetadata, boolean overwrite,
+	Script save(String fileName, InputStream input, LaunchMetadata launchMetadata, boolean overwrite,
 			ResourceResolver resolver) throws RepositoryException, PersistenceException;
 
 }

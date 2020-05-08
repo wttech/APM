@@ -22,8 +22,11 @@ package com.cognifide.apm.core.endpoints
 
 import com.cognifide.apm.api.scripts.LaunchEnvironment
 import com.cognifide.apm.api.scripts.LaunchMode
+import com.cognifide.apm.core.endpoints.utils.DateFormat
+import com.cognifide.apm.core.endpoints.utils.FileName
 import com.cognifide.apm.core.endpoints.utils.RequestParameter
-import com.cognifide.cq.cqsm.api.scripts.ExecutionMetadata
+import com.cognifide.cq.cqsm.api.scripts.LaunchMetadata
+import com.cognifide.cq.cqsm.core.scripts.ScriptNode
 import org.apache.sling.api.SlingHttpServletRequest
 import org.apache.sling.models.annotations.Model
 import java.io.InputStream
@@ -33,15 +36,15 @@ import javax.inject.Inject
 @Model(adaptables = [SlingHttpServletRequest::class])
 class ScriptUploadForm @Inject constructor(
         @param:RequestParameter("file", optional = false) val file: InputStream,
-        @param:RequestParameter("file", optional = false) @param:com.cognifide.apm.core.endpoints.utils.FileName val fileName: String,
+        @param:RequestParameter("file", optional = false) @param:FileName val fileName: String,
         @param:RequestParameter("overwrite") val overwrite: Boolean,
-        @param:RequestParameter("apm:executionEnabled") val executionEnabled: Boolean,
-        @param:RequestParameter("apm:executionMode") val launchMode: LaunchMode,
-        @param:RequestParameter("apm:executionEnvironment") val launchEnvironment: LaunchEnvironment?,
-        @param:RequestParameter("apm:executionHook") val executionHook: String?,
-        @param:RequestParameter("apm:executionSchedule") @param:com.cognifide.apm.core.endpoints.utils.DateFormat("yyyy-MM-dd'T'HH:mm:ss") val executionSchedule: LocalDateTime?
+        @param:RequestParameter(ScriptNode.APM_LAUNCH_ENABLED) val launchEnabled: Boolean,
+        @param:RequestParameter(ScriptNode.APM_LAUNCH_MODE) val launchMode: LaunchMode,
+        @param:RequestParameter(ScriptNode.APM_LAUNCH_ENVIRONMENT) val launchEnvironment: LaunchEnvironment?,
+        @param:RequestParameter(ScriptNode.APM_LAUNCH_HOOK) val launchHook: String?,
+        @param:RequestParameter(ScriptNode.APM_LAUNCH_SCHEDULE) @param:DateFormat("yyyy-MM-dd'T'HH:mm:ss") val launchSchedule: LocalDateTime?
 ) {
-    fun toExecutionMetadata(): ExecutionMetadata {
-        return ExecutionMetadata(executionEnabled, launchMode, launchEnvironment, executionHook, executionSchedule)
+    fun toLaunchMetadata(): LaunchMetadata {
+        return LaunchMetadata(launchEnabled, launchMode, launchEnvironment, launchHook, launchSchedule)
     }
 }

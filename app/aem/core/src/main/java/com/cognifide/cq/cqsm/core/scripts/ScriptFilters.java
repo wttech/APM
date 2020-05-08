@@ -36,21 +36,27 @@ public class ScriptFilters {
 
   public static Predicate<Script> onInstall(final LaunchEnvironment environment, final String currentHook) {
     return enabled()
-        .and(withExecutionMode(LaunchMode.ON_INSTALL))
-        .and(script -> script.getLaunchEnvironment() == null || environment == script.getLaunchEnvironment())
-        .and(
-            script -> isBlank(script.getLaunchHook()) || StringUtils.equals(currentHook, script.getLaunchHook()));
+        .and(withLaunchMode(LaunchMode.ON_INSTALL))
+        .and(withLaunchEnvironment(environment))
+        .and(withLaunchHook(currentHook));
   }
 
   public static Predicate<Script> onInstallModified(final LaunchEnvironment environment, final String currentHook) {
     return enabled()
-        .and(withExecutionMode(LaunchMode.ON_INSTALL_MODIFIED))
-        .and(script -> script.getLaunchEnvironment() == null || environment == script.getLaunchEnvironment())
-        .and(
-            script -> isBlank(script.getLaunchHook()) || StringUtils.equals(currentHook, script.getLaunchHook()));
+        .and(withLaunchMode(LaunchMode.ON_INSTALL_MODIFIED))
+        .and(withLaunchEnvironment(environment))
+        .and(withLaunchHook(currentHook));
   }
 
-  private static Predicate<Script> withExecutionMode(final LaunchMode mode) {
+  private static Predicate<Script> withLaunchHook(String currentHook) {
+    return script -> isBlank(script.getLaunchHook()) || StringUtils.equals(currentHook, script.getLaunchHook());
+  }
+
+  private static Predicate<Script> withLaunchEnvironment(LaunchEnvironment environment) {
+    return script -> script.getLaunchEnvironment() == LaunchEnvironment.ALL || environment == script.getLaunchEnvironment();
+  }
+
+  private static Predicate<Script> withLaunchMode(final LaunchMode mode) {
     return script -> script.getLaunchMode() == mode;
   }
 
@@ -60,18 +66,18 @@ public class ScriptFilters {
 
   public static Predicate<Script> onSchedule(final Date date) {
     return enabled()
-        .and(withExecutionMode(LaunchMode.ON_SCHEDULE))
+        .and(withLaunchMode(LaunchMode.ON_SCHEDULE))
         .and(script -> script.getLastExecuted() == null && script.getLaunchSchedule().before(date));
   }
 
   public static Predicate<Script> onModify() {
     return enabled()
-        .and(withExecutionMode(LaunchMode.ON_MODIFY));
+        .and(withLaunchMode(LaunchMode.ON_MODIFY));
   }
 
   public static Predicate<Script> onStart() {
     return enabled()
-        .and(withExecutionMode(LaunchMode.ON_START));
+        .and(withLaunchMode(LaunchMode.ON_START));
   }
 
   public static Predicate<Script> noChecksum() {

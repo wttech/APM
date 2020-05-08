@@ -28,14 +28,14 @@ import org.osgi.service.component.annotations.Component;
     immediate = true,
     service = Servlet.class,
     property = {
-        Property.RESOURCE_TYPE + "apm/datasource/executionModes",
-        Property.DESCRIPTION + "Provides execution modes",
+        Property.RESOURCE_TYPE + "apm/datasource/launchModes",
+        Property.DESCRIPTION + "Provides launch modes",
         Property.VENDOR
     }
 )
-public class ExecutionModeDatasourceServlet extends AbstractDatasourceServlet<LaunchMode> {
+public class LaunchModeDatasourceServlet extends AbstractDatasourceServlet<LaunchMode> {
 
-  public ExecutionModeDatasourceServlet() {
+  public LaunchModeDatasourceServlet() {
     super(LaunchMode.values(), null);
   }
 }
