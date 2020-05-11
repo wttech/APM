@@ -26,11 +26,9 @@ import com.cognifide.cq.cqsm.api.history.History;
 import com.cognifide.cq.cqsm.api.history.HistoryEntry;
 import com.cognifide.cq.cqsm.api.history.ScriptHistory;
 import com.cognifide.cq.cqsm.core.scripts.ScriptModel;
-import com.cognifide.cq.cqsm.core.scripts.ScriptNode;
 import com.cognifide.cq.cqsm.core.utils.CalendarUtils;
 import com.day.cq.commons.jcr.JcrConstants;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -126,18 +124,8 @@ public final class ScriptsRowModel {
     return FOLDER_TYPES.contains(getProperty(resource, JcrConstants.JCR_PRIMARYTYPE));
   }
 
-  public static boolean isScript(Resource resource) {
-    return Optional.ofNullable(resource)
-        .map(child -> getArrayProperty(child, JcrConstants.JCR_MIXINTYPES).contains(ScriptNode.APM_SCRIPT))
-        .orElse(false);
-  }
-
   private static String getProperty(Resource resource, String name) {
     return resource.getValueMap().get(name, StringUtils.EMPTY);
-  }
-
-  private static List<String> getArrayProperty(Resource resource, String name) {
-    return Lists.newArrayList(resource.getValueMap().get(name, new String[]{}));
   }
 
   public String getResourceType() {

@@ -26,6 +26,7 @@ import com.adobe.granite.ui.components.ds.DataSource;
 import com.adobe.granite.ui.components.ds.SimpleDataSource;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.models.ScriptsRowModel;
+import com.cognifide.cq.cqsm.core.scripts.ScriptModel;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.Servlet;
@@ -54,7 +55,7 @@ public class ScriptsDatasourceServlet extends SlingSafeMethodsServlet {
     List<Resource> scripts = new ArrayList<>();
     Resource resource = request.getResourceResolver().getResource(path);
     for (Resource child : resource.getChildren()) {
-      if (ScriptsRowModel.isFolder(child) || ScriptsRowModel.isScript(child)) {
+      if (ScriptsRowModel.isFolder(child) || ScriptModel.isScript(child)) {
         scripts.add(new ResourceTypeWrapper(child));
       }
     }

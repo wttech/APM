@@ -63,6 +63,15 @@
       getFileName: function () {
         return this.$fileName.val() + '.apm';
       },
+      getFullPath: function () {
+        let fileName = this.getFileName();
+        if (this.savePath.endsWith('/' + fileName)) {
+          fileName = this.savePath;
+        } else {
+          fileName = this.savePath + '/' + fileName;
+        }
+        return fileName;
+      },
       getOverwrite: function () {
         return this.isFileNameLocked() ? 'true' : 'false';
       },
@@ -72,13 +81,6 @@
       fileUpload: function () {
         const self = this;
         const value = this.$textArea.val();
-
-        let fileName = this.getFileName();
-        if (this.savePath.endsWith('/' + fileName)) {
-          fileName = this.savePath;
-        } else {
-          fileName = this.savePath + '/' + fileName;
-        }
 
         const originalFormData = new FormData(this.$form.get(0));
 
@@ -91,7 +93,7 @@
         });
         formData.set('apm:launchEnabled', this.getLaunchEnabled());
         formData.set('overwrite', this.getOverwrite());
-        formData.set('file', new Blob([value], {type: 'text/plain'}), fileName);
+        formData.set('file', new Blob([value], {type: 'text/plain'}), this.getFullPath());
 
         $.ajax({
           type: 'POST',
@@ -188,7 +190,7 @@
             async: false,
             url: '/bin/apm/script/validate',
             data: {
-              path: self.savePath,
+              path: self.getFullPath(),
               content: self.$textArea.val()
             },
             success: function (response) {

@@ -49,5 +49,5 @@ public enum LaunchMode {
   /**
    * Executed after successfully package installation if script content's changed
    */
-  ON_INSTALL_MODIFIED
+  ON_INSTALL_IF_MODIFIED
 }

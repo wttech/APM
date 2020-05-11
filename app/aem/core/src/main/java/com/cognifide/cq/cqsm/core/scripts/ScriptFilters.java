@@ -43,7 +43,7 @@ public class ScriptFilters {
 
   public static Predicate<Script> onInstallModified(final LaunchEnvironment environment, final String currentHook) {
     return enabled()
-        .and(withLaunchMode(LaunchMode.ON_INSTALL_MODIFIED))
+        .and(withLaunchMode(LaunchMode.ON_INSTALL_IF_MODIFIED))
         .and(withLaunchEnvironment(environment))
         .and(withLaunchHook(currentHook));
   }

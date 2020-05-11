@@ -32,11 +32,6 @@ public interface ScriptFinder {
 	Script find(String path, ResourceResolver resolver);
 
 	/**
-	 * Find script by relative or absolute path
-	 */
-	Script find(String path, boolean skipIgnored, ResourceResolver resolver);
-
-	/**
 	 * Find all available scripts
 	 */
 	List<Script> findAll(ResourceResolver resolver);

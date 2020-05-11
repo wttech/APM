@@ -32,21 +32,26 @@ import static com.cognifide.cq.cqsm.core.scripts.ScriptNode.APM_VERIFIED;
 
 import com.cognifide.apm.api.scripts.LaunchEnvironment;
 import com.cognifide.apm.api.scripts.LaunchMode;
-import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.scripts.MutableScript;
+import com.cognifide.cq.cqsm.core.utils.ResourceMixinUtil;
 import com.day.cq.commons.jcr.JcrConstants;
+import com.google.common.collect.Lists;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
-import lombok.AccessLevel;
-import lombok.Setter;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.sling.api.resource.ModifiableValueMap;
+import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.Optional;
 import org.apache.sling.models.annotations.injectorspecific.Self;
 
 @Model(adaptables = Resource.class)
-public class ScriptModel implements Script {
+public class ScriptModel implements MutableScript {
 
   private final String path;
 
@@ -56,7 +61,6 @@ public class ScriptModel implements Script {
   @Inject
   @Named(APM_LAUNCH_ENABLED)
   @Optional
-  @Setter(AccessLevel.PACKAGE)
   private Boolean launchEnabled;
 
   @Inject
@@ -77,37 +81,31 @@ public class ScriptModel implements Script {
   @Inject
   @Named(APM_LAUNCH_SCHEDULE)
   @Optional
-  @Setter(AccessLevel.PACKAGE)
   private Date launchSchedule;
 
   @Inject
   @Named(APM_LAST_EXECUTED)
   @Optional
-  @Setter(AccessLevel.PACKAGE)
-  private Date lastExecution;
+  private Date lastExecuted;
 
   @Inject
   @Named(APM_CHECKSUM)
   @Optional
-  @Setter(AccessLevel.PACKAGE)
   private String checksum;
 
   @Inject
   @Named(APM_PUBLISH_RUN)
   @Optional
-  @Setter(AccessLevel.PACKAGE)
   private Boolean publishRun;
 
   @Inject
   @Named(APM_REPLICATED_BY)
   @Optional
-  @Setter(AccessLevel.PACKAGE)
   private String replicatedBy;
 
   @Inject
   @Named(APM_VERIFIED)
   @Optional
-  @Setter(AccessLevel.PACKAGE)
   private Boolean verified;
 
   @Inject
@@ -136,10 +134,6 @@ public class ScriptModel implements Script {
     return (launchMode == null) ? LaunchMode.ON_DEMAND : LaunchMode.valueOf(launchMode);
   }
 
-  void setLaunchMode(LaunchMode mode) {
-    this.launchMode = mode != null ? mode.toString() : null;
-  }
-
   @Override
   public String getLaunchHook() {
     return launchHook;
@@ -162,7 +156,7 @@ public class ScriptModel implements Script {
 
   @Override
   public Date getLastExecuted() {
-    return lastExecution;
+    return lastExecuted;
   }
 
   @Override
@@ -193,7 +187,12 @@ public class ScriptModel implements Script {
   @Override
   public String getData() {
     if (data == null) {
-      data = resource.getChild(JcrConstants.JCR_CONTENT).getValueMap().get(JcrConstants.JCR_DATA, String.class);
+      Resource child = resource.getChild(JcrConstants.JCR_CONTENT);
+      if (child != null) {
+        data = child.getValueMap().get(JcrConstants.JCR_DATA, String.class);
+      } else {
+        data = "";
+      }
     }
     return data;
   }
@@ -201,5 +200,64 @@ public class ScriptModel implements Script {
   @Override
   public String getReplicatedBy() {
     return replicatedBy;
+  }
+
+  @Override
+  public void setChecksum(String checksum) throws PersistenceException {
+    this.checksum = checksum;
+    setProperty(APM_CHECKSUM, checksum);
+  }
+
+  @Override
+  public void setValid(boolean flag) throws PersistenceException {
+    this.verified = flag;
+    setProperty(APM_VERIFIED, flag);
+  }
+
+  @Override
+  public void setLastExecuted(Date date) throws PersistenceException {
+    this.lastExecuted = date;
+    setProperty(APM_LAST_EXECUTED, date);
+  }
+
+  @Override
+  public void setPublishRun(boolean flag) throws PersistenceException {
+    this.publishRun = flag;
+    setProperty(APM_PUBLISH_RUN, flag);
+  }
+
+  @Override
+  public void setReplicatedBy(String userId) throws PersistenceException {
+    this.replicatedBy = userId;
+    setProperty(APM_REPLICATED_BY, userId);
+  }
+
+  private void setProperty(String name, Object value) throws PersistenceException {
+    ModifiableValueMap vm = resource.adaptTo(ModifiableValueMap.class);
+    ResourceMixinUtil.addMixin(vm, ScriptNode.APM_SCRIPT);
+    vm.put(name, convertValue(value));
+
+    resource.getResourceResolver().commit();
+  }
+
+  private Object convertValue(Object obj) {
+    if (obj instanceof Date) {
+      Calendar calendar = new GregorianCalendar();
+      calendar.setTime((Date) obj);
+
+      return calendar;
+    }
+
+    return obj;
+  }
+
+  public static boolean isScript(Resource resource) {
+    return java.util.Optional.ofNullable(resource)
+        .map(child -> getArrayProperty(child, JcrConstants.JCR_MIXINTYPES).contains(ScriptNode.APM_SCRIPT))
+        .orElse(false);
+  }
+
+  private static List<String> getArrayProperty(Resource resource, String name) {
+    return Lists.newArrayList(resource.getValueMap().get(name, new String[]{}));
   }
 }

@@ -17,13 +17,12 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.cq.cqsm.api.scripts;
+package com.cognifide.apm.api.scripts;
 
-import com.cognifide.apm.api.scripts.LaunchMode;
 import java.util.Date;
 import org.apache.sling.api.resource.PersistenceException;
 
-public interface ModifiableScript {
+public interface MutableScript extends Script {
 
   /**
    * Set validation status
@@ -33,22 +32,7 @@ public interface ModifiableScript {
   /**
    * Mark after execution
    */
-  void setExecuted(boolean flag) throws PersistenceException;
-
-  /**
-   * Enable or disable automatic execution
-   */
-  void setLaunchEnabled(boolean flag) throws PersistenceException;
-
-  /**
-   * Set mode related with automatic execution
-   */
-  void setLaunchMode(LaunchMode mode) throws PersistenceException;
-
-  /**
-   * Set date after which script will be executed by schedule executor
-   */
-  void setLaunchSchedule(Date date) throws PersistenceException;
+  void setLastExecuted(Date date) throws PersistenceException;
 
   /**
    * Set publish run
@@ -60,5 +44,8 @@ public interface ModifiableScript {
    */
   void setReplicatedBy(String userId) throws PersistenceException;
 
+  /**
+   * Set checksum
+   */
   void setChecksum(String checksum) throws PersistenceException;
 }

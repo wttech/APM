@@ -34,7 +34,7 @@ public interface Script {
 	boolean isLaunchEnabled();
 
 	/**
-	 * Get mode related with automatic execution
+	 * Get launch mode
 	 */
 	LaunchMode getLaunchMode();
 

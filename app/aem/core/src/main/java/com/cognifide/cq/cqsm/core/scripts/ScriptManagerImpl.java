@@ -41,17 +41,12 @@ import com.cognifide.cq.cqsm.api.logger.Progress;
 import com.cognifide.cq.cqsm.api.scripts.Event;
 import com.cognifide.cq.cqsm.api.scripts.EventManager;
 import com.cognifide.cq.cqsm.api.scripts.ExtendedScriptManager;
-import com.cognifide.cq.cqsm.api.scripts.LaunchMetadata;
-import com.cognifide.cq.cqsm.api.scripts.ModifiableScript;
 import com.cognifide.cq.cqsm.api.scripts.ScriptStorage;
 import com.cognifide.cq.cqsm.core.Property;
 import com.cognifide.cq.cqsm.core.actions.executor.ActionExecutor;
 import com.cognifide.cq.cqsm.core.actions.executor.ActionExecutorFactory;
 import com.cognifide.cq.cqsm.core.progress.ProgressImpl;
 import com.google.common.collect.Maps;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -59,7 +54,6 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.api.JackrabbitSession;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -169,47 +163,25 @@ public class ScriptManagerImpl implements ExtendedScriptManager {
       progress.addEntry(Status.ERROR, e.getMessage());
     }
 
-    updateScriptProperties(script, mode, progress.isSuccess(), resolver);
+    updateScriptProperties(script, mode, progress.isSuccess());
     applyChecksum(scriptFinder, resolver, script);
     eventManager.trigger(Event.AFTER_EXECUTE, script, mode, progress);
 
     return progress;
   }
 
-  private void updateScriptProperties(final Script script, final ExecutionMode mode, final boolean success,
-      ResourceResolver resolver) throws PersistenceException {
-    final ModifiableScript modifiableScript = new ModifiableScriptWrapper(resolver, script);
+  private void updateScriptProperties(final Script script, final ExecutionMode mode, final boolean success)
+      throws PersistenceException {
+
+    final MutableScriptWrapper mutableScriptWrapper = new MutableScriptWrapper(script);
 
     if (Arrays.asList(ExecutionMode.RUN, ExecutionMode.AUTOMATIC_RUN).contains(mode)) {
-      modifiableScript.setExecuted(true);
+      mutableScriptWrapper.setExecuted(true);
     }
 
     if (ExecutionMode.VALIDATION.equals(mode)) {
-      modifiableScript.setValid(success);
+      mutableScriptWrapper.setValid(success);
     }
-  }
-
-  @Override
-  public Progress evaluate(String path, String content, ExecutionMode mode, ResourceResolver resolver)
-      throws RepositoryException, PersistenceException {
-    return evaluate(path, content, mode, Maps.newHashMap(), resolver);
-  }
-
-  @Override
-  public Progress evaluate(String path, String content, ExecutionMode mode, Map<String, String> customDefinitions,
-      ResourceResolver resolver) throws RepositoryException, PersistenceException {
-    Script script = scriptFinder.find(path, false, resolver);
-    if (script != null) {
-      path = StringUtils.substringBeforeLast(path, "/");
-    }
-
-    InputStream stream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
-    script = scriptStorage.save(path + "/" + FILE_FOR_EVALUATION, stream, LaunchMetadata.onDemand(), true, resolver);
-
-    Progress progress = process(script, mode, customDefinitions, resolver);
-    scriptStorage.remove(script, resolver);
-
-    return progress;
   }
 
   @Override

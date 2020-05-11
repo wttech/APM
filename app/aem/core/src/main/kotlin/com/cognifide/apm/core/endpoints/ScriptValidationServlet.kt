@@ -19,6 +19,7 @@
  */
 package com.cognifide.apm.core.endpoints
 
+import com.cognifide.apm.api.scripts.TransientScript
 import com.cognifide.apm.api.services.ExecutionMode
 import com.cognifide.apm.api.services.ExecutionResult
 import com.cognifide.apm.api.services.ScriptManager
@@ -58,7 +59,8 @@ class ScriptValidationServlet : AbstractFormServlet<ScriptValidationForm>(Script
 
     override fun doPost(form: ScriptValidationForm, resourceResolver: ResourceResolver): ResponseEntity<Any> {
         return try {
-            val result = scriptManager.evaluate(form.path, form.content, ExecutionMode.VALIDATION, resourceResolver)
+            val script = TransientScript.create(form.path, form.content);
+            val result = scriptManager.process(script, ExecutionMode.VALIDATION, resourceResolver)
             if (result.isSuccess) {
                 ok {
                     message = "Script passes validation"

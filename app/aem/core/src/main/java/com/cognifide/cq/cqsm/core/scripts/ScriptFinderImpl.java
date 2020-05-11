@@ -21,7 +21,6 @@ package com.cognifide.cq.cqsm.core.scripts;
 
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ScriptFinder;
-import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.cq.cqsm.core.Property;
 import java.util.List;
 import java.util.Objects;
@@ -32,7 +31,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.jcr.query.Query;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -48,11 +46,10 @@ import org.osgi.service.component.annotations.Component;
 )
 public class ScriptFinderImpl implements ScriptFinder {
 
-  public static final String ROOT_PATH = "/conf/apm";
+  private static final String SCRIPT_PATH = "/conf/apm/scripts";
 
-  public static final String SCRIPT_PATH = ROOT_PATH + "/scripts";
-
-  private static final String QUERY = "SELECT * FROM [nt:file] WHERE ISDESCENDANTNODE([%s]) AND [jcr:mixinTypes] = 'apm:Script'";
+  private static final String QUERY = "SELECT * FROM [nt:file] "
+      + "WHERE ISDESCENDANTNODE([%s]) AND [jcr:mixinTypes] = 'apm:Script'";
 
   @Override
   public List<Script> findAll(Predicate<Script> filter, ResourceResolver resolver) {
@@ -70,21 +67,16 @@ public class ScriptFinderImpl implements ScriptFinder {
   }
 
   @Override
-  public Script find(String path, ResourceResolver resolver) {
-    return find(path, true, resolver);
-  }
-
-  @Override
-  public Script find(String scriptPath, boolean skipIgnored, ResourceResolver resolver) {
+  public Script find(String scriptPath, ResourceResolver resolver) {
     Script result = null;
-    if (StringUtils.isNotEmpty(scriptPath) && (!skipIgnored || isNotIgnoredPath(scriptPath))) {
+    if (StringUtils.isNotEmpty(scriptPath)) {
       Resource resource;
       if (isAbsolute(scriptPath)) {
         resource = resolver.getResource(scriptPath);
       } else {
         resource = resolver.getResource(SCRIPT_PATH + "/" + scriptPath);
       }
-      if (resource != null) {
+      if (resource != null && ScriptModel.isScript(resource)) {
         result = resource.adaptTo(ScriptModel.class);
       }
     }
@@ -97,10 +89,6 @@ public class ScriptFinderImpl implements ScriptFinder {
         .map(resourceIterator -> Spliterators.spliteratorUnknownSize(resourceIterator, Spliterator.ORDERED))
         .flatMap(resourceSpliterator -> StreamSupport.stream(resourceSpliterator, false))
         .filter(Objects::nonNull);
-  }
-
-  private boolean isNotIgnoredPath(String path) {
-    return !ScriptManager.FILE_FOR_EVALUATION.equals(FilenameUtils.getBaseName(path));
   }
 
   private boolean isAbsolute(String path) {
