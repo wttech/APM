@@ -23,11 +23,11 @@ import static java.lang.String.format;
 import static java.util.Collections.singletonList;
 
 import com.cognifide.apm.api.actions.ActionResult;
+import com.cognifide.apm.api.actions.Message;
 import com.cognifide.apm.api.status.Status;
 import com.cognifide.apm.core.actions.ActionDescriptor;
 import com.cognifide.apm.core.actions.ActionResultImpl;
 import com.cognifide.apm.core.grammar.argument.Arguments;
-import com.cognifide.apm.core.logger.Message;
 import com.cognifide.apm.core.logger.Position;
 import com.cognifide.apm.core.logger.Progress;
 import com.cognifide.apm.core.logger.ProgressEntry;

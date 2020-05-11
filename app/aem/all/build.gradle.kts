@@ -11,7 +11,7 @@ description = "AEM Permission Management :: Application"
 aem {
     tasks {
         packageCompose {
-            installBundleProject(":app:aem:checks")
+            installBundleProject(":app:aem:actions.checks")
             mergePackageProject(":app:aem:ui.apps")
             vaultDefinition {
                 version.set(rootProject.version as String)

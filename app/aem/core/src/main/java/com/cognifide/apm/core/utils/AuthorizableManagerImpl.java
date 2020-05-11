@@ -24,8 +24,9 @@ import static java.lang.String.format;
 
 import com.cognifide.apm.api.actions.AuthorizableManager;
 import com.cognifide.apm.api.exceptions.ActionExecutionException;
-import com.cognifide.apm.foundation.actions.MockGroup;
-import com.cognifide.apm.foundation.actions.MockUser;
+import com.cognifide.apm.core.utils.mocks.MockGroup;
+import com.cognifide.apm.core.utils.mocks.MockPrincipal;
+import com.cognifide.apm.core.utils.mocks.MockUser;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -148,6 +149,11 @@ public class AuthorizableManagerImpl implements AuthorizableManager {
     }
     existingAuthorizables.remove(user.getID());
     user.remove();
+  }
+
+  @Override
+  public Principal createMockPrincipal(String name) {
+    return new MockPrincipal(name);
   }
 
   private <T extends Authorizable> T getAuthorizableIfExists(Class<T> authorizableClass, String id)

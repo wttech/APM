@@ -56,4 +56,6 @@ public interface AuthorizableManager {
   User createMockUser(String id);
 
   void removeUser(User user) throws RepositoryException;
+
+  Principal createMockPrincipal(String name);
 }

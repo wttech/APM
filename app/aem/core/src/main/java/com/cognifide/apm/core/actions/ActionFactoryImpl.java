@@ -23,7 +23,6 @@ import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.exceptions.ActionCreationException;
 import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.grammar.argument.Arguments;
-import com.cognifide.apm.foundation.actions.ActionGroup;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -42,6 +41,7 @@ import org.osgi.service.component.annotations.Reference;
 )
 public class ActionFactoryImpl implements ActionFactory {
 
+  public static final String CORE_GROUP = "core";
   @Reference
   private ActionMapperRegistry registry;
 
@@ -81,13 +81,13 @@ public class ActionFactoryImpl implements ActionFactory {
 
   private void sortReferences(List<CommandDescription> references) {
     Collections.sort(references, Comparator.comparing(CommandDescription::getGroup, (o1, o2) -> {
-      if (ActionGroup.CORE.equals(o1) && ActionGroup.CORE.equals(o2)) {
+      if (CORE_GROUP.equals(o1) && CORE_GROUP.equals(o2)) {
         return 0;
       }
-      if (ActionGroup.CORE.equals(o1)) {
+      if (CORE_GROUP.equals(o1)) {
         return -1;
       }
-      if (ActionGroup.CORE.equals(o2)) {
+      if (CORE_GROUP.equals(o2)) {
         return 1;
       }
       return Comparator.<String>naturalOrder().compare(o1, o2);
