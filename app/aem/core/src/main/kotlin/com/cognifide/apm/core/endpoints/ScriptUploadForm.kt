@@ -25,8 +25,8 @@ import com.cognifide.apm.api.scripts.LaunchMode
 import com.cognifide.apm.core.endpoints.utils.DateFormat
 import com.cognifide.apm.core.endpoints.utils.FileName
 import com.cognifide.apm.core.endpoints.utils.RequestParameter
-import com.cognifide.cq.cqsm.api.scripts.LaunchMetadata
-import com.cognifide.cq.cqsm.core.scripts.ScriptNode
+import com.cognifide.apm.core.scripts.LaunchMetadata
+import com.cognifide.apm.core.scripts.ScriptNode
 import org.apache.sling.api.SlingHttpServletRequest
 import org.apache.sling.models.annotations.Model
 import java.io.InputStream

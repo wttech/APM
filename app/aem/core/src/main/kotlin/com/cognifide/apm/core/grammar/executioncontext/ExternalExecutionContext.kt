@@ -21,7 +21,7 @@
 package com.cognifide.apm.core.grammar.executioncontext
 
 import com.cognifide.apm.core.grammar.ApmType
-import com.cognifide.cq.cqsm.api.logger.Progress
+import com.cognifide.apm.core.logger.Progress
 import org.apache.jackrabbit.api.security.user.Authorizable
 
 interface ExternalExecutionContext {

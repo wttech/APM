@@ -29,7 +29,7 @@ import com.cognifide.apm.core.grammar.ReferenceGraph.NonExistingNode
 import com.cognifide.apm.core.grammar.argument.toPlainString
 import com.cognifide.apm.core.grammar.executioncontext.ExecutionContext
 import com.cognifide.apm.core.grammar.parsedscript.ParsedScript
-import com.cognifide.cq.cqsm.core.progress.ProgressImpl
+import com.cognifide.apm.core.progress.ProgressImpl
 import org.apache.sling.api.resource.ResourceResolver
 import java.util.*
 

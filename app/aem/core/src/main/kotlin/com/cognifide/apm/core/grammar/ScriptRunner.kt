@@ -33,8 +33,8 @@ import com.cognifide.apm.core.grammar.parsedscript.InvalidSyntaxException
 import com.cognifide.apm.core.grammar.parsedscript.InvalidSyntaxMessageFactory
 import com.cognifide.apm.core.grammar.utils.ImportScript
 import com.cognifide.apm.core.grammar.utils.RequiredVariablesChecker
-import com.cognifide.cq.cqsm.api.logger.Position
-import com.cognifide.cq.cqsm.api.logger.Progress
+import com.cognifide.apm.core.logger.Position
+import com.cognifide.apm.core.logger.Progress
 import org.antlr.v4.runtime.ParserRuleContext
 import org.apache.sling.api.resource.ResourceResolver
 

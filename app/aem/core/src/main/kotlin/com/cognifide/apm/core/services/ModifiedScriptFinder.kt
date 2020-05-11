@@ -22,9 +22,9 @@ package com.cognifide.apm.core.services
 
 import com.cognifide.apm.api.scripts.Script
 import com.cognifide.apm.api.services.ScriptFinder
+import com.cognifide.apm.core.Property
 import com.cognifide.apm.core.grammar.ReferenceFinder
-import com.cognifide.cq.cqsm.api.history.History
-import com.cognifide.cq.cqsm.core.Property
+import com.cognifide.apm.core.history.History
 import org.apache.sling.api.resource.ResourceResolver
 import org.osgi.service.component.annotations.Component
 import org.osgi.service.component.annotations.Reference

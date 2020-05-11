@@ -19,7 +19,7 @@
  */
 package com.cognifide.apm.core.endpoints.utils
 
-import com.cognifide.cq.cqsm.core.utils.ServletUtils
+import com.cognifide.apm.core.utils.ServletUtils
 import org.apache.sling.api.SlingHttpServletRequest
 import org.apache.sling.api.SlingHttpServletResponse
 import org.apache.sling.api.resource.ResourceResolver

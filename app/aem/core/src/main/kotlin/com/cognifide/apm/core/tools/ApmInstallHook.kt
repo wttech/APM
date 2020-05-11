@@ -26,10 +26,10 @@ import com.cognifide.apm.api.services.ExecutionMode
 import com.cognifide.apm.api.services.ExecutionResult
 import com.cognifide.apm.api.services.ScriptFinder
 import com.cognifide.apm.api.services.ScriptManager
+import com.cognifide.apm.core.scripts.ScriptFilters.*
 import com.cognifide.apm.core.services.ModifiedScriptFinder
 import com.cognifide.apm.core.services.applyChecksum
-import com.cognifide.cq.cqsm.core.scripts.ScriptFilters.*
-import com.cognifide.cq.cqsm.core.utils.sling.SlingHelper.getResourceResolverForService
+import com.cognifide.apm.core.utils.sling.SlingHelper.getResourceResolverForService
 import org.apache.jackrabbit.vault.packaging.InstallContext
 import org.apache.jackrabbit.vault.packaging.PackageException
 import org.apache.sling.api.resource.ResourceResolver

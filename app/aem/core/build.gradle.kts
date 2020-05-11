@@ -21,15 +21,16 @@ aem {
     tasks {
         jar {
             bundle {
-                exportPackage("com.cognifide.cq.cqsm.*") //TODO repair after extraction of API
-//                exportPackage("com.cognifide.cq.cqsm.foundation.actions.*")
-//                exportPackage("com.cognifide.cq.cqsm.api.*")
-//                exportPackage("com.cognifide.cq.cqsm.core.models.*")
-                exportPackage("com.cognifide.apm.core.tools.*")
-                exportPackage("com.cognifide.apm.core.endpoints.*")
-                attribute("Sling-Model-Packages", "com.cognifide.apm.core.endpoints,com.cognifide.cq.cqsm.core.models,com.cognifide.cq.cqsm.core.scripts,com.cognifide.cq.cqsm.api.history,com.cognifide.cq.cqsm.core.history")
+                exportPackage("com.cognifide.apm.core.*")
+                attribute("Sling-Model-Packages",
+                        listOf(
+                                "com.cognifide.apm.core.endpoints",
+                                "com.cognifide.apm.core.ui.models",
+                                "com.cognifide.apm.core.scripts",
+                                "com.cognifide.apm.core.history"
+                        ).joinToString(","))
                 attribute("Sling-Nodetypes", "CQ-INF/nodetypes/apm_nodetypes.cnd")
-                attribute("APM-Actions", "com.cognifide.cq.cqsm.foundation.actions")
+                attribute("APM-Actions", "com.cognifide.apm.foundation.actions")
             }
         }
     }

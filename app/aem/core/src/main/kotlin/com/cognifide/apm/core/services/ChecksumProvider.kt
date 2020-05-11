@@ -24,7 +24,7 @@ import com.cognifide.apm.api.scripts.Script
 import com.cognifide.apm.api.services.ScriptFinder
 import com.cognifide.apm.core.grammar.ReferenceFinder
 import com.cognifide.apm.core.grammar.ReferenceGraph
-import com.cognifide.cq.cqsm.core.scripts.MutableScriptWrapper
+import com.cognifide.apm.core.scripts.MutableScriptWrapper
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.sling.api.resource.ResourceResolver
 

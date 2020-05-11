@@ -21,7 +21,7 @@
 package com.cognifide.apm.core.endpoints.utils
 
 
-import com.cognifide.cq.cqsm.core.Property
+import com.cognifide.apm.core.Property
 import com.google.common.primitives.Ints
 import org.apache.commons.lang.StringUtils
 import org.apache.sling.api.SlingHttpServletRequest

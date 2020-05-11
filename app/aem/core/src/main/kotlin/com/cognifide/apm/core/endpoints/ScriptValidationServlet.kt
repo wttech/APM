@@ -24,13 +24,13 @@ import com.cognifide.apm.api.services.ExecutionMode
 import com.cognifide.apm.api.services.ExecutionResult
 import com.cognifide.apm.api.services.ScriptManager
 import com.cognifide.apm.api.status.Status
+import com.cognifide.apm.core.Property
 import com.cognifide.apm.core.endpoints.utils.AbstractFormServlet
 import com.cognifide.apm.core.endpoints.utils.ResponseEntity
 import com.cognifide.apm.core.endpoints.utils.badRequest
 import com.cognifide.apm.core.endpoints.utils.ok
-import com.cognifide.cq.cqsm.api.logger.ProgressEntry
-import com.cognifide.cq.cqsm.core.Property
-import com.cognifide.cq.cqsm.core.scripts.ScriptStorageException
+import com.cognifide.apm.core.logger.ProgressEntry
+import com.cognifide.apm.core.scripts.ScriptStorageException
 import org.apache.sling.api.resource.ResourceResolver
 import org.apache.sling.models.factory.ModelFactory
 import org.osgi.service.component.annotations.Component

@@ -29,7 +29,7 @@ import com.cognifide.apm.core.grammar.argument.ArgumentResolver
 import com.cognifide.apm.core.grammar.argument.Arguments
 import com.cognifide.apm.core.grammar.common.StackWithRoot
 import com.cognifide.apm.core.grammar.parsedscript.ParsedScript
-import com.cognifide.cq.cqsm.api.logger.Progress
+import com.cognifide.apm.core.logger.Progress
 import org.apache.commons.lang.StringUtils
 import org.apache.jackrabbit.api.security.user.Authorizable
 import org.apache.sling.api.resource.ResourceResolver

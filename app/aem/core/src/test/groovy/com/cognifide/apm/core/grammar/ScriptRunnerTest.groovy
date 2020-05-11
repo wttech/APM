@@ -23,7 +23,7 @@ package com.cognifide.apm.core.grammar
 import com.cognifide.apm.api.scripts.Script
 import com.cognifide.apm.api.services.ScriptFinder
 import com.cognifide.apm.api.status.Status
-import com.cognifide.cq.cqsm.core.progress.ProgressImpl
+import com.cognifide.apm.core.progress.ProgressImpl
 import org.apache.commons.io.IOUtils
 import org.apache.sling.api.resource.ResourceResolver
 import spock.lang.Specification
