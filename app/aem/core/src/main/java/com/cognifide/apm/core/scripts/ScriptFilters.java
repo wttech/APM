@@ -34,18 +34,39 @@ import org.apache.commons.lang.StringUtils;
  */
 public class ScriptFilters {
 
-  public static Predicate<Script> onInstall(final LaunchEnvironment environment, final String currentHook) {
+  public static Predicate<Script> onInstall(LaunchEnvironment environment, String currentHook) {
     return enabled()
         .and(withLaunchMode(LaunchMode.ON_INSTALL))
         .and(withLaunchEnvironment(environment))
         .and(withLaunchHook(currentHook));
   }
 
-  public static Predicate<Script> onInstallModified(final LaunchEnvironment environment, final String currentHook) {
+  public static Predicate<Script> onInstallIfModified(LaunchEnvironment environment, String currentHook) {
     return enabled()
         .and(withLaunchMode(LaunchMode.ON_INSTALL_IF_MODIFIED))
         .and(withLaunchEnvironment(environment))
         .and(withLaunchHook(currentHook));
+  }
+
+  public static Predicate<Script> onSchedule(Date date) {
+    return enabled()
+        .and(withLaunchMode(LaunchMode.ON_SCHEDULE))
+        .and(script -> script.getLastExecuted() == null && script.getLaunchSchedule().before(date));
+  }
+
+  public static Predicate<Script> onStartup() {
+    return enabled()
+        .and(withLaunchMode(LaunchMode.ON_STARTUP));
+  }
+
+  public static Predicate<Script> onStartupIfModified() {
+    return enabled()
+        .and(withLaunchMode(LaunchMode.ON_STARTUP_IF_MODIFIED));
+  }
+
+  public static Predicate<Script> noChecksum() {
+    return enabled()
+        .and(script -> StringUtils.isBlank(script.getChecksum()));
   }
 
   private static Predicate<Script> withLaunchHook(String currentHook) {
@@ -62,26 +83,5 @@ public class ScriptFilters {
 
   private static Predicate<Script> enabled() {
     return script -> script.isLaunchEnabled();
-  }
-
-  public static Predicate<Script> onSchedule(final Date date) {
-    return enabled()
-        .and(withLaunchMode(LaunchMode.ON_SCHEDULE))
-        .and(script -> script.getLastExecuted() == null && script.getLaunchSchedule().before(date));
-  }
-
-  public static Predicate<Script> onModify() {
-    return enabled()
-        .and(withLaunchMode(LaunchMode.ON_MODIFY));
-  }
-
-  public static Predicate<Script> onStart() {
-    return enabled()
-        .and(withLaunchMode(LaunchMode.ON_START));
-  }
-
-  public static Predicate<Script> noChecksum() {
-    return enabled()
-        .and(script -> StringUtils.isBlank(script.getChecksum()));
   }
 }

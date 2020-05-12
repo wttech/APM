@@ -41,11 +41,11 @@ public class LaunchMetadata {
   }
 
   public static LaunchMetadata onModify() {
-    return new LaunchMetadata(true, LaunchMode.ON_MODIFY, null, null, null);
+    return new LaunchMetadata(true, LaunchMode.ON_STARTUP_IF_MODIFIED, null, null, null);
   }
 
   public static LaunchMetadata onStart() {
-    return new LaunchMetadata(true, LaunchMode.ON_START, null, null, null);
+    return new LaunchMetadata(true, LaunchMode.ON_STARTUP, null, null, null);
   }
 
   public static LaunchMetadata onHook(LaunchEnvironment launchEnvironment, String executionHook) {

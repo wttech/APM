@@ -26,7 +26,6 @@ import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.launchers.ScheduledScriptLauncher.ScheduleExecutorConfiguration;
-import com.cognifide.apm.core.utils.MessagingUtils;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
 import java.util.Date;
 import java.util.List;
@@ -51,7 +50,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
     }
 )
 @Designate(ocd = ScheduleExecutorConfiguration.class)
-public class ScheduledScriptLauncher extends AbstractScriptLauncher implements Runnable {
+public class ScheduledScriptLauncher extends AbstractLauncher implements Runnable {
 
   @Reference
   private ScriptManager scriptManager;
@@ -79,16 +78,7 @@ public class ScheduledScriptLauncher extends AbstractScriptLauncher implements R
 
   private void runScheduled(ResourceResolver resolver) throws PersistenceException {
     final List<Script> scripts = scriptFinder.findAll(onSchedule(new Date()), resolver);
-    if (scripts.isEmpty()) {
-      return;
-    }
-    if (logger.isInfoEnabled()) {
-      logger.info(String.format("Schedule executor is trying to execute script(s): %d", scripts.size()));
-      logger.info(MessagingUtils.describeScripts(scripts));
-    }
-    for (Script script : scripts) {
-      processScript(script, resolver, LauncherType.SCHEDULED);
-    }
+    processScripts(scripts, resolver, LauncherType.SCHEDULED);
   }
 
   @Override
