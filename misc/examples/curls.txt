@@ -21,7 +21,7 @@ curl -i -u admin:admin -d "file=permissions.cqsm&mode=DRY_RUN" -X POST http://lo
 
   {
     "authorizable": "test_group",
-    "actionName": "com.cognifide.cq.cqsm.foundation.actions.deny.Deny",
+    "actionName": "Deny",
     "parameters": "/content/geometrixx/it /* ALL",
     "messages": [
       {

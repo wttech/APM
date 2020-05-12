@@ -31,7 +31,7 @@ aem {
         packageCompose {
             vaultDefinition {
                 version.set(rootProject.version as String)
-                property("installhook.apm.class", "com.cognifide.apm.tools.ApmInstallHook")
+                property("installhook.apm.class", "com.cognifide.apm.core.tools.ApmInstallHook")
             }
         }
     }

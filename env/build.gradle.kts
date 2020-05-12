@@ -6,9 +6,7 @@ aem {
     instance {
         satisfier {
             packages {
-                "actions.api"("com.cognifide.cq.actions:com.cognifide.cq.actions.api:6.0.2@zip")
-                "actions.core"("com.cognifide.cq.actions:com.cognifide.cq.actions.core:6.0.2@zip")
-                "actions.replication"("com.cognifide.cq.actions:com.cognifide.cq.actions.msg.replication:6.0.2@zip")
+                "cq.actions"("https://github.com/Cognifide/APM/releases/download/apm-4.3.0/cq-actions-msg-replication-6.4.0.zip")
             }
         }
     }

@@ -20,7 +20,7 @@ scmVersion {
     })
 }
 
-defaultTasks(":app:aem:all:packageDeploy")
+defaultTasks("instanceSatisfy", ":app:aem:all:packageDeploy")
 project.version = scmVersion.version
 
 allprojects {

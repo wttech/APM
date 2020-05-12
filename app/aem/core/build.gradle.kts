@@ -21,21 +21,24 @@ aem {
     tasks {
         jar {
             bundle {
-                exportPackage("com.cognifide.cq.cqsm.*") //TODO repair after extraction of API
-//                exportPackage("com.cognifide.cq.cqsm.foundation.actions.*")
-//                exportPackage("com.cognifide.cq.cqsm.api.*")
-//                exportPackage("com.cognifide.cq.cqsm.core.models.*")
-                exportPackage("com.cognifide.apm.tools.*")
-                exportPackage("com.cognifide.apm.endpoints.*")
-                attribute("Sling-Model-Packages", "com.cognifide.apm.endpoints,com.cognifide.cq.cqsm.core.models,com.cognifide.cq.cqsm.core.scripts,com.cognifide.cq.cqsm.api.history,com.cognifide.cq.cqsm.core.history")
+                exportPackage("com.cognifide.apm.core.*")
+                attribute("Sling-Model-Packages",
+                        listOf(
+                                "com.cognifide.apm.core.endpoints",
+                                "com.cognifide.apm.core.ui.models",
+                                "com.cognifide.apm.core.scripts",
+                                "com.cognifide.apm.core.history"
+                        ).joinToString(","))
                 attribute("Sling-Nodetypes", "CQ-INF/nodetypes/apm_nodetypes.cnd")
-                attribute("CQ-Security-Management-Actions", "com.cognifide.cq.cqsm.foundation.actions")
+                attribute("APM-Actions", "com.cognifide.apm.foundation.actions")
             }
         }
     }
 }
 
 dependencies {
+    implementation(project(":app:aem:api"))
+
     antlr("org.antlr:antlr4:4.7.2")
 
     compileOnly("org.projectlombok:lombok:1.18.8")
@@ -62,8 +65,8 @@ tasks {
 
     named("generateGrammarSource", AntlrTask::class).configure {
         maxHeapSize = "64m"
-        arguments = arguments + listOf("-visitor", "-long-messages", "-package", "com.cognifide.apm.grammar.antlr")
-        outputDirectory = project.file("src/main/generated/com/cognifide/apm/grammar/antlr")
+        arguments = arguments + listOf("-visitor", "-long-messages", "-package", "com.cognifide.apm.core.grammar.antlr")
+        outputDirectory = project.file("src/main/generated/com/cognifide/apm/core/grammar/antlr")
     }
 
     register<Jar>("sourcesJar") {

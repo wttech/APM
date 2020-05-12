@@ -93,7 +93,7 @@ Available modes to use:
   ...
   {
     "authorizable": "test_group",
-    "actionName": "com.cognifide.cq.cqsm.foundation.actions.deny.Deny",
+    "actionName": "Deny",
     "parameters": "/content/geometrixx/it /* ALL",
     "messages": [
       {

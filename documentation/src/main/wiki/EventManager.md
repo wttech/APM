@@ -2,7 +2,7 @@
 The script processing pipeline can be used if any extra operation should be taken. A simple eventing mechanism exists to support hooking into various phases.
 
 ### How to write custom listener?
-In order to hook into the processing lifecycle simply create an OSGi `@Component` that will implement the `com.cognifide.cq.cqsm.api.scripts.EventListener` interface. The actual `EventManager` object is accessible through the `ScriptManager` OSGi component that can be injected to the custom component.
+In order to hook into the processing lifecycle simply create an OSGi `@Component` that will implement the `EventListener` interface. The actual `EventManager` object is accessible through the `ScriptManager` OSGi component that can be injected to the custom component.
 
 ```java
 @Component
