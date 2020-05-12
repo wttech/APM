@@ -73,7 +73,7 @@ class ApmInstallHook : OsgiAwareInstallHook() {
 
         val scripts = mutableListOf<Script>()
         scripts.addAll(scriptFinder.findAll(onInstall(currentEnvironment, currentHook), resolver))
-        scripts.addAll(modifiedScriptFinder.findAll(onInstallModified(currentEnvironment, currentHook), resolver))
+        scripts.addAll(modifiedScriptFinder.findAll(onInstallIfModified(currentEnvironment, currentHook), resolver))
         scripts.forEach { script ->
             val result: ExecutionResult = scriptManager.process(script, ExecutionMode.AUTOMATIC_RUN, resolver)
             logStatus(script.path, result.isSuccess)

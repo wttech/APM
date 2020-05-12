@@ -22,7 +22,7 @@ package com.cognifide.apm.core.launchers;
 import org.apache.commons.lang.WordUtils;
 
 enum LauncherType {
-  SCHEDULED, MODIFIED, REPLICATED, ON_STARTUP;
+  SCHEDULED, REPLICATED, STARTUP, STARTUP_MODIFIED;
 
   @Override
   public String toString() {

@@ -45,9 +45,9 @@ import org.osgi.service.component.annotations.Reference;
         Property.VENDOR
     }
 )
-public class ReplicatedScriptLauncher extends AbstractScriptLauncher implements JobConsumer {
+public class ReplicatedScriptLauncher extends AbstractLauncher implements JobConsumer {
 
-  public static final String JOB_NAME = "com/cognifide/cq/cqsm/core/executors/replication/executor";
+  public static final String JOB_NAME = "com/cognifide/apm/core/launchers/replication";
 
   @Reference
   private ScriptManager scriptManager;

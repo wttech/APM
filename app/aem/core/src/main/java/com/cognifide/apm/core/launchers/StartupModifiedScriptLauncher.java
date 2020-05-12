@@ -19,14 +19,13 @@
  */
 package com.cognifide.apm.core.launchers;
 
-import static com.cognifide.apm.core.scripts.ScriptFilters.onModify;
+import static com.cognifide.apm.core.scripts.ScriptFilters.onStartupIfModified;
 
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.scripts.EventListener;
 import com.cognifide.apm.core.services.ModifiedScriptFinder;
-import com.cognifide.apm.core.utils.MessagingUtils;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
 import java.util.List;
 import org.apache.sling.api.resource.PersistenceException;
@@ -39,11 +38,11 @@ import org.osgi.service.component.annotations.Reference;
 @Component(
     immediate = true,
     property = {
-        Property.DESCRIPTION + "Launches modified scripts",
+        Property.DESCRIPTION + "Launches modified scripts on bundle startup",
         Property.VENDOR
     }
 )
-public class ModifiedScriptLauncher extends AbstractScriptLauncher {
+public class StartupModifiedScriptLauncher extends AbstractLauncher {
 
   /**
    * Reference needed for proper event hook up on activation
@@ -62,20 +61,12 @@ public class ModifiedScriptLauncher extends AbstractScriptLauncher {
 
   @Activate
   private synchronized void activate() {
-    SlingHelper.operateTraced(resolverFactory, this::runModified);
+    SlingHelper.operateTraced(resolverFactory, this::runOnStartupIfModified);
   }
 
-  private void runModified(ResourceResolver resolver) throws PersistenceException {
-    final List<Script> scripts = modifiedScriptFinder.findAll(onModify(), resolver);
-    if (!scripts.isEmpty()) {
-      logger.info("Executor will try to run following scripts: {}", scripts.size());
-      logger.info(MessagingUtils.describeScripts(scripts));
-      for (Script script : scripts) {
-        processScript(script, resolver, LauncherType.MODIFIED);
-      }
-    } else {
-      logger.info("Executor has not detected any changes");
-    }
+  private void runOnStartupIfModified(ResourceResolver resolver) throws PersistenceException {
+    List<Script> scripts = modifiedScriptFinder.findAll(onStartupIfModified(), resolver);
+    processScripts(scripts, resolver, LauncherType.STARTUP_MODIFIED);
   }
 
   @Override

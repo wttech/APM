@@ -19,14 +19,13 @@
  */
 package com.cognifide.apm.core.launchers;
 
-import static com.cognifide.apm.core.scripts.ScriptFilters.onStart;
+import static com.cognifide.apm.core.scripts.ScriptFilters.onStartup;
 
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.scripts.EventListener;
-import com.cognifide.apm.core.utils.MessagingUtils;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
 import java.util.List;
 import org.apache.sling.api.resource.PersistenceException;
@@ -43,7 +42,7 @@ import org.osgi.service.component.annotations.Reference;
         Property.VENDOR
     }
 )
-public class OnStartupScriptLauncher extends AbstractScriptLauncher {
+public class StartupScriptLauncher extends AbstractLauncher {
 
   /**
    * Reference needed for proper event hook up on activation
@@ -66,16 +65,8 @@ public class OnStartupScriptLauncher extends AbstractScriptLauncher {
   }
 
   private void runOnStartup(ResourceResolver resolver) throws PersistenceException {
-    final List<Script> scripts = scriptFinder.findAll(onStart(), resolver);
-    if (!scripts.isEmpty()) {
-      logger.info("Startup script executor is trying to execute scripts on startup: {}", scripts.size());
-      logger.info(MessagingUtils.describeScripts(scripts));
-      for (Script script : scripts) {
-        processScript(script, resolver, LauncherType.ON_STARTUP);
-      }
-    } else {
-      logger.info("Startup script executor has nothing to do");
-    }
+    List<Script> scripts = scriptFinder.findAll(onStartup(), resolver);
+    processScripts(scripts, resolver, LauncherType.STARTUP);
   }
 
   @Override

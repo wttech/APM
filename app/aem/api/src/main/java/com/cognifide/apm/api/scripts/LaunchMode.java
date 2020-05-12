@@ -31,19 +31,19 @@ public enum LaunchMode {
   ON_DEMAND,
 
   /**
-   * Executed always on bundle start / update
-   */
-  ON_START,
-
-  /**
-   * Executed only once or if script content's changed
-   */
-  ON_MODIFY,
-
-  /**
    * Executed only after scheduled date
    */
   ON_SCHEDULE,
+
+  /**
+   * Executed always on bundle start
+   */
+  ON_STARTUP,
+
+  /**
+   * Executed on bundle start, only if script content's changed
+   */
+  ON_STARTUP_IF_MODIFIED,
 
   /**
    * Executed always after successfully package installation
@@ -51,7 +51,7 @@ public enum LaunchMode {
   ON_INSTALL,
 
   /**
-   * Executed after successfully package installation if script content's changed
+   * Executed after successfully package installation, only if script content's changed
    */
   ON_INSTALL_IF_MODIFIED;
 

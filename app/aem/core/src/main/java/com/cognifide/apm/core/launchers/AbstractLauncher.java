@@ -23,21 +23,37 @@ import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ExecutionMode;
 import com.cognifide.apm.api.services.ExecutionResult;
 import com.cognifide.apm.api.services.ScriptManager;
+import com.cognifide.apm.core.utils.MessagingUtils;
+import java.util.List;
 import javax.jcr.RepositoryException;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-abstract class AbstractScriptLauncher {
+abstract class AbstractLauncher {
 
   protected final Logger logger;
 
-  AbstractScriptLauncher() {
+  AbstractLauncher() {
     logger = LoggerFactory.getLogger(this.getClass());
   }
 
-  void processScript(Script script, ResourceResolver resolver, LauncherType launcherType) throws PersistenceException {
+  void processScripts(List<Script> scripts, ResourceResolver resolver, LauncherType launcherType)
+      throws PersistenceException {
+
+    if (!scripts.isEmpty()) {
+      logger.info("Launcher will try to run following scripts: {}", scripts.size());
+      logger.info(MessagingUtils.describeScripts(scripts));
+      for (Script script : scripts) {
+        processScript(script, resolver, launcherType);
+      }
+    }
+  }
+
+  void processScript(Script script, ResourceResolver resolver, LauncherType launcherType)
+      throws PersistenceException {
+
     final String scriptPath = script.getPath();
     try {
       getScriptManager().process(script, ExecutionMode.VALIDATION, resolver);
@@ -45,7 +61,7 @@ abstract class AbstractScriptLauncher {
         final ExecutionResult result = getScriptManager().process(script, ExecutionMode.AUTOMATIC_RUN, resolver);
         logStatus(scriptPath, result.isSuccess(), launcherType);
       } else {
-        logger.warn("{} executor cannot execute script which is not valid: {}", launcherType.toString(), scriptPath);
+        logger.warn("{} launcher cannot execute script which is not valid: {}", launcherType.toString(), scriptPath);
       }
     } catch (RepositoryException e) {
       logger.error("Script cannot be processed because of repository error: {}", scriptPath, e);
