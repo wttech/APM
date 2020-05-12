@@ -3,10 +3,6 @@ import org.gradle.jvm.tasks.Jar
 
 plugins {
     id("com.cognifide.aem.bundle")
-    kotlin("jvm")
-    id("org.jetbrains.kotlin.plugin.noarg") version "1.3.70"
-    antlr
-    groovy
     java
     `maven-publish`
     signing
@@ -25,14 +21,6 @@ aem {
             }
         }
     }
-}
-
-dependencies {
-    compileOnly("org.projectlombok:lombok:1.18.8")
-    annotationProcessor("org.projectlombok:lombok:1.18.8")
-
-    compileOnly(kotlin("stdlib-jdk8"))
-    compileOnly(kotlin("osgi-bundle"))
 }
 
 tasks {
