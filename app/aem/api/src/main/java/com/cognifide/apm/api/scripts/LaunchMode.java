@@ -19,6 +19,10 @@
  */
 package com.cognifide.apm.api.scripts;
 
+import java.util.Arrays;
+import java.util.Optional;
+import org.apache.commons.lang.StringUtils;
+
 public enum LaunchMode {
 
   /**
@@ -49,5 +53,11 @@ public enum LaunchMode {
   /**
    * Executed after successfully package installation if script content's changed
    */
-  ON_INSTALL_IF_MODIFIED
+  ON_INSTALL_IF_MODIFIED;
+
+  public static Optional<LaunchMode> from(String text) {
+    return Arrays.stream(LaunchMode.values())
+        .filter(launchMode -> StringUtils.endsWithIgnoreCase(launchMode.name(), text))
+        .findFirst();
+  }
 }

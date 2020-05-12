@@ -19,7 +19,17 @@
  */
 package com.cognifide.apm.api.scripts;
 
+import java.util.Arrays;
+import java.util.Optional;
+import org.apache.commons.lang.StringUtils;
+
 public enum LaunchEnvironment {
 
-  ALL, AUTHOR, PUBLISH
+  ALL, AUTHOR, PUBLISH;
+
+  public static Optional<LaunchEnvironment> from(String text) {
+    return Arrays.stream(LaunchEnvironment.values())
+        .filter(launchEnvironment -> StringUtils.endsWithIgnoreCase(launchEnvironment.name(), text))
+        .findFirst();
+  }
 }
