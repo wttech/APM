@@ -67,7 +67,7 @@ public class ScheduledScriptLauncher extends AbstractScriptLauncher implements R
   @Activate
   @Modified
   public void activate(ScheduleExecutorConfiguration config) {
-    enabled = config.enableScheduleExecutor();
+    enabled = !config.disableScheduleExecutor();
   }
 
   @Override
@@ -96,10 +96,10 @@ public class ScheduledScriptLauncher extends AbstractScriptLauncher implements R
     return scriptManager;
   }
 
-  @ObjectClassDefinition(name = "AEM Permission Management - Schedule Executor Configuration ")
+  @ObjectClassDefinition(name = "AEM Permission Management - Schedule Launcher Configuration ")
   public @interface ScheduleExecutorConfiguration {
 
-    @AttributeDefinition(name = "Enable Schedule Executor", defaultValue = "true")
-    boolean enableScheduleExecutor();
+    @AttributeDefinition(name = "Disable Schedule Launcher", defaultValue = "false")
+    boolean disableScheduleExecutor();
   }
 }

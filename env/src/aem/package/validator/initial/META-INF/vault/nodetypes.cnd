@@ -7,7 +7,6 @@
 <'granite'='http://www.adobe.com/jcr/granite/1.0'>
 <'rep'='internal'>
 <'xmp'='http://ns.adobe.com/xap/1.0/'>
-<'apm'='http://www.cognifide.com/apm/1.1'>
 <'social'='http://www.adobe.com/social/1.0'>
 <'dam'='http://www.day.com/dam/1.0'>
 <'oauth'='http://oauth.net/'>
@@ -115,19 +114,6 @@
 [sling:ResourceSuperType]
   mixin
   - sling:resourceSuperType (string)
-
-[apm:Script]
-  mixin
-  - apm:launchEnabled (boolean)
-  - apm:launchMode (string)
-  - apm:launchEnvironment (string)
-  - apm:launchHook (string)
-  - apm:launchSchedule (date)
-  - apm:lastExecuted (date)
-  - apm:checksum (string)
-  - apm:publishRun (boolean)
-  - apm:replicatedBy (string)
-  - apm:verified (string)
 
 [rep:User] > rep:Authorizable, rep:Impersonatable
   - rep:password (string) protected

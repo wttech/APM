@@ -38,9 +38,13 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.Optional;
 import org.apache.sling.models.annotations.injectorspecific.Self;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Model(adaptables = Resource.class)
 public class ScriptModel implements MutableScript {
+
+  private static Logger LOGGER = LoggerFactory.getLogger(ScriptModel.class);
 
   private final String path;
 
@@ -120,7 +124,11 @@ public class ScriptModel implements MutableScript {
 
   @Override
   public LaunchMode getLaunchMode() {
-    return (launchMode == null) ? LaunchMode.ON_DEMAND : LaunchMode.valueOf(launchMode);
+    return (launchMode == null) ? LaunchMode.ON_DEMAND : LaunchMode.from(launchMode)
+        .orElseGet(() -> {
+          LOGGER.warn("Cannot match {} to existing launch modes. Using default one", launchMode);
+          return LaunchMode.ON_DEMAND;
+        });
   }
 
   @Override
@@ -130,7 +138,11 @@ public class ScriptModel implements MutableScript {
 
   @Override
   public LaunchEnvironment getLaunchEnvironment() {
-    return (launchEnvironment == null) ? LaunchEnvironment.ALL : LaunchEnvironment.valueOf(launchEnvironment);
+    return (launchEnvironment == null) ? LaunchEnvironment.ALL : LaunchEnvironment.from(launchEnvironment)
+        .orElseGet(() -> {
+          LOGGER.warn("Cannot match {} to existing launch environments. Using default one", launchEnvironment);
+          return LaunchEnvironment.ALL;
+        });
   }
 
   @Override

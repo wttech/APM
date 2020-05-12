@@ -20,8 +20,8 @@
   -->
 <jcr:root xmlns:apm="http://www.cognifide.com/apm/1.1" xmlns:jcr="http://www.jcp.org/jcr/1.0"
   xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
-  apm:launchMode="ON_INSTALL"
-  apm:launchEnvironment="AUTHOR"
+  apm:launchMode="on_install"
+  apm:launchEnvironment="author"
   apm:verified="true"
   jcr:mixinTypes="[apm:Script]"
   jcr:primaryType="nt:file">
