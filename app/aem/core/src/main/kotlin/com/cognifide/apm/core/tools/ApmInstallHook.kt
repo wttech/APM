@@ -29,12 +29,12 @@ import com.cognifide.apm.api.services.ScriptManager
 import com.cognifide.apm.core.scripts.ScriptFilters.*
 import com.cognifide.apm.core.services.ModifiedScriptFinder
 import com.cognifide.apm.core.services.applyChecksum
+import com.cognifide.apm.core.utils.InstanceTypeProvider
 import com.cognifide.apm.core.utils.sling.SlingHelper.getResourceResolverForService
 import org.apache.jackrabbit.vault.packaging.InstallContext
 import org.apache.jackrabbit.vault.packaging.PackageException
 import org.apache.sling.api.resource.ResourceResolver
 import org.apache.sling.api.resource.ResourceResolverFactory
-import org.apache.sling.settings.SlingSettingsService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.*
@@ -97,13 +97,8 @@ class ApmInstallHook : OsgiAwareInstallHook() {
     }
 
     private fun getCurrentEnvironment(): LaunchEnvironment {
-        val slingSettingsService = getService(SlingSettingsService::class.java)
-        val runModes = slingSettingsService.runModes
-        return when {
-            runModes.contains("author") -> LaunchEnvironment.AUTHOR
-            runModes.contains("publish") -> LaunchEnvironment.PUBLISH
-            else -> LaunchEnvironment.AUTHOR
-        }
+        val instanceTypeProvider = getService(InstanceTypeProvider::class.java)
+        return if (instanceTypeProvider.isOnAuthor) LaunchEnvironment.AUTHOR else LaunchEnvironment.PUBLISH
     }
 
     private fun logStatus(scriptPath: String, success: Boolean) {

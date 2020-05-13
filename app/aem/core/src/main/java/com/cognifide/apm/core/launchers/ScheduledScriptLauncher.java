@@ -19,13 +19,17 @@
  */
 package com.cognifide.apm.core.launchers;
 
+import static com.cognifide.apm.api.scripts.LaunchEnvironment.AUTHOR;
+import static com.cognifide.apm.api.scripts.LaunchEnvironment.PUBLISH;
 import static com.cognifide.apm.core.scripts.ScriptFilters.onSchedule;
 
+import com.cognifide.apm.api.scripts.LaunchEnvironment;
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.launchers.ScheduledScriptLauncher.ScheduleExecutorConfiguration;
+import com.cognifide.apm.core.utils.InstanceTypeProvider;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
 import java.util.Date;
 import java.util.List;
@@ -59,6 +63,9 @@ public class ScheduledScriptLauncher extends AbstractLauncher implements Runnabl
   private ScriptFinder scriptFinder;
 
   @Reference
+  private InstanceTypeProvider instanceTypeProvider;
+
+  @Reference
   private ResourceResolverFactory resolverFactory;
 
   private boolean enabled = true;
@@ -77,7 +84,8 @@ public class ScheduledScriptLauncher extends AbstractLauncher implements Runnabl
   }
 
   private void runScheduled(ResourceResolver resolver) throws PersistenceException {
-    final List<Script> scripts = scriptFinder.findAll(onSchedule(new Date()), resolver);
+    LaunchEnvironment environment = instanceTypeProvider.isOnAuthor() ? AUTHOR : PUBLISH;
+    List<Script> scripts = scriptFinder.findAll(onSchedule(environment, new Date()), resolver);
     processScripts(scripts, resolver, LauncherType.SCHEDULED);
   }
 

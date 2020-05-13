@@ -48,20 +48,23 @@ public class ScriptFilters {
         .and(withLaunchHook(currentHook));
   }
 
-  public static Predicate<Script> onSchedule(Date date) {
+  public static Predicate<Script> onSchedule(LaunchEnvironment environment, Date date) {
     return enabled()
         .and(withLaunchMode(LaunchMode.ON_SCHEDULE))
+        .and(withLaunchEnvironment(environment))
         .and(script -> script.getLastExecuted() == null && script.getLaunchSchedule().before(date));
   }
 
-  public static Predicate<Script> onStartup() {
+  public static Predicate<Script> onStartup(LaunchEnvironment environment) {
     return enabled()
-        .and(withLaunchMode(LaunchMode.ON_STARTUP));
+        .and(withLaunchMode(LaunchMode.ON_STARTUP))
+        .and(withLaunchEnvironment(environment));
   }
 
-  public static Predicate<Script> onStartupIfModified() {
+  public static Predicate<Script> onStartupIfModified(LaunchEnvironment environment) {
     return enabled()
-        .and(withLaunchMode(LaunchMode.ON_STARTUP_IF_MODIFIED));
+        .and(withLaunchMode(LaunchMode.ON_STARTUP_IF_MODIFIED))
+        .and(withLaunchEnvironment(environment));
   }
 
   public static Predicate<Script> noChecksum() {
@@ -74,7 +77,8 @@ public class ScriptFilters {
   }
 
   private static Predicate<Script> withLaunchEnvironment(LaunchEnvironment environment) {
-    return script -> script.getLaunchEnvironment() == LaunchEnvironment.ALL || environment == script.getLaunchEnvironment();
+    return script -> script.getLaunchEnvironment() == LaunchEnvironment.ALL
+        || environment == script.getLaunchEnvironment();
   }
 
   private static Predicate<Script> withLaunchMode(final LaunchMode mode) {

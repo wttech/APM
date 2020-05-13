@@ -19,6 +19,7 @@
  */
 .apm-editor-grid {
   display: grid;
+  grid-template-rows: min-content;
   grid-template-areas: "console console console details" "console console console launch" "console console console nothing";
 
   .apm-editor-console {
@@ -38,9 +39,6 @@
       max-height: 150px;
       overflow: auto;
 
-      &.hidden {
-        display: none;
-      }
 
       .apm-console-log {
         border-bottom: 1px dotted rgb(208, 208, 208);
@@ -63,6 +61,10 @@
 
   .apm-editor-launch {
     grid-area: launch;
+  }
+
+  .hidden {
+    display: none;
   }
 
   @media screen and (max-width: 768px) {
