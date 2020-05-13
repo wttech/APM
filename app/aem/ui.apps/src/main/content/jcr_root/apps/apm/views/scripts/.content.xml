@@ -52,7 +52,7 @@
             sortable="{Boolean}true"/>
           <updated
             jcr:primaryType="nt:unstructured"
-            jcr:title="Updated at"
+            jcr:title="Updated"
             sortable="{Boolean}true"
             sortType="date"/>
           <author

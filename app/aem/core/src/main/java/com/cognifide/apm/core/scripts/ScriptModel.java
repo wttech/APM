@@ -102,7 +102,7 @@ public class ScriptModel implements MutableScript {
   private Boolean verified;
 
   @Inject
-  @Named(JcrConstants.JCR_LASTMODIFIED)
+  @Named(JcrConstants.JCR_CONTENT + "/" + JcrConstants.JCR_LASTMODIFIED)
   @Optional
   private Date lastModified;
 

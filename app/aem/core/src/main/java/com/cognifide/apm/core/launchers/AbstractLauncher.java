@@ -56,7 +56,9 @@ abstract class AbstractLauncher {
 
     final String scriptPath = script.getPath();
     try {
-      getScriptManager().process(script, ExecutionMode.VALIDATION, resolver);
+      if (!script.isValid()) {
+        getScriptManager().process(script, ExecutionMode.VALIDATION, resolver);
+      }
       if (script.isValid()) {
         final ExecutionResult result = getScriptManager().process(script, ExecutionMode.AUTOMATIC_RUN, resolver);
         logStatus(scriptPath, result.isSuccess(), launcherType);

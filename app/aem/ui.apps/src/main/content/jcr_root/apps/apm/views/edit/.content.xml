@@ -101,7 +101,7 @@
                 <launch
                   jcr:primaryType="nt:unstructured"
                   sling:resourceType="granite/ui/components/coral/foundation/include"
-                  path="apm/fragments/scriptLaunch"
+                  path="apm/fragments/scriptLauncher"
                   resourceType="granite/ui/components/coral/foundation/form/fieldset"/>
               </items>
             </grid>

@@ -19,13 +19,16 @@
  */
 package com.cognifide.apm.core.launchers;
 
+import static com.cognifide.apm.api.scripts.LaunchEnvironment.AUTHOR;
+import static com.cognifide.apm.api.scripts.LaunchEnvironment.PUBLISH;
 import static com.cognifide.apm.core.scripts.ScriptFilters.onStartupIfModified;
 
+import com.cognifide.apm.api.scripts.LaunchEnvironment;
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.apm.core.Property;
-import com.cognifide.apm.core.scripts.EventListener;
 import com.cognifide.apm.core.services.ModifiedScriptFinder;
+import com.cognifide.apm.core.utils.InstanceTypeProvider;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
 import java.util.List;
 import org.apache.sling.api.resource.PersistenceException;
@@ -44,17 +47,14 @@ import org.osgi.service.component.annotations.Reference;
 )
 public class StartupModifiedScriptLauncher extends AbstractLauncher {
 
-  /**
-   * Reference needed for proper event hook up on activation
-   */
-  @Reference
-  private EventListener eventListener;
-
   @Reference
   private ScriptManager scriptManager;
 
   @Reference
   private ModifiedScriptFinder modifiedScriptFinder;
+
+  @Reference
+  private InstanceTypeProvider instanceTypeProvider;
 
   @Reference
   private ResourceResolverFactory resolverFactory;
@@ -65,7 +65,8 @@ public class StartupModifiedScriptLauncher extends AbstractLauncher {
   }
 
   private void runOnStartupIfModified(ResourceResolver resolver) throws PersistenceException {
-    List<Script> scripts = modifiedScriptFinder.findAll(onStartupIfModified(), resolver);
+    LaunchEnvironment environment = instanceTypeProvider.isOnAuthor() ? AUTHOR : PUBLISH;
+    List<Script> scripts = modifiedScriptFinder.findAll(onStartupIfModified(environment), resolver);
     processScripts(scripts, resolver, LauncherType.STARTUP_MODIFIED);
   }
 

@@ -40,8 +40,11 @@ import com.cognifide.apm.core.actions.executor.ActionExecutor;
 import com.cognifide.apm.core.actions.executor.ActionExecutorFactory;
 import com.cognifide.apm.core.executors.ContextImpl;
 import com.cognifide.apm.core.grammar.ScriptRunner;
+import com.cognifide.apm.core.history.History;
+import com.cognifide.apm.core.history.HistoryEntry;
 import com.cognifide.apm.core.logger.Progress;
 import com.cognifide.apm.core.progress.ProgressImpl;
+import com.cognifide.apm.core.utils.InstanceTypeProvider;
 import com.google.common.collect.Maps;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -80,6 +83,12 @@ public class ScriptManagerImpl implements ExtendedScriptManager {
 
   @Reference
   private ScriptFinder scriptFinder;
+
+  @Reference
+  private InstanceTypeProvider instanceTypeProvider;
+
+  @Reference
+  private History history;
 
   @Reference(
       cardinality = ReferenceCardinality.MULTIPLE,
@@ -161,9 +170,27 @@ public class ScriptManagerImpl implements ExtendedScriptManager {
 
     updateScriptProperties(script, mode, progress.isSuccess());
     applyChecksum(scriptFinder, resolver, script);
+    saveHistory(script, mode, progress);
     eventManager.trigger(Event.AFTER_EXECUTE, script, mode, progress);
 
     return progress;
+  }
+
+  private void saveHistory(Script script, ExecutionMode mode, Progress progress) {
+    if (instanceTypeProvider.isOnAuthor()) {
+      if (mode != ExecutionMode.VALIDATION) {
+        history.logLocal(script, mode, progress);
+      }
+    } else {
+      if (mode.isRun()) {
+        try {
+          HistoryEntry entry = history.logLocal(script, mode, progress);
+          history.replicate(entry, progress.getExecutor());
+        } catch (RepositoryException e) {
+          LOG.error("Repository error occurred while replicating script execution", e);
+        }
+      }
+    }
   }
 
   private void updateScriptProperties(final Script script, final ExecutionMode mode, final boolean success)

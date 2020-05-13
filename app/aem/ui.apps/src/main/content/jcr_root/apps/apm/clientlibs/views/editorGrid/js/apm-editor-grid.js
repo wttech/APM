@@ -33,14 +33,16 @@
   };
 
   const LaunchModes = {
+    onDemand: 'ON_DEMAND',
     onInstall: 'ON_INSTALL',
-    onInstallModified: 'ON_INSTALL_MODIFIED',
+    onInstallIfModified: 'ON_INSTALL_IF_MODIFIED',
     onSchedule: 'ON_SCHEDULE',
   };
 
   class EditorGrid {
     constructor($element, fields) {
       this.$element = $element;
+      this.$launcher = $element.find('.apm-editor-launcher');
       this.editorMode = this.$element.hasClass(EditorModes.viewMode) ? EditorModes.viewMode : EditorModes.editMode;
       this.fields = {
         launchEnabled: fields[FieldNames.launchEnabled],
@@ -70,6 +72,7 @@
 
     showFields(fields) {
       const showFields = $.map(fields, (value) => value);
+      this.$launcher.show();
       $.each(this.fields, (index, field) => {
         if (showFields.includes(field)) {
           field.show();
@@ -87,14 +90,17 @@
         this.showFields([this.fields.launchEnabled]);
       } else {
         const launchMode = this.fields.launchMode.getValue();
-        if (launchMode === LaunchModes.onInstall || launchMode === LaunchModes.onInstallModified) {
-          this.showFields([this.fields.launchEnabled, this.fields.launchMode, this.fields.launchEnvironment,
-            this.fields.launchHook])
-        } else if (launchMode === LaunchModes.onSchedule) {
-          this.showFields([this.fields.launchEnabled, this.fields.launchMode, this.fields.launchSchedule]);
-        } else {
-          this.showFields([this.fields.launchEnabled, this.fields.launchMode]);
+        let showFields = [this.fields.launchEnabled, this.fields.launchMode];
+        if (launchMode === LaunchModes.onInstall || launchMode === LaunchModes.onInstallIfModified) {
+          showFields.push(this.fields.launchHook);
         }
+        if (launchMode === LaunchModes.onSchedule) {
+          showFields.push(this.fields.launchSchedule);
+        }
+        if (launchMode !== LaunchModes.onDemand) {
+          showFields.push(this.fields.launchEnvironment);
+        }
+        this.showFields(showFields);
       }
     }
   }
