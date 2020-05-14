@@ -27,6 +27,7 @@ aem {
                                 "com.cognifide.apm.core.endpoints",
                                 "com.cognifide.apm.core.ui.models",
                                 "com.cognifide.apm.core.scripts",
+                                "com.cognifide.apm.core.services",
                                 "com.cognifide.apm.core.history"
                         ).joinToString(","))
                 attribute("Sling-Nodetypes", "CQ-INF/nodetypes/apm_nodetypes.cnd")

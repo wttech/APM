@@ -19,8 +19,6 @@
  */
 package com.cognifide.apm.core.scripts;
 
-import static com.cognifide.apm.core.services.ChecksumProviderKt.applyChecksum;
-
 import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.apm.api.actions.Context;
 import com.cognifide.apm.api.actions.SessionSavingMode;
@@ -44,6 +42,7 @@ import com.cognifide.apm.core.history.History;
 import com.cognifide.apm.core.history.HistoryEntry;
 import com.cognifide.apm.core.logger.Progress;
 import com.cognifide.apm.core.progress.ProgressImpl;
+import com.cognifide.apm.core.services.version.VersionService;
 import com.cognifide.apm.core.utils.InstanceTypeProvider;
 import com.google.common.collect.Maps;
 import java.util.Arrays;
@@ -86,6 +85,9 @@ public class ScriptManagerImpl implements ExtendedScriptManager {
 
   @Reference
   private InstanceTypeProvider instanceTypeProvider;
+
+  @Reference
+  private VersionService versionService;
 
   @Reference
   private History history;
@@ -169,7 +171,7 @@ public class ScriptManagerImpl implements ExtendedScriptManager {
     }
 
     updateScriptProperties(script, mode, progress.isSuccess());
-    applyChecksum(scriptFinder, resolver, script);
+    versionService.updateVersionIfNeeded(resolver, script);
     saveHistory(script, mode, progress);
     eventManager.trigger(Event.AFTER_EXECUTE, script, mode, progress);
 

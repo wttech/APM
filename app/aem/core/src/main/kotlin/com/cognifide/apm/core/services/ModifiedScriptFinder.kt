@@ -24,7 +24,7 @@ import com.cognifide.apm.api.scripts.Script
 import com.cognifide.apm.api.services.ScriptFinder
 import com.cognifide.apm.core.Property
 import com.cognifide.apm.core.grammar.ReferenceFinder
-import com.cognifide.apm.core.history.History
+import com.cognifide.apm.core.services.version.VersionService
 import org.apache.sling.api.resource.ResourceResolver
 import org.osgi.service.component.annotations.Component
 import org.osgi.service.component.annotations.Reference
@@ -40,7 +40,7 @@ class ModifiedScriptFinder {
 
     @Reference
     @Transient
-    lateinit var history: History
+    lateinit var versionService: VersionService
 
     @Reference
     @Transient
@@ -54,9 +54,9 @@ class ModifiedScriptFinder {
         referenceGraph.roots
                 .filter { it.isValid() }
                 .forEach { root ->
-                    val checksum = countChecksum(root)
-                    val scriptHistory = history.findScriptHistory(resolver, root.script)
-                    if (checksum != scriptHistory.lastChecksum) {
+                    val checksum = versionService.countChecksum(root)
+                    val scriptVersion = versionService.getScriptVersion(resolver, root.script)
+                    if (checksum != scriptVersion.lastChecksum) {
                         modified.add(root.script)
                     }
                 }

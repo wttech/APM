@@ -28,7 +28,7 @@ import com.cognifide.apm.api.services.ScriptFinder
 import com.cognifide.apm.api.services.ScriptManager
 import com.cognifide.apm.core.scripts.ScriptFilters.*
 import com.cognifide.apm.core.services.ModifiedScriptFinder
-import com.cognifide.apm.core.services.applyChecksum
+import com.cognifide.apm.core.services.version.VersionService
 import com.cognifide.apm.core.utils.InstanceTypeProvider
 import com.cognifide.apm.core.utils.sling.SlingHelper.getResourceResolverForService
 import org.apache.jackrabbit.vault.packaging.InstallContext
@@ -82,7 +82,10 @@ class ApmInstallHook : OsgiAwareInstallHook() {
 
     private fun applyChecksum(scriptFinder: ScriptFinder, resolver: ResourceResolver) {
         val scripts = scriptFinder.findAll(noChecksum(), resolver)
-        applyChecksum(scriptFinder, resolver, *scripts.toTypedArray())
+        if (scripts.isNotEmpty()) {
+            val versionService = getService(VersionService::class.java)
+            versionService.updateVersionIfNeeded(resolver, *scripts.toTypedArray())
+        }
     }
 
     private fun getCurrentHook(context: InstallContext): String {

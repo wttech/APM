@@ -33,12 +33,11 @@ import com.cognifide.apm.core.history.HistoryEntryWriter.HistoryEntryWriterBuild
 import com.cognifide.apm.core.history.InstanceDetails.InstanceType;
 import com.cognifide.apm.core.logger.Progress;
 import com.cognifide.apm.core.progress.ProgressHelper;
-import com.cognifide.apm.core.scripts.ScriptNode;
+import com.cognifide.apm.core.services.version.VersionService;
 import com.cognifide.apm.core.utils.InstanceTypeProvider;
 import com.cognifide.apm.core.utils.sling.ResolveCallback;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
 import com.day.cq.commons.jcr.JcrConstants;
-import com.day.cq.commons.jcr.JcrUtil;
 import com.day.cq.replication.ReplicationAction;
 import com.google.common.collect.Lists;
 import java.net.InetAddress;
@@ -102,6 +101,9 @@ public class HistoryImpl implements History {
 
   @Reference
   private InstanceTypeProvider instanceTypeProvider;
+
+  @Reference
+  private VersionService versionService;
 
   @Override
   public HistoryEntry logLocal(Script script, ExecutionMode mode, Progress progressLogger) {
@@ -203,10 +205,8 @@ public class HistoryImpl implements History {
       Session session = resolver.adaptTo(Session.class);
 
       Node scriptHistoryNode = createScriptHistoryNode(script, session);
-      Node scriptVersionNode = createScriptVersionNode(scriptHistoryNode, script, session);
-      Node scriptContentNode = copyScriptContent(scriptVersionNode, script, session);
-      Node historyEntryNode = createHistoryEntryNode(scriptHistoryNode, scriptVersionNode, script, mode, remote);
-      historyEntryNode.setProperty(HistoryEntryImpl.SCRIPT_CONTENT_PATH, scriptContentNode.getPath());
+      Node historyEntryNode = createHistoryEntryNode(scriptHistoryNode, script, mode, remote);
+      historyEntryNode.setProperty(HistoryEntryImpl.SCRIPT_CONTENT_PATH, versionService.getVersionPath(script));
       writeProperties(resolver, historyEntryNode, historyEntryWriter);
 
       session.save();
@@ -226,10 +226,10 @@ public class HistoryImpl implements History {
     return entryResource;
   }
 
-  private Node createHistoryEntryNode(Node scriptHistoryNode, Node parent, Script script, ExecutionMode mode, boolean remote)
+  private Node createHistoryEntryNode(Node scriptHistoryNode, Script script, ExecutionMode mode, boolean remote)
       throws RepositoryException {
     String modeName = getModeName(mode, remote);
-    Node historyEntry = getOrCreateUniqueByPath(parent, modeName, NT_UNSTRUCTURED);
+    Node historyEntry = getOrCreateUniqueByPath(scriptHistoryNode, modeName, NT_UNSTRUCTURED);
     historyEntry.setProperty(APM_HISTORY, APM_HISTORY_ENTRY);
     historyEntry.setProperty(HistoryEntryImpl.CHECKSUM, script.getChecksum());
     scriptHistoryNode.setProperty(ScriptHistoryImpl.LAST_CHECKSUM, script.getChecksum());
@@ -247,12 +247,6 @@ public class HistoryImpl implements History {
   }
 
   @NotNull
-  private Node createScriptVersionNode(Node parent, Script script, Session session) throws RepositoryException {
-    String path = parent.getPath() + "/" + script.getChecksum();
-    return getOrCreateByPath(path, SLING_ORDERED_FOLDER, SLING_ORDERED_FOLDER, session, true);
-  }
-
-  @NotNull
   private String getModeName(ExecutionMode mode, boolean remote) {
     String modeName = (remote ? "Remote" : "Local");
     if (mode == ExecutionMode.AUTOMATIC_RUN || mode == ExecutionMode.RUN) {
@@ -267,16 +261,6 @@ public class HistoryImpl implements History {
   @NotNull
   private String getScriptHistoryPath(Script script) {
     return HISTORY_FOLDER + "/" + script.getPath().replace("/", "_").substring(1);
-  }
-
-  private Node copyScriptContent(Node parent, Script script, Session session) throws RepositoryException {
-    if (!parent.hasNode(SCRIPT_NODE_NAME)) {
-      Node source = session.getNode(script.getPath());
-      Node file = JcrUtil.copy(source, parent, SCRIPT_NODE_NAME);
-      file.addMixin(ScriptNode.APM_SCRIPT);
-      return file;
-    }
-    return parent.getNode(SCRIPT_NODE_NAME);
   }
 
   private String getHostname() {
