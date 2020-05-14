@@ -27,20 +27,19 @@ import java.util.List;
 import javax.jcr.RepositoryException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.jetbrains.annotations.NotNull;
 
 public interface History {
 
   /**
    * Save detailed script execution on a remote host as entry
    */
-  HistoryEntry logRemote(Script script, ExecutionMode mode, Progress progressLogger, InstanceDetails instanceDetails,
+  HistoryEntry logRemote(Script script, ExecutionMode mode, Progress progress, InstanceDetails instance,
       Calendar executionTime);
 
   /**
    * Save detailed script execution as entry
    */
-  HistoryEntry logLocal(Script script, ExecutionMode mode, Progress progressLogger);
+  HistoryEntry logLocal(Script script, ExecutionMode mode, Progress progress);
 
   /**
    * Replicate log entry from publish to author instance
@@ -53,6 +52,5 @@ public interface History {
 
   HistoryEntry findHistoryEntry(ResourceResolver resourceResolver, String path);
 
-  @NotNull
   ScriptHistory findScriptHistory(ResourceResolver resourceResolver, Script script);
 }
