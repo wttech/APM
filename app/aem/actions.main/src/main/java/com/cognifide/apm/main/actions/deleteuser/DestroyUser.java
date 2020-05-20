@@ -17,7 +17,7 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.main.actions.destroyuser;
+package com.cognifide.apm.main.actions.deleteuser;
 
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.ActionResult;
@@ -25,7 +25,6 @@ import com.cognifide.apm.api.actions.Context;
 import com.cognifide.apm.api.exceptions.ActionExecutionException;
 import com.cognifide.apm.main.actions.purge.Purge;
 import com.cognifide.apm.main.actions.removefromgroup.RemoveFromGroup;
-import com.cognifide.apm.main.actions.removeuser.RemoveUser;
 import com.cognifide.apm.main.utils.MessagingUtils;
 import java.util.ArrayList;
 import java.util.Collections;
