@@ -17,31 +17,29 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.main.actions.include;
+package com.cognifide.apm.main.actions.removeparents;
 
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.apm.api.actions.Context;
 import com.cognifide.apm.api.exceptions.ActionExecutionException;
-import com.cognifide.apm.main.utils.ActionUtils;
 import com.cognifide.apm.main.utils.MessagingUtils;
 import java.util.ArrayList;
 import java.util.List;
 import javax.jcr.RepositoryException;
-import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.apache.jackrabbit.api.security.user.Group;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Include implements Action {
+public class RemoveParents implements Action {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(Include.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RemoveParents.class);
 
-  private final List<String> authorizableIds;
+  private final List<String> groupIds;
 
-  public Include(final List<String> authorizableIds) {
-    this.authorizableIds = authorizableIds;
+  public RemoveParents(final List<String> groupIds) {
+    this.groupIds = groupIds;
   }
 
   @Override
@@ -54,14 +52,16 @@ public class Include implements Action {
     return process(context, true);
   }
 
-  private ActionResult process(Context context, boolean execute) {
+  public ActionResult process(final Context context, boolean execute) {
     ActionResult actionResult = context.createActionResult();
-    Group group = null;
+    List<String> errors = new ArrayList<>();
+    Authorizable authorizable = null;
     try {
-      group = context.getCurrentGroup();
-      actionResult.setAuthorizable(group.getID());
-      LOGGER.info(String.format("Adding authorizables %s to group with id = %s",
-          StringUtils.join(authorizableIds, ", "), group.getID()));
+      authorizable = context.getCurrentAuthorizable();
+      actionResult.setAuthorizable(authorizable.getID());
+      LOGGER.info(
+          String.format("Removing authorizable with id = %s from groups %s", authorizable.getID(),
+              groupIds));
     } catch (ActionExecutionException e) {
       actionResult.logError(MessagingUtils.createMessage(e));
       return actionResult;
@@ -70,22 +70,15 @@ public class Include implements Action {
       return actionResult;
     }
 
-    List<String> errors = new ArrayList<>();
-
-    for (String authorizableId : authorizableIds) {
+    for (String id : groupIds) {
       try {
-
-        Authorizable authorizable = context.getAuthorizableManager().getAuthorizable(authorizableId);
-
-        if (authorizable.isGroup()) {
-          ActionUtils.checkCyclicRelations(group, (Group) authorizable);
-        }
+        Group group = context.getAuthorizableManager().getGroup(id);
 
         if (execute) {
-          group.addMember(authorizable);
+          group.removeMember(authorizable);
         }
 
-        actionResult.logMessage(MessagingUtils.addedToGroup(authorizableId, group.getID()));
+        actionResult.logMessage(MessagingUtils.removedFromGroup(authorizable.getID(), id));
       } catch (RepositoryException | ActionExecutionException e) {
         errors.add(MessagingUtils.createMessage(e));
       }
@@ -104,5 +97,4 @@ public class Include implements Action {
   public boolean isGeneric() {
     return false;
   }
-
 }

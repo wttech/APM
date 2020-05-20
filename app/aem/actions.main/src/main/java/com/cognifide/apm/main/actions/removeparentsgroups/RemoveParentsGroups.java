@@ -17,23 +17,30 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.main.actions.purge;
+package com.cognifide.apm.main.actions.removeparentsgroups;
 
 import com.cognifide.apm.api.actions.Action;
-import com.cognifide.apm.api.actions.annotations.Mapper;
-import com.cognifide.apm.api.actions.annotations.Mapping;
-import com.cognifide.apm.api.actions.annotations.Required;
-import com.cognifide.apm.main.actions.ActionGroup;
+import com.cognifide.apm.api.actions.ActionResult;
+import com.cognifide.apm.api.actions.Context;
+import com.cognifide.apm.main.actions.removechildrengroups.ClearFromGroupDetacher;
 
-@Mapper(value = "purge", group = ActionGroup.CORE)
-public final class PurgeMapper {
+public class RemoveParentsGroups implements Action {
 
-  @Mapping(
-      examples = "PURGE '/'",
-      reference = "Delete every permission applied for current authorizable starting from specified path. "
-          + "It invokes REMOVE-ALL action recursively for every sub-path."
-  )
-  public Action mapAction(@Required("path") String path) {
-    return new Purge(path);
+  @Override
+  public ActionResult simulate(Context context) {
+    ClearFromGroupDetacher detacher = new ClearFromGroupDetacher(context, true);
+    return detacher.detachAuthorizableFromParents();
   }
+
+  @Override
+  public ActionResult execute(Context context) {
+    ClearFromGroupDetacher detacher = new ClearFromGroupDetacher(context, false);
+    return detacher.detachAuthorizableFromParents();
+  }
+
+  @Override
+  public boolean isGeneric() {
+    return false;
+  }
+
 }

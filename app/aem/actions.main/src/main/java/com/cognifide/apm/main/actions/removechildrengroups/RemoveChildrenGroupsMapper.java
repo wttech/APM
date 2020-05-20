@@ -1,4 +1,4 @@
-/*-
+/*
  * ========================LICENSE_START=================================
  * AEM Permission Management
  * %%
@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,23 +17,20 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.main.actions.removeall;
+package com.cognifide.apm.main.actions.removechildrengroups;
 
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.annotations.Mapper;
 import com.cognifide.apm.api.actions.annotations.Mapping;
-import com.cognifide.apm.api.actions.annotations.Required;
 import com.cognifide.apm.main.actions.ActionGroup;
 
-@Mapper(value = "remove-all", group = ActionGroup.CORE)
-public final class RemoveAllMapper {
+@Mapper(value = "remove-children-groups", group = ActionGroup.CORE)
+public final class RemoveChildrenGroupsMapper {
 
   @Mapping(
-      examples = "REMOVE-ALL '/'",
-      reference = "Delete every permission applied for current authorizable on specified path."
+      reference = "This action removes all groups from a given group."
   )
-  public Action mapAction(@Required("path") String path) {
-    return new RemoveAll(path);
+  public Action mapActionForClearGroups() {
+    return new RemoveChildrenGroups();
   }
-
 }

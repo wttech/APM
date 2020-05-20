@@ -17,7 +17,7 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.main.actions.addtogroup;
+package com.cognifide.apm.main.actions.addparents;
 
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.ActionResult;
@@ -33,13 +33,13 @@ import org.apache.jackrabbit.api.security.user.Group;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AddToGroup implements Action {
+public class AddParents implements Action {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(AddToGroup.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AddParents.class);
 
   private final List<String> groupIds;
 
-  public AddToGroup(final List<String> groupIds) {
+  public AddParents(final List<String> groupIds) {
     this.groupIds = groupIds;
   }
 

@@ -17,7 +17,7 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.main.actions.removegroup;
+package com.cognifide.apm.main.actions.addchildren;
 
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.annotations.Mapper;
@@ -27,29 +27,25 @@ import com.cognifide.apm.main.actions.ActionGroup;
 import java.util.Collections;
 import java.util.List;
 
-@Mapper(value = "remove-group", group = ActionGroup.CORE)
-public final class RemoveGroupMapper {
+@Mapper(value = "add-children", group = ActionGroup.CORE)
+public final class AddChildrenMapper {
 
-  public static final String REFERENCE = "Remove specified groups.\n"
-      + "No group's members are removed, but they no longer belong to the removed group (reference is removed).\n"
-      + "Note that no permissions for removed group are cleaned, so after creating a new group with the same id"
-      + " - it will automatically gain those permissions.";
+  public static final String REFERENCE = "Add specified users and groups to current group.";
 
   @Mapping(
-      examples = "REMOVE-GROUP 'authors'",
+      examples = "ADD-CHILDREN 'authors'",
       reference = REFERENCE
   )
-  public Action mapAction(@Required(value = "groupId", description = "group's id e.g.: 'authors'") String id) {
+  public Action mapAction(@Required(value = "id", description = "user's or group's id e.g.: 'author'") String id) {
     return mapAction(Collections.singletonList(id));
   }
 
   @Mapping(
-      examples = "REMOVE-GROUP ['authors']",
+      examples = "ADD-CHILDREN ['authors']",
       reference = REFERENCE
   )
   public Action mapAction(
-      @Required(value = "groupIds", description = "groups' ids e.g.: ['authors']") List<String> ids) {
-    return new RemoveGroup(ids);
+      @Required(value = "ids", description = "users' or groups' ids e.g.: ['author']") List<String> ids) {
+    return new AddChildren(ids);
   }
-
 }

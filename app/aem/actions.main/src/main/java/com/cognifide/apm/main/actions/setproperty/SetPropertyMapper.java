@@ -29,7 +29,7 @@ import com.cognifide.apm.main.actions.ActionGroup;
 public final class SetPropertyMapper {
 
   @Mapping(
-      examples = "SET_PROPERTY 'jcr:title' 'title'",
+      examples = "SET-PROPERTY 'jcr:title' 'title'",
       reference = "This is general purpose action which can be used to assign specified value to the specified property."
   )
   public Action mapAction(

@@ -17,7 +17,7 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.main.actions.purge;
+package com.cognifide.apm.main.actions.clearpermissions;
 
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.ActionResult;
@@ -25,7 +25,6 @@ import com.cognifide.apm.api.actions.Context;
 import com.cognifide.apm.api.actions.Message;
 import com.cognifide.apm.api.exceptions.ActionExecutionException;
 import com.cognifide.apm.api.status.Status;
-import com.cognifide.apm.main.actions.removeall.RemoveAll;
 import com.cognifide.apm.main.utils.MessagingUtils;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;

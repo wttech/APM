@@ -17,7 +17,7 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.main.actions.include;
+package com.cognifide.apm.main.actions.addparents;
 
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.annotations.Mapper;
@@ -27,26 +27,26 @@ import com.cognifide.apm.main.actions.ActionGroup;
 import java.util.Collections;
 import java.util.List;
 
-@Mapper(value = "include", group = ActionGroup.CORE)
-public final class IncludeMapper {
+@Mapper(value = "add-parents", group = ActionGroup.CORE)
+public final class AddParentsMapper {
 
-  public static final String REFERENCE = "This action is an complementary one for EXCLUDE action, and can be used to"
-      + " add specified users and groups to current group.";
-
-  @Mapping(
-      examples = "INCLUDE 'authors'",
-      reference = REFERENCE
-  )
-  public Action mapAction(@Required(value = "id", description = "user's or group's id e.g.: 'author'") String id) {
-    return mapAction(Collections.singletonList(id));
-  }
+  public static final String REFERENCE = "Add current authorizable to specified groups.";
 
   @Mapping(
-      examples = "INCLUDE ['authors']",
+      examples = "ADD-PARENTS 'authors'",
       reference = REFERENCE
   )
   public Action mapAction(
-      @Required(value = "ids", description = "users' or groups' ids e.g.: ['author']") List<String> ids) {
-    return new Include(ids);
+      @Required(value = "group", description = "group") String group) {
+    return mapAction(Collections.singletonList(group));
+  }
+
+  @Mapping(
+      examples = "ADD-PARENTS ['authors', 'publishers']",
+      reference = REFERENCE
+  )
+  public Action mapAction(
+      @Required(value = "groups", description = "list of groups") List<String> groups) {
+    return new AddParents(groups);
   }
 }

@@ -17,7 +17,7 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.main.actions.exclude;
+package com.cognifide.apm.main.actions.deletegroup;
 
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.ActionResult;
@@ -28,19 +28,18 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.jcr.RepositoryException;
 import org.apache.commons.lang.StringUtils;
-import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.apache.jackrabbit.api.security.user.Group;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Exclude implements Action {
+public class DeleteGroup implements Action {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(Exclude.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(DeleteGroup.class);
 
-  private final List<String> authorizableIds;
+  private final List<String> ids;
 
-  public Exclude(final List<String> authorizableIds) {
-    this.authorizableIds = authorizableIds;
+  public DeleteGroup(final List<String> ids) {
+    this.ids = ids;
   }
 
   @Override
@@ -55,41 +54,24 @@ public class Exclude implements Action {
 
   private ActionResult process(final Context context, boolean execute) {
     ActionResult actionResult = context.createActionResult();
-    Group group = null;
-    try {
-      group = context.getCurrentGroup();
-      actionResult.setAuthorizable(group.getID());
-      LOGGER.info(String.format("Removing authorizables %s from group with id = %s",
-          StringUtils.join(authorizableIds, ", "), group.getID()));
-    } catch (ActionExecutionException e) {
-      actionResult.logError(MessagingUtils.createMessage(e));
-      return actionResult;
-    } catch (RepositoryException e) {
-      actionResult.logError(MessagingUtils.createMessage(e));
-      return actionResult;
-    }
 
     List<String> errors = new ArrayList<>();
-    for (String authorizableId : authorizableIds) {
+    LOGGER.info(String.format("Removing groups with ids = %s", StringUtils.join(ids, ", ")));
+    for (String id : ids) {
       try {
-
-        Authorizable authorizable = context.getAuthorizableManager().getAuthorizableIfExists(authorizableId);
-
-        if (authorizable == null) {
-          actionResult.logWarning(MessagingUtils.authorizableNotExists(authorizableId));
-          continue;
+        Group group = context.getAuthorizableManager().getGroupIfExists(id);
+        if (group != null) {
+          context.getAuthorizableManager().markAuthorizableAsRemoved(group);
+          if (execute) {
+            context.getAuthorizableManager().removeGroup(group);
+          }
+          actionResult.logMessage("Group with id: " + id + " removed");
         }
 
-        if (execute) {
-          group.removeMember(authorizable);
-        }
-
-        actionResult.logMessage(MessagingUtils.removedFromGroup(authorizableId, group.getID()));
-      } catch (RepositoryException e) {
+      } catch (RepositoryException | ActionExecutionException e) {
         errors.add(MessagingUtils.createMessage(e));
       }
     }
-
     if (!errors.isEmpty()) {
       for (String error : errors) {
         actionResult.logError(error);
@@ -101,7 +83,6 @@ public class Exclude implements Action {
 
   @Override
   public boolean isGeneric() {
-    return false;
+    return true;
   }
-
 }

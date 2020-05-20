@@ -17,7 +17,7 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.main.actions.exclude;
+package com.cognifide.apm.main.actions.removeparents;
 
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.annotations.Mapper;
@@ -27,26 +27,26 @@ import com.cognifide.apm.main.actions.ActionGroup;
 import java.util.Collections;
 import java.util.List;
 
-@Mapper(value = "exclude", group = ActionGroup.CORE)
-public final class ExcludeMapper {
+@Mapper(value = "remove-from-group", group = ActionGroup.CORE)
+public final class RemoveFromGroupMapper {
 
-  public static final String REFERENCE = "Remove specified users and groups from current group.";
+  public static final String REFERENCE = "Remove current authorizable from specified groups. "
+      + "Alias for REMOVE-PARENTS command.";
 
   @Mapping(
-      examples = "EXCLUDE 'author'",
+      examples = "REMOVE-FROM-GROUP 'authors'",
       reference = REFERENCE
   )
-  public Action mapAction(@Required(value = "id", description = "user's or group's id e.g.: 'author'") String id) {
+  public Action mapAction(@Required(value = "groupId", description = "group's id e.g.: 'authors'") String id) {
     return mapAction(Collections.singletonList(id));
   }
 
   @Mapping(
-      examples = "EXCLUDE ['author']",
+      examples = "REMOVE-FROM-GROUP ['authors']",
       reference = REFERENCE
   )
   public Action mapAction(
-      @Required(value = "ids", description = "users' or groups' ids e.g.: 'author'") List<String> ids) {
-    return new Exclude(ids);
+      @Required(value = "groupIds", description = "groups' ids e.g.: ['authors']") List<String> ids) {
+    return new RemoveParents(ids);
   }
-
 }

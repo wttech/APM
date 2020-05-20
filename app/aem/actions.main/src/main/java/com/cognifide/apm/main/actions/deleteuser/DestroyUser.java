@@ -23,8 +23,8 @@ import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.apm.api.actions.Context;
 import com.cognifide.apm.api.exceptions.ActionExecutionException;
-import com.cognifide.apm.main.actions.purge.Purge;
-import com.cognifide.apm.main.actions.removefromgroup.RemoveFromGroup;
+import com.cognifide.apm.main.actions.clearpermissions.Purge;
+import com.cognifide.apm.main.actions.removeparents.RemoveParents;
 import com.cognifide.apm.main.utils.MessagingUtils;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,7 +54,7 @@ public class DestroyUser implements Action {
     try {
       User user = context.getAuthorizableManager().getUser(userId);
       context.setCurrentAuthorizable(user);
-      Action removeFromGroups = new RemoveFromGroup(getGroups(user));
+      Action removeFromGroups = new RemoveParents(getGroups(user));
       ActionResult purgeResult = purge.simulate(context);
       ActionResult removeFromGroupsResult = removeFromGroups.execute(context);
       ActionResult removeResult = remove.simulate(context);
@@ -72,7 +72,7 @@ public class DestroyUser implements Action {
     try {
       User user = context.getAuthorizableManager().getUser(userId);
       context.setCurrentAuthorizable(user);
-      Action removeFromGroups = new RemoveFromGroup(getGroups(user));
+      Action removeFromGroups = new RemoveParents(getGroups(user));
       ActionResult purgeResult = purge.execute(context);
       ActionResult removeFromGroupsResult = removeFromGroups.execute(context);
       ActionResult removeResult = remove.execute(context);

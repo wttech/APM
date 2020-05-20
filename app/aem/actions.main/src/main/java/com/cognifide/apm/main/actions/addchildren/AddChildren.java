@@ -17,29 +17,31 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.main.actions.removegroup;
+package com.cognifide.apm.main.actions.addchildren;
 
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.apm.api.actions.Context;
 import com.cognifide.apm.api.exceptions.ActionExecutionException;
+import com.cognifide.apm.main.utils.ActionUtils;
 import com.cognifide.apm.main.utils.MessagingUtils;
 import java.util.ArrayList;
 import java.util.List;
 import javax.jcr.RepositoryException;
 import org.apache.commons.lang.StringUtils;
+import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.apache.jackrabbit.api.security.user.Group;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RemoveGroup implements Action {
+public class AddChildren implements Action {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(RemoveGroup.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AddChildren.class);
 
-  private final List<String> ids;
+  private final List<String> authorizableIds;
 
-  public RemoveGroup(final List<String> ids) {
-    this.ids = ids;
+  public AddChildren(final List<String> authorizableIds) {
+    this.authorizableIds = authorizableIds;
   }
 
   @Override
@@ -52,26 +54,43 @@ public class RemoveGroup implements Action {
     return process(context, true);
   }
 
-  private ActionResult process(final Context context, boolean execute) {
+  private ActionResult process(Context context, boolean execute) {
     ActionResult actionResult = context.createActionResult();
+    Group group = null;
+    try {
+      group = context.getCurrentGroup();
+      actionResult.setAuthorizable(group.getID());
+      LOGGER.info(String.format("Adding authorizables %s to group with id = %s",
+          StringUtils.join(authorizableIds, ", "), group.getID()));
+    } catch (ActionExecutionException e) {
+      actionResult.logError(MessagingUtils.createMessage(e));
+      return actionResult;
+    } catch (RepositoryException e) {
+      actionResult.logError(MessagingUtils.createMessage(e));
+      return actionResult;
+    }
 
     List<String> errors = new ArrayList<>();
-    LOGGER.info(String.format("Removing groups with ids = %s", StringUtils.join(ids, ", ")));
-    for (String id : ids) {
+
+    for (String authorizableId : authorizableIds) {
       try {
-        Group group = context.getAuthorizableManager().getGroupIfExists(id);
-        if (group != null) {
-          context.getAuthorizableManager().markAuthorizableAsRemoved(group);
-          if (execute) {
-            context.getAuthorizableManager().removeGroup(group);
-          }
-          actionResult.logMessage("Group with id: " + id + " removed");
+
+        Authorizable authorizable = context.getAuthorizableManager().getAuthorizable(authorizableId);
+
+        if (authorizable.isGroup()) {
+          ActionUtils.checkCyclicRelations(group, (Group) authorizable);
         }
 
+        if (execute) {
+          group.addMember(authorizable);
+        }
+
+        actionResult.logMessage(MessagingUtils.addedToGroup(authorizableId, group.getID()));
       } catch (RepositoryException | ActionExecutionException e) {
         errors.add(MessagingUtils.createMessage(e));
       }
     }
+
     if (!errors.isEmpty()) {
       for (String error : errors) {
         actionResult.logError(error);
@@ -83,6 +102,7 @@ public class RemoveGroup implements Action {
 
   @Override
   public boolean isGeneric() {
-    return true;
+    return false;
   }
+
 }
