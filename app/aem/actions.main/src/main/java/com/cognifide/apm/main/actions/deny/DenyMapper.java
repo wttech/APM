@@ -41,7 +41,7 @@ public class DenyMapper {
       examples = {
           "DENY '/content/dam' [READ]",
           "DENY '/content/dam' properties= ['jcr:title'] [MODIFY]",
-          "DENY '/content/dam' properties= ['nt:folder'] [MODIFY]",
+          "DENY '/content/dam' types= ['nt:folder'] [MODIFY]",
           "DENY '/content/dam/domain' [READ, MODIFY] --IF-EXISTS"
       },
       reference = REFERENCE
@@ -52,8 +52,7 @@ public class DenyMapper {
       @Named(value = "glob", description = "regular expression to narrow set of paths") String glob,
       @Named(value = "types", description = "list of jcr types which will be affected") List<String> types,
       @Named(value = "properties", description = "list of properties which will be affected ") List<String> items,
-      @Flags({
-          @Flag(value = IF_EXISTS, description = "script doesn't fail if path doesn't exist")}) List<String> flags) {
+      @Flags(@Flag(value = IF_EXISTS, description = "script doesn't fail if path doesn't exist")) List<String> flags) {
     return new Deny(path, permissions, glob, types, items, flags.contains(IF_EXISTS));
   }
 }
