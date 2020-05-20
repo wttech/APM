@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+  jcr:primaryType="sling:OrderedFolder">
+  <apm
+    jcr:description="Manage and execute your APM scripts"
+    jcr:primaryType="nt:unstructured"
+    jcr:title="AEM Permission Management"
+    href="/apm.html"
+    icon="login"
+    id="cq-tools-apm"
+    target="_blank"/>
+</jcr:root>
