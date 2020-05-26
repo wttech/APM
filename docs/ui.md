@@ -1,6 +1,7 @@
 <p align="center">
-    <img src="apm-logo.png" alt="APM Logo" style="width: 128px; vertical-align: middle">
     <img src="https://assets.cognifide.com/github/cognifide-logo.png" style="vertical-align: middle">
+</p><p align="center">
+    <img src="apm-logo.png" alt="APM Logo" style="width: 128px; vertical-align: middle">
 </p>
 
 # Basic User guide
@@ -89,6 +90,6 @@ The table displays the latest execution history. The columns present:
 * Link to detailed **summary**.
 
 ### Execution Summary
-![Execution Summary](#execution-summary)
+![Execution Summary](apm-execution-summary.png)
 
 Contains list of all invoked actions and detailed description about their status.
