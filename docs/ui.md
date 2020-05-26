@@ -1,12 +1,17 @@
-![Cognifide logo](https://assets.cognifide.com/github/cognifide-logo.png)
-
-<p>
-  <img src="apm-logo.png" alt="APM Logo"/>
+<p align="center">
+    <img src="docs/apm-logo.png" alt="APM Logo" style="width: 128px; vertical-align: middle">
+    <img src="https://assets.cognifide.com/github/cognifide-logo.png" style="vertical-align: middle">
 </p>
-
 
 # Basic User guide
 The usage of the tool should be quite intuitive, nevertheless this section describes all features available within the AEM Permission Management.
+
+* [APM Dashboard](#apm-dashboard)
+* [Scripts](#scripts)
+    * [Editor](#editor)
+    * [References](#references)
+* [History](#history)
+    * [Execution Summary](#execution-summary)
 
 ## APM Dashboard
 ![APM Dashboard](apm-dashboard.png)
@@ -17,7 +22,7 @@ APM Dashboard is a central hub for APM modules:
 ## Scripts
 ![Scripts](apm-scripts-0.png)
 
-The table displays all scripts available to use in the AEM Permission Management tool. The columns present:
+The table displays scripts from the selected folder. The columns present:
 * Icon of folder or script.  
 * Name of the **script**.
 * Date at which the script was **updated**.
@@ -68,3 +73,22 @@ The reference window consists of three sections:
 * **Available commands** with description and examples.
 * **Permissions** description.
 * **Predefined definitions** list.
+
+## History
+![History](apm-history.png)
+
+The table displays the latest execution history. The columns present:
+* Icon of script.  
+* Name of the **script**.
+* Date of **last run**.
+* **Author** who starts script execution.
+* **Executor** the user who executes the script.
+* **Mode** of execution.
+* **Instance** on which script was executed.
+* The final **run status** of execution.
+* Link to detailed **summary**.
+
+### Execution Summary
+![Execution Summary](#execution-summary)
+
+Contains list of all invoked actions and detailed description about their status.
