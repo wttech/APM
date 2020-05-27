@@ -6,10 +6,10 @@ CREATE-GROUP "test_group" --IF-NOT-EXISTS
 # Change current context to specified authorizable
 FOR-GROUP "test_group" BEGIN
 
-# Purge will remove all permission for current context for whole subtree, starting from specified path as root
-	CLEAR "/content/dam"
+  # CLEAR-PERMISSIONS will remove all permission for current context for whole subtree, starting from specified path as root
+	CLEAR-PERMISSIONS "/content/dam"
 
-# Allow and deny are common actions that can be used for setting privileges.
+  # Allow and deny are common actions that can be used for setting privileges.
 	ALLOW "/apps" ["READ"]
 	ALLOW "/libs" ["READ"]
 	ALLOW "/tmp" ["READ"]
