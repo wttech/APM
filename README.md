@@ -1,13 +1,13 @@
-![Cognifide logo](https://assets.cognifide.com/github/cognifide-logo.png)
+<p align="center">
+    <img src="https://assets.cognifide.com/github/cognifide-logo.png" style="vertical-align: middle">
+</p><p align="center">
+    <img src="docs/apm-logo.png" alt="APM Logo" style="width: 128px; vertical-align: middle">
+</p>
 
 [![Build Status](https://travis-ci.org/Cognifide/APM.svg?branch=master)](https://travis-ci.org/Cognifide/APM)
 [![Apache License, Version 2.0, January 2004](https://img.shields.io/github/license/cognifide/apm.svg?label=License)](http://www.apache.org/licenses/)
 
 # AEM Permission Management
-<p align="center">
-  <img src="docs/apm-logo.png" alt="APM Logo"/>
-</p>
-
 ## About
 APM (**A**EM **P**ermission **M**anagement) is an AEM based tool focused on streamlining the permission configuration. It provides a rich UX console tailored for administrators. They can write human readable scripts that handle user/group creation/deletion and permissions application, both in bulk. Through it's flexible grammar, exposed API, and high extensibility it vastly improves **permission**-based implementations.
 
@@ -41,6 +41,14 @@ Open **APM** dashboard [http://localhost:4502/apm.html](http://localhost:4502/ap
 * [UI](docs/ui.md) - quick tour for APM user's interface.
 * [Grammar](docs/grammar.md) - syntax of APM scripts, and description of main actions.
 * [Launchers](docs/launchers.md) - configuring auto execution of scripts.
+
+## What's new?
+### APM 5.0.0
+* Introduction of ANTLR 4.
+* New way of registering actions (no regex, just friendly annotations).
+* Improvements in UI (especially in script's editor and viewer).
+* Introduction of new launchers (auto execution of scripts after package installation).
+* Code separated in several modules (cleaner API).
 
 ## How to contribute
 See details in [Contributing section](https://github.com/Cognifide/APM/blob/master/CONTRIBUTING.md)
