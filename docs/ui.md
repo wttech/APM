@@ -78,6 +78,7 @@ The reference window consists of three sections:
 ## History
 ![History](apm-history.png)
 
+All the script execution details are preserved, and stored within the repository. No matter whether the script has been manually or auto-executed, the GUI or API was used, if it was on author or publish instance, the History screen keeps all the audit for the scripts executed by tool. 
 The table displays the latest execution history. The columns present:
 * Icon of script.  
 * Name of the **script**.

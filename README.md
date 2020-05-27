@@ -37,26 +37,16 @@ The latest AEM packages are available [here](https://github.com/Cognifide/APM/re
 ### How to use
 Open **APM** dashboard [http://localhost:4502/apm.html](http://localhost:4502/apm.html), and start using the tool. For more information visit [user guide](docs/ui.md).
 
-### How to create script
-1. Open console<br />
-![Console](documentation/src/main/wiki/assets/screens/consoleAutocompletion.png)
-2. Write script using [permission actions](https://github.com/Cognifide/APM/wiki/Actions)
-3. Check if your script passes validation
-4. Save
-5. Run script
+### Documentation
+* [UI](docs/ui.md) - quick tour for APM user's interface.
+* [Grammar](docs/grammar.md) - syntax of APM scripts, and description of main actions.
+* [Launchers](docs/launchers.md) - configuring auto execution of scripts.
 
 ## How to contribute
 See details in [Contributing section](https://github.com/Cognifide/APM/blob/master/CONTRIBUTING.md)
 
 ## License
 **APM** is licensed under [Apache License, Version 2.0 (the "License")](https://www.apache.org/licenses/LICENSE-2.0.txt)
-
-## Roadmap
-See [Roadmap](https://github.com/Cognifide/apm/wiki/Roadmap) for details.
-
-## Documentation
-* [APM Wiki](https://github.com/Cognifide/apm/wiki)
-* [AMP users mailing group](http://aem-permission-management-forum.2359962.n4.nabble.com/)
 
 ## Commercial Support
 
