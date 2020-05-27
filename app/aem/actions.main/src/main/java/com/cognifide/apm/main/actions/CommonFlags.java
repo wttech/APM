@@ -24,5 +24,4 @@ public final class CommonFlags {
 
   public static final String IF_EXISTS = "IF-EXISTS";
   public static final String IF_NOT_EXISTS = "IF-NOT-EXISTS";
-  public static final String IGNORE_IF_EXISTS = "IGNORE-IF-EXISTS";
 }

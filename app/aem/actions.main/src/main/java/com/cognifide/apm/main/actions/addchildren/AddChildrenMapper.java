@@ -17,25 +17,35 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.main.actions.setproperty;
+package com.cognifide.apm.main.actions.addchildren;
 
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.annotations.Mapper;
 import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.apm.api.actions.annotations.Required;
 import com.cognifide.apm.main.actions.ActionGroup;
+import java.util.Collections;
+import java.util.List;
 
-@Mapper(value = "set-property", group = ActionGroup.CORE)
-public final class SetPropertyMapper {
+@Mapper(value = "add-children", group = ActionGroup.CORE)
+public final class AddChildrenMapper {
+
+  public static final String REFERENCE = "Add specified users and groups to current group.";
 
   @Mapping(
-      examples = "SET-PROPERTY 'jcr:title' 'title'",
-      reference = "This is general purpose action which can be used to assign specified value to the specified property."
+      examples = "ADD-CHILDREN 'authors'",
+      reference = REFERENCE
   )
-  public Action mapAction(
-      @Required(value = "name", description = "property's name e.g.: 'jcr:title'") String name,
-      @Required(value = "value", description = "property's value e.g.: 'title'") String value) {
-    return new SetProperty(name, value);
+  public Action mapAction(@Required(value = "id", description = "user's or group's id e.g.: 'author'") String id) {
+    return mapAction(Collections.singletonList(id));
   }
 
+  @Mapping(
+      examples = "ADD-CHILDREN ['authors']",
+      reference = REFERENCE
+  )
+  public Action mapAction(
+      @Required(value = "ids", description = "users' or groups' ids e.g.: ['author']") List<String> ids) {
+    return new AddChildren(ids);
+  }
 }

@@ -21,14 +21,14 @@ CREATE-USER "test_user_4" path= "/home/users/company/cognifide" --IF-NOT-EXISTS
 
 # For these actions we need context. To set context use "FOR-USER" or "FOR-GROUP" action.
 FOR-USER "test_user_1"
-	ADD-TO-GROUP ["test_group_1", "test_group_2"]
+	ADD-PARENTS ["test_group_1", "test_group_2"]
 
 FOR-USER "test_user_2"
-	ADD-TO-GROUP ["test_group_1"]
+	ADD-PARENTS ["test_group_1"]
 
 FOR-USER "test_user_3"
-	ADD-TO-GROUP ["test_group_1", "test_group_2"]
-	REMOVE-FROM-GROUP "test_group_1"
+	ADD-PARENTS ["test_group_1", "test_group_2"]
+	REMOVE-PARENTS "test_group_1"
 
 # We will use pre-defined value "profilePath"
 FOR-USER "test_user_1"
@@ -38,15 +38,15 @@ FOR-USER "test_user_1"
 FOR-USER "test_user_2"
 	SET-PASSWORD "newPassword2"
 
-# "EXLUDE" and "INCLUDE" actions work only with group context
-# "EXLUDE" action will remove specified user from context group
-# "INCLUDE" action will add specified user to context group
+# "ADD-CHILDREN" and "REMOVE-CHILDREN" actions work only with group context
+# "REMOVE-CHILDREN" action will remove specified user from context group
+# "ADD-CHILDREN" action will add specified user to context group
 FOR-GROUP "test_group_2"
-	EXCLUDE "test_user_3"
-	INCLUDE "test_user_2"
+	REMOVE-CHILDREN "test_user_3"
+	ADD-CHILDREN "test_user_2"
 
-# "REMOVE-USER" do not need context to work. We can delete specified users.
-REMOVE-USER ["test_user_1", "test_user_2", "test_user_3", "test_user_4"]
+# "DELETE-USER" do not need context to work. We can delete specified users.
+DELETE-USER ["test_user_1", "test_user_2", "test_user_3", "test_user_4"]
 
-# "REMOVE-GROUP" do not need context to work. We can delete specified groups.
-REMOVE-GROUP ["test_group_1", "test_group_2", "test_group_3"]
+# "DELETE-GROUP" do not need context to work. We can delete specified groups.
+DELETE-GROUP ["test_group_1", "test_group_2", "test_group_3"]

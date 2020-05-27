@@ -36,6 +36,8 @@ public interface ActionResult {
 
   ActionResult merge(ActionResult... actionResult);
 
+  ActionResult merge(List<ActionResult> actionResult);
+
   String getAuthorizable();
 
   Status getStatus();
