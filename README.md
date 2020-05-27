@@ -43,6 +43,7 @@ Open **APM** dashboard [http://localhost:4502/apm.html](http://localhost:4502/ap
 * [Permissions](docs/permissions.md) - actions used for adding and revoking access to resources. 
 * [Launchers](docs/launchers.md) - configuring auto execution of scripts.
 * [Backend API](docs/backend-api.md) - executing scripts from backend services.
+* [Custom actions](docs/custom-actions.md) - implement your own action.
 
 ## What's new?
 ### APM 5.0.0

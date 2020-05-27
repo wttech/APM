@@ -10,3 +10,4 @@
 * [Permissions](permissions.md) - actions used for adding and revoking access to resources.
 * [Launchers](launchers.md) - configuring auto execution of scripts.
 * [Backend API](backend-api.md) - executing scripts from backend services.
+* [Custom actions](custom-actions.md) - implement your own action.
