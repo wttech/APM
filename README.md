@@ -40,7 +40,9 @@ Open **APM** dashboard [http://localhost:4502/apm.html](http://localhost:4502/ap
 ### Documentation
 * [UI](docs/ui.md) - quick tour for APM user's interface.
 * [Grammar](docs/grammar.md) - syntax of APM scripts, and description of main actions.
+* [Permissions](docs/permissions.md) - actions used for adding and revoking access to resources. 
 * [Launchers](docs/launchers.md) - configuring auto execution of scripts.
+* [Backend API](docs/backend-api.md) - executing scripts from backend services.
 
 ## What's new?
 ### APM 5.0.0
