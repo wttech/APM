@@ -1,7 +1,7 @@
 <p align="center">
     <img src="https://assets.cognifide.com/github/cognifide-logo.png" style="vertical-align: middle">
 </p><p align="center">
-    <img src="docs/apm-logo.png" alt="APM Logo" style="width: 128px; vertical-align: middle">
+    <img src="apm-logo.png" alt="APM Logo" style="width: 128px; vertical-align: middle">
 </p>
 
 # Documentation
