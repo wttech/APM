@@ -25,7 +25,7 @@ import kotlin.reflect.KProperty
 open class JsonObject {
 
     protected val properties: MutableMap<String, Any> = mutableMapOf()
-    private val children: MutableMap<String, com.cognifide.apm.core.endpoints.utils.JsonObject> = mutableMapOf()
+    private val children: MutableMap<String, JsonObject> = mutableMapOf()
 
     fun properties(vararg pairs: Pair<String, String>) {
         properties.putAll(pairs)
@@ -35,12 +35,12 @@ open class JsonObject {
         properties[this] = value
     }
 
-    fun addChild(name: String, child: com.cognifide.apm.core.endpoints.utils.JsonObject) {
+    fun addChild(name: String, child: JsonObject) {
         children[name] = child
     }
 
-    operator fun String.invoke(child: com.cognifide.apm.core.endpoints.utils.JsonObject.() -> Unit) {
-        children[this] = com.cognifide.apm.core.endpoints.utils.JsonObject().apply(child)
+    operator fun String.invoke(child: JsonObject.() -> Unit) {
+        children[this] = JsonObject().apply(child)
     }
 
     fun toMap(): Map<String, Any> {
@@ -52,17 +52,17 @@ open class JsonObject {
     }
 }
 
-class SuccessBody(initialMessage: String = "") : com.cognifide.apm.core.endpoints.utils.JsonObject() {
-    var message: Any? by com.cognifide.apm.core.endpoints.utils.PropertyDelegate(properties, "message", initialMessage)
+class SuccessBody(initialMessage: String = "") : JsonObject() {
+    var message: Any? by PropertyDelegate(properties, "message", initialMessage)
 
     init {
         message = initialMessage
     }
 }
 
-class ErrorBody(initMessage: String = "", initErrors: List<String> = listOf()) : com.cognifide.apm.core.endpoints.utils.JsonObject() {
-    var message: String? by com.cognifide.apm.core.endpoints.utils.PropertyDelegate(properties, "message", initMessage)
-    var errors: List<String>? by com.cognifide.apm.core.endpoints.utils.PropertyDelegate(properties, "errors", initErrors)
+class ErrorBody(initMessage: String = "", initErrors: List<String> = listOf()) : JsonObject() {
+    var message: String? by PropertyDelegate(properties, "message", initMessage)
+    var errors: List<String>? by PropertyDelegate(properties, "errors", initErrors)
 
     init {
         message = initMessage

@@ -24,22 +24,22 @@ import javax.servlet.http.HttpServletResponse
 
 class ResponseEntity<T>(val statusCode: Int, val body: T)
 
-fun badRequest(body: com.cognifide.apm.core.endpoints.utils.ErrorBody.() -> Unit): ResponseEntity<Any> {
+fun badRequest(body: ErrorBody.() -> Unit): ResponseEntity<Any> {
     return error(HttpServletResponse.SC_BAD_REQUEST, body)
 }
 
-fun internalServerError(body: com.cognifide.apm.core.endpoints.utils.ErrorBody.() -> Unit): ResponseEntity<Any> {
+fun internalServerError(body: ErrorBody.() -> Unit): ResponseEntity<Any> {
     return error(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, body)
 }
 
-fun ok(body: com.cognifide.apm.core.endpoints.utils.SuccessBody.() -> Unit): ResponseEntity<Any> {
+fun ok(body: SuccessBody.() -> Unit): ResponseEntity<Any> {
     return success(200, body)
 }
 
-fun error(statusCode: Int, body: com.cognifide.apm.core.endpoints.utils.ErrorBody.() -> Unit): ResponseEntity<Any> {
-    return ResponseEntity(statusCode, com.cognifide.apm.core.endpoints.utils.ErrorBody().apply(body))
+fun error(statusCode: Int, body: ErrorBody.() -> Unit): ResponseEntity<Any> {
+    return ResponseEntity(statusCode, ErrorBody().apply(body))
 }
 
-fun success(statusCode: Int, body: com.cognifide.apm.core.endpoints.utils.SuccessBody.() -> Unit): ResponseEntity<Any> {
-    return ResponseEntity(statusCode, com.cognifide.apm.core.endpoints.utils.SuccessBody().apply(body))
+fun success(statusCode: Int, body: SuccessBody.() -> Unit): ResponseEntity<Any> {
+    return ResponseEntity(statusCode, SuccessBody().apply(body))
 }
