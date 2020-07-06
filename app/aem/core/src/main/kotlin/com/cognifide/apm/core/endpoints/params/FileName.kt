@@ -18,13 +18,8 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm.core.endpoints.utils
-
-import org.apache.sling.models.annotations.Source
-import org.apache.sling.models.spi.injectorspecific.InjectAnnotation
+package com.cognifide.apm.core.endpoints.params
 
 @Target(AnnotationTarget.FIELD, AnnotationTarget.VALUE_PARAMETER)
 @Retention(AnnotationRetention.RUNTIME)
-@InjectAnnotation
-@Source("apm-request-parameter")
-annotation class RequestParameter(val value: String, val optional: Boolean = true, val fileName: Boolean = false)
+annotation class FileName

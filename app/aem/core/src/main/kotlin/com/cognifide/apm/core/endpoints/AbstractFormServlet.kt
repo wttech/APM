@@ -17,8 +17,11 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.core.endpoints.utils
+package com.cognifide.apm.core.endpoints
 
+import com.cognifide.apm.core.endpoints.response.ErrorBody
+import com.cognifide.apm.core.endpoints.response.JsonObject
+import com.cognifide.apm.core.endpoints.response.ResponseEntity
 import com.cognifide.apm.core.utils.ServletUtils
 import org.apache.sling.api.SlingHttpServletRequest
 import org.apache.sling.api.SlingHttpServletResponse
@@ -45,13 +48,13 @@ abstract class AbstractFormServlet<F>(private val formClass: Class<F>) : SlingAl
             ServletUtils.writeJson(httpResponse, body(response.body))
         } catch (e: Exception) {
             httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
-            ServletUtils.writeJson(httpResponse, body(com.cognifide.apm.core.endpoints.utils.ErrorBody("Cannot save script in repository: " + e.message)))
+            ServletUtils.writeJson(httpResponse, body(ErrorBody("Cannot save script in repository: " + e.message)))
         }
     }
 
-    private fun body(body: Any) = if (body is com.cognifide.apm.core.endpoints.utils.JsonObject) body.toMap() else body
+    private fun body(body: Any) = if (body is JsonObject) body.toMap() else body
 
     abstract fun setup(modelFactory: ModelFactory)
 
-    abstract fun doPost(form: F, resourceResolver: ResourceResolver): com.cognifide.apm.core.endpoints.utils.ResponseEntity<Any>
+    abstract fun doPost(form: F, resourceResolver: ResourceResolver): ResponseEntity<Any>
 }

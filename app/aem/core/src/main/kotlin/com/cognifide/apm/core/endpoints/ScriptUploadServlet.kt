@@ -22,13 +22,11 @@ package com.cognifide.apm.core.endpoints
 import com.cognifide.apm.api.services.ExecutionMode
 import com.cognifide.apm.api.services.ScriptManager
 import com.cognifide.apm.core.Property
-import com.cognifide.apm.core.endpoints.utils.AbstractFormServlet
-import com.cognifide.apm.core.endpoints.utils.ResponseEntity
-import com.cognifide.apm.core.endpoints.utils.badRequest
-import com.cognifide.apm.core.endpoints.utils.ok
+import com.cognifide.apm.core.endpoints.response.ResponseEntity
+import com.cognifide.apm.core.endpoints.response.badRequest
+import com.cognifide.apm.core.endpoints.response.ok
 import com.cognifide.apm.core.scripts.ScriptStorage
 import com.cognifide.apm.core.scripts.ScriptStorageException
-import com.cognifide.apm.core.scripts.ScriptUtils
 import org.apache.sling.api.resource.ResourceResolver
 import org.apache.sling.models.factory.ModelFactory
 import org.osgi.service.component.annotations.Component
@@ -39,7 +37,7 @@ import javax.servlet.Servlet
         immediate = true,
         service = [Servlet::class],
         property = [
-            Property.PATH + "/bin/apm/script/upload",
+            Property.PATH + "/bin/apm/scripts/upload",
             Property.METHOD + "POST",
             Property.DESCRIPTION + "APM Script Upload Servlet",
             Property.VENDOR
@@ -65,7 +63,7 @@ class ScriptUploadServlet : AbstractFormServlet<ScriptUploadForm>(ScriptUploadFo
             scriptManager.process(script, ExecutionMode.VALIDATION, resourceResolver)
             ok {
                 message = "File successfully saved"
-                "uploadedScript" set ScriptUtils.asMap(script)
+                "uploadedScript" set ScriptDto(script)
             }
         } catch (e: ScriptStorageException) {
             badRequest {
