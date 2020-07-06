@@ -98,7 +98,7 @@
         $.ajax({
           type: 'POST',
           async: false,
-          url: '/bin/apm/script/upload',
+          url: '/bin/apm/scripts/upload',
           dataType: 'json',
           processData: false,
           contentType: false,
@@ -188,7 +188,7 @@
           $.ajax({
             type: 'POST',
             async: false,
-            url: '/bin/apm/script/validate',
+            url: '/bin/apm/scripts/validate',
             data: {
               path: self.getFullPath(),
               content: self.$textArea.val()

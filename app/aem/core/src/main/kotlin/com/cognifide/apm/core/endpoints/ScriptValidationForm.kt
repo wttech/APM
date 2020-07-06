@@ -20,7 +20,7 @@
 
 package com.cognifide.apm.core.endpoints
 
-import com.cognifide.apm.core.endpoints.utils.RequestParameter
+import com.cognifide.apm.core.endpoints.params.RequestParameter
 import org.apache.sling.api.SlingHttpServletRequest
 import org.apache.sling.models.annotations.Model
 import javax.inject.Inject

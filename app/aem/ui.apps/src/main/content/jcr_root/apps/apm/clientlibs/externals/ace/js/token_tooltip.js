@@ -20,10 +20,10 @@ ace.define("ace/token_tooltip", ["require", "exports", "module"], function (requ
 			return null;
 		}
 	}
-	var CqsmReference = loadJson("/bin/cqsm/references");
 
-	function findTokenReference(token)
-	{
+	var CqsmReference = loadJson("/bin/apm/references");
+
+	function findTokenReference(token) {
 		if (!token || !token.value) {
 			return null;
 		}

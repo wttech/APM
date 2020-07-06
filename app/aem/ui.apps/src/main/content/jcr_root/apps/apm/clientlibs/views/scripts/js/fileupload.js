@@ -26,7 +26,7 @@
   function init() {
     fileUploader = new Coral.FileUpload();
     fileUploader.accept = '.cqsm,.apm';
-    fileUploader.action = '/bin/apm/script/upload';
+    fileUploader.action = '/bin/apm/scripts/upload';
     fileUploader.async = true;
     fileUploader.multiple = true;
     fileUploader.name = 'file';

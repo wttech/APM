@@ -18,7 +18,7 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm.core.endpoints.utils
+package com.cognifide.apm.core.endpoints.params
 
 @Target(AnnotationTarget.FIELD, AnnotationTarget.VALUE_PARAMETER)
 @Retention(AnnotationRetention.RUNTIME)

@@ -18,7 +18,7 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm.core.endpoints.utils
+package com.cognifide.apm.core.endpoints.response
 
 import javax.servlet.http.HttpServletResponse
 

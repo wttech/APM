@@ -35,7 +35,7 @@ ace.define("ace/snippets/cqsm",["require","exports","module"], function(e, t, n)
 	}
 
 	function generateReference() {
-		var references = loadJson("/bin/cqsm/references");
+		var references = loadJson("/bin/apm/references");
 
 		var snippetText = "";
 		for (var i = 0; i < references.length; i++) {
@@ -58,8 +58,8 @@ ace.define("ace/snippets/cqsm",["require","exports","module"], function(e, t, n)
 	}
 
 	function generateDefinitions() {
-		var definitions = loadJson("/bin/cqsm/definitions");
-		
+		var definitions = loadJson("/bin/apm/definitions");
+
 		var snippetText = "";
 		for (var name in definitions) {
 			if (!definitions.hasOwnProperty(name)) {
@@ -68,7 +68,7 @@ ace.define("ace/snippets/cqsm",["require","exports","module"], function(e, t, n)
 
 			var value = definitions[name];
 			var header = "snippet " + name,
-				body = "\\${" + name + "}";
+					body = "\\${" + name + "}";
 
 			snippetText += (header + "\n" + "\t" + body + "\n");
 		}

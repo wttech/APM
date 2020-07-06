@@ -25,10 +25,9 @@ import com.cognifide.apm.api.services.ExecutionResult
 import com.cognifide.apm.api.services.ScriptManager
 import com.cognifide.apm.api.status.Status
 import com.cognifide.apm.core.Property
-import com.cognifide.apm.core.endpoints.utils.AbstractFormServlet
-import com.cognifide.apm.core.endpoints.utils.ResponseEntity
-import com.cognifide.apm.core.endpoints.utils.badRequest
-import com.cognifide.apm.core.endpoints.utils.ok
+import com.cognifide.apm.core.endpoints.response.ResponseEntity
+import com.cognifide.apm.core.endpoints.response.badRequest
+import com.cognifide.apm.core.endpoints.response.ok
 import com.cognifide.apm.core.logger.ProgressEntry
 import com.cognifide.apm.core.scripts.ScriptStorageException
 import org.apache.sling.api.resource.ResourceResolver
@@ -41,7 +40,7 @@ import javax.servlet.Servlet
         immediate = true,
         service = [Servlet::class],
         property = [
-            Property.PATH + "/bin/apm/script/validate",
+            Property.PATH + "/bin/apm/scripts/validate",
             Property.METHOD + "POST",
             Property.DESCRIPTION + "APM Script Validation Servlet",
             Property.VENDOR

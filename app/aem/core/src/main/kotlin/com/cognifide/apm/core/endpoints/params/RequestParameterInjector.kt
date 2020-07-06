@@ -18,7 +18,7 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm.core.endpoints.utils
+package com.cognifide.apm.core.endpoints.params
 
 
 import com.cognifide.apm.core.Property
@@ -54,7 +54,7 @@ class RequestParameterInjector : Injector, StaticInjectAnnotationProcessorFactor
     override fun getValue(adaptable: Any, fieldName: String, type: Type, annotatedElement: AnnotatedElement,
                           disposalCallbackRegistry: DisposalCallbackRegistry): Any? {
         if (adaptable is SlingHttpServletRequest) {
-            val annotation = annotatedElement.getAnnotation(com.cognifide.apm.core.endpoints.utils.RequestParameter::class.java)
+            val annotation = annotatedElement.getAnnotation(RequestParameter::class.java)
             if (annotation != null && type is Class<*>) {
                 val parameterName = annotation.value
                 return getValue(adaptable, type, StringUtils.defaultString(parameterName, fieldName), annotatedElement)
@@ -66,12 +66,12 @@ class RequestParameterInjector : Injector, StaticInjectAnnotationProcessorFactor
     private fun getValue(request: SlingHttpServletRequest, fieldClass: Class<*>, fieldName: String, annotatedElement: AnnotatedElement): Any? {
         val parameterValue = request.getRequestParameter(fieldName) ?: return null
         return when {
-            annotatedElement.isAnnotationPresent(com.cognifide.apm.core.endpoints.utils.FileName::class.java) -> parameterValue.fileName
+            annotatedElement.isAnnotationPresent(FileName::class.java) -> parameterValue.fileName
             fieldClass.name in listOf("java.lang.Integer", "int") -> Ints.tryParse(parameterValue.string)
             fieldClass.name in listOf("java.lang.Boolean", "boolean") -> "true" == parameterValue.string
             fieldClass == InputStream::class.java -> parameterValue.inputStream
             fieldClass == LocalDateTime::class.java -> {
-                val dateFormat = annotatedElement.getAnnotation(com.cognifide.apm.core.endpoints.utils.DateFormat::class.java)?.value
+                val dateFormat = annotatedElement.getAnnotation(DateFormat::class.java)?.value
                         ?: DateTimeFormatter.ISO_LOCAL_DATE_TIME.toString()
                 LocalDateTime.parse(parameterValue.string, DateTimeFormatter.ofPattern(dateFormat))
             }
@@ -83,10 +83,10 @@ class RequestParameterInjector : Injector, StaticInjectAnnotationProcessorFactor
     }
 
     override fun createAnnotationProcessor(element: AnnotatedElement): InjectAnnotationProcessor2? {
-        return element.getAnnotation(com.cognifide.apm.core.endpoints.utils.RequestParameter::class.java)?.let { com.cognifide.apm.core.endpoints.utils.RequestParameterInjector.RequestParameterAnnotationProcessor(it) }
+        return element.getAnnotation(RequestParameter::class.java)?.let { RequestParameterAnnotationProcessor(it) }
     }
 
-    class RequestParameterAnnotationProcessor(private val annotation: com.cognifide.apm.core.endpoints.utils.RequestParameter) : AbstractInjectAnnotationProcessor2() {
+    class RequestParameterAnnotationProcessor(private val annotation: RequestParameter) : AbstractInjectAnnotationProcessor2() {
 
         override fun getName(): String {
             return annotation.value
