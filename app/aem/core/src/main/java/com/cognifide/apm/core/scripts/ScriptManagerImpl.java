@@ -42,6 +42,9 @@ import com.cognifide.apm.core.history.History;
 import com.cognifide.apm.core.history.HistoryEntry;
 import com.cognifide.apm.core.logger.Progress;
 import com.cognifide.apm.core.progress.ProgressImpl;
+import com.cognifide.apm.core.services.event.ApmEvent.ScriptExecutedEvent;
+import com.cognifide.apm.core.services.event.ApmEvent.ScriptLaunchedEvent;
+import com.cognifide.apm.core.services.event.EventManager;
 import com.cognifide.apm.core.services.version.VersionService;
 import com.cognifide.apm.core.utils.InstanceTypeProvider;
 import com.google.common.collect.Maps;
@@ -64,13 +67,13 @@ import org.slf4j.LoggerFactory;
 
 @Component(
     immediate = true,
-    service = {ScriptManager.class, ExtendedScriptManager.class},
+    service = {ScriptManager.class},
     property = {
-        Property.DESCRIPTION + "CQSM Script Manager Service",
+        Property.DESCRIPTION + "APM Script Manager Service",
         Property.VENDOR
     }
 )
-public class ScriptManagerImpl implements ExtendedScriptManager {
+public class ScriptManagerImpl implements ScriptManager {
 
   private static final Logger LOG = LoggerFactory.getLogger(ScriptManagerImpl.class);
 
@@ -90,6 +93,9 @@ public class ScriptManagerImpl implements ExtendedScriptManager {
   private VersionService versionService;
 
   @Reference
+  private EventManager eventManager;
+
+  @Reference
   private History history;
 
   @Reference(
@@ -98,8 +104,6 @@ public class ScriptManagerImpl implements ExtendedScriptManager {
       service = DefinitionsProvider.class
   )
   private final Set<DefinitionsProvider> definitionsProviders = new CopyOnWriteArraySet<>();
-
-  private final EventManager eventManager = new EventManager();
 
   private Progress execute(Script script, final ExecutionMode mode, Map<String, String> customDefinitions,
       ResourceResolver resolver) throws ExecutionException, RepositoryException {
@@ -119,7 +123,7 @@ public class ScriptManagerImpl implements ExtendedScriptManager {
     final Context context = actionExecutor.getContext();
     final SessionSavingPolicy savingPolicy = context.getSavingPolicy();
 
-    eventManager.trigger(Event.BEFORE_EXECUTE, script, mode, progress);
+    eventManager.trigger(new ScriptLaunchedEvent(script, mode));
     ScriptRunner scriptRunner = new ScriptRunner(scriptFinder, resolver, mode == ExecutionMode.VALIDATION,
         (executionContext, commandName, arguments) -> {
           try {
@@ -173,7 +177,7 @@ public class ScriptManagerImpl implements ExtendedScriptManager {
     updateScriptProperties(script, mode, progress.isSuccess());
     versionService.updateVersionIfNeeded(resolver, script);
     saveHistory(script, mode, progress);
-    eventManager.trigger(Event.AFTER_EXECUTE, script, mode, progress);
+    eventManager.trigger(new ScriptExecutedEvent(script, mode, progress.isSuccess()));
 
     return progress;
   }
@@ -214,11 +218,6 @@ public class ScriptManagerImpl implements ExtendedScriptManager {
     Map<String, String> predefinedDefinitions = new HashMap<>();
     definitionsProviders.forEach(provider -> predefinedDefinitions.putAll(provider.getPredefinedDefinitions()));
     return predefinedDefinitions;
-  }
-
-  @Override
-  public EventManager getEventManager() {
-    return eventManager;
   }
 
   private ActionExecutor createExecutor(ExecutionMode mode, ResourceResolver resolver) throws RepositoryException {

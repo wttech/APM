@@ -22,7 +22,6 @@ package com.cognifide.apm.core.scripts;
 import static java.lang.String.format;
 
 import com.cognifide.apm.api.scripts.Script;
-import com.cognifide.apm.api.services.ExecutionMode;
 import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.apm.core.Apm;
 import com.cognifide.apm.core.Property;
@@ -49,8 +48,6 @@ import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,15 +71,11 @@ public class ScriptStorageImpl implements ScriptStorage {
 
   private static final Charset SCRIPT_ENCODING = StandardCharsets.UTF_8;
 
-  @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC)
-  private volatile ExtendedScriptManager scriptManager;
-
   @Reference
   private ScriptFinder scriptFinder;
 
   @Override
   public void remove(final Script script, ResourceResolver resolver) throws RepositoryException {
-    scriptManager.getEventManager().trigger(Event.BEFORE_REMOVE, script);
     final Session session = resolver.adaptTo(Session.class);
     final String path = script.getPath();
     if (path != null) {
@@ -99,10 +92,7 @@ public class ScriptStorageImpl implements ScriptStorage {
 
     validate(Collections.singletonList(fileDescriptor));
 
-    Script script = saveScript(fileDescriptor, launchMetadata, overwrite, resolver);
-    scriptManager.process(script, ExecutionMode.VALIDATION, resolver);
-    scriptManager.getEventManager().trigger(Event.AFTER_SAVE, script);
-    return script;
+    return saveScript(fileDescriptor, launchMetadata, overwrite, resolver);
   }
 
   @Override

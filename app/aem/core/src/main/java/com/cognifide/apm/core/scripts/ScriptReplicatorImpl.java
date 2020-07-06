@@ -19,7 +19,6 @@
  */
 package com.cognifide.apm.core.scripts;
 
-import com.cognifide.apm.api.exceptions.ExecutionException;
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.apm.core.Property;
@@ -35,39 +34,31 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 @Component(
-		immediate = true,
-		service = ScriptReplicator.class,
-		property = {
-				Property.DESCRIPTION + "CQSM Script Replicator Service",
-				Property.VENDOR
-		}
+    immediate = true,
+    service = ScriptReplicator.class,
+    property = {
+        Property.DESCRIPTION + "APM Script Replicator Service",
+        Property.VENDOR
+    }
 )
 public class ScriptReplicatorImpl implements ScriptReplicator {
 
-	@Reference
-	private Replicator replicator;
+  @Reference
+  private Replicator replicator;
 
-	@Reference
-	private ScriptFinder scriptFinder;
+  @Reference
+  private ScriptFinder scriptFinder;
 
-	private final EventManager eventManager = new EventManager();
+  @Override
+  public void replicate(Script script, ResourceResolver resolver) throws ReplicationException {
+    final List<Script> includes = new LinkedList<>();
+    includes.add(script);
+    includes.addAll(new ReferenceFinder(scriptFinder, resolver).findReferences(script));
 
-	@Override
-	public void replicate(Script script, ResourceResolver resolver) throws ExecutionException,
-			ReplicationException {
+    final Session session = resolver.adaptTo(Session.class);
 
-		eventManager.trigger(Event.BEFORE_REPLICATE, script);
-
-		final List<Script> includes = new LinkedList<>();
-		includes.add(script);
-		includes.addAll(new ReferenceFinder(scriptFinder, resolver).findReferences(script));
-
-		final Session session = resolver.adaptTo(Session.class);
-
-		for (final Script include : includes) {
-			replicator.replicate(session, ReplicationActionType.ACTIVATE, include.getPath());
-		}
-
-		eventManager.trigger(Event.AFTER_REPLICATE, script);
-	}
+    for (final Script include : includes) {
+      replicator.replicate(session, ReplicationActionType.ACTIVATE, include.getPath());
+    }
+  }
 }

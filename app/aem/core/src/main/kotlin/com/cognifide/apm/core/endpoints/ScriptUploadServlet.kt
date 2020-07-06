@@ -19,6 +19,8 @@
  */
 package com.cognifide.apm.core.endpoints
 
+import com.cognifide.apm.api.services.ExecutionMode
+import com.cognifide.apm.api.services.ScriptManager
 import com.cognifide.apm.core.Property
 import com.cognifide.apm.core.endpoints.utils.AbstractFormServlet
 import com.cognifide.apm.core.endpoints.utils.ResponseEntity
@@ -49,6 +51,10 @@ class ScriptUploadServlet : AbstractFormServlet<ScriptUploadForm>(ScriptUploadFo
     private lateinit var scriptStorage: ScriptStorage
 
     @Reference
+    @Transient
+    private lateinit var scriptManager: ScriptManager
+
+    @Reference
     override fun setup(modelFactory: ModelFactory) {
         this.modelFactory = modelFactory
     }
@@ -56,6 +62,7 @@ class ScriptUploadServlet : AbstractFormServlet<ScriptUploadForm>(ScriptUploadFo
     override fun doPost(form: ScriptUploadForm, resourceResolver: ResourceResolver): ResponseEntity<Any> {
         return try {
             val script = scriptStorage.save(form.fileName, form.file, form.toLaunchMetadata(), form.overwrite, resourceResolver)
+            scriptManager.process(script, ExecutionMode.VALIDATION, resourceResolver)
             ok {
                 message = "File successfully saved"
                 "uploadedScript" set ScriptUtils.asMap(script)

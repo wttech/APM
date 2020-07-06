@@ -28,6 +28,8 @@ import com.cognifide.apm.api.services.ScriptFinder
 import com.cognifide.apm.api.services.ScriptManager
 import com.cognifide.apm.core.scripts.ScriptFilters.*
 import com.cognifide.apm.core.services.ModifiedScriptFinder
+import com.cognifide.apm.core.services.event.ApmEvent
+import com.cognifide.apm.core.services.event.EventManager
 import com.cognifide.apm.core.services.version.VersionService
 import com.cognifide.apm.core.utils.InstanceTypeProvider
 import com.cognifide.apm.core.utils.sling.SlingHelper.getResourceResolverForService
@@ -61,6 +63,8 @@ class ApmInstallHook : OsgiAwareInstallHook() {
                 executeScripts(currentEnvironment, currentHook, resolver)
                 applyChecksum(scriptFinder, resolver)
             }
+            val eventManager = getService(EventManager::class.java)
+            eventManager.trigger(ApmEvent.InstallHookExecuted(currentHook))
         } catch (e: Exception) {
             throw PackageException("Could not run scripts", e)
         }

@@ -17,18 +17,30 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.core.scripts;
+package com.cognifide.apm.core.services.event
 
-import com.cognifide.apm.api.scripts.Script;
-import com.cognifide.apm.api.services.ExecutionMode;
-import com.cognifide.apm.api.services.ScriptManager;
-import com.cognifide.apm.core.logger.Progress;
+import com.cognifide.apm.core.Property
+import org.osgi.service.component.annotations.Component
+import org.osgi.service.component.annotations.Reference
+import org.osgi.service.event.EventAdmin
 
-public interface EventListener {
+/**
+ * Responsible for tracking Script lifecycle. Collects listeners that can hook into a lifetime of scripts.
+ */
+@Component(
+        immediate = true,
+        service = [EventManager::class],
+        property = [
+            Property.DESCRIPTION + "APM Event Manager",
+            Property.VENDOR
+        ])
+class EventManagerImpl : EventManager {
 
-	/**
-	 * Handle event trigerred by {@link ScriptManager}
-	 * If event is not related with execution only first argument is specified, other are nulls
-	 */
-	void handle(Script script, ExecutionMode mode, Progress progress);
+    @Reference
+    @Transient
+    private lateinit var eventAdmin: EventAdmin
+
+    override fun trigger(event: ApmEvent) {
+        eventAdmin.postEvent(event.toOsgiEvent())
+    }
 }
