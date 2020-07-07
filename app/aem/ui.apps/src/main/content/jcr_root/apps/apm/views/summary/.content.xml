@@ -30,9 +30,7 @@
           jcr:primaryType="nt:unstructured"
           sling:resourceType="granite/ui/components/coral/foundation/anchorbutton"
           href="/apm/history.html"
-          target="_blank"
-          text="Close"
-          variant="actionBar"/>
+          text="Close"/>
       </secondary>
     </actions>
     <views jcr:primaryType="nt:unstructured">
