@@ -18,9 +18,21 @@
  * =========================LICENSE_END==================================
  */
 (function (window, $) {
-  $(document).on('cui-contentloaded', function () {
 
-    const SHOW_REFERENCES_URL = '/apm/references.html';
+  $(window).adaptTo('foundation-registry').register('foundation.collection.action.action', {
+    name: 'editor.back',
+    handler: function (name, el, config, collection, selections) {
+      let url = window.location.href;
+      url = url.substring(url.indexOf('/apm/editor.html'));
+      url = url.replace('/apm/editor.html', '');
+      if (url.endsWith('.apm')) {
+        url = url.substring(0, url.lastIndexOf('/'));
+      }
+      window.location.href = '/apm/scripts.html' + url;
+    }
+  });
+
+  $(document).on('cui-contentloaded', function () {
 
     const fieldNames = [
       'apm:launchEnabled',
@@ -37,11 +49,9 @@
       this.$launchEnabled = this.$form.find('coral-checkbox[name="apm:launchEnabled"]');
       this.$textArea = this.$el.find('#cqsm').eq(0);
       this.$fileName = this.$el.find('#fname').eq(0);
-      this.$showReference = this.$el.find('#showReference').eq(0);
       this.$validateButton = this.$el.find('#validateButton').eq(0);
       this.$saveButton = this.$el.find('#saveButton').eq(0);
       this.$saveAndCloseButton = this.$el.find('#saveAndCloseButton').eq(0);
-      this.$cancelButton = this.$el.find('#cancelButton').eq(0);
       this.$logger = this.$el.find('.apm-console-logger');
       this.initialValue = this.$textArea.val();
       this.savePath = this.$el.find('#script-form').attr('action');
@@ -147,14 +157,6 @@
 
         this.editor.getSession().on('change', function () {
           self.$textArea.val(self.editor.getSession().getValue());
-        });
-
-        this.$showReference.click(function () {
-          window.open(SHOW_REFERENCES_URL, '_blank');
-        });
-
-        this.$cancelButton.click(function () {
-          window.location.href = document.referrer;
         });
 
         this.showInfo = function (response) {
