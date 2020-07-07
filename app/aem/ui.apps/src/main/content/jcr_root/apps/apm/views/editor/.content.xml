@@ -5,53 +5,77 @@
   jcr:primaryType="cq:Page">
   <jcr:content
     jcr:mixinTypes="[sling:VanityPath]"
-    jcr:primaryType="nt:unstructured"
-    jcr:title="APM View"
-    granite:class="apm-view-script-page"
+    jcr:primaryType="cq:PageContent"
+    jcr:title="APM Edit"
+    granite:class="apm-edit-script-page"
     sling:resourceType="granite/ui/components/shell/page"
-    sling:vanityPath="/apm/view"
-    consoleId="apm-view"
+    sling:vanityPath="/apm/editor"
+    consoleId="apm-edit"
     omnisearchLocationPath="/libs/granite/omnisearch/content/metadata/experiencefragments">
     <head jcr:primaryType="nt:unstructured">
       <clientlibs
         jcr:primaryType="nt:unstructured"
         sling:resourceType="granite/ui/components/coral/foundation/includeclientlibs"
-        categories="[apm-view, apm-editor-grid]"/>
+        categories="[apm-editor, apm-editor-grid]"/>
     </head>
     <title
       jcr:primaryType="nt:unstructured"
       sling:resourceType="granite/ui/components/coral/foundation/text"
-      text="APM View">
+      text="APM Edit">
     </title>
-    <actions
-      jcr:primaryType="nt:unstructured">
+    <actions jcr:primaryType="nt:unstructured">
+      <primary jcr:primaryType="nt:unstructured">
+        <showReferences
+          granite:id="showReference"
+          granite:class="foundation-collection-action"
+          jcr:primaryType="nt:unstructured"
+          sling:resourceType="granite/ui/components/coral/foundation/anchorbutton"
+          href="/apm/references.html"
+          icon="file"
+          target="_blank"
+          text="Show References"
+          variant="actionBar"/>
+        <validate
+          granite:id="validateButton"
+          granite:class="foundation-collection-action"
+          jcr:primaryType="nt:unstructured"
+          sling:resourceType="granite/ui/components/coral/foundation/button"
+          icon="spellcheck"
+          text="Validate"
+          variant="actionBar"/>
+      </primary>
       <secondary jcr:primaryType="nt:unstructured">
-        <back
-          granite:id="backButton"
+        <cancel
+          granite:id="cancelButton"
           granite:class="foundation-collection-action"
           jcr:primaryType="nt:unstructured"
           sling:resourceType="granite/ui/components/coral/foundation/collection/action"
-          action="view.back"
-          text="Back"/>
+          action="editor.back"
+          text="Cancel"
+          variant="quiet"/>
+        <save
+          jcr:primaryType="nt:unstructured"
+          sling:resourceType="apm/components/saveAndCloseButton"/>
       </secondary>
     </actions>
     <content
-      granite:class="apm-view-form"
-      granite:rel="apm-view"
+      granite:class="apm-edit-form"
+      granite:rel="apm-edit"
       jcr:primaryType="nt:unstructured"
       sling:resourceType="granite/ui/components/coral/foundation/container">
       <items jcr:primaryType="nt:unstructured">
         <form
           granite:class="cache-warmup-form"
+          granite:id="script-form"
           jcr:primaryType="nt:unstructured"
           sling:resourceType="granite/ui/components/coral/foundation/form"
-          action="${requestPathInfo.resourcePath}"
+          action="${requestPathInfo.suffix}"
           dataPath="${requestPathInfo.suffix}"
           method="post"
           style="aligned">
           <items jcr:primaryType="nt:unstructured">
             <grid
-              granite:class="apm-editor-grid apm-editor-view-mode"
+              granite:class="apm-editor-grid apm-editor-edit-mode"
               jcr:primaryType="nt:unstructured"
               sling:resourceType="granite/ui/components/coral/foundation/container"
               maximized="true">

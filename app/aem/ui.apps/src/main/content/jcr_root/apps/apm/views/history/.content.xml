@@ -1,113 +1,116 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:granite="http://www.adobe.com/jcr/granite/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
-          jcr:primaryType="cq:Page">
-    <jcr:content
-            jcr:mixinTypes="[sling:VanityPath]"
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:granite="http://www.adobe.com/jcr/granite/1.0"
+  xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+  xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+  jcr:primaryType="cq:Page">
+  <jcr:content
+    jcr:mixinTypes="[sling:VanityPath]"
+    jcr:primaryType="nt:unstructured"
+    jcr:title="APM Script Execution History"
+    sling:resourceType="granite/ui/components/shell/collectionpage"
+    sling:vanityOrder="{Long}301"
+    sling:vanityPath="/apm/history"
+    consoleId="cq-bridge-data-collections"
+    currentView="${state[&quot;products.shell.collectionpage.layoutId&quot;].string}"
+    modeGroup="cq-experience-fragments-admin-childpages"
+    omnisearchLocationPath="/libs/granite/omnisearch/content/metadata/experiencefragments"
+    pageURITemplate="/apm/history.html"
+    targetCollection=".cq-experience-fragments-admin-childpages">
+    <head jcr:primaryType="nt:unstructured">
+      <clientlibs
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/includeclientlibs"
+        categories="[apm-scripts,apm-history,cq.common.wcm,cq.sites.collectionpage,cq.siteadmin.admin.page.row,cq.experiencefragments.components.experiencefragment]"/>
+    </head>
+    <views jcr:primaryType="nt:unstructured">
+      <list
+        granite:rel="cq-experience-fragments-admin-childpages"
+        jcr:primaryType="nt:unstructured"
+        jcr:title="List View"
+        sling:resourceType="granite/ui/components/coral/foundation/table"
+        icon="viewList"
+        layoutId="list"
+        limit="{Long}10"
+        modeGroup="cq-experience-fragments-admin-childpages"
+        path="${requestPathInfo.suffix}"
+        selectionMode="row"
+        size="${empty requestPathInfo.selectors[1] ? &quot;10&quot; : requestPathInfo.selectors[1]}"
+        sortMode="remote"
+        src="/mnt/overlay/apm/views/history/jcr:content/views/list{.offset,limit}.html{+id}{?sortName,sortDir}"
+        stateId="xf.shell.collectionpage">
+        <columns jcr:primaryType="nt:unstructured">
+          <select
             jcr:primaryType="nt:unstructured"
-            jcr:title="APM Script Execution History"
-            sling:resourceType="granite/ui/components/shell/collectionpage"
-            sling:vanityOrder="{Long}301"
-            sling:vanityPath="/apm/history"
-            consoleId="cq-bridge-data-collections"
-            currentView="${state[&quot;products.shell.collectionpage.layoutId&quot;].string}"
-            modeGroup="cq-experience-fragments-admin-childpages"
-            omnisearchLocationPath="/libs/granite/omnisearch/content/metadata/experiencefragments"
-            pageURITemplate="/apm/history.html"
-            targetCollection=".cq-experience-fragments-admin-childpages">
-        <head jcr:primaryType="nt:unstructured">
-            <clientlibs
-                    jcr:primaryType="nt:unstructured"
-                    sling:resourceType="granite/ui/components/coral/foundation/includeclientlibs"
-                    categories="[apm-scripts,apm-history,cq.common.wcm,cq.sites.collectionpage,cq.siteadmin.admin.page.row,cq.experiencefragments.components.experiencefragment]"/>
-        </head>
-        <views jcr:primaryType="nt:unstructured">
-            <list
-                    granite:rel="cq-experience-fragments-admin-childpages"
-                    jcr:primaryType="nt:unstructured"
-                    jcr:title="List View"
-                    sling:resourceType="granite/ui/components/coral/foundation/table"
-                    icon="viewList"
-                    layoutId="list"
-                    limit="{Long}10"
-                    modeGroup="cq-experience-fragments-admin-childpages"
-                    path="${requestPathInfo.suffix}"
-                    selectionMode="row"
-                    size="${empty requestPathInfo.selectors[1] ? &quot;10&quot; : requestPathInfo.selectors[1]}"
-                    sortMode="remote"
-                    src="/mnt/overlay/apm/views/history/jcr:content/views/list{.offset,limit}.html{+id}{?sortName,sortDir}"
-                    stateId="xf.shell.collectionpage">
-                <columns jcr:primaryType="nt:unstructured">
-                    <select
-                      jcr:primaryType="nt:unstructured"
-                      select="{Boolean}true"/>
-                    <scriptName
-                            jcr:primaryType="nt:unstructured"
-                            jcr:title="Script"
-                            sortable="{Boolean}true"/>
-                    <lastRun
-                            jcr:primaryType="nt:unstructured"
-                            jcr:title="Last run"
-                            sortable="{Boolean}true"/>
-                    <author
-                            jcr:primaryType="nt:unstructured"
-                            jcr:title="Author"
-                            sortable="{Boolean}true"/>
-                    <executor
-                            jcr:primaryType="nt:unstructured"
-                            jcr:title="Executor"
-                            sortable="{Boolean}true"/>
-                    <mode
-                            jcr:primaryType="nt:unstructured"
-                            jcr:title="Mode"
-                            sortable="{Boolean}true"/>
-                    <instance
-                            jcr:primaryType="nt:unstructured"
-                            jcr:title="Instance"
-                            sortable="{Boolean}true"/>
-                    <runStatus
-                            jcr:primaryType="nt:unstructured"
-                            jcr:title="Run status"
-                            sortable="{Boolean}true"/>
-                    <summary
-                            jcr:primaryType="nt:unstructured"
-                            jcr:title="Summary"
-                            sortable="{Boolean}false"/>
-                </columns>
-                <datasource
-                        jcr:primaryType="nt:unstructured"
-                        sling:resourceType="apm/datasource/history"
-                        itemResourceType="apm/components/historyRow"/>
-            </list>
-        </views>
-        <title jcr:primaryType="nt:unstructured"
-          sling:resourceType="granite/ui/components/shell/title"
-          jcr:title="APM History"/>
-        <actions jcr:primaryType="nt:unstructured">
-            <primary jcr:primaryType="nt:unstructured">
-                <back jcr:primaryType="nt:unstructured"
-                      sling:resourceType="granite/ui/components/coral/foundation/anchorbutton"
-                      href="/apm.html"
-                      icon="chevronLeft"
-                      variant="quiet"/>
-            </primary>
-            <selection jcr:primaryType="nt:unstructured">
-                <view
-                    granite:class="foundation-collection-action"
-                    jcr:primaryType="nt:unstructured"
-                    sling:resourceType="granite/ui/components/coral/foundation/collection/action"
-                    action="foundation.link"
-                    activeSelectionCount="single"
-                    activeCondition="is-not-folder"
-                    icon="search"
-                    relScope="item"
-                    target=".cq-experience-fragments-admin-childpages"
-                    text="View"
-                    variant="actionBar">
-                    <data
-                        jcr:primaryType="nt:unstructured"
-                        href.uritemplate="/apm/view.html{+item}"/>
-                </view>
-            </selection>
-        </actions>
-    </jcr:content>
+            select="{Boolean}true"/>
+          <scriptName
+            jcr:primaryType="nt:unstructured"
+            jcr:title="Script"
+            sortable="{Boolean}true"/>
+          <lastRun
+            jcr:primaryType="nt:unstructured"
+            jcr:title="Last run"
+            sortable="{Boolean}true"/>
+          <author
+            jcr:primaryType="nt:unstructured"
+            jcr:title="Author"
+            sortable="{Boolean}true"/>
+          <executor
+            jcr:primaryType="nt:unstructured"
+            jcr:title="Executor"
+            sortable="{Boolean}true"/>
+          <mode
+            jcr:primaryType="nt:unstructured"
+            jcr:title="Mode"
+            sortable="{Boolean}true"/>
+          <instance
+            jcr:primaryType="nt:unstructured"
+            jcr:title="Instance"
+            sortable="{Boolean}true"/>
+          <runStatus
+            jcr:primaryType="nt:unstructured"
+            jcr:title="Run status"
+            sortable="{Boolean}true"/>
+          <summary
+            jcr:primaryType="nt:unstructured"
+            jcr:title="Summary"
+            sortable="{Boolean}false"/>
+        </columns>
+        <datasource
+          jcr:primaryType="nt:unstructured"
+          sling:resourceType="apm/datasource/history"
+          itemResourceType="apm/components/historyRow"/>
+      </list>
+    </views>
+    <title jcr:primaryType="nt:unstructured"
+      sling:resourceType="granite/ui/components/shell/title"
+      jcr:title="APM History"/>
+    <actions jcr:primaryType="nt:unstructured">
+      <primary jcr:primaryType="nt:unstructured">
+        <back jcr:primaryType="nt:unstructured"
+          sling:resourceType="granite/ui/components/coral/foundation/anchorbutton"
+          href="/apm.html"
+          icon="home"
+          text="Dashboard"
+          variant="quiet"/>
+      </primary>
+      <selection jcr:primaryType="nt:unstructured">
+        <view
+          granite:class="foundation-collection-action"
+          jcr:primaryType="nt:unstructured"
+          sling:resourceType="granite/ui/components/coral/foundation/collection/action"
+          action="foundation.link"
+          activeSelectionCount="single"
+          activeCondition="is-not-folder"
+          icon="search"
+          relScope="item"
+          target=".cq-experience-fragments-admin-childpages"
+          text="View"
+          variant="actionBar">
+          <data
+            jcr:primaryType="nt:unstructured"
+            href.uritemplate="/apm/viewer.html{+item}"/>
+        </view>
+      </selection>
+    </actions>
+  </jcr:content>
 </jcr:root>

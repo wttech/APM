@@ -100,7 +100,8 @@
         <back jcr:primaryType="nt:unstructured"
           sling:resourceType="granite/ui/components/coral/foundation/anchorbutton"
           href="/apm.html"
-          icon="chevronLeft"
+          icon="home"
+          text="Dashboard"
           variant="quiet"/>
       </primary>
       <secondary jcr:primaryType="nt:unstructured">
@@ -116,14 +117,14 @@
               jcr:primaryType="nt:unstructured"
               sling:resourceType="granite/ui/components/coral/foundation/collection/actionlink"
               action="foundation.link"
-              href="/apm/edit.html"
+              href="/apm/editor.html"
               icon="fileAdd"
               relScope="collection"
               target=".cq-experience-fragments-admin-childpages"
               text="Create Script">
               <data
                 jcr:primaryType="nt:unstructured"
-                href.uritemplate="/apm/edit.html{+id}"/>
+                href.uritemplate="/apm/editor.html{+id}"/>
             </createscript>
             <uploadscript
               jcr:primaryType="nt:unstructured"
@@ -200,7 +201,7 @@
           variant="actionBar">
           <data
             jcr:primaryType="nt:unstructured"
-            href.uritemplate="/apm/view.html{+item}"/>
+            href.uritemplate="/apm/viewer.html{+item}"/>
         </view>
         <edit
           granite:class="foundation-collection-action"
@@ -216,7 +217,7 @@
           variant="actionBar">
           <data
             jcr:primaryType="nt:unstructured"
-            href.uritemplate="/apm/edit.html{+item}"/>
+            href.uritemplate="/apm/editor.html{+item}"/>
         </edit>
         <deletepage
           granite:class="foundation-collection-action"
