@@ -194,7 +194,7 @@
           action="foundation.link"
           activeSelectionCount="single"
           activeCondition="is-not-folder"
-          icon="search"
+          icon="viewOn"
           relScope="item"
           target=".cq-experience-fragments-admin-childpages"
           text="View"

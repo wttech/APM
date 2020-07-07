@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:granite="http://www.adobe.com/jcr/granite/1.0"
   xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
   xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
   jcr:primaryType="cq:Page">
@@ -21,6 +21,20 @@
         sling:resourceType="granite/ui/components/coral/foundation/includeclientlibs"
         categories="[apm-summary]"/>
     </head>
+    <actions
+      jcr:primaryType="nt:unstructured">
+      <secondary jcr:primaryType="nt:unstructured">
+        <back
+          granite:id="close"
+          granite:class="foundation-collection-action"
+          jcr:primaryType="nt:unstructured"
+          sling:resourceType="granite/ui/components/coral/foundation/anchorbutton"
+          href="/apm/history.html"
+          target="_blank"
+          text="Close"
+          variant="actionBar"/>
+      </secondary>
+    </actions>
     <views jcr:primaryType="nt:unstructured">
       <summary
         jcr:primaryType="nt:unstructured"
