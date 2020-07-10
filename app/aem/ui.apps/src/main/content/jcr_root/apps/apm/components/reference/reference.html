@@ -17,9 +17,15 @@
 * limitations under the License.
 * =========================LICENSE_END==================================
 */-->
-<div style="margin: 3%">
-  <sly data-sly-use.model="com.cognifide.apm.core.ui.models.ReferencesModel">
-    <h3>Available commands</h3>
+<div class="apm-documentation" data-sly-use.model="com.cognifide.apm.core.ui.models.ReferencesModel">
+  <h3>Table of contents</h3>
+  <coral-anchorlist>
+    <a is="coral-anchorlist-item" href="#availbale-commands">Available commands</a>
+    <a is="coral-anchorlist-item" href="#permissions">Permissions</a>
+    <a is="coral-anchorlist-item" href="#predefined-definitions">Predefined definitions</a>
+  </coral-anchorlist>
+  <section>
+    <h3><a name="available-commands">Available commands</a></h3>
     <table is="coral-table">
       <thead is="coral-table-head">
       <tr is="coral-table-row">
@@ -35,25 +41,27 @@
           <td is="coral-table-cell" class="argument-cell">
             <ul>
               <sly data-sly-list="${map.arguments}">
-                <li><span class="argument-name argument-type-${item.type}">${item.name}&nbsp;(${item.type})</span> -&nbsp;${item.description}</li>
+                <li><span class="argument-name argument-type-${item.type}">${item.name}&nbsp;(${item.type})</span> -&nbsp;${item.description}
+                </li>
               </sly>
             </ul>
           </td>
           <td is="coral-table-cell">
             <p>${map.description}</p>
-            <div data-sly-test="${map.examples}" class="description-example">
+            <div data-sly-test="${map.examples}" class="code-example">
               <strong>Examples</strong>
-              <p data-sly-repeat.example="${map.examples}">
+              <code data-sly-repeat.example="${map.examples}">
                 ${example}
-              </p>
+              </code>
             </div>
           </td>
         </tr>
       </sly>
       </tbody>
     </table>
-
-    <h3>Permissions</h3>
+  </section>
+  <section>
+    <h3><a name="permissions">Permissions</a></h3>
 
     For commands: ALLOW, DENY you should specify an argument which is a list of permissions.<br/><br/>
     Possible values:
@@ -81,49 +89,35 @@
 
     Wrap them into square brackets like in examples below.
 
-    <table style="width: 30%; margin-bottom: 1%; margin-top: 1%;" is="coral-table">
-      <tbody>
-      <tr is="coral-table-row">
-        <td is="coral-table-cell">FOR-USER "foo"</td>
-      </tr>
-      <tr is="coral-table-row">
-        <td is="coral-table-cell">ALLOW "/content" ["ALL"]</td>
-      </tr>
-      <tr is="coral-table-row">
-        <td is="coral-table-cell">ALLOW "/etc" ["READ"]</td>
-      </tr>
-      <tr is="coral-table-row">
-        <td is="coral-table-cell">DENY "/content/bar" ["MODIFY", "DELETE"]</td>
-      </tr>
-      <tr is="coral-table-row">
-        <td is="coral-table-cell">ALLOW "/content/bar" ["jcr:nodeTypeManagement"]</td>
-      </tr>
-      </tbody>
-    </table>
+    <div class="code-example">
+      <code>
+        FOR-USER "foo" BEGIN
+        ALLOW "/content" ["ALL"]
+        ALLOW "/etc" ["READ"]
+        DENY "/content/bar" ["MODIFY", "DELETE"]
+        ALLOW "/content/bar" ["jcr:nodeTypeManagement"]
+        END
+      </code>
+    </div>
 
     The default ACL effects the whole subtree of the target node, you can limit it by adding a
     glob parameter, which defines a pattern to restrict the subtree. This affects performance so please use it
     carefully. Apply privileges directly on target node whenever you can.<br/><br/>
     You can use STRICT as a glob pattern to match a target node only. See examples below:
 
-    <table style="width: 30%; margin-bottom: 1%; margin-top: 1%;" is="coral-table">
-      <tbody>
-      <tr is="coral-table-row">
-        <td is="coral-table-cell">FOR-USER "foo"</td>
-      </tr>
-      <tr is="coral-table-row">
-        <td is="coral-table-cell">ALLOW "/content" glob= "bar" ["ALL"]</td>
-      </tr>
-      <tr is="coral-table-row">
-        <td is="coral-table-cell">DENY "/content" glob= "bar" ["jcr:nodeTypeManagement"]</td>
-      </tr>
-      <tr is="coral-table-row">
-        <td is="coral-table-cell">ALLOW "/content/foo" glob= "STRICT" ["ALL"]</td>
-      </tr>
-      </tbody>
-    </table>
+    <div class="code-example">
+      <code>
+        FOR-USER "foo" BEGIN
+        ALLOW "/content" glob= "bar" ["ALL"]
+        DENY "/content" glob= "bar" ["jcr:nodeTypeManagement"]
+        ALLOW "/content/foo" glob= "STRICT" ["ALL"]
+        END
+      </code>
+    </div>
+  </section>
+  <section>
+    <h3><a name="predefined-definitions">Predefined definitions</a></h3>
 
-    <h3>Predefined definitions</h3>
     <table is="coral-table">
       <thead is="coral-table-head">
       <tr is="coral-table-row">
@@ -140,5 +134,5 @@
       </sly>
       </tbody>
     </table>
-  </sly>
+  </section>
 </div>

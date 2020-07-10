@@ -18,8 +18,8 @@ aem {
             installBundleProject(":app:aem:core")
             installBundleProject(":app:aem:actions.main")
             vaultDefinition {
-                description.set("APM (AEM Permission Management) is an AEM based tool focused on streamlining the permission configuration. It provides a rich UX console tailored for administrators. They can write human readable scripts that handle user/group creation/deletion and permissions application, both in bulk. Through it's flexible grammar, exposed API, and high extensibility it vastly improves permission-based implementations.")
                 version.set(rootProject.version as String)
+                description.set("APM (AEM Permission Management) is an AEM based tool focused on streamlining the permission configuration. It provides a rich UX console tailored for administrators. They can write human readable scripts that handle user/group creation/deletion and permissions application, both in bulk. Through it's flexible grammar, exposed API, and high extensibility it vastly improves permission-based implementations.")
             }
         }
     }

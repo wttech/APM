@@ -4,14 +4,12 @@
   xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:granite="http://www.adobe.com/jcr/granite/1.0"
   jcr:primaryType="cq:Page">
   <jcr:content
-    jcr:mixinTypes="[sling:VanityPath]"
     jcr:primaryType="nt:unstructured"
     jcr:title="APM View"
     granite:class="apm-view-script-page"
     sling:resourceType="granite/ui/components/shell/page"
     sling:vanityPath="/apm/viewer"
-    consoleId="apm-view"
-    omnisearchLocationPath="/libs/granite/omnisearch/content/metadata/experiencefragments">
+    consoleId="apm-view">
     <head jcr:primaryType="nt:unstructured">
       <clientlibs
         jcr:primaryType="nt:unstructured"
@@ -21,10 +19,8 @@
     <title
       jcr:primaryType="nt:unstructured"
       sling:resourceType="granite/ui/components/coral/foundation/text"
-      text="APM View">
-    </title>
-    <actions
-      jcr:primaryType="nt:unstructured">
+      text="APM View"/>
+    <actions jcr:primaryType="nt:unstructured">
       <primary jcr:primaryType="nt:unstructured">
         <showReferences
           granite:id="showReference"

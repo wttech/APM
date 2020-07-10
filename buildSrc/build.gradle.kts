@@ -32,5 +32,5 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.72")
     implementation("org.apache.sling:org.apache.sling.caconfig.bnd-plugin:1.0.2")
     implementation("com.cognifide.gradle:environment-plugin:0.1.12")
-    implementation("com.cognifide.gradle:aem-plugin:13.0.0")
+    implementation("com.cognifide.gradle:aem-plugin:13.2.1")
 }

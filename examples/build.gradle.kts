@@ -27,6 +27,11 @@ plugins {
 description = "AEM Permission Management :: Examples"
 
 aem {
+    `package` {
+        validator {
+            enabled.set(false)
+        }
+    }
     tasks {
         packageCompose {
             vaultDefinition {
