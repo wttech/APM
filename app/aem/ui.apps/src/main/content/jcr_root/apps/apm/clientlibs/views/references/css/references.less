@@ -18,41 +18,47 @@
  * =========================LICENSE_END==================================
  */
 
-.coral-Table-body {
-  tr.even {
-    .coral-Table-cell {
-      background-color: #e6e6e6;
+.apm-documentation {
+  padding: 0 15px;
+
+  .coral-Table-body {
+    tr.even {
+      .coral-Table-cell {
+        background-color: #e6e6e6;
+      }
     }
-  }
 
-  .coral-Table-cell.argument-cell {
-    border-left: 0px;
-    border-right: 0px;
+    .coral-Table-cell.argument-cell {
+      border-left: 0px;
+      border-right: 0px;
 
-    ul {
-      padding: 0 0 0 10px;
+      ul {
+        padding: 0 0 0 10px;
 
-      li {
-        padding: 0 0 8px 0;
+        li {
+          padding: 0 0 8px 0;
 
-        .argument-type-required {
-          font-weight: bolder;
-        }
+          .argument-type-required {
+            font-weight: bolder;
+          }
 
-        .argument-type-named {
-          font-style: italic;
+          .argument-type-named {
+            font-style: italic;
+          }
         }
       }
     }
   }
-}
 
-.description-example {
-  margin: 10px;
+  .code-example {
+    margin: 10px;
 
-  p {
-    background-color: #F0F0F0;
-    font-family: monospace;
-    padding: 10px;
+    code {
+      border: 1px dotted;
+      font-family: monospace;
+      white-space: pre-wrap;
+      display: block;
+      margin-top: 10px;
+    }
   }
 }
