@@ -37,10 +37,4 @@ public class RemoveParentsGroups implements Action {
     ClearFromGroupDetacher detacher = new ClearFromGroupDetacher(context, false);
     return detacher.detachAuthorizableFromParents();
   }
-
-  @Override
-  public boolean isGeneric() {
-    return false;
-  }
-
 }

@@ -80,9 +80,4 @@ public class DeleteGroup implements Action {
     }
     return actionResult;
   }
-
-  @Override
-  public boolean isGeneric() {
-    return true;
-  }
 }

@@ -71,7 +71,7 @@ public final class DeleteUserMapper {
       @Flags(@Flag(value = CLEAR_PERMISSIONS, description = CLEAR_PERMISSIONS_DESC)) List<String> flags) {
     if (flags.contains(CLEAR_PERMISSIONS)) {
       List<Action> actions = ids.stream().map(id -> new DestroyUser(id)).collect(Collectors.toList());
-      return new CompositeAction(true, actions);
+      return new CompositeAction(actions);
     } else {
       return new RemoveUser(ids);
     }

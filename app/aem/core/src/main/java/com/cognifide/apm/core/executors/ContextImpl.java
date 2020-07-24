@@ -61,6 +61,15 @@ public final class ContextImpl implements Context {
     this.savingPolicy = new SessionSavingPolicyImpl();
   }
 
+  private ContextImpl(AccessControlManager accessControlManager,
+      AuthorizableManager authorizableManager, SessionSavingPolicy savingPolicy,
+      JackrabbitSession session) {
+    this.accessControlManager = accessControlManager;
+    this.authorizableManager = authorizableManager;
+    this.savingPolicy = savingPolicy;
+    this.session = session;
+  }
+
   @Override
   public ValueFactory getValueFactory() throws RepositoryException {
     return session.getValueFactory();
@@ -103,5 +112,10 @@ public final class ContextImpl implements Context {
   @Override
   public ActionResult createActionResult() {
     return new ActionResultImpl();
+  }
+
+  @Override
+  public Context newContext() {
+    return new ContextImpl(accessControlManager, authorizableManager, savingPolicy, session);
   }
 }

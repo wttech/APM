@@ -41,12 +41,6 @@ public abstract class AbstractActionExecutor implements ActionExecutor {
 	}
 
 	protected Action createAction(ActionDescriptor actionDescriptor) throws ActionException {
-		final Action action = actionDescriptor.getAction();
-
-		if (action.isGeneric()) {
-			context.clearCurrentAuthorizable();
-		}
-
-		return action;
+		return actionDescriptor.getAction();
 	}
 }

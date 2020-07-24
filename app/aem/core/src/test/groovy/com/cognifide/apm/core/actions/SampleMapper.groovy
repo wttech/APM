@@ -69,10 +69,5 @@ class SampleMapper {
         ActionResult execute(Context context) throws ActionExecutionException {
             return null
         }
-
-        @Override
-        boolean isGeneric() {
-            return false
-        }
     }
 }

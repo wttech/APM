@@ -38,9 +38,9 @@ public class CreateSystemUserMapper {
 
   @Mapping(
       examples = {
-          "CREATE-USER 'apm-user'",
-          "CREATE-USER 'apm-user' password= 'p@$$w0rd' --IF-NOT-EXISTS",
-          "CREATE-USER 'apm-user' path= '/home/users/client/domain'"
+          "CREATE-SYSTEM-USER 'apm-user'",
+          "CREATE-SYSTEM-USER 'apm-user' password= 'p@$$w0rd' --IF-NOT-EXISTS",
+          "CREATE-SYSTEM-USER 'apm-user' path= '/home/users/client/domain'"
       },
       reference = REFERENCE
   )

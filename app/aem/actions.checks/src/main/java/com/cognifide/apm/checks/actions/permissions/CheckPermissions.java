@@ -190,11 +190,6 @@ public class CheckPermissions implements Action {
     return Lists.transform(permissions, new toLowerCase());
   }
 
-  @Override
-  public boolean isGeneric() {
-    return true;
-  }
-
   private static class toLowerCase implements Function<String, String> {
 
     @Override

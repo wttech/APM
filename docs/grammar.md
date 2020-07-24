@@ -74,10 +74,7 @@ RUN author.apm locale= 'en_us'
 Authorizable actions are used for the purpose of authorizable maintenance. They cover CRUD operations on Groups and Users as well as relationship configuration.
 
 ### Non-contextual actions
-Following action can be executed with no context user preserved by using `FOR-*` action. The operations are used for basic user or group creation or removal.
-* `CREATE-GROUP` - creates new authorizable of group type.
-* `CREATE-USER` - creates new authorizable of user type.
-* `CREATE-SYSTEM-USER` - creates new system user for the service login purpose.
+Following action can be executed with no context user preserved by using `CREATE-*` and `FOR-*` action. The operations are used for basic user or group creation or removal.
 * `DELETE-GROUP` - removes the selected group.
 * `DELETE-USER` - removes user from assigned groups, given permission and user itself.
 
@@ -88,6 +85,46 @@ CREATE-GROUP 'acme-authors' --IF-NOT-EXISTS
 ```
 
 ### Contextual actions
+#### Actions defining context
+There are 2 types of actions defining context: actions creating users/groups, and special actions which only creates context for existing users/groups: 
+* `CREATE-GROUP` - creates new authorizable of group type.
+* `CREATE-USER` - creates new authorizable of user type.
+* `CREATE-SYSTEM-USER` - creates new system user for the service login purpose.
+* `FOR-GROUP` - creates context for given group.
+* `FOR-USER` - creates context for given user.
+
+Here is example how to create a block of code with group in the context: 
+
+```bash
+CREATE-GROUP 'acme-authors' BEGIN
+    # 'acme-authors' is in the context here
+    ALLOW '/content/acme' ['WRITE'] # allows 'acme-authors' to write everything under /content/acme 
+END
+
+# ALLOW does not work here, the context is not set
+
+FOR-GROUP 'acme-admin' BEGIN
+    ALLOW '/content' ['WRITE'] # allows 'acme-admin' to write everything under /content
+END
+```
+
+
+
+```bash
+CREATE-USER 'john-doe' --IF-NOT-EXISTS BEGIN # there is no error when user already exists
+    # code here is executed only when user is created    
+    SET-PASSWORD 'p@$$w0rd'
+END
+
+FOR-USER 'amy-smith' BEGIN
+    # code here is executed always when script is executed
+    SET-PASSWORD 'p@$$w0rd'
+END
+```
+ 
+#### Define permissions
+Go to [permissions page](/docs/permissions.md) for details.
+
 #### Configure the membership
 The membership operation can be executed either from user or group context. Depending on the action selected the operation will either cut all membership links or just some.
 

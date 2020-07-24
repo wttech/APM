@@ -99,10 +99,4 @@ public class AddChildren implements Action {
     }
     return actionResult;
   }
-
-  @Override
-  public boolean isGeneric() {
-    return false;
-  }
-
 }

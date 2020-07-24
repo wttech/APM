@@ -85,9 +85,4 @@ public class CheckNotExists implements Action {
       actionResult.logError(error);
     }
   }
-
-  @Override
-  public boolean isGeneric() {
-    return true;
-  }
 }

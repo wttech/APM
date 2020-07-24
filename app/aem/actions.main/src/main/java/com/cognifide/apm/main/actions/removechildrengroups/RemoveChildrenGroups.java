@@ -36,10 +36,4 @@ public class RemoveChildrenGroups implements Action {
     ClearFromGroupDetacher detacher = new ClearFromGroupDetacher(context, false);
     return detacher.detachMembersFromGroup();
   }
-
-  @Override
-  public boolean isGeneric() {
-    return false;
-  }
-
 }

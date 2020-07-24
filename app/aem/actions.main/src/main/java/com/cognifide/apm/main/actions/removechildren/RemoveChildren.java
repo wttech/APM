@@ -98,10 +98,4 @@ public class RemoveChildren implements Action {
     }
     return actionResult;
   }
-
-  @Override
-  public boolean isGeneric() {
-    return false;
-  }
-
 }

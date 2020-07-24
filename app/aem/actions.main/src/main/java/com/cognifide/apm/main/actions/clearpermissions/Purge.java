@@ -121,10 +121,4 @@ public class Purge implements Action {
   private String normalizePath(String path) {
     return path + (path.endsWith("/") ? "" : "/");
   }
-
-  @Override
-  public boolean isGeneric() {
-    return false;
-  }
-
 }

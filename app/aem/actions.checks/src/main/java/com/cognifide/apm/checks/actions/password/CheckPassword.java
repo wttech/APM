@@ -92,9 +92,4 @@ public class CheckPassword implements Action {
     }
     return loginSuccessful;
   }
-
-  @Override
-  public boolean isGeneric() {
-    return true;
-  }
 }

@@ -100,10 +100,4 @@ public class CheckAuthorizableExists implements Action {
       }
     }
   }
-
-  @Override
-  public boolean isGeneric() {
-    return true;
-  }
-
 }

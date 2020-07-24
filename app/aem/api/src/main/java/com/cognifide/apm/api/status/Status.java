@@ -21,5 +21,5 @@ package com.cognifide.apm.api.status;
 
 public enum Status {
 
-	ERROR, WARNING, SUCCESS
+	ERROR, WARNING, SUCCESS, SKIPPED
 }

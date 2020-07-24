@@ -58,9 +58,4 @@ public class SessionSave implements Action {
     }
     return actionResult;
   }
-
-  @Override
-  public boolean isGeneric() {
-    return true;
-  }
 }

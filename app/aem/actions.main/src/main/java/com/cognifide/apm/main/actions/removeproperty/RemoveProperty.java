@@ -67,10 +67,4 @@ public class RemoveProperty implements Action {
     }
     return actionResult;
   }
-
-  @Override
-  public boolean isGeneric() {
-    return false;
-  }
-
 }

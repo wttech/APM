@@ -51,9 +51,4 @@ public class Save implements Action {
     }
     return actionResult;
   }
-
-  @Override
-  public boolean isGeneric() {
-    return true;
-  }
 }

@@ -101,9 +101,4 @@ public class CheckIncludes implements Action {
     }
     return null;
   }
-
-  @Override
-  public boolean isGeneric() {
-    return true;
-  }
 }

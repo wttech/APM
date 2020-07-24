@@ -71,22 +71,20 @@ public class DestroyUser implements Action {
     ActionResult actionResult;
     try {
       User user = context.getAuthorizableManager().getUser(userId);
-      context.setCurrentAuthorizable(user);
+      // local context is used here to not override current authorizable in given context
+      Context localContext = context.newContext();
+      localContext.setCurrentAuthorizable(user);
       Action removeFromGroups = new RemoveParents(getGroups(user));
-      ActionResult purgeResult = purge.execute(context);
-      ActionResult removeFromGroupsResult = removeFromGroups.execute(context);
-      ActionResult removeResult = remove.execute(context);
+      ActionResult purgeResult = purge.execute(localContext);
+      ActionResult removeFromGroupsResult = removeFromGroups.execute(localContext);
+      ActionResult removeResult = remove.execute(localContext);
       actionResult = purgeResult.merge(removeFromGroupsResult, removeResult);
+      actionResult.setAuthorizable(context.getCurrentAuthorizable().getID() + " (ignored)");
     } catch (RepositoryException | ActionExecutionException e) {
       actionResult = context.createActionResult();
       actionResult.logError(MessagingUtils.createMessage(e));
     }
     return actionResult;
-  }
-
-  @Override
-  public boolean isGeneric() {
-    return true;
   }
 
   private List<String> getGroups(User user) throws RepositoryException {

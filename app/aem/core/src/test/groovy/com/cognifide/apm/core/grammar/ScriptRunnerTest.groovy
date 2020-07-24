@@ -106,7 +106,7 @@ class ScriptRunnerTest extends Specification {
     private static ActionInvoker createActionInvoker() {
         new ActionInvoker() {
             @Override
-            void runAction(com.cognifide.apm.core.grammar.executioncontext.ExternalExecutionContext context, String commandName, com.cognifide.apm.core.grammar.argument.Arguments arguments) {
+            Status runAction(com.cognifide.apm.core.grammar.executioncontext.ExternalExecutionContext context, String commandName, com.cognifide.apm.core.grammar.argument.Arguments arguments) {
                 def command = new StringBuilder("Executing command ")
                 command.append(commandName)
                 arguments.required.each {
@@ -116,6 +116,7 @@ class ScriptRunnerTest extends Specification {
                             .append("'")
                 }
                 context.progress.addEntry(Status.SUCCESS, "", command.toString())
+                return Status.SUCCESS
             }
         }
     }

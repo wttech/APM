@@ -114,10 +114,4 @@ public class Deny implements Action {
     }
     return preparedGlob;
   }
-
-  @Override
-  public boolean isGeneric() {
-    return false;
-  }
-
 }
