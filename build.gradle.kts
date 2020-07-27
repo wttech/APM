@@ -9,8 +9,7 @@ plugins {
     signing
 }
 
-//defaultTasks = listOf(":app:aemSatisfy", ":app:aemDeploy")
-description = "AEM Permission Management :: Root"
+defaultTasks("instanceSatisfy", ":app:aem:ui.apps:packageDeploy", ":app:aem:actions.checks:packageDeploy")
 
 scmVersion {
     useHighestVersion = true
@@ -20,7 +19,6 @@ scmVersion {
     })
 }
 
-defaultTasks("instanceSatisfy", ":app:aem:ui.apps:packageDeploy", ":app:aem:actions.checks:packageDeploy")
 project.version = scmVersion.version
 
 allprojects {
@@ -28,10 +26,6 @@ allprojects {
 }
 
 tasks {
-    register("packageDeploy") {
-        dependsOn(":app:aem:ui.apps:packageDeploy", ":app:aem:actions.checks:packageDeploy", ":examples:packageDeploy")
-    }
-
     withType<RatTask>().configureEach {
         // Files that don't require a license header
         excludes.add("**/LICENSE")

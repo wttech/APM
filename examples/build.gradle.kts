@@ -25,7 +25,7 @@ plugins {
 }
 
 group = "com.cognifide.apm"
-description = "AEM Permission Management :: Examples"
+description = "APM Examples - a bunch of scripts which can be use as a good start point for newcomers."
 
 aem {
     `package` {
@@ -38,7 +38,7 @@ aem {
             vaultDefinition {
                 val currentVersion = rootProject.version as String
                 version.set(currentVersion)
-                description.set("APM Examples - a bunch of scripts which can be use as a good start point for newcomers.")
+                description.set(project.description)
                 property("installhook.apm.class", "com.cognifide.apm.core.tools.ApmInstallHook")
                 property("dependencies", "com.cognifide.apm:apm:" + currentVersion.substringBefore("-SNAPSHOT"))
             }
@@ -49,10 +49,15 @@ aem {
 publishing {
     publications {
         create<MavenPublication>("apm") {
+            groupId = project.group.toString() + ".crx"
             artifact(common.publicationArtifact("packageCompose"))
             afterEvaluate {
                 artifactId = "apm-examples"
                 version = rootProject.version
+            }
+            pom {
+                name.set("APM - " + project.name)
+                description.set(project.description)
             }
         }
     }

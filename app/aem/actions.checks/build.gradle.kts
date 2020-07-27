@@ -9,7 +9,7 @@ plugins {
     signing
 }
 
-description = "AEM Permission Management :: Actions - Checks"
+description = "APM Extension - a set of 'check' actions, which verify configuration of permissions."
 
 apply(from = rootProject.file("app/common.gradle.kts"))
 apply(from = rootProject.file("app/aem/common.gradle.kts"))
@@ -21,7 +21,7 @@ aem {
             vaultDefinition {
                 val currentVersion = rootProject.version as String
                 version.set(currentVersion)
-                description.set("APM Extension - a set of 'check' actions, which verify configuration of permissions.")
+                description.set(project.description)
                 property("dependencies", "com.cognifide.apm:apm:" + currentVersion.substringBefore("-SNAPSHOT"))
             }
         }
@@ -60,6 +60,22 @@ publishing {
             afterEvaluate {
                 artifactId = "apm-" + project.name
                 version = rootProject.version
+            }
+            pom {
+                name.set("APM - " + project.name)
+                description.set(project.description)
+            }
+        }
+        register<MavenPublication>("apmCrx") {
+            groupId = project.group.toString() + ".crx"
+            artifact(common.publicationArtifact("packageCompose"))
+            afterEvaluate {
+                artifactId = "apm-" + project.name
+                version = rootProject.version
+            }
+            pom {
+                name.set("APM - " + project.name)
+                description.set(project.description)
             }
         }
     }

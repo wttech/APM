@@ -22,18 +22,14 @@ allprojects {
     repositories {
         mavenLocal()
         jcenter()
-        maven ("https://repo.adobe.com/nexus/content/groups/public")
+        maven("https://repo.adobe.com/nexus/content/groups/public")
     }
 
     afterEvaluate {
-        val apmRepositoryUsername: String? by extra
-        val apmRepositoryPassword: String? by extra
         extensions.findByType(PublishingExtension::class)?.apply {
-            publications?.findByName("apm")?.apply {
+            publications?.configureEach {
                 if (this is MavenPublication) {
                     pom {
-                        name.set("AEM Permission Management")
-                        description.set("AEM Permission Management is an AEM based tool focused on streamlining the permission configuration")
                         url.set("https://github.com/Cognifide/APM")
                         licenses {
                             license {
@@ -119,14 +115,22 @@ allprojects {
             }
             repositories {
                 maven {
-                    name = "OSSSonatypeOrg"
+                    name = "Mvn"
                     url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
                     credentials {
-                        username = apmRepositoryUsername
-                        password = apmRepositoryPassword
+                        username = findProperty("apm.repo.mvn.user")?.toString()
+                        password = findProperty("apm.repo.mvn.password")?.toString()
                     }
                     authentication {
                         create<BasicAuthentication>("basic")
+                    }
+                }
+                maven {
+                    name = "Gpr"
+                    url = uri("https://maven.pkg.github.com/Cognifide/APM")
+                    credentials {
+                        username = (findProperty("apm.repo.gpr.user") ?: System.getenv("USERNAME"))?.toString()
+                        password = (findProperty("apm.repo.gpr.key") ?: System.getenv("TOKEN"))?.toString()
                     }
                 }
             }
@@ -134,9 +138,8 @@ allprojects {
 
         extensions.findByType(SigningExtension::class)?.apply {
             useGpgCmd()
-            val publication = extensions.findByType(PublishingExtension::class)?.publications?.findByName("apm")
-            if (publication != null) {
-                sign(publication)
+            extensions.findByType(PublishingExtension::class)?.publications?.configureEach {
+                sign(this)
             }
         }
     }
