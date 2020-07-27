@@ -29,7 +29,7 @@ tasks {
     withType<RatTask>().configureEach {
         // Files that don't require a license header
         excludes.add("**/LICENSE")
-        excludes.add(".travis.yml")
+        excludes.add(".github/workflows/**")
 
         excludes.add("**/main/generated/**")
         excludes.add("**/clientlibs/externals/ace/js/**")
@@ -50,7 +50,7 @@ tasks {
         excludes.add("**/*.cnd")
 
         // Module
-        excludes.add("**/documentation/*")
+        excludes.add("**/docs/*")
         excludes.add("**/misc/**")
 
         // Gradle files
