@@ -24,6 +24,7 @@ plugins {
     signing
 }
 
+group = "com.cognifide.apm"
 description = "AEM Permission Management :: Examples"
 
 aem {
@@ -35,8 +36,11 @@ aem {
     tasks {
         packageCompose {
             vaultDefinition {
-                version.set(rootProject.version as String)
+                val currentVersion = rootProject.version as String
+                version.set(currentVersion)
+                description.set("APM Examples - a bunch of scripts which can be use as a good start point for newcomers.")
                 property("installhook.apm.class", "com.cognifide.apm.core.tools.ApmInstallHook")
+                property("dependencies", "com.cognifide.apm:apm:" + currentVersion.substringBefore("-SNAPSHOT"))
             }
         }
     }

@@ -3,6 +3,7 @@ import org.gradle.jvm.tasks.Jar
 
 plugins {
     id("com.cognifide.aem.bundle")
+    id("com.cognifide.aem.package")
     java
     `maven-publish`
     signing
@@ -15,6 +16,15 @@ apply(from = rootProject.file("app/aem/common.gradle.kts"))
 
 aem {
     tasks {
+        packageCompose {
+            installBundleProject(":app:aem:actions.checks")
+            vaultDefinition {
+                val currentVersion = rootProject.version as String
+                version.set(currentVersion)
+                description.set("APM Extension - a set of 'check' actions, which verify configuration of permissions.")
+                property("dependencies", "com.cognifide.apm:apm:" + currentVersion.substringBefore("-SNAPSHOT"))
+            }
+        }
         jar {
             bundle {
                 exportPackage("com.cognifide.apm.checks.actions.*")
