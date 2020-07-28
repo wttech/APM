@@ -8,7 +8,7 @@ plugins {
     signing
 }
 
-description = "AEM Permission Management :: API"
+description = "APM API - programmatic API for managing scripts, and extending tool by custom actions."
 
 apply(from = rootProject.file("app/common.gradle.kts"))
 apply(from = rootProject.file("app/aem/common.gradle.kts"))
@@ -45,6 +45,10 @@ publishing {
             afterEvaluate {
                 artifactId = "apm-" + project.name
                 version = rootProject.version
+            }
+            pom {
+                name.set("APM - " + project.name)
+                description.set(project.description)
             }
         }
     }

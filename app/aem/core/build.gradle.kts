@@ -12,7 +12,7 @@ plugins {
     signing
 }
 
-description = "AEM Permission Management :: Core"
+description = "APM Core - main classes and services handling APM business logic."
 
 apply(from = rootProject.file("app/common.gradle.kts"))
 apply(from = rootProject.file("app/aem/common.gradle.kts"))
@@ -91,6 +91,10 @@ publishing {
             afterEvaluate {
                 artifactId = "apm-" + project.name
                 version = rootProject.version
+            }
+            pom {
+                name.set("APM - " + project.name)
+                description.set(project.description)
             }
         }
     }

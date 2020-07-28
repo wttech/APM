@@ -8,7 +8,7 @@ plugins {
     signing
 }
 
-description = "AEM Permission Management :: Actions - Main"
+description = "APM Extension - a set of 'main' actions, which allow to define permissions, and manage users and groups."
 
 apply(from = rootProject.file("app/common.gradle.kts"))
 apply(from = rootProject.file("app/aem/common.gradle.kts"))
@@ -53,6 +53,10 @@ publishing {
             afterEvaluate {
                 artifactId = "apm-" + project.name
                 version = rootProject.version
+            }
+            pom {
+                name.set("APM - " + project.name)
+                description.set(project.description)
             }
         }
     }
