@@ -29,7 +29,7 @@ aem {
 
 publishing {
     publications {
-        register<MavenPublication>("apm") {
+        register<MavenPublication>("apmCrx") {
             groupId = project.group.toString() + ".crx"
             artifact(common.publicationArtifact("packageCompose"))
             afterEvaluate {

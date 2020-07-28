@@ -48,7 +48,7 @@ aem {
 
 publishing {
     publications {
-        create<MavenPublication>("apm") {
+        create<MavenPublication>("apmCrx") {
             groupId = project.group.toString() + ".crx"
             artifact(common.publicationArtifact("packageCompose"))
             afterEvaluate {

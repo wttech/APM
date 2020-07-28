@@ -31,6 +31,10 @@ allprojects {
                 if (this is MavenPublication) {
                     pom {
                         url.set("https://github.com/Cognifide/APM")
+                        organization {
+                            name.set("Cognifide")
+                            url.set("https://www.cognifide.com")
+                        }
                         licenses {
                             license {
                                 name.set("The Apache License, Version 2.0")
@@ -43,66 +47,49 @@ allprojects {
                                 email.set("marcin.jedraszczyk@cognifide.com")
                                 organization.set("Cognifide")
                                 organizationUrl.set("https://www.cognifide.com")
+                                roles.set(listOf("architect", "lead developer"))
+                            }
+                            developer {
+                                name.set("Piotr Marcinkowski")
+                                email.set("piotr.marcinkowski@cognifide.com")
+                                organization.set("Cognifide")
+                                organizationUrl.set("https://www.cognifide.com")
+                                roles.set(listOf("developer"))
+                            }
+                            developer {
+                                name.set("Maciej Geisler")
+                                email.set("maciej.geisler@cognifide.com")
+                                organization.set("Cognifide")
+                                organizationUrl.set("https://www.cognifide.com")
+                                roles.set(listOf("developer"))
+                            }
+                            developer {
+                                name.set("Mateusz Bloch")
+                                email.set("mateusz.bloch@cognifide.com")
+                                organization.set("Cognifide")
+                                organizationUrl.set("https://www.cognifide.com")
+                                roles.set(listOf("tester"))
                             }
                             developer {
                                 name.set("Katarzyna Wielgosz")
                                 email.set("katarzyna.wielgosz@cognifide.com")
                                 organization.set("Cognifide")
                                 organizationUrl.set("https://www.cognifide.com")
-                            }
-                            developer {
-                                name.set("Piotr Wilczyński")
-                                email.set("piotr.wilczynski@cognifide.com")
-                                organization.set("Cognifide")
-                                organizationUrl.set("https://www.cognifide.com")
-                            }
-                            developer {
-                                name.set("Paweł Przystarz")
-                                email.set("pawel.przystarz@cognifide.com")
-                                organization.set("Cognifide")
-                                organizationUrl.set("https://www.cognifide.com")
-                            }
-                            developer {
-                                name.set("Urszula Gawłowska")
-                                email.set("urszula.gawlowska@cognifide.com")
-                                organization.set("Cognifide")
-                                organizationUrl.set("https://www.cognifide.com")
+                                roles.set(listOf("consultant"))
                             }
                             developer {
                                 name.set("Marek Krokosiński")
                                 email.set("marek.krokosinski@cognifide.com")
                                 organization.set("Cognifide")
                                 organizationUrl.set("https://www.cognifide.com")
+                                roles.set(listOf("consultant"))
                             }
                             developer {
-                                name.set("Szymon Owczarz")
-                                email.set("szymon.owczarz@cognifide.com")
+                                name.set("Piotr Wilczyński")
+                                email.set("piotr.wilczynski@cognifide.com")
                                 organization.set("Cognifide")
                                 organizationUrl.set("https://www.cognifide.com")
-                            }
-                            developer {
-                                name.set("Bartosz Wesołowski")
-                                email.set("bartosz.wesolowski@cognifide.com")
-                                organization.set("Cognifide")
-                                organizationUrl.set("https://www.cognifide.com")
-                            }
-                            developer {
-                                name.set("Artur Maćkowiak")
-                                email.set("artur.mackowiak@cognifide.com")
-                                organization.set("Cognifide")
-                                organizationUrl.set("https://www.cognifide.com")
-                            }
-                            developer {
-                                name.set("Tomasz Kaik")
-                                email.set("tomasz.kaik@cognifide.com")
-                                organization.set("Cognifide")
-                                organizationUrl.set("https://www.cognifide.com")
-                            }
-                            developer {
-                                name.set("Dominik Przybył")
-                                email.set("dominik.przybyl@cognifide.com")
-                                organization.set("Cognifide")
-                                organizationUrl.set("https://www.cognifide.com")
+                                roles.set(listOf("consultant"))
                             }
                         }
                         scm {
@@ -125,14 +112,15 @@ allprojects {
                         create<BasicAuthentication>("basic")
                     }
                 }
-                maven {
-                    name = "Gpr"
-                    url = uri("https://maven.pkg.github.com/Cognifide/APM")
-                    credentials {
-                        username = (findProperty("apm.repo.gpr.user") ?: System.getenv("USERNAME"))?.toString()
-                        password = (findProperty("apm.repo.gpr.key") ?: System.getenv("TOKEN"))?.toString()
-                    }
-                }
+// configuration of github packages
+//                maven {
+//                    name = "Gpr"
+//                    url = uri("https://maven.pkg.github.com/Cognifide/APM")
+//                    credentials {
+//                        username = (findProperty("apm.repo.gpr.user") ?: System.getenv("USERNAME"))?.toString()
+//                        password = (findProperty("apm.repo.gpr.key") ?: System.getenv("TOKEN"))?.toString()
+//                    }
+//                }
             }
         }
 
