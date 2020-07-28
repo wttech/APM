@@ -3,7 +3,7 @@ import pl.allegro.tech.build.axion.release.domain.TagNameSerializationConfig
 import pl.allegro.tech.build.axion.release.domain.scm.ScmPosition
 
 plugins {
-    id("pl.allegro.tech.build.axion-release") version "1.10.1"
+    id("pl.allegro.tech.build.axion-release") version "1.12.0"
     id("org.nosphere.apache.rat") version "0.6.0"
     `maven-publish`
     signing
