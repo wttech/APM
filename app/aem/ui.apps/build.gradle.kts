@@ -20,7 +20,7 @@ aem {
             installBundleProject(":app:aem:core")
             installBundleProject(":app:aem:actions.main")
             vaultDefinition {
-                version.set(currentVersion)
+                version.set(rootProject.version as String)
                 description.set(project.description)
             }
         }
