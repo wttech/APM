@@ -22,7 +22,7 @@ aem {
                 val currentVersion = rootProject.version as String
                 version.set(currentVersion)
                 description.set(project.description)
-                property("dependencies", "com.cognifide.apm:apm:" + currentVersion.substringBefore("-SNAPSHOT"))
+                property("dependencies", "com.cognifide.apm:apm-ui.apps:" + currentVersion.substringBefore("-SNAPSHOT"))
             }
         }
         jar {

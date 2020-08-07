@@ -40,7 +40,7 @@ aem {
                 version.set(currentVersion)
                 description.set(project.description)
                 property("installhook.apm.class", "com.cognifide.apm.core.tools.ApmInstallHook")
-                property("dependencies", "com.cognifide.apm:apm:" + currentVersion.substringBefore("-SNAPSHOT"))
+                property("dependencies", "com.cognifide.apm:apm-ui.apps:" + currentVersion.substringBefore("-SNAPSHOT"))
             }
         }
     }

@@ -13,14 +13,12 @@ apply(from = rootProject.file("app/aem/common.gradle.kts"))
 aem {
     tasks {
         packageCompose {
-            val currentVersion = rootProject.version as String
-            archiveFileName.set("apm-$currentVersion")
             installBundle("org.jetbrains.kotlin:kotlin-osgi-bundle:1.3.72")
             installBundleProject(":app:aem:api")
             installBundleProject(":app:aem:core")
             installBundleProject(":app:aem:actions.main")
             vaultDefinition {
-                version.set(currentVersion)
+                version.set(rootProject.version as String)
                 description.set(project.description)
             }
         }
