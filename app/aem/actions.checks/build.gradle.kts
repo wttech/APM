@@ -3,18 +3,28 @@ import org.gradle.jvm.tasks.Jar
 
 plugins {
     id("com.cognifide.aem.bundle")
+    id("com.cognifide.aem.package")
     java
     `maven-publish`
     signing
 }
 
-description = "AEM Permission Management :: Actions - Checks"
+description = "APM Extension - a set of 'check' actions, which verify configuration of permissions."
 
 apply(from = rootProject.file("app/common.gradle.kts"))
 apply(from = rootProject.file("app/aem/common.gradle.kts"))
 
 aem {
     tasks {
+        packageCompose {
+            installBundleProject(":app:aem:actions.checks")
+            vaultDefinition {
+                val currentVersion = rootProject.version as String
+                version.set(currentVersion)
+                description.set(project.description)
+                property("dependencies", "com.cognifide.apm:apm-ui.apps:" + currentVersion.substringBefore("-SNAPSHOT"))
+            }
+        }
         jar {
             bundle {
                 exportPackage("com.cognifide.apm.checks.actions.*")
@@ -50,6 +60,22 @@ publishing {
             afterEvaluate {
                 artifactId = "apm-" + project.name
                 version = rootProject.version
+            }
+            pom {
+                name.set("APM - " + project.name)
+                description.set(project.description)
+            }
+        }
+        register<MavenPublication>("apmCrx") {
+            groupId = project.group.toString() + ".crx"
+            artifact(common.publicationArtifact("packageCompose"))
+            afterEvaluate {
+                artifactId = "apm-" + project.name
+                version = rootProject.version
+            }
+            pom {
+                name.set("APM - " + project.name)
+                description.set(project.description)
             }
         }
     }
