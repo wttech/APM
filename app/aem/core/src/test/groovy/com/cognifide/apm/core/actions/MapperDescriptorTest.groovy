@@ -65,7 +65,7 @@ class MapperDescriptorTest extends Specification {
 
         then:
         mapperDescriptor.name == "sample"
-        mapperDescriptor.mappingDescriptors.size() == 2
+        mapperDescriptor.mappingDescriptors.size() == 4
     }
 
     @Unroll
@@ -98,6 +98,34 @@ class MapperDescriptorTest extends Specification {
         ["/content", ["read", "delete"]] | ["glob": "*"] | ["IF-EXISTS"] || "create2"
         ["/content", ["read", "delete"]] | ["glob": "*"] | []            || "create2"
         ["/content", "read"]             | ["glob": "*"] | ["IF-EXISTS"] || "create1"
+    }
+
+    @Unroll
+    def "SampleMapper annotated by @Flag and @Flags for flags= #flags"(List<String> flags, String result) {
+        expect:
+        MapperDescriptorFactory mapperDescriptorFactory = new MapperDescriptorFactory()
+        def mapperDescriptor = mapperDescriptorFactory.create(SampleMapper.class)
+        mapperDescriptor.handle(toArguments([], [:], flags)).name == result
+
+        where:
+        flags                 || result
+        ["IF-EXISTS", "FLAG"] || "isFlag-true"
+        []                    || "isFlag-false"
+        ["IF-EXISTS"]         || "isFlag-false"
+    }
+
+    @Unroll
+    def "SampleMapper annotated by multiple @Flag for flags= #flags"(List<String> flags, String result) {
+        expect:
+        MapperDescriptorFactory mapperDescriptorFactory = new MapperDescriptorFactory()
+        def mapperDescriptor = mapperDescriptorFactory.create(SampleMapper.class)
+        mapperDescriptor.handle(toArguments(["/content"], [:], flags)).name == result
+
+        where:
+        flags                 || result
+        ["IF-EXISTS", "FLAG"] || "flags-IF-EXISTS-FLAG"
+        []                    || "flags-"
+        ["IF-EXISTS"]         || "flags-IF-EXISTS"
     }
 
     def toArguments(List<Object> required, Map<String, Object> named, List<String> flags) {

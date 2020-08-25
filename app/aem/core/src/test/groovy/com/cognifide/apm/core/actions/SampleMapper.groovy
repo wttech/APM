@@ -23,10 +23,7 @@ package com.cognifide.apm.core.actions
 import com.cognifide.apm.api.actions.Action
 import com.cognifide.apm.api.actions.ActionResult
 import com.cognifide.apm.api.actions.Context
-import com.cognifide.apm.api.actions.annotations.Flags
-import com.cognifide.apm.api.actions.annotations.Mapper
-import com.cognifide.apm.api.actions.annotations.Mapping
-import com.cognifide.apm.api.actions.annotations.Named
+import com.cognifide.apm.api.actions.annotations.*
 import com.cognifide.apm.api.exceptions.ActionExecutionException
 
 @Mapper("sample")
@@ -46,10 +43,20 @@ class SampleMapper {
         return new DummyAction("create2")
     }
 
-    Action create3(String path, List<String> permissions,
+    @Mapping
+    Action create3(@Flag("FLAG") boolean isFlag, @Flags List<String> flags) {
+        return new DummyAction("isFlag-" + isFlag)
+    }
+
+    @Mapping
+    Action create4(String path, @Flag("FLAG1") @Flag("FLAG2") List<String> flags) {
+        return new DummyAction("flags-" + flags.join("-"))
+    }
+
+    Action create5(String path, List<String> permissions,
                    @Named("glob") String glob, @Named("types") List<String> types, @Named("items") List<String> items,
                    @Flags List<String> flags) {
-        return new DummyAction("create3")
+        return new DummyAction("create5")
     }
 
     class DummyAction implements Action {

@@ -78,10 +78,10 @@ Following action can be executed with no context user preserved by using `CREATE
 * `DELETE-GROUP` - removes the selected group.
 * `DELETE-USER` - removes user from assigned groups, given permission and user itself.
 
-Create operations will fail if the authorizable exists already. If the script is intended to be idempotent it's encouraged to add the `--IF-NOT-EXISTS` modifier at the end of the action. This way the script will pass through the execution even if the group cannot be created due to id conflict.
+Create operations won't fail if the authorizable exists already. You may change that by adding flag `--ERROR-IF-EXISTS`. 
 
 ```
-CREATE-GROUP 'acme-authors' --IF-NOT-EXISTS
+CREATE-GROUP 'acme-authors' --ERROR-IF-EXISTS
 ```
 
 ### Contextual actions
@@ -111,8 +111,8 @@ END
 
 
 ```bash
-CREATE-USER 'john-doe' --IF-NOT-EXISTS BEGIN # there is no error when user already exists
-    # code here is executed only when user is created    
+CREATE-USER 'john-doe' BEGIN 
+    # if user already exists, code in this block is not executed
     SET-PASSWORD 'p@$$w0rd'
 END
 

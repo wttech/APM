@@ -23,7 +23,6 @@ import static com.cognifide.apm.main.actions.CommonFlags.IF_EXISTS;
 
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.annotations.Flag;
-import com.cognifide.apm.api.actions.annotations.Flags;
 import com.cognifide.apm.api.actions.annotations.Mapper;
 import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.apm.api.actions.annotations.Named;
@@ -52,7 +51,7 @@ public class DenyMapper {
       @Named(value = "glob", description = "regular expression to narrow set of paths") String glob,
       @Named(value = "types", description = "list of jcr types which will be affected") List<String> types,
       @Named(value = "properties", description = "list of properties which will be affected ") List<String> items,
-      @Flags(@Flag(value = IF_EXISTS, description = "script doesn't fail if path doesn't exist")) List<String> flags) {
+      @Flag(value = IF_EXISTS, description = "script doesn't fail if path doesn't exist") List<String> flags) {
     return new Deny(path, permissions, glob, types, items, flags.contains(IF_EXISTS));
   }
 }

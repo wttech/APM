@@ -19,11 +19,11 @@
  */
 package com.cognifide.apm.main.actions.createauthorizable;
 
-import static com.cognifide.apm.main.actions.CommonFlags.IF_NOT_EXISTS;
+import static com.cognifide.apm.main.actions.CommonFlags.ERROR_IF_EXISTS;
+import static com.cognifide.apm.main.actions.createauthorizable.CreateAuthorizableStrategy.GROUP;
 
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.annotations.Flag;
-import com.cognifide.apm.api.actions.annotations.Flags;
 import com.cognifide.apm.api.actions.annotations.Mapper;
 import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.apm.api.actions.annotations.Named;
@@ -39,16 +39,15 @@ public class CreateGroupMapper {
   @Mapping(
       examples = {
           "CREATE-GROUP 'authors'",
-          "CREATE-GROUP 'authors' path= '/home/users/client/domain' --IF-NOT-EXISTS"
+          "CREATE-GROUP 'authors' path= '/home/users/client/domain' --ERROR-IF-EXISTS"
       },
       reference = REFERENCE
   )
   public Action mapAction(
       @Required(value = "groupId", description = "group's id e.g.: 'authors'") String groupId,
       @Named(value = "path", description = "group's home e.g.: '/home/groups/domain'") String path,
-      @Flags({@Flag(value = IF_NOT_EXISTS, description = "action is executed only if group doesn't exist, "
-          + "and script doesn't fail in that case")}) List<String> flags) {
-    return new CreateAuthorizable(groupId, null, path, flags.contains(IF_NOT_EXISTS), CreateAuthorizableStrategy.GROUP);
+      @Flag(value = ERROR_IF_EXISTS, description = "if group already exists, raise an error and stop script execution") List<String> flags) {
+    return new CreateAuthorizable(groupId, null, path, !flags.contains(ERROR_IF_EXISTS), GROUP);
   }
 
 }

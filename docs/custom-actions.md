@@ -53,7 +53,7 @@ public class AllowMapper {
       @Named(value = "glob", description = "regular expression to narrow set of paths") String glob,
       @Named(value = "types", description = "list of jcr types which will be affected") List<String> types,
       @Named(value = "properties", description = "list of properties which will be affected ") List<String> items,
-      @Flags(@Flag(value = IF_EXISTS, description = "script doesn't fail if path doesn't exist")) List<String> flags) {
+      @Flag(value = IF_EXISTS, description = "script doesn't fail if path doesn't exist") List<String> flags) {
     return new Allow(path, permissions, glob, types, items, flags.contains(IF_EXISTS));
   }
 }

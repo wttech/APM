@@ -19,11 +19,12 @@
  */
 package com.cognifide.apm.main.actions.createauthorizable;
 
+import static com.cognifide.apm.main.actions.CommonFlags.ERROR_IF_EXISTS;
 import static com.cognifide.apm.main.actions.CommonFlags.IF_NOT_EXISTS;
+import static com.cognifide.apm.main.actions.createauthorizable.CreateAuthorizableStrategy.SYSTEM_USER;
 
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.annotations.Flag;
-import com.cognifide.apm.api.actions.annotations.Flags;
 import com.cognifide.apm.api.actions.annotations.Mapper;
 import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.apm.api.actions.annotations.Named;
@@ -39,18 +40,19 @@ public class CreateSystemUserMapper {
   @Mapping(
       examples = {
           "CREATE-SYSTEM-USER 'apm-user'",
-          "CREATE-SYSTEM-USER 'apm-user' password= 'p@$$w0rd' --IF-NOT-EXISTS",
-          "CREATE-SYSTEM-USER 'apm-user' path= '/home/users/client/domain'"
+          "CREATE-SYSTEM-USER 'apm-user' --ERROR-IF-EXISTS",
+          "CREATE-SYSTEM-USER 'apm-user' path= '/home/users/client/domain'",
+          "CREATE-SYSTEM-USER 'apm-user' path= '/home/users/client/domain' BEGIN\n" +
+              " SET-PROPERTY 'first-name' 'APM'\n" +
+              "END"
       },
       reference = REFERENCE
   )
   public Action mapAction(
       @Required(value = "userId", description = "user's login e.g.: 'apm-user'") String userId,
-      @Named(value = "password", description = "user's password e.g.: 'p@$$w0rd'") String password,
       @Named(value = "path", description = "user's home e.g.: '/home/users/domain'") String path,
-      @Flags({@Flag(value = IF_NOT_EXISTS, description = "action is executed only if user doesn't exist, "
-          + "and script doesn't fail in that case")}) List<String> flags) {
-    return new CreateAuthorizable(userId, null, path, flags.contains(IF_NOT_EXISTS), CreateAuthorizableStrategy.SYSTEM_USER);
+      @Flag(value = ERROR_IF_EXISTS, description = "if user already exists, raise an error and stop script execution") List<String> flags) {
+    return new CreateAuthorizable(userId, null, path, flags.contains(IF_NOT_EXISTS), SYSTEM_USER);
   }
 
 }

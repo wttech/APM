@@ -21,12 +21,14 @@
 package com.cognifide.apm.core.actions;
 
 import com.cognifide.apm.api.actions.Action;
+import com.cognifide.apm.api.actions.annotations.Flag;
 import com.cognifide.apm.api.actions.annotations.Flags;
 import com.cognifide.apm.api.actions.annotations.Mapper;
 import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.apm.api.actions.annotations.Named;
 import com.cognifide.apm.api.actions.annotations.Required;
 import com.cognifide.apm.api.exceptions.InvalidActionMapperException;
+import com.cognifide.apm.core.actions.ParameterDescriptor.FlagParameterDescriptor;
 import com.cognifide.apm.core.actions.ParameterDescriptor.FlagsParameterDescriptor;
 import com.cognifide.apm.core.actions.ParameterDescriptor.NamedParameterDescriptor;
 import com.cognifide.apm.core.actions.ParameterDescriptor.RequiredParameterDescriptor;
@@ -92,12 +94,13 @@ public class MapperDescriptorFactory {
       if (containsAnnotation(parameterAnnotations, Named.class)) {
         Named namedAnnotation = getAnnotation(parameterAnnotations, Named.class);
         parameterDescriptor = new NamedParameterDescriptor(apmType, namedAnnotation);
-      }
-      if (containsAnnotation(parameterAnnotations, Flags.class)) {
+      } else if (containsAnnotation(parameterAnnotations, Flags.class)) {
         Flags flagsAnnotation = getAnnotation(parameterAnnotations, Flags.class);
-        parameterDescriptor = new FlagsParameterDescriptor(apmType, flagsAnnotation);
-      }
-      if (parameterDescriptor == null) {
+        parameterDescriptor = new FlagsParameterDescriptor(apmType, flagsAnnotation.value());
+      } else if (containsAnnotation(parameterAnnotations, Flag.class)) {
+        Flag flagAnnotation = getAnnotation(parameterAnnotations, Flag.class);
+        parameterDescriptor = new FlagParameterDescriptor(apmType, flagAnnotation);
+      } else {
         Required requiredAnnotation = getAnnotation(parameterAnnotations, Required.class);
         parameterDescriptor = new RequiredParameterDescriptor(apmType, requiredIndex, requiredAnnotation);
         requiredIndex++;
