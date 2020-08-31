@@ -22,6 +22,7 @@ package com.cognifide.apm.main.actions.createauthorizable;
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.apm.api.actions.Context;
+import com.cognifide.apm.api.status.Status;
 import com.cognifide.apm.main.utils.MessagingUtils;
 import javax.jcr.RepositoryException;
 import org.apache.jackrabbit.api.security.user.Authorizable;
@@ -82,22 +83,20 @@ public class CreateAuthorizable implements Action {
   private void logMessage(ActionResult actionResult, Authorizable authorizable) throws RepositoryException {
     if (!ignoreIfExists) {
       if (authorizable instanceof Group) {
-        actionResult.logError(MessagingUtils.authorizableExists(authorizable.getID(), "Group"));
+        actionResult.logError(authorizableExists(authorizable.getID(), "Group"));
       } else {
-        actionResult.logError(MessagingUtils.authorizableExists(authorizable.getID(), "User"));
+        actionResult.logError(authorizableExists(authorizable.getID(), "User"));
       }
     } else {
       if (authorizable instanceof Group) {
-        actionResult.logWarning(MessagingUtils.authorizableExists(authorizable.getID(), "Group"));
+        actionResult.changeStatus(Status.SKIPPED, authorizableExists(authorizable.getID(), "Group"));
       } else {
-        actionResult.logWarning(MessagingUtils.authorizableExists(authorizable.getID(), "User"));
+        actionResult.changeStatus(Status.SKIPPED, authorizableExists(authorizable.getID(), "User"));
       }
     }
   }
 
-  @Override
-  public boolean isGeneric() {
-    return true;
+  private static String authorizableExists(String authorizableId, String type) {
+    return "Authorizable with id: " + authorizableId + " already exists, and is a " + type;
   }
-
 }

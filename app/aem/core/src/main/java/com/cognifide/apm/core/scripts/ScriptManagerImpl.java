@@ -136,9 +136,11 @@ public class ScriptManagerImpl implements ScriptManager {
             if ((Status.ERROR != result.getStatus()) || (ExecutionMode.DRY_RUN == mode)) {
               savingPolicy.save(context.getSession(), SessionSavingMode.EVERY_ACTION);
             }
+            return result.getStatus();
           } catch (RepositoryException | ActionCreationException e) {
             LOG.error("Error while processing command: {}", commandName, e);
             progress.addEntry(Status.ERROR, e.getMessage(), commandName);
+            return Status.ERROR;
           }
         });
 

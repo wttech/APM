@@ -64,9 +64,4 @@ public class SetPassword implements Action {
     }
     return actionResult;
   }
-
-  @Override
-  public boolean isGeneric() {
-    return false;
-  }
 }

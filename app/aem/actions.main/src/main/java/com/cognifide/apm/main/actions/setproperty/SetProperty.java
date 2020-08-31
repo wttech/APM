@@ -75,10 +75,4 @@ public class SetProperty implements Action {
     }
     return actionResult;
   }
-
-  @Override
-  public boolean isGeneric() {
-    return false;
-  }
-
 }

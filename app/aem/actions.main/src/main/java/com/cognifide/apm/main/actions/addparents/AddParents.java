@@ -90,9 +90,4 @@ public class AddParents implements Action {
     }
     return actionResult;
   }
-
-  @Override
-  public boolean isGeneric() {
-    return false;
-  }
 }

@@ -20,13 +20,14 @@
 
 package com.cognifide.apm.core.actions;
 
-import com.cognifide.apm.api.actions.annotations.Flags;
+import static java.util.Collections.singletonList;
+
+import com.cognifide.apm.api.actions.annotations.Flag;
 import com.cognifide.apm.api.actions.annotations.Named;
 import com.cognifide.apm.api.actions.annotations.Required;
 import com.cognifide.apm.core.grammar.ApmType;
 import com.cognifide.apm.core.grammar.argument.Arguments;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Getter;
@@ -57,7 +58,7 @@ public abstract class ParameterDescriptor {
     public RequiredParameterDescriptor(Class<? extends ApmType> type, int index, Required required) {
       super(type);
       this.index = index;
-      this.argumentDescriptions = Collections.singletonList(new ArgumentDescription(
+      this.argumentDescriptions = singletonList(new ArgumentDescription(
           required != null ? required.value() : "(" + index + ")",
           "required",
           required != null ? required.description() : ""
@@ -89,7 +90,7 @@ public abstract class ParameterDescriptor {
     public NamedParameterDescriptor(Class<? extends ApmType> type, Named named) {
       super(type);
       this.name = named.value();
-      this.argumentDescriptions = Collections.singletonList(new ArgumentDescription(
+      this.argumentDescriptions = singletonList(new ArgumentDescription(
           name, "named", named.description()
       ));
     }
@@ -115,9 +116,9 @@ public abstract class ParameterDescriptor {
 
     private final List<ArgumentDescription> argumentDescriptions;
 
-    public FlagsParameterDescriptor(Class<? extends ApmType> type, Flags flags) {
+    public FlagsParameterDescriptor(Class<? extends ApmType> type, Flag[] flags) {
       super(type);
-      this.argumentDescriptions = Arrays.stream(flags.value())
+      this.argumentDescriptions = Arrays.stream(flags)
           .map(flag -> new ArgumentDescription(flag.value(), "flag", flag.description()))
           .collect(Collectors.toList());
     }
@@ -125,6 +126,34 @@ public abstract class ParameterDescriptor {
     @Override
     Object getArgument(Arguments arguments) {
       return arguments.getFlags();
+    }
+
+    @Override
+    boolean handles(Arguments arguments) {
+      return true;
+    }
+
+    @Override
+    List<ArgumentDescription> toArgumentDescriptions() {
+      return argumentDescriptions;
+    }
+  }
+
+  @Getter
+  public static class FlagParameterDescriptor extends ParameterDescriptor {
+
+    private final List<ArgumentDescription> argumentDescriptions;
+    private final String flag;
+
+    public FlagParameterDescriptor(Class<? extends ApmType> type, Flag flag) {
+      super(type);
+      this.argumentDescriptions = singletonList(new ArgumentDescription(flag.value(), "flag", flag.description()));
+      this.flag = flag.value();
+    }
+
+    @Override
+    Object getArgument(Arguments arguments) {
+      return arguments.getFlags().contains(flag);
     }
 
     @Override

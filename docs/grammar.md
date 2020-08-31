@@ -74,20 +74,57 @@ RUN author.apm locale= 'en_us'
 Authorizable actions are used for the purpose of authorizable maintenance. They cover CRUD operations on Groups and Users as well as relationship configuration.
 
 ### Non-contextual actions
-Following action can be executed with no context user preserved by using `FOR-*` action. The operations are used for basic user or group creation or removal.
-* `CREATE-GROUP` - creates new authorizable of group type.
-* `CREATE-USER` - creates new authorizable of user type.
-* `CREATE-SYSTEM-USER` - creates new system user for the service login purpose.
+Following action can be executed with no context user preserved by using `CREATE-*` and `FOR-*` action. The operations are used for basic user or group creation or removal.
 * `DELETE-GROUP` - removes the selected group.
 * `DELETE-USER` - removes user from assigned groups, given permission and user itself.
 
-Create operations will fail if the authorizable exists already. If the script is intended to be idempotent it's encouraged to add the `--IF-NOT-EXISTS` modifier at the end of the action. This way the script will pass through the execution even if the group cannot be created due to id conflict.
+Create operations won't fail if the authorizable exists already. You may change that by adding flag `--ERROR-IF-EXISTS`. 
 
 ```
-CREATE-GROUP 'acme-authors' --IF-NOT-EXISTS
+CREATE-GROUP 'acme-authors' --ERROR-IF-EXISTS
 ```
 
 ### Contextual actions
+#### Actions defining context
+There are 2 types of actions defining context: actions creating users/groups, and special actions which only creates context for existing users/groups: 
+* `CREATE-GROUP` - creates new authorizable of group type.
+* `CREATE-USER` - creates new authorizable of user type.
+* `CREATE-SYSTEM-USER` - creates new system user for the service login purpose.
+* `FOR-GROUP` - creates context for given group.
+* `FOR-USER` - creates context for given user.
+
+Here is example how to create a block of code with group in the context: 
+
+```bash
+CREATE-GROUP 'acme-authors' BEGIN
+    # 'acme-authors' is in the context here
+    ALLOW '/content/acme' ['WRITE'] # allows 'acme-authors' to write everything under /content/acme 
+END
+
+# ALLOW does not work here, the context is not set
+
+FOR-GROUP 'acme-admin' BEGIN
+    ALLOW '/content' ['WRITE'] # allows 'acme-admin' to write everything under /content
+END
+```
+
+
+
+```bash
+CREATE-USER 'john-doe' BEGIN 
+    # if user already exists, code in this block is not executed
+    SET-PASSWORD 'p@$$w0rd'
+END
+
+FOR-USER 'amy-smith' BEGIN
+    # code here is executed always when script is executed
+    SET-PASSWORD 'p@$$w0rd'
+END
+```
+ 
+#### Define permissions
+Go to [permissions page](/docs/permissions.md) for details.
+
 #### Configure the membership
 The membership operation can be executed either from user or group context. Depending on the action selected the operation will either cut all membership links or just some.
 

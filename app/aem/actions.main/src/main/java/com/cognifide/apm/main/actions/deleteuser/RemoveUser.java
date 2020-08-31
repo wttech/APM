@@ -79,9 +79,4 @@ public class RemoveUser implements Action {
     }
     return actionResult;
   }
-
-  @Override
-  public boolean isGeneric() {
-    return true;
-  }
 }

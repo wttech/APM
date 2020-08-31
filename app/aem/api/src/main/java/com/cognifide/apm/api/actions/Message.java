@@ -23,10 +23,6 @@ public final class Message {
 
   public static final String ERROR = "error";
 
-  public static final String WARNING = "warning";
-
-  public static final String INFO = "info";
-
   private String text;
 
   private String type;
@@ -38,19 +34,6 @@ public final class Message {
 
   // Gson library needs this
   private Message() {
-  }
-
-
-  public static Message createErrorMessage(String text) {
-    return new Message(text, ERROR);
-  }
-
-  public static Message createWarningMessage(String text) {
-    return new Message(text, WARNING);
-  }
-
-  public static Message createInfoMessage(String text) {
-    return new Message(text, INFO);
   }
 
   public String getText() {

@@ -1,7 +1,7 @@
 # This script provides example actions for permission manipulation.
 
 # This action will create group only if this group do not exist
-CREATE-GROUP "test_group" --IF-NOT-EXISTS
+CREATE-GROUP "test_group"
 
 # Change current context to specified authorizable
 FOR-GROUP "test_group" BEGIN

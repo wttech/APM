@@ -30,6 +30,8 @@ public interface ActionResult {
 
   void logError(String error);
 
+  void changeStatus(Status status, String message);
+
   List<Message> getMessages();
 
   void setAuthorizable(String authorizable);

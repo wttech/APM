@@ -54,9 +54,7 @@ public class ActionResultImpl implements ActionResult {
 
   @Override
   public void setAuthorizable(String authorizable) {
-    if (this.authorizable == null) {
-      this.authorizable = authorizable;
-    }
+    this.authorizable = authorizable;
   }
 
   @Override
@@ -78,12 +76,12 @@ public class ActionResultImpl implements ActionResult {
 
   @Override
   public void logMessage(final String message) {
-    messages.add(Message.createInfoMessage(message));
+    addMessage(Status.SUCCESS, message);
   }
 
   @Override
   public void logWarning(final String warning) {
-    messages.add(Message.createWarningMessage(warning));
+    addMessage(Status.WARNING, warning);
     if (status != Status.ERROR) {
       status = Status.WARNING;
     }
@@ -91,8 +89,18 @@ public class ActionResultImpl implements ActionResult {
 
   @Override
   public void logError(final String error) {
-    messages.add(Message.createErrorMessage(error));
+    addMessage(Status.ERROR, error);
     status = Status.ERROR;
+  }
+
+  @Override
+  public void changeStatus(Status status, String message) {
+    this.status = status;
+    addMessage(status, message);
+  }
+
+  private void addMessage(Status status, String message) {
+    messages.add(new Message(message, status.name().toLowerCase()));
   }
 
   private static List<Message> mergeMessages(List<ActionResult> actionResults) {

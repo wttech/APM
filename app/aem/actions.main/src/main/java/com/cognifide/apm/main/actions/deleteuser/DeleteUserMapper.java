@@ -21,7 +21,6 @@ package com.cognifide.apm.main.actions.deleteuser;
 
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.annotations.Flag;
-import com.cognifide.apm.api.actions.annotations.Flags;
 import com.cognifide.apm.api.actions.annotations.Mapper;
 import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.apm.api.actions.annotations.Required;
@@ -51,7 +50,7 @@ public final class DeleteUserMapper {
   )
   public Action create(
       @Required(value = "userId", description = "user's id e.g.: 'author'") String id,
-      @Flags(@Flag(value = CLEAR_PERMISSIONS, description = CLEAR_PERMISSIONS_DESC)) List<String> flags) {
+      @Flag(value = CLEAR_PERMISSIONS, description = CLEAR_PERMISSIONS_DESC) List<String> flags) {
     if (flags.contains(CLEAR_PERMISSIONS)) {
       return new DestroyUser(id);
     } else {
@@ -68,10 +67,10 @@ public final class DeleteUserMapper {
   )
   public Action create(
       @Required(value = "userIds", description = "users' ids e.g.: ['author']") List<String> ids,
-      @Flags(@Flag(value = CLEAR_PERMISSIONS, description = CLEAR_PERMISSIONS_DESC)) List<String> flags) {
+      @Flag(value = CLEAR_PERMISSIONS, description = CLEAR_PERMISSIONS_DESC) List<String> flags) {
     if (flags.contains(CLEAR_PERMISSIONS)) {
       List<Action> actions = ids.stream().map(id -> new DestroyUser(id)).collect(Collectors.toList());
-      return new CompositeAction(true, actions);
+      return new CompositeAction(actions);
     } else {
       return new RemoveUser(ids);
     }

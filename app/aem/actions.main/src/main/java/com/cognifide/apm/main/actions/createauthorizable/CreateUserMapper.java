@@ -19,12 +19,11 @@
  */
 package com.cognifide.apm.main.actions.createauthorizable;
 
-import static com.cognifide.apm.main.actions.CommonFlags.IF_NOT_EXISTS;
+import static com.cognifide.apm.main.actions.CommonFlags.ERROR_IF_EXISTS;
 import static com.cognifide.apm.main.actions.createauthorizable.CreateAuthorizableStrategy.USER;
 
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.annotations.Flag;
-import com.cognifide.apm.api.actions.annotations.Flags;
 import com.cognifide.apm.api.actions.annotations.Mapper;
 import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.apm.api.actions.annotations.Named;
@@ -35,13 +34,16 @@ import java.util.List;
 @Mapper(value = "create-user", group = ActionGroup.CORE)
 public class CreateUserMapper {
 
-  public static final String REFERENCE = "Create a user. Script fails if user already exists.";
+  public static final String REFERENCE = "Create a user. If user already exists, the following block of code will be skipped.";
 
   @Mapping(
       examples = {
           "CREATE-USER 'author'",
-          "CREATE-USER 'author' password= 'p@$$w0rd' --IF-NOT-EXISTS",
-          "CREATE-USER 'author' path= '/home/users/client/domain'"
+          "CREATE-USER 'author' password= 'p@$$w0rd' --ERROR-IF-EXISTS",
+          "CREATE-USER 'author' path= '/home/users/client/domain'",
+          "CREATE-USER 'author' path= '/home/users/client/domain' BEGIN\n" +
+              " SET-PROPERTY 'first-name' 'Author'\n" +
+              "END"
       },
       reference = REFERENCE
   )
@@ -49,9 +51,8 @@ public class CreateUserMapper {
       @Required(value = "userId", description = "user's login e.g.: 'author'") String userId,
       @Named(value = "password", description = "user's password e.g.: 'p@$$w0rd'") String password,
       @Named(value = "path", description = "user's home e.g.: '/home/users/domain'") String path,
-      @Flags({@Flag(value = IF_NOT_EXISTS, description = "action is executed only if user doesn't exist, "
-          + "and script doesn't fail in that case")}) List<String> flags) {
-    return new CreateAuthorizable(userId, password, path, flags.contains(IF_NOT_EXISTS), USER);
+      @Flag(value = ERROR_IF_EXISTS, description = "if user already exists, raise an error and stop script execution") List<String> flags) {
+    return new CreateAuthorizable(userId, password, path, !flags.contains(ERROR_IF_EXISTS), USER);
   }
 
 }

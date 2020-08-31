@@ -113,10 +113,4 @@ public class Allow implements Action {
     }
     return preparedGlob;
   }
-
-  @Override
-  public boolean isGeneric() {
-    return false;
-  }
-
 }

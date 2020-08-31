@@ -85,10 +85,4 @@ public class RemoveAll implements Action {
     }
     accessControlManager.setPolicy(path, jackrabbitAcl);
   }
-
-  @Override
-  public boolean isGeneric() {
-    return false;
-  }
-
 }

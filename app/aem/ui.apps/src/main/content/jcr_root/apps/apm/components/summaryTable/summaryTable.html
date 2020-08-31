@@ -60,8 +60,12 @@
           </ul>
         </td>
         <td is="coral-table-cell">
-          <coral-icon
-              icon="${execution.status.toString == 'SUCCESS' ? 'check' : (execution.status.toString == 'ERROR' ? 'close' : 'alert')}"/>
+          <coral-icon data-sly-test.statusSuccess="${execution.status.toString == 'SUCCESS'}" title="success"
+                      icon="check"/>
+          <coral-icon data-sly-test.statusSkipped="${execution.status.toString == 'SKIPPED'}" title="skipped"
+                      icon="chevronRight"/>
+          <coral-icon data-sly-test.statusError="${execution.status.toString == 'ERROR'}" title="error" icon="close"/>
+          <coral-icon data-sly-test="${!statusSuccess && !statusSkipped && !statusError}" title="warning" icon="alert"/>
         </td>
         <td is="coral-table-cell">
           <ul>

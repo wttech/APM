@@ -30,15 +30,12 @@ import java.util.List;
 public class CompositeAction implements Action {
 
   private final List<Action> actions;
-  private final boolean generic;
 
-  public CompositeAction(boolean generic, List<Action> actions) {
-    this.generic = generic;
+  public CompositeAction(List<Action> actions) {
     this.actions = ImmutableList.copyOf(actions);
   }
 
-  public CompositeAction(boolean generic, Action... actions) {
-    this.generic = generic;
+  public CompositeAction(Action... actions) {
     this.actions = ImmutableList.copyOf(actions);
   }
 
@@ -60,10 +57,5 @@ public class CompositeAction implements Action {
       actionResults.add(action.execute(context));
     }
     return result.merge(actionResults);
-  }
-
-  @Override
-  public boolean isGeneric() {
-    return generic;
   }
 }

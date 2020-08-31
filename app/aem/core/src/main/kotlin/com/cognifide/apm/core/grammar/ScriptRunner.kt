@@ -132,9 +132,13 @@ class ScriptRunner(
                     executionContext.createLocalContext()
                 }
                 val arguments = executionContext.resolveArguments(ctx.complexArguments())
-                actionInvoker.runAction(executionContext, commandName, arguments)
+                val status = actionInvoker.runAction(executionContext, commandName, arguments)
                 if (ctx.body() != null) {
-                    visit(ctx.body())
+                    if (status in listOf(Status.SUCCESS, Status.WARNING)) {
+                        visit(ctx.body())
+                    } else {
+                        progress(ctx, Status.SKIPPED, "code-block", "Skipped due to the status of previous action: $commandName")
+                    }
                 }
             } catch (e: ArgumentResolverException) {
                 progress(ctx, Status.ERROR, commandName, "Action failed: ${e.message}")

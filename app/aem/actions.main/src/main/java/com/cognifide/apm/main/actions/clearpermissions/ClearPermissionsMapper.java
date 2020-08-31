@@ -21,7 +21,6 @@ package com.cognifide.apm.main.actions.clearpermissions;
 
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.annotations.Flag;
-import com.cognifide.apm.api.actions.annotations.Flags;
 import com.cognifide.apm.api.actions.annotations.Mapper;
 import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.apm.api.actions.annotations.Required;
@@ -44,7 +43,7 @@ public final class ClearPermissionsMapper {
   )
   public Action mapAction(
       @Required(value = "path", description = "e.g.: '/content/dam'") String path,
-      @Flags(@Flag(value = STRICT_PATH, description = STRICT_PATH_DESC)) List<String> flags) {
+      @Flag(value = STRICT_PATH, description = STRICT_PATH_DESC) List<String> flags) {
     if (flags.contains(STRICT_PATH)) {
       return new RemoveAll(path);
     } else {

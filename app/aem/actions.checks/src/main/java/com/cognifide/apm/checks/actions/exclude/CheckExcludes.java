@@ -110,9 +110,4 @@ public class CheckExcludes implements Action {
     return group;
   }
 
-  @Override
-  public boolean isGeneric() {
-    return true;
-  }
-
 }

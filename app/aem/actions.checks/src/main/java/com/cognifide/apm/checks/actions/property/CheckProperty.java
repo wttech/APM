@@ -101,10 +101,4 @@ public class CheckProperty implements Action {
     }
     return true;
   }
-
-  @Override
-  public boolean isGeneric() {
-    return true;
-  }
-
 }

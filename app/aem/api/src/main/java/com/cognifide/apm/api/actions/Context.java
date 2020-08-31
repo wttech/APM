@@ -53,4 +53,6 @@ public interface Context {
   void setCurrentAuthorizable(Authorizable currentAuthorizable);
 
   ActionResult createActionResult();
+
+  Context newContext();
 }
