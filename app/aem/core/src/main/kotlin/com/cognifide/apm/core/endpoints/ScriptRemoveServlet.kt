@@ -43,7 +43,6 @@ import com.cognifide.apm.core.Property
             Property.DESCRIPTION + "APM Remove Scripts Servlet",
             Property.VENDOR
         ])
-
 class ScriptRemoveServlet : SlingAllMethodsServlet() {
 
     @Reference
