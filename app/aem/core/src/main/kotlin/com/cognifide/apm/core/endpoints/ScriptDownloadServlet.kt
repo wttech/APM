@@ -1,6 +1,5 @@
 package com.cognifide.apm.core.endpoints
 
-import com.cognifide.apm.core.services.version.VersionServiceImpl
 import org.apache.commons.lang.StringUtils
 import org.apache.sling.api.SlingHttpServletRequest
 import org.apache.sling.api.SlingHttpServletResponse
@@ -47,7 +46,7 @@ class ScriptDownloadServlet : SlingAllMethodsServlet() {
 
             session.save()
             var read : Int
-            val bytes = ByteArray(ScriptDownloadServlet.BYTES_DOWNLOAD)
+            val bytes = ByteArray(BYTES_DOWNLOAD)
             val os = response.outputStream
 
             while (input.read(bytes).also { read = it } != -1) {
