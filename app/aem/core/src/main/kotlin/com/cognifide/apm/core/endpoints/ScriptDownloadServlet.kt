@@ -22,7 +22,6 @@ package com.cognifide.apm.core.endpoints
 import org.apache.commons.lang.StringUtils
 import org.apache.sling.api.SlingHttpServletRequest
 import org.apache.sling.api.SlingHttpServletResponse
-import org.apache.sling.api.servlets.SlingAllMethodsServlet
 import org.osgi.service.component.annotations.Component
 import org.slf4j.LoggerFactory
 import java.net.URLEncoder
@@ -30,6 +29,7 @@ import javax.jcr.RepositoryException
 import javax.jcr.Session
 import javax.servlet.Servlet
 import com.cognifide.apm.core.Property
+import org.apache.sling.api.servlets.SlingSafeMethodsServlet
 
 @Component(
         immediate = true,
@@ -40,7 +40,7 @@ import com.cognifide.apm.core.Property
             Property.DESCRIPTION + "APM File Download Servlet",
             Property.VENDOR
         ])
-class ScriptDownloadServlet : SlingAllMethodsServlet() {
+class ScriptDownloadServlet : SlingSafeMethodsServlet() {
 
     private val logger = LoggerFactory.getLogger(ScriptDownloadServlet::class.java)
 
