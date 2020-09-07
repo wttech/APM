@@ -87,7 +87,7 @@
 
     showRunStatus: function (success, summaryPath) {
       let icon = success ? 'check' : 'close';
-      let href = '/bin/cqsm/lastSummary.local' + self.mode + '.html' + self.scriptPath;
+      let href = '/bin/apm/lastSummary.local' + self.mode + '.html' + self.scriptPath;
       if (summaryPath && summaryPath.length && summaryPath.length > 0) {
         href = '/apm/summary.html' + summaryPath;
       }
@@ -113,7 +113,7 @@
       this.showWait();
       $.ajax({
         type: 'POST',
-        url: '/bin/cqsm/run-background?file=' + this.scriptPath + '&mode=' + this.mode,
+        url: '/bin/apm/run-background?file=' + this.scriptPath + '&mode=' + this.mode,
         dataType: 'json'
       })
       .done(function (data) {
@@ -128,7 +128,7 @@
       const self = this;
       $.ajax({
         type: 'GET',
-        url: '/bin/cqsm/run-background?id=' + this.job.id,
+        url: '/bin/apm/run-background?id=' + this.job.id,
         dataType: 'json'
       })
       .done(function (data) {
@@ -175,7 +175,7 @@
       this.showWait();
       $.ajax({
         type: 'GET',
-        url: '/bin/cqsm/replicate?run=publish&fileName=' + this.scriptPath,
+        url: '/bin/apm/replicate?run=publish&fileName=' + this.scriptPath,
         dataType: 'json'
       })
       .done(function (data) {
