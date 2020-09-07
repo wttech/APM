@@ -42,7 +42,7 @@ import org.osgi.service.component.annotations.Reference
             Property.DESCRIPTION + "APM History List Servlet",
             Property.VENDOR
         ])
-class HistoryListServlet2 : SlingAllMethodsServlet() {
+class HistoryListServlet : SlingAllMethodsServlet() {
 
     @Reference
     @Transient
@@ -61,7 +61,6 @@ class HistoryListServlet2 : SlingAllMethodsServlet() {
         val FILTER_AUTOMATIC_RUN = "automatic run"
         val FILTER_AUTHOR = "author"
         val FILTER_PUBLISH = "publish"
-
 
         override fun evaluate(any: Any): Boolean {
             val executionModel: HistoryEntry = any as HistoryEntry
