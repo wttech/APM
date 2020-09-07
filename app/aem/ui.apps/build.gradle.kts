@@ -41,3 +41,5 @@ publishing {
         }
     }
 }
+
+tasks["packageCompose"].dependsOn(":app:aem:ui.react:build")
