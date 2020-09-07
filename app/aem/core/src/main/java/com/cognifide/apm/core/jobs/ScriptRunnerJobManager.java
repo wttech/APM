@@ -19,7 +19,7 @@
  */
 package com.cognifide.apm.core.jobs;
 
-import com.cognifide.apm.core.endpoints.BackgroundJobParameters;
+import com.cognifide.apm.core.endpoints.params.BackgroundJobParameters;
 import com.cognifide.apm.core.scriptrunnerjob.JobProgressOutput;
 import org.apache.sling.event.jobs.Job;
 

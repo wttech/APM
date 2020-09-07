@@ -22,7 +22,7 @@ package com.cognifide.apm.core.endpoints
 import com.cognifide.apm.api.scripts.Script
 import com.cognifide.apm.api.services.ScriptFinder
 import com.cognifide.apm.core.Property
-import com.cognifide.apm.core.endpoints.BackgroundJobParameters
+import com.cognifide.apm.core.endpoints.params.BackgroundJobParameters
 import com.cognifide.apm.core.jobs.ScriptRunnerJobManager
 import com.cognifide.apm.core.utils.ServletUtils
 import com.google.common.collect.ImmutableMap
@@ -92,7 +92,7 @@ class ScriptRunBackgroundServlet : SlingAllMethodsServlet() {
         if (StringUtils.isEmpty(modeName)) {
             ServletUtils.writeMessage(response, ERROR_RESPONSE_TYPE, "Running mode not specified")
         }
-        return BackgroundJobParameters(searchPath, modeName, userName)
+        return BackgroundJobParameters(searchPath, modeName, userName!!)
     }
 
     private fun createMapWithJobIdKey(job: Job): Map<String, Any> {
