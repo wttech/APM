@@ -64,7 +64,7 @@ class ScriptDownloadServlet : SlingSafeMethodsServlet() {
             val input = jcrContent.getProperty("jcr:data").getBinary().getStream()
 
             session.save()
-            var read : Int
+            var read: Int
             val bytes = ByteArray(BYTES_DOWNLOAD)
             val os = response.outputStream
 

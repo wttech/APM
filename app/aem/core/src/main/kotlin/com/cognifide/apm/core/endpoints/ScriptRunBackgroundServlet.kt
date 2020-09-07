@@ -57,10 +57,10 @@ class ScriptRunBackgroundServlet : SlingAllMethodsServlet() {
     override fun doPost(request: SlingHttpServletRequest, response: SlingHttpServletResponse) {
         val searchPath = request.getParameter(FILE_REQUEST_PARAMETER)
         val resourceResolver = request.resourceResolver
-        val script : Script = scriptFinder.find(searchPath, resourceResolver)
+        val script: Script = scriptFinder.find(searchPath, resourceResolver)
 
-        val isValid : Boolean = script.isValid()
-        val isExecutable : Boolean = script.isLaunchEnabled()
+        val isValid: Boolean = script.isValid()
+        val isExecutable: Boolean = script.isLaunchEnabled()
 
         if (!(isValid && isExecutable)) {
             ServletUtils.writeMessage(response, ERROR_RESPONSE_TYPE,
@@ -70,7 +70,7 @@ class ScriptRunBackgroundServlet : SlingAllMethodsServlet() {
 
         val parameters = getParameters(request, response) ?: return
 
-        val job : Job =  scriptRunnerJobManager.scheduleJob(parameters)
+        val job: Job =  scriptRunnerJobManager.scheduleJob(parameters)
         ServletUtils.writeMessage(response, BACKGROUND_RESPONSE_TYPE, BACKGROUND_RESPONSE_TYPE, createMapWithJobIdKey(job))
     }
 
