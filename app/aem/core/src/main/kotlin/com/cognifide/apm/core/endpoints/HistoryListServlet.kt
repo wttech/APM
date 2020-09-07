@@ -23,59 +23,56 @@ import org.apache.sling.api.servlets.SlingAllMethodsServlet
 import org.osgi.service.component.annotations.Component
 import javax.servlet.Servlet
 import com.cognifide.apm.core.history.History
-import com.cognifide.apm.core.history.ScriptHistory
-import com.cognifide.apm.core.history.ScriptHistoryImpl
-import com.cognifide.apm.api.services.ScriptFinder
+import com.cognifide.apm.core.history.HistoryEntry
 import com.cognifide.apm.core.Property
 import com.cognifide.apm.core.utils.ServletUtils
+import org.apache.commons.collections.CollectionUtils
+import org.apache.commons.collections.Predicate
 import org.apache.commons.lang.StringUtils
 import org.apache.sling.api.SlingHttpServletRequest
 import org.apache.sling.api.SlingHttpServletResponse
-import com.cognifide.apm.api.services.ExecutionMode
-import com.cognifide.apm.core.progress.ProgressHelper
 import org.osgi.service.component.annotations.Reference
 
 @Component(
         immediate = true,
         service = [Servlet::class],
         property = [
-            Property.PATH + "/bin/apm/lastSummary",
-            Property.EXTENSION + ".html",
-            Property.DESCRIPTION + "APM Summary Redirect Servlet",
+            Property.PATH + "/bin/apm/history",
+            Property.METHOD + "GET",
+            Property.DESCRIPTION + "APM History List Servlet",
             Property.VENDOR
         ])
-class SummaryRedirectServlet : SlingAllMethodsServlet() {
+class HistoryListServlet2 : SlingAllMethodsServlet() {
 
     @Reference
     @Transient
     private lateinit var history: History
 
-    @Reference
-    @Transient
-    private lateinit var scriptFinder: ScriptFinder
-
     override fun doGet(request: SlingHttpServletRequest, response: SlingHttpServletResponse) {
-        val mode = StringUtils.defaultString(request.requestPathInfo.selectorString)
-        val scriptPath = request.requestPathInfo.suffix
-
-        val scriptHistory: ScriptHistory? = scriptFinder.find(scriptPath, request.resourceResolver)?.let {
-            script -> history.findScriptHistory(request.resourceResolver, script)
-        } ?: ScriptHistoryImpl.empty(scriptPath)
-
-        val lastSummaryPath = getLastSummaryPath(scriptHistory!!, mode)
-        if (lastSummaryPath.isNotEmpty()) {
-            response.sendRedirect("/apm/summary.html$lastSummaryPath")
-        } else {
-            response.sendRedirect("/apm/history.html")
+        val filter = request.getParameter("filter")
+        val executions: List<HistoryEntry> = history.findAllHistoryEntries(request.resourceResolver)
+        if (StringUtils.isNotBlank(filter)) {
+            CollectionUtils.filter(executions, ExecutionHistoryFilter(filter))
         }
+        ServletUtils.writeJson(response, executions)
     }
 
-    private fun getLastSummaryPath(scriptHistory: ScriptHistory, mode: String): String {
-        return when (mode.toLowerCase()) {
-            "localdryrun" -> scriptHistory.getLastLocalDryRunPath()
-            "localrun" -> scriptHistory.getLastLocalRunPath()
-            "remoteautomaticrun" -> scriptHistory.getLastRemoteRunPath()
-            else -> StringUtils.EMPTY
+    inner class ExecutionHistoryFilter(val filterType: String) : Predicate {
+        val FILTER_AUTOMATIC_RUN = "automatic run"
+        val FILTER_AUTHOR = "author"
+        val FILTER_PUBLISH = "publish"
+
+
+        override fun evaluate(any: Any): Boolean {
+            val executionModel: HistoryEntry = any as HistoryEntry
+            var value: String?
+            value = when (filterType) {
+                FILTER_AUTHOR -> executionModel.instanceType
+                FILTER_PUBLISH -> executionModel.instanceType
+                FILTER_AUTOMATIC_RUN -> executionModel.executor
+                else -> null
+            }
+            return filterType == value
         }
     }
 }

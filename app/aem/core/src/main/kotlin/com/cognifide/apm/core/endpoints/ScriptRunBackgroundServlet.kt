@@ -41,7 +41,8 @@ import javax.servlet.Servlet
         property = [
             Property.PATH + "/bin/apm/run-background",
             Property.METHOD + "GET",
-            Property.DESCRIPTION + "APM Replication Servlet",
+            Property.METHOD + "POST",
+            Property.DESCRIPTION + "APM Servlet for running scripts in background and checking theirs status",
             Property.VENDOR
         ])
 class ScriptRunBackgroundServlet : SlingAllMethodsServlet() {
@@ -80,7 +81,7 @@ class ScriptRunBackgroundServlet : SlingAllMethodsServlet() {
         ServletUtils.writeJson(response, jobProgressOutput)
     }
 
-    private fun getParameters(request: SlingHttpServletRequest, response: SlingHttpServletResponse) : BackgroundJobParameters {
+    private fun getParameters(request: SlingHttpServletRequest, response: SlingHttpServletResponse): BackgroundJobParameters {
         val searchPath = request.getParameter(FILE_REQUEST_PARAMETER)
         val modeName = request.getParameter(MODE_REQUEST_PARAMETER)
         val userName = request.resourceResolver.userID
@@ -94,7 +95,7 @@ class ScriptRunBackgroundServlet : SlingAllMethodsServlet() {
         return BackgroundJobParameters(searchPath, modeName, userName)
     }
 
-    private fun createMapWithJobIdKey(job: Job) : Map<String, Any> {
+    private fun createMapWithJobIdKey(job: Job): Map<String, Any> {
         return ImmutableMap.builder<String, Any>().put(ID_REQUEST_PARAMETER, job.id).build()
     }
 

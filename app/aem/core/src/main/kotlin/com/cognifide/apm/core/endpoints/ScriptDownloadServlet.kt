@@ -35,7 +35,7 @@ import org.apache.sling.api.servlets.SlingSafeMethodsServlet
         immediate = true,
         service = [Servlet::class],
         property = [
-            Property.PATH + "/bin/apm/scripts/fileDownload",
+            Property.PATH + "/bin/apm/fileDownload",
             Property.METHOD + "GET",
             Property.DESCRIPTION + "APM File Download Servlet",
             Property.VENDOR
