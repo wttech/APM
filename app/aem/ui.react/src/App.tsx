@@ -1,9 +1,9 @@
 import React from 'react';
 import './App.css';
-import {Graph} from "./components/Graph/Graph";
+import {TreeView} from "./components/Graph/TreeView";
 
 function App() {
-  return <Graph paragraph='aa' title='aaa'/>
+  return <TreeView paragraph='TreeView' title='TreeView'/>
 }
 
 export default App;

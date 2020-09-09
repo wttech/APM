@@ -29,12 +29,12 @@ import './index.css';
 
 import ReactDOM from 'react-dom';
 import './index.css';
-
-ReactDOM.render(
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>,
-    document.getElementById('root')
-);
-
+document.addEventListener('DOMContentLoaded', () => {
+  ReactDOM.render(
+      <React.StrictMode>
+        <App/>
+      </React.StrictMode>,
+      document.getElementById('tree-view-root')
+  );
+});
 

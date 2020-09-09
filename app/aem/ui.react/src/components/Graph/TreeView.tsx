@@ -5,7 +5,7 @@ type GraphProps = {
   paragraph: string
 }
 
-export const Graph = ({ title, paragraph }: GraphProps) => <aside>
+export const TreeView = ({ title, paragraph }: GraphProps) => <aside>
   <h2>{ title }</h2>
   <p>
     { paragraph }
