@@ -9,7 +9,7 @@ plugins {
     signing
 }
 
-defaultTasks("instanceSatisfy", ":app:aem:ui.apps:packageDeploy", ":app:aem:actions.checks:packageDeploy")
+defaultTasks("deployAll")
 
 scmVersion {
     useHighestVersion = true
@@ -26,6 +26,9 @@ allprojects {
 }
 
 tasks {
+    register("deployAll") {
+        dependsOn(":env:instanceProvision", ":app:aem:ui.apps:packageDeploy", ":app:aem:actions.checks:packageDeploy")
+    }
     withType<RatTask>().configureEach {
         // Files that don't require a license header
         excludes.add("**/LICENSE")

@@ -4,10 +4,8 @@ plugins {
 
 aem {
     instance {
-        satisfier {
-            packages {
-                "cq.actions"("https://github.com/Cognifide/APM/releases/download/apm-4.3.0/cq-actions-msg-replication-6.4.0.zip")
-            }
+        provisioner {
+            deployPackage("https://github.com/Cognifide/APM/releases/download/apm-4.3.0/cq-actions-msg-replication-6.4.0.zip")
         }
     }
 }

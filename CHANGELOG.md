@@ -8,3 +8,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - #258 - Fixed actions which use @Flag annotation
+
+### Changed
+- #260 - Updated GAP to the latest version. Fixed default task to deploy packages in proper order. Changed antlr and kotlin bundles to private packages 
