@@ -39,6 +39,10 @@ dependencies {
 }
 
 tasks {
+    getByName("packageDeploy") {
+        mustRunAfter(":app:aem:ui.apps:packageDeploy")
+    }
+
     register<Jar>("sourcesJar") {
         from(sourceSets.main.get().allSource)
         archiveClassifier.set("sources")
