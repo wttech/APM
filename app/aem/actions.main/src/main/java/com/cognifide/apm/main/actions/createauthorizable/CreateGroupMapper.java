@@ -29,7 +29,6 @@ import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.apm.api.actions.annotations.Named;
 import com.cognifide.apm.api.actions.annotations.Required;
 import com.cognifide.apm.main.actions.ActionGroup;
-import java.util.List;
 
 @Mapper(value = "create-group", group = ActionGroup.CORE)
 public class CreateGroupMapper {
@@ -46,8 +45,8 @@ public class CreateGroupMapper {
   public Action mapAction(
       @Required(value = "groupId", description = "group's id e.g.: 'authors'") String groupId,
       @Named(value = "path", description = "group's home e.g.: '/home/groups/domain'") String path,
-      @Flag(value = ERROR_IF_EXISTS, description = "if group already exists, raise an error and stop script execution") List<String> flags) {
-    return new CreateAuthorizable(groupId, null, path, !flags.contains(ERROR_IF_EXISTS), GROUP);
+      @Flag(value = ERROR_IF_EXISTS, description = "if group already exists, raise an error and stop script execution") boolean errorIfExists) {
+    return new CreateAuthorizable(groupId, null, path, !errorIfExists, GROUP);
   }
 
 }

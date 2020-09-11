@@ -20,7 +20,6 @@
 package com.cognifide.apm.main.actions.createauthorizable;
 
 import static com.cognifide.apm.main.actions.CommonFlags.ERROR_IF_EXISTS;
-import static com.cognifide.apm.main.actions.CommonFlags.IF_NOT_EXISTS;
 import static com.cognifide.apm.main.actions.createauthorizable.CreateAuthorizableStrategy.SYSTEM_USER;
 
 import com.cognifide.apm.api.actions.Action;
@@ -30,7 +29,6 @@ import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.apm.api.actions.annotations.Named;
 import com.cognifide.apm.api.actions.annotations.Required;
 import com.cognifide.apm.main.actions.ActionGroup;
-import java.util.List;
 
 @Mapper(value = "create-system-user", group = ActionGroup.CORE)
 public class CreateSystemUserMapper {
@@ -51,8 +49,8 @@ public class CreateSystemUserMapper {
   public Action mapAction(
       @Required(value = "userId", description = "user's login e.g.: 'apm-user'") String userId,
       @Named(value = "path", description = "user's home e.g.: '/home/users/domain'") String path,
-      @Flag(value = ERROR_IF_EXISTS, description = "if user already exists, raise an error and stop script execution") List<String> flags) {
-    return new CreateAuthorizable(userId, null, path, flags.contains(IF_NOT_EXISTS), SYSTEM_USER);
+      @Flag(value = ERROR_IF_EXISTS, description = "if user already exists, raise an error and stop script execution") boolean errorIfExists) {
+    return new CreateAuthorizable(userId, null, path, !errorIfExists, SYSTEM_USER);
   }
 
 }
