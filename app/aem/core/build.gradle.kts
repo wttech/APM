@@ -74,6 +74,10 @@ tasks {
         outputDirectory = project.file("src/main/generated/com/cognifide/apm/core/grammar/antlr")
     }
 
+    javadoc {
+        exclude("com/cognifide/apm/core/history/**")
+    }
+
     register<Jar>("sourcesJar") {
         from(sourceSets.main.get().allSource)
         archiveClassifier.set("sources")
