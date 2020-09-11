@@ -29,7 +29,6 @@ import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.apm.api.actions.annotations.Named;
 import com.cognifide.apm.api.actions.annotations.Required;
 import com.cognifide.apm.main.actions.ActionGroup;
-import java.util.List;
 
 @Mapper(value = "create-user", group = ActionGroup.CORE)
 public class CreateUserMapper {
@@ -51,8 +50,8 @@ public class CreateUserMapper {
       @Required(value = "userId", description = "user's login e.g.: 'author'") String userId,
       @Named(value = "password", description = "user's password e.g.: 'p@$$w0rd'") String password,
       @Named(value = "path", description = "user's home e.g.: '/home/users/domain'") String path,
-      @Flag(value = ERROR_IF_EXISTS, description = "if user already exists, raise an error and stop script execution") List<String> flags) {
-    return new CreateAuthorizable(userId, password, path, !flags.contains(ERROR_IF_EXISTS), USER);
+      @Flag(value = ERROR_IF_EXISTS, description = "if user already exists, raise an error and stop script execution") boolean errorIfExists) {
+    return new CreateAuthorizable(userId, password, path, !errorIfExists, USER);
   }
 
 }
