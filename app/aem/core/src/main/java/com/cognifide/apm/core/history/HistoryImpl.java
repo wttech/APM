@@ -24,8 +24,6 @@ import static com.day.crx.JcrConstants.NT_UNSTRUCTURED;
 import static org.apache.jackrabbit.commons.JcrUtils.getOrCreateByPath;
 import static org.apache.jackrabbit.commons.JcrUtils.getOrCreateUniqueByPath;
 
-import com.cognifide.actions.api.ActionSendException;
-import com.cognifide.actions.api.ActionSubmitter;
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ExecutionMode;
 import com.cognifide.apm.core.Property;
@@ -73,8 +71,6 @@ import org.slf4j.LoggerFactory;
 )
 public class HistoryImpl implements History {
 
-  public static final String REPLICATE_ACTION = "com/cognifide/actions/cqsm/history/replicate";
-
   public static final String HISTORY_FOLDER = "/var/apm/history";
 
   private static final Logger LOG = LoggerFactory.getLogger(HistoryImpl.class);
@@ -87,14 +83,12 @@ public class HistoryImpl implements History {
 
   private static final String SLING_ORDERED_FOLDER = "sling:OrderedFolder";
 
-  private static final String SCRIPT_NODE_NAME = "script";
-
   private static final String HISTORY_ENTRIES_QUERY = String.format("SELECT * FROM [nt:unstructured] "
       + " WHERE ISDESCENDANTNODE([%s]) AND apmHistory = '%s' "
       + " ORDER BY executionTime DESC ", HISTORY_FOLDER, APM_HISTORY_ENTRY);
 
   @Reference
-  private ActionSubmitter actionSubmitter;
+  private RemoteScriptExecutionNotifier remoteScriptExecutionNotifier;
 
   @Reference
   private ResourceResolverFactory resolverFactory;
@@ -119,7 +113,8 @@ public class HistoryImpl implements History {
   }
 
   @Override
-  public HistoryEntry logRemote(Script script, ExecutionMode mode, Progress progressLogger, InstanceDetails instanceDetails,
+  public HistoryEntry logRemote(Script script, ExecutionMode mode, Progress progressLogger,
+      InstanceDetails instanceDetails,
       Calendar executionTime) {
     return resolveDefault(resolverFactory, progressLogger.getExecutor(), (ResolveCallback<HistoryEntry>) resolver -> {
       final HistoryEntryWriter historyEntryWriter = createBuilder(resolver, script, mode, progressLogger)
@@ -160,23 +155,12 @@ public class HistoryImpl implements History {
 
   @Override
   public void replicate(final HistoryEntry entry, String userId) {
-    if (actionSubmitter == null) {
-      LOG.warn(String.format("History entry '%s' replication cannot be performed on author instance",
-          entry.getPath()));
-      return;
-    }
     SlingHelper.operateTraced(resolverFactory, userId, resolver -> {
       Resource resource = resolver.getResource(entry.getPath());
       if (resource != null) {
-        try {
-          LOG.warn("Sending action {} to action submitter", REPLICATE_ACTION);
-          Map<String, Object> properties = new HashMap<>(resource.getValueMap());
-          properties.put(ReplicationAction.PROPERTY_USER_ID, resolver.getUserID());
-          actionSubmitter.sendAction(REPLICATE_ACTION, properties);
-          LOG.warn("Action {} was sent to action submitter", REPLICATE_ACTION);
-        } catch (ActionSendException e) {
-          LOG.info("Cannot send action", e);
-        }
+        Map<String, Object> properties = new HashMap<>(resource.getValueMap());
+        properties.put(ReplicationAction.PROPERTY_USER_ID, resolver.getUserID());
+        remoteScriptExecutionNotifier.notifyRemoteInstance(properties);
       }
     });
   }
@@ -219,7 +203,8 @@ public class HistoryImpl implements History {
   }
 
   @NotNull
-  private Resource writeProperties(ResourceResolver resolver, Node historyEntry, HistoryEntryWriter historyEntryWriter)
+  private Resource writeProperties(ResourceResolver resolver, Node historyEntry, HistoryEntryWriter
+      historyEntryWriter)
       throws RepositoryException {
     Resource entryResource = resolver.getResource(historyEntry.getPath());
     historyEntryWriter.writeTo(entryResource);

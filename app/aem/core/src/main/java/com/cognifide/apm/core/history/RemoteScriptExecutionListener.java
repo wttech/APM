@@ -44,7 +44,7 @@ import org.osgi.service.component.annotations.Reference;
 		immediate = true,
 		service = ActionReceiver.class
 )
-public class RemoteScriptExecutionActionReceiver implements ActionReceiver {
+public class RemoteScriptExecutionListener implements ActionReceiver {
 
 	@Reference
 	private History history;
@@ -74,7 +74,7 @@ public class RemoteScriptExecutionActionReceiver implements ActionReceiver {
 
 	@Override
 	public String getType() {
-		return HistoryImpl.REPLICATE_ACTION;
+		return RemoteScriptExecutionNotifier.REPLICATE_ACTION;
 	}
 
 	private ExecutionMode getMode(ValueMap valueMap) {
