@@ -32,8 +32,8 @@ aem {
                         ).joinToString(","))
                 attribute("Sling-Nodetypes", "CQ-INF/nodetypes/apm_nodetypes.cnd")
                 attribute("APM-Actions", "com.cognifide.apm.foundation.actions")
-                excludePackage("org.antlr.stringtemplate")
-                embedPackage("org.antlr:antlr4:4.7.2", "org.antlr.v4.*", "org.antlr.runtime.v4.*", "org.antlr.runtime.*", "org.stringtemplate.v4.*", "com.ibm.icu.*", "org.abego.treelayout.*")
+                excludePackage("org.antlr.stringtemplate", "org.antlr.v4.gui")
+                embedPackage("org.antlr:antlr4-runtime:4.7.2", "org.antlr.v4.runtime.*")
                 embedPackage("org.jetbrains.kotlin:kotlin-reflect:1.3.72", "kotlin.reflect.*")
                 embedPackage("org.jetbrains.kotlin:kotlin-stdlib:1.3.72", "kotlin.*")
             }
@@ -49,7 +49,7 @@ dependencies {
     compileOnly("org.projectlombok:lombok:1.18.8")
     annotationProcessor("org.projectlombok:lombok:1.18.8")
 
-    compileOnly("com.cognifide.cq.actions:com.cognifide.cq.actions.api:6.0.2")
+    compileOnly("com.cognifide.cq.actions:com.cognifide.cq.actions.api:6.4.0")
 
     compileOnly(kotlin("stdlib-jdk8"))
     compileOnly(kotlin("reflect"))
