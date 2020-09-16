@@ -9,7 +9,7 @@ plugins {
     signing
 }
 
-description = "APM Extension - a set of 'check' actions, which verify configuration of permissions."
+description = "APM Actions Checks"
 
 apply(from = rootProject.file("app/common.gradle.kts"))
 apply(from = rootProject.file("app/aem/common.gradle.kts"))

@@ -8,7 +8,7 @@ plugins {
     signing
 }
 
-description = "APM Extension - a set of 'main' actions, which allow to define permissions, and manage users and groups."
+description = "APM Actions Main"
 
 apply(from = rootProject.file("app/common.gradle.kts"))
 apply(from = rootProject.file("app/aem/common.gradle.kts"))
