@@ -1,4 +1,3 @@
-import com.cognifide.gradle.aem.bundle.tasks.bundle
 import org.gradle.jvm.tasks.Jar
 
 plugins {
@@ -8,7 +7,7 @@ plugins {
     signing
 }
 
-description = "APM API - programmatic API for managing scripts, and extending tool by custom actions."
+description = "APM API"
 
 apply(from = rootProject.file("app/common.gradle.kts"))
 apply(from = rootProject.file("app/aem/common.gradle.kts"))

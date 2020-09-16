@@ -1,4 +1,3 @@
-import com.cognifide.gradle.aem.bundle.tasks.bundle
 import org.gradle.jvm.tasks.Jar
 
 plugins {
@@ -12,7 +11,7 @@ plugins {
     signing
 }
 
-description = "APM Core - main classes and services handling APM business logic."
+description = "APM Core"
 
 apply(from = rootProject.file("app/common.gradle.kts"))
 apply(from = rootProject.file("app/aem/common.gradle.kts"))
