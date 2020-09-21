@@ -7,6 +7,6 @@
   </filter>
   <filter root="/home/users/system/apm-system-user"/>
   <filter root="/rep:policy"/>
-  <filter root="/oak:index/apmHistory" mode="update"/>
-  <filter root="/oak:index/apmScripts" mode="update"/>
+  <filter root="/oak:index/apmHistory-custom-1" mode="update"/>
+  <filter root="/oak:index/apmScripts-custom-1" mode="update"/>
 </workspaceFilter>
