@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- #267 - Fixed path in index definition
+
 ## 5.0.0-RC4
 
 ### Fixed
