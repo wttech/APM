@@ -4,7 +4,7 @@ import org.gradle.jvm.tasks.Jar
 plugins {
     id("com.cognifide.aem.bundle")
     kotlin("jvm")
-    id("org.jetbrains.kotlin.plugin.noarg") version "1.3.70"
+    id("org.jetbrains.kotlin.plugin.noarg") version "1.3.72"
     antlr
     groovy
     java
@@ -12,7 +12,7 @@ plugins {
     signing
 }
 
-description = "APM Core - main classes and services handling APM business logic."
+description = "APM Core"
 
 apply(from = rootProject.file("app/common.gradle.kts"))
 apply(from = rootProject.file("app/aem/common.gradle.kts"))
@@ -32,6 +32,10 @@ aem {
                         ).joinToString(","))
                 attribute("Sling-Nodetypes", "CQ-INF/nodetypes/apm_nodetypes.cnd")
                 attribute("APM-Actions", "com.cognifide.apm.foundation.actions")
+                excludePackage("org.antlr.stringtemplate", "org.antlr.v4.gui")
+                embedPackage("org.antlr:antlr4-runtime:4.7.2", "org.antlr.v4.runtime.*")
+                embedPackage("org.jetbrains.kotlin:kotlin-reflect:1.3.72", "kotlin.reflect.*")
+                embedPackage("org.jetbrains.kotlin:kotlin-stdlib:1.3.72", "kotlin.*")
             }
         }
     }
@@ -45,10 +49,10 @@ dependencies {
     compileOnly("org.projectlombok:lombok:1.18.8")
     annotationProcessor("org.projectlombok:lombok:1.18.8")
 
-    compileOnly("com.cognifide.cq.actions:com.cognifide.cq.actions.api:6.0.2")
+    compileOnly("com.cognifide.cq.actions:com.cognifide.cq.actions.api:6.4.0")
 
     compileOnly(kotlin("stdlib-jdk8"))
-    compileOnly(kotlin("osgi-bundle"))
+    compileOnly(kotlin("reflect"))
 }
 
 sourceSets {
@@ -68,6 +72,10 @@ tasks {
         maxHeapSize = "64m"
         arguments = arguments + listOf("-visitor", "-long-messages", "-package", "com.cognifide.apm.core.grammar.antlr")
         outputDirectory = project.file("src/main/generated/com/cognifide/apm/core/grammar/antlr")
+    }
+
+    javadoc {
+        exclude("com/cognifide/apm/core/history/**")
     }
 
     register<Jar>("sourcesJar") {

@@ -29,7 +29,6 @@ import com.cognifide.apm.api.actions.annotations.Mapper;
 import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.apm.api.actions.annotations.Required;
 import com.cognifide.apm.main.actions.ActionGroup;
-import java.util.List;
 
 @Mapper(value = "clear", group = ActionGroup.CORE)
 public final class ClearMapper {
@@ -43,8 +42,8 @@ public final class ClearMapper {
   )
   public Action mapAction(
       @Required(value = "path", description = "e.g.: '/content/dam'") String path,
-      @Flag(value = STRICT_PATH, description = STRICT_PATH_DESC) List<String> flags) {
-    if (flags.contains(STRICT_PATH)) {
+      @Flag(value = STRICT_PATH, description = STRICT_PATH_DESC) boolean strictPath) {
+    if (strictPath) {
       return new RemoveAll(path);
     } else {
       return new Purge(path);

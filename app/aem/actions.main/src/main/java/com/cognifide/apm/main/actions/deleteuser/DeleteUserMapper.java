@@ -50,8 +50,8 @@ public final class DeleteUserMapper {
   )
   public Action create(
       @Required(value = "userId", description = "user's id e.g.: 'author'") String id,
-      @Flag(value = CLEAR_PERMISSIONS, description = CLEAR_PERMISSIONS_DESC) List<String> flags) {
-    if (flags.contains(CLEAR_PERMISSIONS)) {
+      @Flag(value = CLEAR_PERMISSIONS, description = CLEAR_PERMISSIONS_DESC) boolean clearPermissions) {
+    if (clearPermissions) {
       return new DestroyUser(id);
     } else {
       return new RemoveUser(Collections.singletonList(id));
@@ -67,8 +67,8 @@ public final class DeleteUserMapper {
   )
   public Action create(
       @Required(value = "userIds", description = "users' ids e.g.: ['author']") List<String> ids,
-      @Flag(value = CLEAR_PERMISSIONS, description = CLEAR_PERMISSIONS_DESC) List<String> flags) {
-    if (flags.contains(CLEAR_PERMISSIONS)) {
+      @Flag(value = CLEAR_PERMISSIONS, description = CLEAR_PERMISSIONS_DESC) boolean clearPermissions) {
+    if (clearPermissions) {
       List<Action> actions = ids.stream().map(id -> new DestroyUser(id)).collect(Collectors.toList());
       return new CompositeAction(actions);
     } else {

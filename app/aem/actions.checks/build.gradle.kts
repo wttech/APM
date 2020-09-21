@@ -9,7 +9,7 @@ plugins {
     signing
 }
 
-description = "APM Extension - a set of 'check' actions, which verify configuration of permissions."
+description = "APM Actions Checks"
 
 apply(from = rootProject.file("app/common.gradle.kts"))
 apply(from = rootProject.file("app/aem/common.gradle.kts"))
@@ -39,6 +39,10 @@ dependencies {
 }
 
 tasks {
+    getByName("packageDeploy") {
+        mustRunAfter(":app:aem:ui.apps:packageDeploy")
+    }
+
     register<Jar>("sourcesJar") {
         from(sourceSets.main.get().allSource)
         archiveClassifier.set("sources")

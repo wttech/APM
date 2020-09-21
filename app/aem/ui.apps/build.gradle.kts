@@ -13,7 +13,9 @@ apply(from = rootProject.file("app/aem/common.gradle.kts"))
 aem {
     tasks {
         packageCompose {
-            installBundle("org.jetbrains.kotlin:kotlin-osgi-bundle:1.3.72")
+            installBundle("com.cognifide.cq.actions:com.cognifide.cq.actions.api:6.4.0")
+            installBundle("com.cognifide.cq.actions:com.cognifide.cq.actions.core:6.4.0")
+            installBundle("com.cognifide.cq.actions:com.cognifide.cq.actions.msg.replication:6.4.0")
             installBundleProject(":app:aem:api")
             installBundleProject(":app:aem:core")
             installBundleProject(":app:aem:actions.main")
@@ -22,6 +24,12 @@ aem {
                 description.set(project.description)
             }
         }
+    }
+}
+
+tasks {
+    getByName("packageDeploy") {
+        mustRunAfter(":env:instanceProvision")
     }
 }
 
