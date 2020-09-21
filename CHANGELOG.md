@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## 5.0.0-RC4
 
 ### Fixed
-- #265 - Shorten bundles' names
+- #265 - Shortened bundles' names
 
 ## 5.0.0-RC3
 
