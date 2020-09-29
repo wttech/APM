@@ -19,7 +19,6 @@
  */
 package com.cognifide.apm.core.endpoints.dto
 
-import com.cognifide.apm.core.endpoints.dto.NodeDto
 import com.cognifide.apm.core.grammar.ReferenceGraph
 
 class TransitionDto(transition: ReferenceGraph.Transition) {
