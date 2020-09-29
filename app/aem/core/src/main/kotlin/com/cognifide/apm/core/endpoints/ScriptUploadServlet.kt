@@ -22,6 +22,7 @@ package com.cognifide.apm.core.endpoints
 import com.cognifide.apm.api.services.ExecutionMode
 import com.cognifide.apm.api.services.ScriptManager
 import com.cognifide.apm.core.Property
+import com.cognifide.apm.core.endpoints.dto.ScriptDto
 import com.cognifide.apm.core.endpoints.response.ResponseEntity
 import com.cognifide.apm.core.endpoints.response.badRequest
 import com.cognifide.apm.core.endpoints.response.ok

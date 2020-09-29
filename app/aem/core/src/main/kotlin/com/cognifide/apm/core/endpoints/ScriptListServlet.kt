@@ -21,6 +21,7 @@ package com.cognifide.apm.core.endpoints
 
 import com.cognifide.apm.api.services.ScriptFinder
 import com.cognifide.apm.core.Property
+import com.cognifide.apm.core.endpoints.dto.ScriptDto
 import com.cognifide.apm.core.utils.ServletUtils
 import org.apache.sling.api.SlingHttpServletRequest
 import org.apache.sling.api.SlingHttpServletResponse
