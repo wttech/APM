@@ -24,10 +24,13 @@ import com.cognifide.apm.api.scripts.Script
 import com.cognifide.apm.api.services.ScriptFinder
 import com.cognifide.apm.core.Property
 import com.cognifide.apm.core.grammar.ReferenceFinder
+import com.cognifide.apm.core.grammar.ScriptExecutionException
 import com.cognifide.apm.core.services.version.VersionService
+import com.cognifide.apm.core.services.version.VersionServiceImpl
 import org.apache.sling.api.resource.ResourceResolver
 import org.osgi.service.component.annotations.Component
 import org.osgi.service.component.annotations.Reference
+import org.slf4j.LoggerFactory
 import java.util.function.Predicate
 
 @Component(
@@ -37,6 +40,9 @@ import java.util.function.Predicate
             Property.VENDOR
         ])
 class ModifiedScriptFinder {
+
+    private val logger = LoggerFactory.getLogger(ModifiedScriptFinder::class.java)
+
 
     @Reference
     @Transient
@@ -49,15 +55,20 @@ class ModifiedScriptFinder {
     fun findAll(filter: Predicate<Script>, resolver: ResourceResolver): List<Script> {
         val all = scriptFinder.findAll(filter, resolver)
         val referenceFinder = ReferenceFinder(scriptFinder, resolver)
-        val referenceGraph = referenceFinder.getReferenceGraph(*all.toTypedArray())
         val modified = mutableListOf<Script>()
-        referenceGraph.roots
-                .filter { it.isValid() }
-                .forEach { root ->
-                    val checksum = versionService.countChecksum(root)
-                    val scriptVersion = versionService.getScriptVersion(resolver, root.script)
-                    if (checksum != scriptVersion.lastChecksum) {
-                        modified.add(root.script)
+
+        all
+                .filter { it.isValid }
+                .forEach { script ->
+                    try {
+                        val subtree = referenceFinder.findReferences(script)
+                        val checksum = versionService.countChecksum(subtree)
+                        val scriptVersion = versionService.getScriptVersion(resolver, script)
+                        if (checksum != scriptVersion.lastChecksum) {
+                            modified.add(script)
+                        }
+                    } catch (e: ScriptExecutionException) {
+                        logger.error(e.message)
                     }
                 }
         return modified
