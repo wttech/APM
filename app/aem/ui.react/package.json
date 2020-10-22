@@ -25,7 +25,10 @@
     "react-app-polyfill": "^1.0.5",
     "react-dom": "^16.12.0",
     "react-router-dom": "^5.1.2",
-    "typescript": "^4.0.2"
+    "typescript": "^4.0.2",
+    "vis-data": "^7.0.0",
+    "vis-network": "^8.0.1",
+    "vis-util": "^4.3.4"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^4.2.4",
