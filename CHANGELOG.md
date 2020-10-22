@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## 5.0.0-RC5
+
+### Fixed
+- #267 - Fixed path in index definition
+
+### Changed
+- #269 - Changed names of indexes due to the requirements of AEM as Cloud
+
 ## 5.0.0-RC4
 
 ### Fixed

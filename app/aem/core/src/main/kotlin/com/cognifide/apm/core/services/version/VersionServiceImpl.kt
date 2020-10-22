@@ -23,7 +23,7 @@ import com.cognifide.apm.api.scripts.Script
 import com.cognifide.apm.api.services.ScriptFinder
 import com.cognifide.apm.core.Property
 import com.cognifide.apm.core.grammar.ReferenceFinder
-import com.cognifide.apm.core.grammar.ReferenceGraph
+import com.cognifide.apm.core.grammar.ScriptExecutionException
 import com.cognifide.apm.core.scripts.MutableScriptWrapper
 import com.cognifide.apm.core.scripts.ScriptNode
 import com.day.cq.commons.jcr.JcrUtil
@@ -63,26 +63,30 @@ class VersionServiceImpl : VersionService {
         return "$versionsRoot/${script.normalizedPath()}/${script.checksum}/$scriptNodeName"
     }
 
-    override fun countChecksum(root: ReferenceGraph.TreeRoot): String {
+    override fun countChecksum(root: Iterable<Script>): String {
         val checksums = root
                 .asSequence()
-                .filter { it == root || it.isValid() }
-                .map { it.script.data }
+                .filter {it.isValid }
+                .map { it.data }
                 .map { DigestUtils.md5Hex(it) }
                 .reduce { previous, current -> previous + current }
         return DigestUtils.md5Hex(checksums)
     }
 
     override fun updateVersionIfNeeded(resolver: ResourceResolver, vararg scripts: Script) {
-        val referenceGraph = ReferenceFinder(scriptFinder, resolver).getReferenceGraph(*scripts)
-
+        val referenceFinder = ReferenceFinder(scriptFinder, resolver)
         scripts.forEach { script ->
-            val checksum = countChecksum(referenceGraph.getRoot(script)!!)
-            if (checksum != script.checksum) {
-                MutableScriptWrapper(script).apply {
-                    setChecksum(checksum)
+            try {
+                val subtree = referenceFinder.findReferences(script)
+                val checksum = countChecksum(subtree)
+                if (checksum != script.checksum) {
+                    MutableScriptWrapper(script).apply {
+                        setChecksum(checksum)
+                    }
+                    createVersion(resolver, script)
                 }
-                createVersion(resolver, script)
+            } catch(e: ScriptExecutionException) {
+                logger.error(e.message)
             }
         }
     }

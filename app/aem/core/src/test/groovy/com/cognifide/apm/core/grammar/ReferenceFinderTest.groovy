@@ -23,6 +23,8 @@ package com.cognifide.apm.core.grammar
 
 import com.cognifide.apm.api.scripts.Script
 import com.cognifide.apm.api.services.ScriptFinder
+import com.cognifide.apm.core.grammar.ReferenceGraph.Transition
+import com.cognifide.apm.core.grammar.ReferenceGraph.TreeNode
 import org.apache.commons.io.IOUtils
 import org.apache.sling.api.resource.ResourceResolver
 import spock.lang.Specification
@@ -36,9 +38,9 @@ class ReferenceFinderTest extends Specification {
     }
     ResourceResolver resourceResolver = Mock(ResourceResolver)
 
-    def "return all scripts included and imported to given script (recursively)"() {
+    def "return all scripts included and imported to given script (recursively) including current script"() {
         given:
-        Script script = createScript("/import-and-run1.apm")
+        Script script = createScript("/import-and-run3.apm")
         ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resourceResolver)
 
         when:
@@ -46,16 +48,16 @@ class ReferenceFinderTest extends Specification {
 
         then:
         references.collect { it.toString() } == [
+                "/import-and-run3.apm",
                 "/includes/import-a.apm",
                 "/includes/import-b.apm",
                 "/includes/import-c.apm",
                 "/includes/run-b.apm",
-                "/includes/run-c.apm",
-                "/includes/run-a.apm"
+                "/includes/run-c.apm"
         ]
     }
 
-    def "error found in script's tree"() {
+    def "cycle found in script's tree"() {
         given:
         Script script = createScript("/import-and-run2.apm")
         ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resourceResolver)
@@ -65,7 +67,20 @@ class ReferenceFinderTest extends Specification {
 
         then:
         def e = thrown(ScriptExecutionException.class)
-        e.message == "Script doesn't exist: /includes/non-existing.apm"
+        e.message == "Cycle detected /includes/cycle-c.apm -> /includes/cycle-a.apm"
+    }
+
+    def "ERROR found in script's tree"() {
+        given:
+        Script script = createScript("/import-and-run1.apm")
+        ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resourceResolver)
+
+        when:
+        referenceFinder.findReferences(script)
+
+        then:
+        def e = thrown(ScriptExecutionException.class)
+        e.message == "Script doesn't exist /includes/non-existing.apm"
     }
 
     def "return reference graph for given script"() {
@@ -78,17 +93,18 @@ class ReferenceFinderTest extends Specification {
 
         then:
         printReferenceGraph(referenceGraph) == """\
-            /import-and-run1.apm
-            |- /includes/import-a.apm
-            |  |- /includes/import-b.apm
-            |  |  |- /includes/import-c.apm
-            |  |- /includes/run-b.apm
-            |  |  |- /includes/import-b.apm
-            |  |  |  |- /includes/import-c.apm
-            |  |  |- /includes/run-c.apm
-            |- /includes/import-b.apm
-            |  |- /includes/import-c.apm
-            |- /includes/run-a.apm
+        /import-and-run1.apm
+        |-- IMPORT --> /includes/import-a.apm
+        | |-- IMPORT --> /includes/import-b.apm
+        | | |-- IMPORT --> /includes/import-c.apm
+        | |-- RUN_SCRIPT --> /includes/run-b.apm
+        | | |-- IMPORT --> /includes/import-b.apm
+        | | | |-- IMPORT --> /includes/import-c.apm
+        | | |-- RUN_SCRIPT --> /includes/run-c.apm
+        |-- IMPORT --> /includes/import-b.apm
+        | |-- IMPORT --> /includes/import-c.apm
+        |-- RUN_SCRIPT --> /includes/run-a.apm
+        | |-- IMPORT --> /includes/non-existing.apm <error - script doesn't exist>
         """.stripIndent()
     }
 
@@ -102,26 +118,28 @@ class ReferenceFinderTest extends Specification {
         ReferenceGraph referenceGraph = referenceFinder.getReferenceGraph(script1, script2)
 
         then:
+        println printReferenceGraph(referenceGraph)
         printReferenceGraph(referenceGraph) == """\
             /import-and-run1.apm
-            |- /includes/import-a.apm
-            |  |- /includes/import-b.apm
-            |  |  |- /includes/import-c.apm
-            |  |- /includes/run-b.apm
-            |  |  |- /includes/import-b.apm
-            |  |  |  |- /includes/import-c.apm
-            |  |  |- /includes/run-c.apm
-            |- /includes/import-b.apm
-            |  |- /includes/import-c.apm
-            |- /includes/run-a.apm
+            |-- IMPORT --> /includes/import-a.apm
+            | |-- IMPORT --> /includes/import-b.apm
+            | | |-- IMPORT --> /includes/import-c.apm
+            | |-- RUN_SCRIPT --> /includes/run-b.apm
+            | | |-- IMPORT --> /includes/import-b.apm
+            | | | |-- IMPORT --> /includes/import-c.apm
+            | | |-- RUN_SCRIPT --> /includes/run-c.apm
+            |-- IMPORT --> /includes/import-b.apm
+            | |-- IMPORT --> /includes/import-c.apm
+            |-- RUN_SCRIPT --> /includes/run-a.apm
+            | |-- IMPORT --> /includes/non-existing.apm <error - script doesn't exist>
             /import-and-run2.apm
-            |- /includes/cycle-a.apm
-            |  |- /includes/cycle-b.apm
-            |  |  |- /includes/cycle-c.apm
-            |  |  |  |- /includes/cycle-a.apm <error - found cycle>
-            |- /includes/non-existing.apm <error - script doesn't exist>
-            |- /includes/run-a.apm
-        """.stripIndent()
+            |-- RUN_SCRIPT --> /includes/cycle-a.apm
+            | |-- RUN_SCRIPT --> /includes/cycle-b.apm
+            | | |-- RUN_SCRIPT --> /includes/cycle-c.apm
+            | | | |-- RUN_SCRIPT --> /includes/cycle-a.apm <error - cycle detected>
+            |-- RUN_SCRIPT --> /includes/run-a.apm
+            | |-- IMPORT --> /includes/non-existing.apm <error - script doesn't exist>
+            """.stripIndent()
     }
 
     private Script createScript(String file) {
@@ -139,25 +157,38 @@ class ReferenceFinderTest extends Specification {
 
     private String printReferenceGraph(ReferenceGraph referenceGraph) {
         StringBuilder result = new StringBuilder()
-        referenceGraph.roots.forEach {
-            result.append(it.script.path).append("\n")
-            appendChildren(result, "|- ", it.children)
+
+        Set<TreeNode> visited = new HashSet<>()
+        referenceGraph.nodes.forEach { node ->
+            if (!visited.contains(node)) {
+                visited.add(node)
+                result.append(printNode(node)).append("\n")
+                printSubtree(referenceGraph, node, visited, "", result)
+            }
         }
         return result.toString()
     }
 
-
-    private void appendChildren(StringBuilder result, String prefix, List<ReferenceGraph.Node> children) {
-        children.forEach {
-            result.append(prefix).append(it.script.path)
-            if (it instanceof ReferenceGraph.CyclicNode) {
-                result.append(" <error - found cycle>")
+    private printSubtree(ReferenceGraph referenceGraph, TreeNode fromNode, visited, String prefix, StringBuilder result) {
+        referenceGraph.transitions.findAll { transition ->
+            transition.from == fromNode
+        }.forEach {
+            result.append(printTransition(it, prefix))
+            if (!it.cycleDetected) {
+                printSubtree(referenceGraph, it.to, visited, "| ${prefix}", result)
             }
-            if (it instanceof ReferenceGraph.NonExistingNode) {
-                result.append(" <error - script doesn't exist>")
-            }
-            result.append("\n")
-            appendChildren(result, "|  ${prefix}", it.children)
+            visited.add(it.to)
         }
+    }
+
+    private String printTransition(Transition transition, String prefix) {
+        return "${prefix}|-- ${transition.transitionType} --> ${printNode(transition.to)}${transition.cycleDetected ? ' <error - cycle detected>' : ''}\n"
+    }
+
+    private static String printNode(treeNode) {
+        if (treeNode instanceof ReferenceGraph.NonExistingTreeNode) {
+            return treeNode.script.path + " <error - script doesn't exist>"
+        }
+        return treeNode.script.path
     }
 }

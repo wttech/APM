@@ -17,18 +17,20 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.core.services.version
+package com.cognifide.apm.core.endpoints.dto
 
 import com.cognifide.apm.api.scripts.Script
-import com.cognifide.apm.core.grammar.ReferenceGraph
-import org.apache.sling.api.resource.ResourceResolver
+import org.apache.commons.io.FilenameUtils
+import java.util.*
 
-interface VersionService {
+class ScriptDto(script: Script) {
 
-    fun getScriptVersion(resolver: ResourceResolver, script: Script): ScriptVersion
+    val name: String = FilenameUtils.getName(script.path)
+    val path: String = script.path
+    val author: String? = script.author
+    val launchEnabled: Boolean = script.isLaunchEnabled
+    val launchMode: String = script.launchMode.name.toLowerCase()
+    val lastModified: Date? = script.lastModified
+    val valid: Boolean = script.isValid
 
-    fun getVersionPath(script: Script): String
-
-    fun updateVersionIfNeeded(resolver: ResourceResolver, vararg scripts: Script)
-    fun countChecksum(root: Iterable<Script>): String
 }
