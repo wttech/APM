@@ -26,8 +26,11 @@ allprojects {
 }
 
 tasks {
-    register("deployAll") {
+    register("deployApp") {
         dependsOn(":env:instanceProvision", ":app:aem:ui.apps:packageDeploy", ":app:aem:actions.checks:packageDeploy")
+    }
+    register("deployAll") {
+        dependsOn(":env:instanceProvision", ":app:aem:all:packageDeploy")
     }
     withType<RatTask>().configureEach {
         // Files that don't require a license header
