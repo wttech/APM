@@ -1,10 +1,10 @@
 import React from 'react';
 import './App.css';
-import {TreeView} from "./components/TreeView";
+import {GraphView} from "./components/GraphView";
 
 
 function App() {
-  return <TreeView />
+  return <GraphView />
 }
 
 export default App;

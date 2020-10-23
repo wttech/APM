@@ -1,8 +1,6 @@
 import React, {useEffect, useState, useRef, MutableRefObject} from 'react';
 import axios from "axios";
-import TreeNodeComponent from './TreeNodeComponent';
 import {Network, DataSet, Edge, Node, Data} from "vis-network/standalone";
-import {forEach} from "vis-util";
 
 export type Script = {
     name: string,
@@ -10,20 +8,20 @@ export type Script = {
     valid: boolean
 };
 
-export type TreeNode = {
+export type GraphNode = {
     script: Script,
     isValid: boolean
 };
 
 export type Transition = {
-    from: TreeNode,
-    to: TreeNode,
+    from: GraphNode,
+    to: GraphNode,
     cycleDetected: boolean,
     refType: string
 }
 
 type Graph = {
-    nodes: TreeNode[],
+    nodes: GraphNode[],
     transitions: Transition[]
 }
 
@@ -35,11 +33,8 @@ export const fetchData = async (): Promise<Graph | null> => {
     return null;
 };
 
-export const TreeView = () => {
+export const GraphView = () => {
     const [graphData, setData] = useState<Graph | null>(null);
-    const [nodes, setNodes] = useState<TreeNode[] | undefined>([])
-    const [transitions, setTransitions] = useState<Transition[] | undefined>([]);
-
 
     const options = {
         physics: false,
@@ -54,38 +49,62 @@ export const TreeView = () => {
             .then((data) => {
                 console.log(data);
                 setData(data);
-                setNodes(data?.nodes)
-                setTransitions(data?.transitions);
             })
             .then(() =>
-                console.log(nodes));
+                console.log(graphData?.nodes));
 
     }, []);
 
     useEffect(() => {
-        console.log("Second use effect" + nodes);
+        const nodes = graphData?.nodes;
+        const transitions = graphData?.transitions;
         if (nodes && transitions && null !== container.current) {
-            const networkNodes = new DataSet<Node, "id">();
+            const networkNodes = new DataSet<Node, 'id'>();
             nodes?.forEach((node) => {
-                networkNodes.add({id: node.script.name, label: node.script.name, shape: 'box'});
+                networkNodes.add({
+                    id: node.script.name,
+                    label: node.script.name,
+                    shape: 'box',
+                    size: 30,
+                    margin: {
+                        top: 10,
+                        bottom: 10,
+                        right: 10,
+                        left: 10
+                    },
+                    borderWidth: 2,
+                    color: {
+                        background: '#bbd7f0',
+                        border: '#448CCB',
+                    },
+                    font: {
+                        size: 16,
+                        color: '#448CCB',
+                    },
+                    title: node.script.path
+                });
             })
 
-            const edges = new DataSet<Edge, "id">();
+            const edges = new DataSet<Edge, 'id'>();
             transitions?.forEach((transition) => {
                 edges.add({
                     from: transition.from.script.name,
                     to: transition.to.script.name,
-                    id: `${transition.refType}${transition.from.script.name}${transition.to.script.name}`,
                     title: transition.cycleDetected ? 'INVALID' : transition.refType,
                     smooth: {
                         enabled: true,
                         type: 'curvedCW',
                         roundness: Math.random()
                     },
-                    color: transition.cycleDetected ? 'red' : (transition.refType === 'IMPORT' ? 'blue' : 'green')
+                    width: 2,
+                    shadow: {
+                        enabled: true,
+                        size: 5,
+                        color: 'rgba(0,0,0,0.2)'
+                    },
+                    color: transition.cycleDetected ? 'red' : (transition.refType === 'IMPORT' ? '#0b3f6e' : '#69c44d')
                 });
             })
-
 
             const data: Data = {
                 nodes: networkNodes,
@@ -94,21 +113,7 @@ export const TreeView = () => {
 
             new Network(container.current, data, options);
         }
-    }, [nodes, transitions])
+    }, [graphData])
 
-    /*    useEffect(() => {
-            if (null !== container.current) {
-                console.log(container);
-                const network: Network = new Network(container.current, data, options);
-                console.log(network);
-            }
-        }, [container])*/
-
-
-    const markup = nodes && nodes.map((item, key) =>
-        <div>{item.script.name}</div>
-    );/* items && items.map((item, key) =>
-      <TreeNodeComponent key={key} script={item.script} children={item.children}/>);
-*/
     return <div ref={container} id="graph"/>
 };

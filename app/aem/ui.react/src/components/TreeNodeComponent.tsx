@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {TreeNode} from "./TreeView";
+import {GraphNode} from "./GraphView";
 
 const useToggle = (initialValue = false) => {
   const [toggled, setToggled] = useState(initialValue);
@@ -7,7 +7,7 @@ const useToggle = (initialValue = false) => {
   return [toggled, toggle] as const;
 };
 
-const TreeNodeComponent: React.FC<TreeNode> = ({script, children}) => {
+const TreeNodeComponent: React.FC<GraphNode> = ({script, children}) => {
   const [expanded, toggleExpanded] = useToggle(true);
   console.log(children);
 
