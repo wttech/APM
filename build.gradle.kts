@@ -27,7 +27,7 @@ allprojects {
 
 tasks {
     register("deployApp") {
-        dependsOn(":env:instanceProvision", ":app:aem:ui.apps:packageDeploy", ":app:aem:actions.checks:packageDeploy")
+        dependsOn(":env:instanceProvision", ":app:aem:ui.apps:packageDeploy")
     }
     register("deployAll") {
         dependsOn(":env:instanceProvision", ":app:aem:all:packageDeploy")

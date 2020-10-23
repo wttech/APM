@@ -11,7 +11,6 @@ description = "APM (AEM Permission Management) - AEM All-In-One Package"
 aem {
     tasks {
         packageCompose {
-            nestPackageProject(":app:aem:actions.checks")
             nestPackageProject(":app:aem:ui.apps")
             nestPackageProject(":app:aem:ui.content")
         }
