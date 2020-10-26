@@ -93,7 +93,6 @@
     $('.foundation-collection').overlayMask('hide');
   }
 
-
   $(window).adaptTo('foundation-registry').register('foundation.collection.action.action', {
     name: 'scripts.upload',
     handler: function() {
