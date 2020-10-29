@@ -35,7 +35,7 @@ tasks {
     withType<RatTask>().configureEach {
         // Files that don't require a license header
         excludes.add("**/LICENSE")
-        excludes.add(".github/workflows/**")
+        excludes.add(".github/**")
 
         excludes.add("**/main/generated/**")
         excludes.add("**/clientlibs/externals/ace/js/**")
