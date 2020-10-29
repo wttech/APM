@@ -34,6 +34,10 @@
     fileUploader
       .on('coral-fileupload:fileadded', function(event) {
         let filename = event.detail.item.file.name;
+        event.detail.item._parameters = [
+          { name: "apm:launchEnabled", value: true },
+          { name: "apm:launchMode", value: "ON_DEMAND" },
+        ];
         fileUploader.upload(filename);
       })
       .on('coral-fileupload:load', function(event) {
