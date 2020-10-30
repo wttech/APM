@@ -26,5 +26,5 @@ class GraphDto(refGraph: ReferenceGraph) {
     @SerializedName("nodes")
     val nodes: List<NodeDto> = refGraph.nodes.map { NodeDto(it) }
     @SerializedName("transitions")
-    val transitions: List<TransitionDto> = refGraph.transitions.map { TransitionDto(it) }
+    val transitions: List<TransitionDto> = refGraph.transitions.distinct().map { TransitionDto(it) }
 }

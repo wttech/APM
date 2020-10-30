@@ -37,9 +37,10 @@ body {
   height: 100%;
 }
 
-#tree-view-root {
+#graph-view-root {
   width: 100%;
   height: 100%;
+  position: relative;
 }
 
 h1,

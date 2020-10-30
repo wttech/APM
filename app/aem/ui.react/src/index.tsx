@@ -30,11 +30,11 @@ import './index.css';
 import ReactDOM from 'react-dom';
 import './index.css';
 document.addEventListener('DOMContentLoaded', () => {
-  ReactDOM.render(
+    ReactDOM.render(
       <React.StrictMode>
         <App/>
       </React.StrictMode>,
-      document.getElementById('tree-view-root')
+      document.getElementById('graph-view-root')
   );
-});
+}, {once: true});
 

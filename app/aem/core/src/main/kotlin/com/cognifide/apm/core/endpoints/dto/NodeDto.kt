@@ -20,8 +20,10 @@
 package com.cognifide.apm.core.endpoints.dto
 
 import com.cognifide.apm.core.grammar.ReferenceGraph
+import java.util.*
 
 class NodeDto(treeNode: ReferenceGraph.TreeNode) {
+    val id: String = treeNode.id
     val script: ScriptDto = ScriptDto(treeNode.script)
     val valid: Boolean = treeNode.valid
 }
