@@ -105,7 +105,7 @@ allprojects {
                     name = "Mvn"
                     url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
                     credentials {
-                        username = findProperty("apm.repo.mvn.user")?.toString()
+                        username = findProperty("apm.repo.mvn.username")?.toString()
                         password = findProperty("apm.repo.mvn.password")?.toString()
                     }
                     authentication {
