@@ -1,8 +1,6 @@
 name-template: 'Release APM $RESOLVED_VERSION'
 tag-template: 'apm-$RESOLVED_VERSION'
 template: |
-  ## What’s Changed
-
   $CHANGES
 
   All contributors: $CONTRIBUTORS

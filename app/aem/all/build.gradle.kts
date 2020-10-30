@@ -1,6 +1,8 @@
 plugins {
     id("com.cognifide.aem.package")
     id("maven-publish")
+    `maven-publish`
+    signing
 }
 
 apply(from = rootProject.file("app/common.gradle.kts"))
