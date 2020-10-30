@@ -74,6 +74,9 @@ tasks {
         excludes.add("**/out/**")
         excludes.add("**/.idea/**")
         excludes.add("**/*.iml")
+
+        // Swagger API Definition
+        excludes.add("**/apidefinition/*.yaml")
     }
 }
 
