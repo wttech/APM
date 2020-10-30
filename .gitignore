@@ -31,3 +31,5 @@ atlassian-ide-plugin.xml
 #eclipse
 .settings
 .classpath
+
+node_modules
