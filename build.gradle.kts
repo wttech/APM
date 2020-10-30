@@ -26,13 +26,16 @@ allprojects {
 }
 
 tasks {
+    register("deployApp") {
+        dependsOn(":env:instanceProvision", ":app:aem:ui.apps:packageDeploy")
+    }
     register("deployAll") {
-        dependsOn(":env:instanceProvision", ":app:aem:ui.apps:packageDeploy", ":app:aem:actions.checks:packageDeploy")
+        dependsOn(":env:instanceProvision", ":app:aem:all:packageDeploy")
     }
     withType<RatTask>().configureEach {
         // Files that don't require a license header
         excludes.add("**/LICENSE")
-        excludes.add(".github/workflows/**")
+        excludes.add(".github/**")
 
         excludes.add("**/main/generated/**")
         excludes.add("**/clientlibs/externals/ace/js/**")
@@ -71,6 +74,9 @@ tasks {
         excludes.add("**/out/**")
         excludes.add("**/.idea/**")
         excludes.add("**/*.iml")
+
+        // Swagger API Definition
+        excludes.add("**/apidefinition/*.yaml")
     }
 }
 

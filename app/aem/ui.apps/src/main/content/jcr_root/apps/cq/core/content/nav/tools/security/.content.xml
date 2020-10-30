@@ -6,7 +6,7 @@
     jcr:primaryType="nt:unstructured"
     jcr:title="AEM Permission Management"
     href="/apm.html"
-    icon="apm"
+    icon="login"
     id="cq-tools-apm"
     target="_blank"/>
 </jcr:root>

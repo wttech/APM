@@ -2,9 +2,6 @@
 <workspaceFilter version="1.0">
   <filter root="/apps/apm"/>
   <filter root="/apps/cq/core/content/nav/tools/security/apm"/>
-  <filter root="/conf/apm">
-    <exclude pattern="/conf/apm/scripts(/.*)?"/>
-  </filter>
   <filter root="/home/users/system/apm-system-user"/>
   <filter root="/rep:policy"/>
   <filter root="/oak:index/apmHistory-custom-1" mode="update"/>

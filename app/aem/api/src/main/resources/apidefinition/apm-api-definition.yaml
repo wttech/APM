@@ -1,0 +1,314 @@
+---
+openapi: 3.0.1
+info:
+  title: APM 5.0 API Definition
+  version: "5.0"
+servers:
+  - url: http://localhost:4502
+paths:
+  /bin/apm/scripts:
+    get:
+      description: API for downloading list of scripts available in AEM
+      security:
+        - basicAuth: []
+      responses:
+        "200":
+          description: List of APM scripts which are currently available in AEM
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScriptResponse'
+      servers:
+        - url: http://localhost:4502
+    servers:
+      - url: http://localhost:4502
+  /bin/apm/scripts/upload:
+    post:
+      description: API For uploading APM scripts into AEM
+      parameters:
+        - name: apm%3AlaunchEnabled
+          in: formData
+          required: true
+          style: form
+          explode: true
+          schema:
+            type: boolean
+          example: "true"
+        - name: apm%3AlaunchMode
+          in: formData
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+            enum: [ON_DEMAND, ON_SCHEDULE, ON_STARTUP, ON_STARTUP_IF_MODIFIED, ON_INSTALL, ON_INSTALL_IF_MODIFIED]
+        - name: apm%3AlaunchEnvironment
+          in: formData
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+            enum: [AUTHOR, PUBLISH, ALL]
+        - name: overwrite
+          in: formData
+          required: true
+          style: form
+          explode: true
+          schema:
+            type: boolean
+          example: "false"
+        - name: apm%3AlaunchSchedule
+          in: formData
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+          example: "2020-10-26T11:46:00"
+        - name: apm%3AlaunchHook
+          in: formData
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+          example: HookName
+        - name: file
+          in: formData
+          type: file
+          required: true
+          description: Script to be uploaded.
+        - name: Referer
+          in: header
+          required: false
+          style: simple
+          explode: false
+          schema:
+            type: string
+          example: http://localhost:4502/apm/scripts.html/conf/apm/scripts
+        - name: CSRF-Token
+          in: header
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+          example: eyJleHAiOjE2MDM4NzI0MzYsImlhdCI6MTYwMzg3MTgzNn0.fb9csRBFqj1oCvsCmRGOSpk9aTBnPdGYsJ3UheWwxbg.Z79QqoTSQnLW1rqrJ1c9DOBcvjqTq3PiX80YLFq_D0U
+      responses:
+        '200':
+          description: A User object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScriptResponse'
+        '400':
+          description: Occures when upload fails
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      servers:
+        - url: http://localhost:4502
+    servers:
+      - url: http://localhost:4502
+  /bin/apm/definitions:
+    get:
+      description: Provides list of definitions with their paths
+      responses:
+        "200":
+          description: Auto generated using Swagger Inspector
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DefinitionResponse'
+      servers:
+        - url: http://localhost:4502
+    servers:
+      - url: http://localhost:4502
+  /bin/apm/scripts/validate:
+    post:
+      description: API For validation scripts uploaded to AEM
+      parameters:
+        - name: path
+          in: query
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+          example: '%2Fconf%2Fapm%2Fscripts%2Ffilename.apm'
+        - name: content
+          in: query
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+          example: DEFINE%20path%20%22%2Fcontent%22%5Cn
+        - name: CSRF-Token
+          in: header
+          required: false
+          style: simple
+          explode: false
+          schema:
+            type: string
+          example: eyJleHAiOjE2MDM4NzI0MzYsImlhdCI6MTYwMzg3MTgzNn0.fb9csRBFqj1oCvsCmRGOSpk9aTBnPdGYsJ3UheWwxbg
+      responses:
+        "200":
+          description: Success response is sent when scripts passes validation
+          content:
+            application/json;charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/ValidateResponse'
+        "400":
+          description: Error response when validation fails
+          content:
+            application/json;charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      servers:
+        - url: http://localhost:4502
+    servers:
+      - url: http://localhost:4502
+  /bin/apm/references:
+    get:
+      description: API returns available commands in APM scripts with examples and description
+      responses:
+        "200":
+          description: Success response is sent when scripts passes validation
+          content:
+            application/json;charset=utf-8:
+              schema:
+                $ref: '#/components/schemas/ReferenceResponse'
+      servers:
+        - url: http://localhost:4502
+    servers:
+      - url: http://localhost:4502
+components:
+  securitySchemes:
+    basicAuth:     # <-- arbitrary name for the security scheme
+      type: http
+      scheme: basic
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Server generic response message
+        errors:
+          type: array
+          items:
+            type: string
+          description: List of errors returned by the API
+    ValidateResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Server genericresponse message.
+        valid:
+          type: boolean
+    ScriptResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Server genericresponse message.
+        uploadedScript:
+          description: The user name.
+          type: object
+          properties:
+            name:
+              type: string
+            path:
+              type: string
+            author:
+              type: string
+            launchEnabled:
+              type: string
+            launchMode:
+              type: string
+            lastModified:
+              type: string
+            valid:
+              type: boolean
+    DefinitionResponse:
+      type: object
+      properties:
+        DeveloperResources:
+          type: string
+        Websites:
+          type: string
+        Communities:
+          type: string
+        Backup:
+          type: string
+        Users:
+          type: string
+        CloudServices:
+          type: string
+        Digital Assets:
+          type: string
+        Packages:
+          type: string
+        OSGiConsoleStatusDump:
+          type: string
+        Inbox:
+          type: string
+        TaskManagement:
+          type: string
+        Publications:
+          type: string
+        Workflows:
+          type: string
+        PackageShare:
+          type: string
+        Documentation:
+          type: string
+        Tools:
+          type: string
+        Reports:
+          type: string
+        Campaigns:
+          type: string
+        Clustering:
+          type: string
+        Manuscripts:
+          type: string
+        Tagging:
+          type: string
+        Replication:
+          type: string
+        OSGiConsole:
+          type: string
+        CRXDELite:
+          type: string
+    ReferenceResponse:
+      type: array
+      description: List of commands with list of arguments
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+          group:
+            type: string
+          examples:
+            type: array
+            items:
+              type: string
+          description:
+            type: string
+          arguments:
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                "type":
+                  type: string
+                description:
+                  type: string

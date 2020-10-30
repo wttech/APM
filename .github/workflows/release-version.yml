@@ -1,0 +1,39 @@
+name: Release new version
+
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    name: Release version
+    steps:
+      - uses: actions/checkout@master
+        with:
+          fetch-depth: 0
+      - name: Get version
+        run: echo "Releasing version ${{ github.event.release.tag_name }}"
+      - name: Verify release
+        run: ./gradlew verifyRelease -Prelease.disableRemoteCheck
+      - name: Publish version
+        env:
+          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.GPG_SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingPassword:  ${{ secrets.GPG_SIGNING_PASSPHRASE }}
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+        run: ./gradlew publish -Papm.repo.mvn.username=$OSSRH_USERNAME -Papm.repo.mvn.password=$OSSRH_PASSWORD -Dorg.gradle.internal.http.socketTimeout=120000 -Dorg.gradle.internal.http.connectionTimeout=120000 --stacktrace
+      - name: Prepare release artifacts
+        run: |
+          mkdir artifacts
+          find ./app/aem/all/build/packageCompose -name "*.zip" -print0 | xargs -0 cp -t "artifacts"
+          find ./app/aem/actions.checks/build/packageCompose -name "*.zip" -print0 | xargs -0 cp -t "artifacts"
+          find ./artifacts -name '*.zip' -exec bash -c ' mv $0 ${0/core/apmt}' {} \;
+      - name: Upload Release Asset
+        uses: skx/github-action-publish-binaries@release-0.14
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          releaseId: ${{ github.event.release.id }}
+          args: './artifacts/*.zip'
