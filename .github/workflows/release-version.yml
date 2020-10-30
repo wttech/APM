@@ -23,7 +23,7 @@ jobs:
           ORG_GRADLE_PROJECT_signingPassword:  ${{ secrets.GPG_SIGNING_PASSPHRASE }}
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
-        run: ./gradlew publish -PapmtRepositoryUsername=$OSSRH_USERNAME -PapmtRepositoryPassword=$OSSRH_PASSWORD -Dorg.gradle.internal.http.socketTimeout=120000 -Dorg.gradle.internal.http.connectionTimeout=120000 --stacktrace
+        run: ./gradlew publish -Papm.repo.mvn.username=$OSSRH_USERNAME -Papm.repo.mvn.password=$OSSRH_PASSWORD -Dorg.gradle.internal.http.socketTimeout=120000 -Dorg.gradle.internal.http.connectionTimeout=120000 --stacktrace
       - name: Prepare release artifacts
         run: |
           mkdir artifacts
