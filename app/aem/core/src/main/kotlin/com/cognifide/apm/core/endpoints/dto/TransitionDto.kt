@@ -26,4 +26,5 @@ class TransitionDto(transition: ReferenceGraph.Transition) {
     val from: NodeDto = NodeDto(transition.from)
     val to: NodeDto = NodeDto(transition.to)
     val refType: String = transition.transitionType.name
+    val cycleDetected: Boolean = transition.cycleDetected
 }
