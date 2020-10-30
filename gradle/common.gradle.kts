@@ -112,20 +112,13 @@ allprojects {
                         create<BasicAuthentication>("basic")
                     }
                 }
-// configuration of github packages
-//                maven {
-//                    name = "Gpr"
-//                    url = uri("https://maven.pkg.github.com/Cognifide/APM")
-//                    credentials {
-//                        username = (findProperty("apm.repo.gpr.user") ?: System.getenv("USERNAME"))?.toString()
-//                        password = (findProperty("apm.repo.gpr.key") ?: System.getenv("TOKEN"))?.toString()
-//                    }
-//                }
             }
         }
 
         extensions.findByType(SigningExtension::class)?.apply {
-            useGpgCmd()
+            val signingKey: String? by project
+            val signingPassword: String? by project
+            useInMemoryPgpKeys(signingKey, signingPassword)
             extensions.findByType(PublishingExtension::class)?.publications?.configureEach {
                 sign(this)
             }
