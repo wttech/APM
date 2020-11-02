@@ -118,9 +118,14 @@ allprojects {
         extensions.findByType(SigningExtension::class)?.apply {
             val signingKey: String? by project
             val signingPassword: String? by project
-            useInMemoryPgpKeys(signingKey, signingPassword)
+            if (signingKey != null && signingPassword != null) {
+                useInMemoryPgpKeys(signingKey, signingPassword)
+            } else {
+                useGpgCmd()
+            }
             extensions.findByType(PublishingExtension::class)?.publications?.configureEach {
-                sign(this)
+                val publication = this
+                sign(publication)
             }
         }
     }
