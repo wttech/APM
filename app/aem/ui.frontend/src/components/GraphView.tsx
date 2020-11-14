@@ -19,7 +19,7 @@
 */
 import React, {useEffect, useState, useRef, MutableRefObject} from 'react';
 import axios from "axios";
-import {Network, DataSet, Edge, Node, Data, NodeOptions} from "vis-network/standalone";
+import {Network, DataSet, Edge, Node} from "vis-network/standalone";
 
 type Script = {
     name: string,
@@ -105,7 +105,7 @@ export const GraphView = () => {
 
 
     const handleDoubleClick = (e: any, nodes: GraphNode[]) => {
-        const selectedNode: GraphNode | undefined = nodes.find((node) => node.id == e.nodes[0]);
+        const selectedNode: GraphNode | undefined = nodes.find((node) => node.id === e.nodes[0]);
         window.open(`${window.location.origin}/apm/editor.html${selectedNode?.script.path}`, '_blank');
     };
 
