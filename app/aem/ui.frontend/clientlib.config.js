@@ -39,9 +39,9 @@ module.exports = {
   context: BUILD_DIR,
   clientLibRoot: CLIENTLIB_DIR,
   libs: {
-    name: 'clientlib-react',
+    name: 'clientlib-graph-view',
     allowProxy: true,
-    categories: ['apm.react'],
+    categories: ['apm.graphview'],
     serializationFormat: 'xml',
     cssProcessor: ['default:none', 'min:none'],
     jsProcessor: ['default:none', 'min:none'],

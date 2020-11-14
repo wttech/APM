@@ -50,4 +50,4 @@ publishing {
     }
 }
 
-tasks["packageCompose"].dependsOn(":app:aem:ui.react:build")
+tasks["packageCompose"].dependsOn(":app:aem:ui.frontend:build")
