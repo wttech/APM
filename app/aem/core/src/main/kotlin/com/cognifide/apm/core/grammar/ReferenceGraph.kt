@@ -65,7 +65,7 @@ class ReferenceGraph(
     inner class Transition(val from: TreeNode, val to: TreeNode, val transitionType: TransitionType) {
         var cycleDetected: Boolean = false
 
-        var id: String = String.format("%s|%s|%s", from.id, to.id, transitionType.name)
+        var id: String = "${from.id}|${to.id}|${transitionType.name}"
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
