@@ -24,8 +24,6 @@ import com.cognifide.apm.api.scripts.LaunchEnvironment
 import com.cognifide.apm.api.scripts.LaunchMode
 import com.cognifide.apm.api.scripts.Script
 import com.cognifide.apm.api.services.ScriptFinder
-import com.cognifide.apm.core.grammar.ReferenceGraph.CyclicNode
-import com.cognifide.apm.core.grammar.ReferenceGraph.NonExistingNode
 import com.cognifide.apm.core.grammar.argument.toPlainString
 import com.cognifide.apm.core.grammar.executioncontext.ExecutionContext
 import com.cognifide.apm.core.grammar.parsedscript.ParsedScript
@@ -38,35 +36,37 @@ class ReferenceFinder(
         private val resourceResolver: ResourceResolver) {
 
     fun findReferences(script: Script): List<Script> {
-        val referenceGraph = ReferenceGraph()
-        fillReferenceGraph(referenceGraph, script)
-        val treeRoot = referenceGraph.roots.first()
-        if (treeRoot.isValid()) {
-            return referenceGraph.getAllReferences().remove(script)
+        val result = mutableSetOf<Script>()
+        val refGraph = getReferenceGraph(script)
+        val possibleCycle = refGraph.getCycleIfExist()
+        if (possibleCycle != null) {
+            throw ScriptExecutionException("Cycle detected ${possibleCycle.from.getScriptPath()} -> ${possibleCycle.to.getScriptPath()}")
         } else {
-            val message = when (val invalidDescendant = treeRoot.invalidDescendants.first()) {
-                is NonExistingNode -> "Script doesn't exist: ${invalidDescendant.script.path}"
-                is CyclicNode -> "Found cycle: ${invalidDescendant.script.path}"
-                else -> "Invalid reference to: ${invalidDescendant.script.path}"
+            refGraph.getSubTreeForScript(script).forEach {
+                if (it is ReferenceGraph.NonExistingTreeNode) {
+                    throw ScriptExecutionException("Script doesn't exist ${it.getScriptPath()}")
+                } else {
+                    result.add(it.script)
+                }
             }
-            throw ScriptExecutionException(message)
         }
+        return result.toList()
     }
 
     fun getReferenceGraph(vararg scripts: Script): ReferenceGraph {
-        val referenceGraph = ReferenceGraph()
+        val refGraph = ReferenceGraph()
         scripts.forEach {
-            fillReferenceGraph(referenceGraph, it)
+            fillReferenceGraph(refGraph, it)
         }
-        return referenceGraph
+        return refGraph
     }
 
-    private fun fillReferenceGraph(referenceGraph: ReferenceGraph, script: Script): ReferenceGraph {
-        val root = referenceGraph.addRoot(script)
-        val parsedScript = ParsedScript.create(script).apm
-        val executionContext = ExecutionContext.create(scriptFinder, resourceResolver, script, ProgressImpl(resourceResolver.userID))
-        findReferences(referenceGraph, root, listOf(script), parsedScript, executionContext)
-        return referenceGraph
+    private fun fillReferenceGraph(refGraph: ReferenceGraph, script: Script) {
+        if (refGraph.getNode(script) == null) {
+            val parsedScript = ParsedScript.create(script).apm
+            val executionContext = ExecutionContext.create(scriptFinder, resourceResolver, script, ProgressImpl(resourceResolver.userID))
+            findReferences(refGraph, refGraph.addNode(script), listOf(script), executionContext, parsedScript)
+        }
     }
 
     fun <T> List<T>.add(value: T): List<T> {
@@ -81,52 +81,58 @@ class ReferenceFinder(
         return mutable.toList()
     }
 
-    private fun findReferences(
-            referenceGraph: ReferenceGraph, parent: ReferenceGraph.Node, ancestors: List<Script>,
-            ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.ApmContext, executionContext: ExecutionContext): MutableSet<Script> {
-
-        val internalVisitor = InternalVisitor(executionContext)
+    private fun findReferences(refGraph: ReferenceGraph, currentNode: ReferenceGraph.TreeNode, ancestors: List<Script>,
+                               executionContext: ExecutionContext,
+                               ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.ApmContext) {
+        val internalVisitor = InternalVisitor(executionContext, refGraph, currentNode)
         internalVisitor.visitApm(ctx)
-
+        currentNode.visited = true
         internalVisitor.scripts.forEach { script ->
-            when {
-                script is NonExistingScript -> parent.addChild(referenceGraph.NonExistingNode(script))
-                ancestors.contains(script) -> parent.addChild(referenceGraph.CyclicNode(script))
-                referenceGraph.contains(script) -> parent.addChild(referenceGraph.getNode(script)!!)
-                else -> {
-                    val node = parent.addChild(script)
-                    val parsedScript = executionContext.loadScript(script.path)
-                    executionContext.createScriptContext(parsedScript)
-                    findReferences(referenceGraph, node, ancestors.add(script), parsedScript.apm, executionContext)
-                    executionContext.removeScriptContext()
+            val node = refGraph.getNode(script)
+            if (node != null && node !is ReferenceGraph.NonExistingTreeNode) {
+                val parsedScript = executionContext.loadScript(script.path)
+                executionContext.createScriptContext(parsedScript)
+                if (ancestors.contains(script)) {
+                    refGraph.detectCycle(currentNode, script)
+                } else if (!node.visited) {
+                    findReferences(refGraph, node, ancestors.add(script), executionContext, parsedScript.apm)
                 }
             }
         }
-        return internalVisitor.scripts
     }
 
-    inner class InternalVisitor(private val executionContext: ExecutionContext) : com.cognifide.apm.core.grammar.antlr.ApmLangBaseVisitor<Unit>() {
+    inner class InternalVisitor(private val executionContext: ExecutionContext, val refGraph: ReferenceGraph, val currentNode: ReferenceGraph.TreeNode) : com.cognifide.apm.core.grammar.antlr.ApmLangBaseVisitor<Unit>() {
         val scripts = mutableSetOf<Script>()
 
         override fun visitImportScript(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.ImportScriptContext?) {
             val foundPath = ctx?.path()?.STRING_LITERAL()?.toPlainString()
-            loadScript(foundPath)
+            createTransition(foundPath, ReferenceGraph.TransitionType.IMPORT)
         }
 
         override fun visitRunScript(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.RunScriptContext?) {
             val foundPath = ctx?.path()?.STRING_LITERAL()?.toPlainString()
-            loadScript(foundPath)
+            createTransition(foundPath, ReferenceGraph.TransitionType.RUN_SCRIPT)
         }
 
-        private fun loadScript(foundPath: String?) {
+        private fun createTransition(foundPath: String?, transitionType: ReferenceGraph.TransitionType) {
+            val script: Script? = loadScript(foundPath)
+            if (script != null) {
+                refGraph.createTransition(currentNode, script, transitionType)
+                scripts.add(script)
+            }
+        }
+
+        private fun loadScript(foundPath: String?): Script? {
+            var script: Script? = null
             if (foundPath != null) {
                 try {
-                    val script = executionContext.loadScript(foundPath).script
-                    scripts.add(script)
+                    script = executionContext.loadScript(foundPath).script
                 } catch (e: ScriptExecutionException) {
-                    scripts.add(NonExistingScript(foundPath))
+                    script = NonExistingScript(foundPath)
+                    currentNode.valid = false
                 }
             }
+            return script
         }
     }
 

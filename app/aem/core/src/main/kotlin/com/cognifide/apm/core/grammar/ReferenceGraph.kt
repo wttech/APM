@@ -1,4 +1,4 @@
-/*
+/*-
  * ========================LICENSE_START=================================
  * AEM Permission Management
  * %%
@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,96 +17,95 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-
 package com.cognifide.apm.core.grammar
 
 import com.cognifide.apm.api.scripts.Script
-import java.util.*
 
 class ReferenceGraph(
-        private val references: MutableMap<Script, Node> = mutableMapOf(),
-        val roots: MutableList<TreeRoot> = mutableListOf()
+        val nodes: MutableList<TreeNode> = mutableListOf(),
+        val transitions: MutableList<Transition> = mutableListOf()
 ) {
 
-    fun addRoot(script: Script): Node {
-        val root = TreeRoot(script)
-        references[script] = root
-        roots.add(root)
-        return root
+    fun addNode(script: Script): TreeNode {
+        val node = TreeNodeFactory().create(script)
+        nodes.add(node)
+        return node
     }
 
-    fun getAllReferences(): List<Script> {
-        return references.keys.distinct().toList()
+    fun getNode(script: Script): TreeNode? {
+        return nodes.find { it.getScriptPath() == script.path }
     }
 
-    fun getRoot(script: Script): TreeRoot? {
-        return roots.find { it.script == script }
+    fun createTransition(fromNode: TreeNode, toScript: Script, transitionType: TransitionType) {
+        val toNode = getNode(toScript) ?: addNode(toScript)
+        transitions.add(Transition(fromNode, toNode, transitionType))
     }
 
-    fun getNode(script: Script): Node? {
-        return references[script]
+    fun getSubTreeForScript(script: Script): Set<TreeNode> {
+        val currentNode = getNode(script)
+        val subtree = mutableSetOf<TreeNode>()
+        if (currentNode != null) {
+            subtree.add(currentNode)
+            transitions.filter { it.from === currentNode }.forEach {
+                subtree.addAll(getSubTreeForScript(it.to.script))
+            }
+        }
+        return subtree
     }
 
-    fun contains(script: Script): Boolean {
-        return references.containsKey(script)
+    fun getCycleIfExist(): Transition? {
+        return transitions.firstOrNull { it.cycleDetected }
     }
 
-    open inner class Node(
-            val script: Script,
-            val children: MutableList<Node> = mutableListOf()
+    fun detectCycle(fromNode: TreeNode, to: Script) {
+        transitions.first { it.from == fromNode && it.to == getNode(to) }.cycleDetected = true
+    }
+
+    inner class Transition(val from: TreeNode, val to: TreeNode, val transitionType: TransitionType) {
+        var cycleDetected: Boolean = false
+    }
+
+    enum class TransitionType {
+        IMPORT, RUN_SCRIPT
+    }
+
+    open class TreeNode(
+            val script: Script
     ) {
+        var visited = false
+        open var valid = true
 
-        open fun isValid(): Boolean = true
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
 
-        fun addChild(value: Script): Node {
-            val child = Node(value)
-            children.add(child)
-            references[value] = child
-            return child
+            other as TreeNode
+
+            if (script.path != other.script.path) return false
+
+            return true
         }
 
-        fun addChild(child: Node): Node {
-            children.add(child)
-            return child
+        override fun hashCode(): Int {
+            return script.hashCode()
+        }
+
+        fun getScriptPath(): String {
+            return script.path
         }
     }
 
-    inner class TreeRoot(value: Script) : Node(value), Iterable<Node> {
-        val descendants: List<Node>
-            get() = this.filter { it != this }
-        val invalidDescendants: List<Node>
-            get() = this.filter { it != this && !it.isValid() }
-
-        override fun isValid(): Boolean {
-            return invalidDescendants.isEmpty()
-        }
-
-        override fun iterator(): Iterator<Node> = TreeIterator(this)
+    class NonExistingTreeNode(script: Script) : TreeNode(script) {
+        override var valid = false
     }
+}
 
-    inner class CyclicNode(value: Script) : Node(value) {
-        override fun isValid(): Boolean = false
-    }
+class TreeNodeFactory {
 
-    inner class NonExistingNode(value: Script) : Node(value) {
-        override fun isValid(): Boolean = false
-    }
-
-    class TreeIterator(root: Node) : Iterator<Node> {
-
-        private val queue = LinkedList<Node>()
-
-        init {
-            queue.add(root)
+    fun create(script: Script): ReferenceGraph.TreeNode {
+        if (script is ReferenceFinder.NonExistingScript) {
+            return ReferenceGraph.NonExistingTreeNode(script)
         }
-
-        override fun hasNext(): Boolean = queue.isNotEmpty()
-
-        override fun next(): Node {
-            val next = queue.pop()
-            queue.addAll(next.children)
-            return next
-        }
-
+        return ReferenceGraph.TreeNode(script)
     }
 }

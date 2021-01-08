@@ -17,20 +17,14 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.core.endpoints
+package com.cognifide.apm.core.endpoints.dto
 
-import com.cognifide.apm.api.scripts.Script
-import org.apache.commons.io.FilenameUtils
-import java.util.*
+import com.cognifide.apm.core.grammar.ReferenceGraph
+import com.google.gson.annotations.SerializedName
 
-class ScriptDto(script: Script) {
-
-    val name: String = FilenameUtils.getName(script.path)
-    val path: String = script.path
-    val author: String = script.author
-    val launchEnabled: Boolean = script.isLaunchEnabled
-    val launchMode: String = script.launchMode.name.toLowerCase()
-    val lastModified: Date = script.lastModified
-    val valid: Boolean = script.isValid
-
+class GraphDto(refGraph: ReferenceGraph) {
+    @SerializedName("nodes")
+    val nodes: List<NodeDto> = refGraph.nodes.map { NodeDto(it) }
+    @SerializedName("transitions")
+    val transitions: List<TransitionDto> = refGraph.transitions.map { TransitionDto(it) }
 }

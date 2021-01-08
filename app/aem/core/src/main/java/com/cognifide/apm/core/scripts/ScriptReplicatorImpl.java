@@ -51,9 +51,8 @@ public class ScriptReplicatorImpl implements ScriptReplicator {
 
   @Override
   public void replicate(Script script, ResourceResolver resolver) throws ReplicationException {
-    final List<Script> includes = new LinkedList<>();
-    includes.add(script);
-    includes.addAll(new ReferenceFinder(scriptFinder, resolver).findReferences(script));
+    final List<Script> includes = new LinkedList<>(
+        new ReferenceFinder(scriptFinder, resolver).findReferences(script));
 
     final Session session = resolver.adaptTo(Session.class);
 

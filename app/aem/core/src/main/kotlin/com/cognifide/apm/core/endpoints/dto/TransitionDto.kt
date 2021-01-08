@@ -17,18 +17,13 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.core.services.version
+package com.cognifide.apm.core.endpoints.dto
 
-import com.cognifide.apm.api.scripts.Script
 import com.cognifide.apm.core.grammar.ReferenceGraph
-import org.apache.sling.api.resource.ResourceResolver
 
-interface VersionService {
-
-    fun getScriptVersion(resolver: ResourceResolver, script: Script): ScriptVersion
-
-    fun getVersionPath(script: Script): String
-
-    fun updateVersionIfNeeded(resolver: ResourceResolver, vararg scripts: Script)
-    fun countChecksum(root: Iterable<Script>): String
+class TransitionDto(transition: ReferenceGraph.Transition) {
+    val cycleDetected = transition.cycleDetected
+    val from: NodeDto = NodeDto(transition.from)
+    val to: NodeDto = NodeDto(transition.to)
+    val refType: String = transition.transitionType.name
 }
