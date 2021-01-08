@@ -10,4 +10,3 @@ node {
 
 tasks.create("build")
 tasks["build"].dependsOn("npm_run_build")
-tasks["npm_run_build"].dependsOn("npm_install")
