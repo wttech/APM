@@ -77,6 +77,9 @@ tasks {
 
         // Swagger API Definition
         excludes.add("**/apidefinition/*.yaml")
+
+        // Node dependencies
+        excludes.add("**/node_modules/**")
     }
 }
 
