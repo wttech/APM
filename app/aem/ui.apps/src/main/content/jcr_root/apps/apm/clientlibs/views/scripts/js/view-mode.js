@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * AEM Permission Management
  * %%
- * Copyright (C) 2013 Cognifide Limited
+ * Copyright (C) 2013 - 2016 Cognifide Limited
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,10 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.core.endpoints.dto
+(function (window, $) {
+  $(document).on('coral-cyclebutton:change', '.granite-toggleable-control-view', function(e) {
+    $('#' + e.originalEvent.detail.selection.dataset.showview).removeAttr('hidden');
+    $('#' + e.originalEvent.detail.selection.dataset.hideview).attr('hidden', 'hidden');
+  });
 
-import com.cognifide.apm.core.grammar.ReferenceGraph
-import java.util.*
-
-class NodeDto(treeNode: ReferenceGraph.TreeNode) {
-    val id: String = treeNode.id
-    val script: ScriptDto = ScriptDto(treeNode.script)
-    val valid: Boolean = treeNode.valid
-}
+})(window, jQuery);

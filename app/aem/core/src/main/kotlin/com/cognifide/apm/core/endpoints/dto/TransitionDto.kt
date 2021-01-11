@@ -22,8 +22,9 @@ package com.cognifide.apm.core.endpoints.dto
 import com.cognifide.apm.core.grammar.ReferenceGraph
 
 class TransitionDto(transition: ReferenceGraph.Transition) {
-    val cycleDetected = transition.cycleDetected
+    val id: String = transition.id
     val from: NodeDto = NodeDto(transition.from)
     val to: NodeDto = NodeDto(transition.to)
     val refType: String = transition.transitionType.name
+    val cycleDetected: Boolean = transition.cycleDetected
 }

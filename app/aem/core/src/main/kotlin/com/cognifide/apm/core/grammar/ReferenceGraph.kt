@@ -20,6 +20,7 @@
 package com.cognifide.apm.core.grammar
 
 import com.cognifide.apm.api.scripts.Script
+import java.util.*
 
 class ReferenceGraph(
         val nodes: MutableList<TreeNode> = mutableListOf(),
@@ -63,6 +64,23 @@ class ReferenceGraph(
 
     inner class Transition(val from: TreeNode, val to: TreeNode, val transitionType: TransitionType) {
         var cycleDetected: Boolean = false
+
+        var id: String = "${from.id}|${to.id}|${transitionType.name}"
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as Transition
+
+            if (other.id != this.id) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            return id.hashCode()
+        }
     }
 
     enum class TransitionType {
@@ -73,6 +91,7 @@ class ReferenceGraph(
             val script: Script
     ) {
         var visited = false
+        var id: String = Base64.getEncoder().encodeToString(script.path.toByteArray())
         open var valid = true
 
         override fun equals(other: Any?): Boolean {
