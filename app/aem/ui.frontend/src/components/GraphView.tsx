@@ -75,6 +75,72 @@ export const GraphView = () => {
     }, []);
 
     useEffect(() => {
+        const convertToEdges = (transitions: Transition[]): DataSet<Edge, 'id'> => {
+
+            const edges = new DataSet<Edge, 'id'>();
+
+            transitions.forEach((transition) => {
+                const existingItem = edges.getDataSet().getIds().find((id) => {
+                    return (id.toString().startsWith(`${transition.from.id}${transition.to.id}`) ||
+                        id.toString().startsWith(`${transition.to.id}${transition.from.id}`));
+                });
+
+                let smoothOpts: boolean | {
+                    enabled: boolean,
+                    type: string,
+                    forceDirection?: string | boolean,
+                    roundness: number,
+                } = false;
+
+
+                if (existingItem) {
+                    smoothOpts = {
+                        enabled: true,
+                        type: 'curvedCW',
+                        roundness: 0.3
+                    }
+                }
+
+                edges.add({
+                    id: `${transition.from.id}${transition.to.id}|${transition.refType}`,
+                    from: transition.from.id,
+                    to: transition.to.id,
+                    title: transition.cycleDetected ? 'INVALID' : transition.refType,
+                    smooth: smoothOpts,
+                    width: theme.width,
+                    shadow: {
+                        enabled: true,
+                        size: 5,
+                        color: 'rgba(0,0,0,0.2)'
+                    },
+                    color: transition.cycleDetected ? theme.invalid_fg : (transition.refType === 'IMPORT' ? theme.import_edge : theme.run_edge)
+                });
+            });
+
+            return edges;
+        }
+
+        const convertNodes = (nodes: GraphNode[]) : DataSet<Node, 'id'> => {
+            const networkNodes = new DataSet<Node, 'id'>();
+            nodes.forEach((node) => {
+                networkNodes.add({
+                    ...nodeProps,
+                    id: node.id,
+                    label: node.script.name,
+                    color: {
+                        background: node.valid ? theme.blue_bg : theme.invalid_bg,
+                        border: node.valid ? theme.apm_blue : theme.invalid_fg,
+                    },
+                    font: {
+                        color: node.valid ? theme.apm_blue : theme.invalid_fg,
+                    },
+                    title: node.script.path
+                });
+            })
+
+            return networkNodes;
+        }
+
         const nodes = graphData?.nodes;
         const transitions = graphData?.transitions;
         if (nodes && transitions && null !== container.current) {
@@ -123,72 +189,6 @@ export const GraphView = () => {
             size: 16
         }
     };
-
-    const convertNodes = (nodes: GraphNode[]) : DataSet<Node, 'id'> => {
-        const networkNodes = new DataSet<Node, 'id'>();
-        nodes.forEach((node) => {
-            networkNodes.add({
-                ...nodeProps,
-                id: node.id,
-                label: node.script.name,
-                color: {
-                    background: node.valid ? theme.blue_bg : theme.invalid_bg,
-                    border: node.valid ? theme.apm_blue : theme.invalid_fg,
-                },
-                font: {
-                    color: node.valid ? theme.apm_blue : theme.invalid_fg,
-                },
-                title: node.script.path
-            });
-        })
-
-        return networkNodes;
-    }
-
-    const convertToEdges = (transitions: Transition[]): DataSet<Edge, 'id'> => {
-
-        const edges = new DataSet<Edge, 'id'>();
-
-        transitions.forEach((transition) => {
-            const existingItem = edges.getDataSet().getIds().find((id) => {
-                return (id.toString().startsWith(`${transition.from.id}${transition.to.id}`) ||
-                    id.toString().startsWith(`${transition.to.id}${transition.from.id}`));
-            });
-
-            let smoothOpts: boolean | {
-                enabled: boolean,
-                type: string,
-                forceDirection?: string | boolean,
-                roundness: number,
-            } = false;
-
-
-            if (existingItem) {
-                smoothOpts = {
-                    enabled: true,
-                    type: 'curvedCW',
-                    roundness: 0.3
-                }
-            }
-
-            edges.add({
-                id: `${transition.from.id}${transition.to.id}|${transition.refType}`,
-                from: transition.from.id,
-                to: transition.to.id,
-                title: transition.cycleDetected ? 'INVALID' : transition.refType,
-                smooth: smoothOpts,
-                width: theme.width,
-                shadow: {
-                    enabled: true,
-                    size: 5,
-                    color: 'rgba(0,0,0,0.2)'
-                },
-                color: transition.cycleDetected ? theme.invalid_fg : (transition.refType === 'IMPORT' ? theme.import_edge : theme.run_edge)
-            });
-        });
-
-        return edges;
-    }
 
     return <>
         <div ref={container} id="graph"/>
