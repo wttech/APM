@@ -75,6 +75,21 @@ export const GraphView = () => {
     }, []);
 
     useEffect(() => {
+        const nodeProps = {
+            shape: 'box',
+            size: 30,
+            margin: {
+                top: 10,
+                bottom: 10,
+                right: 10,
+                left: 10
+            },
+            borderWidth: theme.width,
+            font: {
+                size: 16
+            }
+        };
+
         const convertToEdges = (transitions: Transition[]): DataSet<Edge, 'id'> => {
 
             const edges = new DataSet<Edge, 'id'>();
@@ -173,21 +188,6 @@ export const GraphView = () => {
     const handleDoubleClick = (e: any, nodes: GraphNode[]) => {
         const selectedNode: GraphNode | undefined = nodes.find((node) => node.id === e.nodes[0]);
         window.open(`${window.location.origin}/apm/editor.html${selectedNode?.script.path}`, '_blank');
-    };
-
-    const nodeProps = {
-        shape: 'box',
-        size: 30,
-        margin: {
-            top: 10,
-            bottom: 10,
-            right: 10,
-            left: 10
-        },
-        borderWidth: theme.width,
-        font: {
-            size: 16
-        }
     };
 
     return <>
