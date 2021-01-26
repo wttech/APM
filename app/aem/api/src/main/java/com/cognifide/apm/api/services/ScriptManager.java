@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,23 +19,25 @@
  */
 package com.cognifide.apm.api.services;
 
-import com.cognifide.apm.api.scripts.Script;
 import java.util.Map;
+
 import javax.jcr.RepositoryException;
+
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 
+import com.cognifide.apm.api.scripts.Script;
+
 public interface ScriptManager {
 
-  /**
-   * Fail-safe execution of script in concrete mode (dry run, automatic execution, validation)
-   */
-  ExecutionResult process(Script script, ExecutionMode mode, ResourceResolver resolver)
-      throws RepositoryException, PersistenceException;
+	/**
+	 * Fail-safe execution of script in concrete mode (dry run, automatic execution, validation)
+	 */
+	ExecutionResult process(Script script, ExecutionMode mode, ResourceResolver resolver)
+			throws RepositoryException, PersistenceException;
 
-
-  /**
-   * Fail-safe execution of script in concrete mode (dry run, automatic execution, validation)
+	/**
+	 * Fail-safe execution of script in concrete mode (dry run, automatic execution, validation)
 	 */
 	ExecutionResult process(Script script, ExecutionMode mode, Map<String, String> customDefinitions, ResourceResolver resolver)
 			throws RepositoryException, PersistenceException;

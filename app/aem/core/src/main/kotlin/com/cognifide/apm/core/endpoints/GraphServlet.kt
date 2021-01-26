@@ -19,8 +19,10 @@
  */
 package com.cognifide.apm.core.endpoints
 
+import com.cognifide.apm.api.services.ScriptFinder
 import com.cognifide.apm.core.Property
-import com.cognifide.apm.core.actions.ActionFactory
+import com.cognifide.apm.core.endpoints.dto.GraphDto
+import com.cognifide.apm.core.grammar.ReferenceFinder
 import com.cognifide.apm.core.utils.ServletUtils
 import org.apache.sling.api.SlingHttpServletRequest
 import org.apache.sling.api.SlingHttpServletResponse
@@ -33,18 +35,22 @@ import javax.servlet.Servlet
         immediate = true,
         service = [Servlet::class],
         property = [
-            Property.PATH + "/bin/apm/references",
+            Property.PATH + "/bin/apm/graph",
             Property.METHOD + "GET",
-            Property.DESCRIPTION + "APM References Servlet",
+            Property.DESCRIPTION + "APM Scripts Graph Servlet",
             Property.VENDOR
         ])
-class ReferenceServlet : SlingAllMethodsServlet() {
+class GraphServlet : SlingAllMethodsServlet() {
 
     @Reference
     @Transient
-    private lateinit var actionFactory: ActionFactory
+    lateinit var scriptFinder: ScriptFinder
 
     override fun doGet(request: SlingHttpServletRequest, response: SlingHttpServletResponse) {
-        ServletUtils.writeJson(response, actionFactory.commandDescriptions)
+        val all = scriptFinder.findAll(request.resourceResolver)
+        val referenceFinder = ReferenceFinder(scriptFinder, request.resourceResolver)
+        val referenceGraph = referenceFinder.getReferenceGraph(*all.toTypedArray())
+
+        ServletUtils.writeJson(response, GraphDto(referenceGraph))
     }
 }

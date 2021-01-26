@@ -19,16 +19,18 @@
  */
 package com.cognifide.apm.core.jobs;
 
-import com.cognifide.apm.core.Property;
-import com.cognifide.apm.core.endpoints.BackgroundJobParameters;
-import com.cognifide.apm.core.jobs.JobResultsCache.ExecutionSummary;
-import com.cognifide.apm.core.scriptrunnerjob.JobProgressOutput;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.apache.sling.event.jobs.Job;
 import org.apache.sling.event.jobs.JobManager;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+
+import com.cognifide.apm.core.Property;
+import com.cognifide.apm.core.endpoints.BackgroundJobParameters;
+import com.cognifide.apm.core.jobs.JobResultsCache.ExecutionSummary;
+import com.cognifide.apm.core.scriptrunnerjob.JobProgressOutput;
 
 @Component(
     immediate = true,
@@ -38,6 +40,10 @@ import org.osgi.service.component.annotations.Reference;
         Property.VENDOR
     }
 )
+/**
+ * @deprecated use {@link com.cognifide.apm.core.services.async.AsyncScriptExecutorImpl} instead
+ */
+@Deprecated
 public class ScriptRunnerJobManagerImpl implements ScriptRunnerJobManager {
 
   public static final String JOB_SCRIPT_RUN_TOPIC = "script/job/run";

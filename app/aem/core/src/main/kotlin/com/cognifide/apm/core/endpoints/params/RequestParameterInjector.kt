@@ -34,6 +34,7 @@ import org.osgi.framework.Constants
 import org.osgi.service.component.annotations.Component
 import java.io.InputStream
 import java.lang.reflect.AnnotatedElement
+import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -55,9 +56,13 @@ class RequestParameterInjector : Injector, StaticInjectAnnotationProcessorFactor
                           disposalCallbackRegistry: DisposalCallbackRegistry): Any? {
         if (adaptable is SlingHttpServletRequest) {
             val annotation = annotatedElement.getAnnotation(RequestParameter::class.java)
-            if (annotation != null && type is Class<*>) {
+            if (annotation != null) {
                 val parameterName = annotation.value
-                return getValue(adaptable, type, StringUtils.defaultString(parameterName, fieldName), annotatedElement)
+                return when {
+                    type is ParameterizedType && type.rawType is Class<*> && Map::class.java.isAssignableFrom(type.rawType as Class<*>) -> extractParams(adaptable, fieldName)
+                    type is Class<*> -> getValue(adaptable, type, StringUtils.defaultString(parameterName, fieldName), annotatedElement)
+                    else -> null
+                }
             }
         }
         return null
@@ -70,16 +75,27 @@ class RequestParameterInjector : Injector, StaticInjectAnnotationProcessorFactor
             fieldClass.name in listOf("java.lang.Integer", "int") -> Ints.tryParse(parameterValue.string)
             fieldClass.name in listOf("java.lang.Boolean", "boolean") -> "true" == parameterValue.string
             fieldClass == InputStream::class.java -> parameterValue.inputStream
-            fieldClass == LocalDateTime::class.java -> {
-                val dateFormat = annotatedElement.getAnnotation(DateFormat::class.java)?.value
-                        ?: DateTimeFormatter.ISO_LOCAL_DATE_TIME.toString()
-                LocalDateTime.parse(parameterValue.string, DateTimeFormatter.ofPattern(dateFormat))
-            }
-            Enum::class.java.isAssignableFrom(fieldClass) -> {
-                fieldClass.enumConstants.firstOrNull { it.toString() == parameterValue.string }
-            }
+            fieldClass == LocalDateTime::class.java -> toLocalDateTime(annotatedElement, parameterValue)
+            Enum::class.java.isAssignableFrom(fieldClass) -> toEnum(fieldClass, parameterValue)
             else -> parameterValue.string
         }
+    }
+
+    private fun toEnum(type: Class<*>, parameterValue: org.apache.sling.api.request.RequestParameter) =
+            type.enumConstants.firstOrNull { it.toString() == parameterValue.string }
+
+    private fun extractParams(request: SlingHttpServletRequest, prefix: String) =
+            request.parameterMap.mapValues { (it.value as Array<*>)[0] }
+                    .mapValues { it.value as String }
+                    .mapKeys { it.key as String }
+                    .filterKeys { it.startsWith(prefix) }
+                    .mapKeys { it.key.removePrefix(prefix) }
+                    .mapKeys { it.key.decapitalize() }
+
+    private fun toLocalDateTime(annotatedElement: AnnotatedElement, parameterValue: org.apache.sling.api.request.RequestParameter): LocalDateTime {
+        val dateFormat = annotatedElement.getAnnotation(DateFormat::class.java)?.value
+                ?: DateTimeFormatter.ISO_LOCAL_DATE_TIME.toString()
+        return LocalDateTime.parse(parameterValue.string, DateTimeFormatter.ofPattern(dateFormat))
     }
 
     override fun createAnnotationProcessor(element: AnnotatedElement): InjectAnnotationProcessor2? {

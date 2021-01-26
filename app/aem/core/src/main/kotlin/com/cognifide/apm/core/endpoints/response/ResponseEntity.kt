@@ -28,6 +28,10 @@ fun badRequest(body: ErrorBody.() -> Unit): ResponseEntity<Any> {
     return error(HttpServletResponse.SC_BAD_REQUEST, body)
 }
 
+fun notFound(body: ErrorBody.() -> Unit): ResponseEntity<Any> {
+    return error(HttpServletResponse.SC_NOT_FOUND, body)
+}
+
 fun internalServerError(body: ErrorBody.() -> Unit): ResponseEntity<Any> {
     return error(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, body)
 }
