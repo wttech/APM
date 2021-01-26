@@ -19,11 +19,17 @@
  */
 package com.cognifide.apm.core.scriptrunnerjob;
 
+import java.util.List;
+
 import com.cognifide.apm.api.services.ExecutionResult.Entry;
 import com.cognifide.apm.core.jobs.ScriptRunnerJobStatus;
-import java.util.List;
+
 import lombok.Getter;
 
+/**
+ * @deprecated use {@link com.cognifide.apm.core.services.async.ExecutionStatus} instead
+ */
+@Deprecated
 public class JobProgressOutput {
 
 	@Getter

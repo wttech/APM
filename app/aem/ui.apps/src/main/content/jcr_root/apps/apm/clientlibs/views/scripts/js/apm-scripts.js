@@ -113,7 +113,12 @@
       this.showWait();
       $.ajax({
         type: 'POST',
-        url: '/bin/cqsm/run-background?file=' + this.scriptPath + '&mode=' + this.mode,
+        url: '/bin/apm/scripts/exec',
+        data: {
+          script: this.scriptPath,
+          executionMode: this.mode,
+          async: true
+        },
         dataType: 'json'
       })
       .done(function (data) {
@@ -124,23 +129,32 @@
       });
     },
 
+    handleResponse: function (data) {
+      if (data.status === 'finished') {
+        this.status = ScriptStatus.FINISHED;
+        const runStatus = getRunStatus(data);
+        showMessageOnFinished(this.mode, runStatus);
+        this.showRunStatus(runStatus !== RunStatus.ERROR, data.path);
+      } else if (data.type === 'unknown') {
+        this.status = ScriptStatus.FINISHED;
+        showMessageOnUnknown(this.mode, self.job.message);
+        this.showRunStatus(false, '');
+      }
+    },
+
     checkStatus: function () {
       const self = this;
       $.ajax({
         type: 'GET',
-        url: '/bin/cqsm/run-background?id=' + this.job.id,
+        url: '/bin/apm/scripts/exec?id=' + this.job.id,
         dataType: 'json'
       })
       .done(function (data) {
-        if (data.type === 'finished') {
-          self.status = ScriptStatus.FINISHED;
-          const runStatus = getRunStatus(data);
-          showMessageOnFinished(self.mode, runStatus);
-          self.showRunStatus(runStatus !== RunStatus.ERROR, data.path);
-        } else if (data.type === 'unknown') {
-          self.status = ScriptStatus.FINISHED;
-          showMessageOnUnknown(self.mode, self.job.message);
-          self.showRunStatus(false, '');
+        self.handleResponse(data);
+      })
+      .fail(function(xhr) {
+        if (xhr.responseJSON) {
+          self.handleResponse(xhr.responseJSON);
         }
       });
     },
@@ -289,7 +303,7 @@
       return entry.status;
     }
 
-    let statuses = new Set(data.entries.map(toRunStatus)),
+    let statuses = new Set(data.output.map(toRunStatus)),
         result = RunStatus.SUCCESS;
     if (statuses.has(RunStatus.ERROR)) {
       result = RunStatus.ERROR;

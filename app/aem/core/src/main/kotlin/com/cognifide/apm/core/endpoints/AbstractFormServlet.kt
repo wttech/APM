@@ -19,10 +19,8 @@
  */
 package com.cognifide.apm.core.endpoints
 
-import com.cognifide.apm.core.endpoints.response.ErrorBody
-import com.cognifide.apm.core.endpoints.response.JsonObject
 import com.cognifide.apm.core.endpoints.response.ResponseEntity
-import com.cognifide.apm.core.utils.ServletUtils
+import com.cognifide.apm.core.endpoints.utils.RequestProcessor
 import org.apache.sling.api.SlingHttpServletRequest
 import org.apache.sling.api.SlingHttpServletResponse
 import org.apache.sling.api.resource.ResourceResolver
@@ -30,7 +28,6 @@ import org.apache.sling.api.servlets.SlingAllMethodsServlet
 import org.apache.sling.models.factory.ModelFactory
 import org.osgi.service.component.annotations.Reference
 import java.io.IOException
-import javax.servlet.http.HttpServletResponse
 
 abstract class AbstractFormServlet<F>(private val formClass: Class<F>) : SlingAllMethodsServlet() {
 
@@ -39,20 +36,9 @@ abstract class AbstractFormServlet<F>(private val formClass: Class<F>) : SlingAl
     protected lateinit var modelFactory: ModelFactory
 
     @Throws(IOException::class)
-    override fun doPost(httpRequest: SlingHttpServletRequest, httpResponse: SlingHttpServletResponse) {
-        try {
-            val form = modelFactory.createModel(httpRequest, formClass)
-            val response = doPost(form, httpRequest.resourceResolver)
-
-            httpResponse.setStatus(response.statusCode)
-            ServletUtils.writeJson(httpResponse, body(response.body))
-        } catch (e: Exception) {
-            httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
-            ServletUtils.writeJson(httpResponse, body(ErrorBody("Cannot save script in repository: " + e.message)))
-        }
+    override fun doPost(request: SlingHttpServletRequest, response: SlingHttpServletResponse) {
+        RequestProcessor(modelFactory, formClass).process(request, response) { form, resourceResolver -> doPost(form, resourceResolver) }
     }
-
-    private fun body(body: Any) = if (body is JsonObject) body.toMap() else body
 
     abstract fun setup(modelFactory: ModelFactory)
 
