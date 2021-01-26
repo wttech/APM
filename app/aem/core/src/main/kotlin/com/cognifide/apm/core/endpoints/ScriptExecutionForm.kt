@@ -31,5 +31,5 @@ class ScriptExecutionForm @Inject constructor(
         @param:RequestParameter("script", optional = false) val script: String,
         @param:RequestParameter("executionMode", optional = false) val executionMode: ExecutionMode,
         @param:RequestParameter("async") val async: Boolean = false,
-        @param:RequestParameter("param") val customDefinitions: Map<String, String> = mapOf()
+        @param:RequestParameter("define") val customDefinitions: Map<String, String> = mapOf()
 )
