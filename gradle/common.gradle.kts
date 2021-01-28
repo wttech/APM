@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * AEM Permission Management
  * %%
- * Copyright (C) 2013 Cognifide Limited
+ * Copyright (C) 2013 Wunderman Thompson Technology
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,57 +45,57 @@ allprojects {
                             developer {
                                 name.set("Marcin Jędraszczyk")
                                 email.set("marcin.jedraszczyk@cognifide.com")
-                                organization.set("Cognifide")
+                                organization.set("Wunderman Thompson Technology")
                                 organizationUrl.set("https://www.cognifide.com")
                                 roles.set(listOf("architect", "lead developer"))
                             }
                             developer {
                                 name.set("Piotr Marcinkowski")
                                 email.set("piotr.marcinkowski@cognifide.com")
-                                organization.set("Cognifide")
+                                organization.set("Wunderman Thompson Technology")
                                 organizationUrl.set("https://www.cognifide.com")
                                 roles.set(listOf("developer"))
                             }
                             developer {
                                 name.set("Maciej Geisler")
                                 email.set("maciej.geisler@cognifide.com")
-                                organization.set("Cognifide")
+                                organization.set("Wunderman Thompson Technology")
                                 organizationUrl.set("https://www.cognifide.com")
                                 roles.set(listOf("developer"))
                             }
                             developer {
                                 name.set("Mateusz Bloch")
                                 email.set("mateusz.bloch@cognifide.com")
-                                organization.set("Cognifide")
+                                organization.set("Wunderman Thompson Technology")
                                 organizationUrl.set("https://www.cognifide.com")
                                 roles.set(listOf("tester"))
                             }
                             developer {
                                 name.set("Katarzyna Wielgosz")
                                 email.set("katarzyna.wielgosz@cognifide.com")
-                                organization.set("Cognifide")
+                                organization.set("Wunderman Thompson Technology")
                                 organizationUrl.set("https://www.cognifide.com")
                                 roles.set(listOf("consultant"))
                             }
                             developer {
                                 name.set("Marek Krokosiński")
                                 email.set("marek.krokosinski@cognifide.com")
-                                organization.set("Cognifide")
+                                organization.set("Wunderman Thompson Technology")
                                 organizationUrl.set("https://www.cognifide.com")
                                 roles.set(listOf("consultant"))
                             }
                             developer {
                                 name.set("Piotr Wilczyński")
                                 email.set("piotr.wilczynski@cognifide.com")
-                                organization.set("Cognifide")
+                                organization.set("Wunderman Thompson Technology")
                                 organizationUrl.set("https://www.cognifide.com")
                                 roles.set(listOf("consultant"))
                             }
                         }
                         scm {
-                            connection.set("https://github.com/Cognifide/APM.git")
-                            developerConnection.set("https://github.com/Cognifide/APM.git")
-                            url.set("https://github.com/Cognifide/APM")
+                            connection.set("https://github.com/wttech/APM.git")
+                            developerConnection.set("https://github.com/wttech/APM.git")
+                            url.set("https://github.com/wttech/APM")
                         }
                     }
                 }
