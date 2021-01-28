@@ -23,7 +23,7 @@ plugins.withId("com.cognifide.aem.bundle") {
         withType<Jar> {
             bundle {
                 category = "apm"
-                vendor = "Cognifide"
+                vendor = "wttech"
                 license = "http://www.apache.org/licenses/LICENSE-2.0.txt"
                 bnd("-plugin org.apache.sling.caconfig.bndplugin.ConfigurationClassScannerPlugin")
             }
