@@ -19,6 +19,26 @@
  */
 package com.cognifide.apm.core.scripts;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+
+import org.apache.jackrabbit.api.JackrabbitSession;
+import org.apache.sling.api.resource.PersistenceException;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.settings.SlingSettingsService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.apm.api.actions.Context;
 import com.cognifide.apm.api.actions.SessionSavingMode;
@@ -46,24 +66,7 @@ import com.cognifide.apm.core.services.event.ApmEvent.ScriptExecutedEvent;
 import com.cognifide.apm.core.services.event.ApmEvent.ScriptLaunchedEvent;
 import com.cognifide.apm.core.services.event.EventManager;
 import com.cognifide.apm.core.services.version.VersionService;
-import com.cognifide.apm.core.utils.InstanceTypeProvider;
 import com.google.common.collect.Maps;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import org.apache.jackrabbit.api.JackrabbitSession;
-import org.apache.sling.api.resource.PersistenceException;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Component(
     immediate = true,
@@ -87,7 +90,7 @@ public class ScriptManagerImpl implements ScriptManager {
   private ScriptFinder scriptFinder;
 
   @Reference
-  private InstanceTypeProvider instanceTypeProvider;
+  private SlingSettingsService slingSettings;
 
   @Reference
   private VersionService versionService;
@@ -185,7 +188,7 @@ public class ScriptManagerImpl implements ScriptManager {
   }
 
   private void saveHistory(Script script, ExecutionMode mode, Progress progress) {
-    if (instanceTypeProvider.isOnAuthor()) {
+    if (slingSettings.getRunModes().contains("author")) {
       if (mode != ExecutionMode.VALIDATION) {
         history.logLocal(script, mode, progress);
       }

@@ -21,6 +21,16 @@ package com.cognifide.apm.core.history;
 
 import static com.google.common.base.Preconditions.checkState;
 
+import java.util.Calendar;
+import java.util.List;
+
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.api.resource.ValueMap;
+import org.apache.sling.settings.SlingSettingsService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
 import com.cognifide.actions.api.ActionReceiver;
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ExecutionMode;
@@ -29,16 +39,8 @@ import com.cognifide.apm.core.logger.ProgressEntry;
 import com.cognifide.apm.core.progress.ProgressHelper;
 import com.cognifide.apm.core.progress.ProgressImpl;
 import com.cognifide.apm.core.scripts.ScriptModel;
-import com.cognifide.apm.core.utils.InstanceTypeProvider;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
 import com.day.cq.replication.ReplicationAction;
-import java.util.Calendar;
-import java.util.List;
-import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.apache.sling.api.resource.ValueMap;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 @Component(
 		immediate = true,
@@ -50,14 +52,14 @@ public class RemoteScriptExecutionListener implements ActionReceiver {
 	private History history;
 
 	@Reference
-	private InstanceTypeProvider instanceTypeProvider;
+	private SlingSettingsService slingSettings;
 
 	@Reference
 	private ResourceResolverFactory resolverFactory;
 
 	@Override
 	public void handleAction(final ValueMap valueMap) {
-		checkState(instanceTypeProvider.isOnAuthor(), "Action Receiver has to be called in author");
+		checkState(slingSettings.getRunModes().contains("author"), "Action Receiver has to be called in author");
 		String userId = valueMap.get(ReplicationAction.PROPERTY_USER_ID, String.class);
 		SlingHelper.operateTraced(resolverFactory, userId, resolver -> {
 			//FIXME would be lovely to cast ValueMap -> ModifiableEntryBuilder

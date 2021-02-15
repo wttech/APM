@@ -19,17 +19,15 @@
  */
 package com.cognifide.apm.core.launchers;
 
-import static com.cognifide.apm.api.scripts.LaunchEnvironment.AUTHOR;
-import static com.cognifide.apm.api.scripts.LaunchEnvironment.PUBLISH;
 import static com.cognifide.apm.core.scripts.ScriptFilters.onSchedule;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.settings.SlingSettingsService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -38,13 +36,11 @@ import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-import com.cognifide.apm.api.scripts.LaunchEnvironment;
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.launchers.ScheduledScriptLauncher.ScheduleExecutorConfiguration;
-import com.cognifide.apm.core.utils.InstanceTypeProvider;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
 
 @Component(
@@ -66,7 +62,7 @@ public class ScheduledScriptLauncher extends AbstractLauncher implements Runnabl
   private ScriptFinder scriptFinder;
 
   @Reference
-  private InstanceTypeProvider instanceTypeProvider;
+  private SlingSettingsService slingSettings;
 
   @Reference
   private ResourceResolverFactory resolverFactory;
@@ -87,9 +83,7 @@ public class ScheduledScriptLauncher extends AbstractLauncher implements Runnabl
   }
 
   private void runScheduled(ResourceResolver resolver) throws PersistenceException {
-    LaunchEnvironment environment = instanceTypeProvider.isOnAuthor() ? AUTHOR : PUBLISH;
-    Set<String> runModes = instanceTypeProvider.getRunModes();
-    List<Script> scripts = scriptFinder.findAll(onSchedule(environment, runModes, new Date()), resolver);
+    List<Script> scripts = scriptFinder.findAll(onSchedule(slingSettings, new Date()), resolver);
     processScripts(scripts, resolver, LauncherType.SCHEDULED);
   }
 

@@ -21,7 +21,9 @@ package com.cognifide.apm.api.scripts;
 
 import java.util.Arrays;
 import java.util.Optional;
+
 import org.apache.commons.lang.StringUtils;
+import org.apache.sling.settings.SlingSettingsService;
 
 public enum LaunchEnvironment {
 
@@ -32,4 +34,9 @@ public enum LaunchEnvironment {
         .filter(launchEnvironment -> StringUtils.endsWithIgnoreCase(launchEnvironment.name(), text))
         .findFirst();
   }
+
+  public static LaunchEnvironment of(SlingSettingsService slingSettings) {
+    return slingSettings.getRunModes().contains("author") ? AUTHOR : PUBLISH;
+  }
+
 }

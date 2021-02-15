@@ -20,7 +20,6 @@
 
 package com.cognifide.apm.core.tools
 
-import com.cognifide.apm.api.scripts.LaunchEnvironment
 import com.cognifide.apm.api.scripts.Script
 import com.cognifide.apm.api.services.ExecutionMode
 import com.cognifide.apm.api.services.ExecutionResult
@@ -31,12 +30,12 @@ import com.cognifide.apm.core.services.ModifiedScriptFinder
 import com.cognifide.apm.core.services.event.ApmEvent
 import com.cognifide.apm.core.services.event.EventManager
 import com.cognifide.apm.core.services.version.VersionService
-import com.cognifide.apm.core.utils.InstanceTypeProvider
 import com.cognifide.apm.core.utils.sling.SlingHelper.getResourceResolverForService
 import org.apache.jackrabbit.vault.packaging.InstallContext
 import org.apache.jackrabbit.vault.packaging.PackageException
 import org.apache.sling.api.resource.ResourceResolver
 import org.apache.sling.api.resource.ResourceResolverFactory
+import org.apache.sling.settings.SlingSettingsService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.*
@@ -47,21 +46,20 @@ class ApmInstallHook : OsgiAwareInstallHook() {
 
     override fun execute(context: InstallContext) {
         if (context.phase == InstallContext.Phase.INSTALLED) {
-            val currentEnvironment = getCurrentEnvironment()
-            val currentRunModes = getCurrentRunModes()
+            val slingSettings = getService(SlingSettingsService::class.java)
             val currentHook = getCurrentHook(context)
 
-            handleScripts(currentEnvironment, currentRunModes, currentHook)
+            handleScripts(slingSettings, currentHook)
         }
     }
 
-    private fun handleScripts(currentEnvironment: LaunchEnvironment, currentRunModes: Set<String>, currentHook: String) {
+    private fun handleScripts(slingSettings: SlingSettingsService, currentHook: String) {
         val resolverFactory = getService(ResourceResolverFactory::class.java)
         val scriptFinder = getService(ScriptFinder::class.java)
 
         try {
             getResourceResolverForService(resolverFactory).use { resolver ->
-                executeScripts(currentEnvironment, currentRunModes, currentHook, resolver)
+                executeScripts(slingSettings, currentHook, resolver)
                 applyChecksum(scriptFinder, resolver)
             }
             val eventManager = getService(EventManager::class.java)
@@ -71,14 +69,14 @@ class ApmInstallHook : OsgiAwareInstallHook() {
         }
     }
 
-    private fun executeScripts(currentEnvironment: LaunchEnvironment, currentRunModes: Set<String>, currentHook: String, resolver: ResourceResolver) {
+    private fun executeScripts(slingSettings: SlingSettingsService, currentHook: String, resolver: ResourceResolver) {
         val scriptManager = getService(ScriptManager::class.java)
         val scriptFinder = getService(ScriptFinder::class.java)
         val modifiedScriptFinder = getService(ModifiedScriptFinder::class.java)
 
         val scripts = mutableListOf<Script>()
-        scripts.addAll(scriptFinder.findAll(onInstall(currentEnvironment, currentRunModes, currentHook), resolver))
-        scripts.addAll(modifiedScriptFinder.findAll(onInstallIfModified(currentEnvironment, currentRunModes, currentHook), resolver))
+        scripts.addAll(scriptFinder.findAll(onInstall(slingSettings, currentHook), resolver))
+        scripts.addAll(modifiedScriptFinder.findAll(onInstallIfModified(slingSettings, currentHook), resolver))
         scripts.forEach { script ->
             val result: ExecutionResult = scriptManager.process(script, ExecutionMode.AUTOMATIC_RUN, resolver)
             logStatus(script.path, result.isSuccess)
@@ -102,16 +100,6 @@ class ApmInstallHook : OsgiAwareInstallHook() {
         val hookRegex = Regex("installhook\\.(\\w+)\\.class")
         val result = hookRegex.matchEntire(hookPropertyKey)
         return result?.groups?.get(1)?.value ?: ""
-    }
-
-    private fun getCurrentEnvironment(): LaunchEnvironment {
-        val instanceTypeProvider = getService(InstanceTypeProvider::class.java)
-        return if (instanceTypeProvider.isOnAuthor) LaunchEnvironment.AUTHOR else LaunchEnvironment.PUBLISH
-    }
-
-    private fun getCurrentRunModes(): Set<String> {
-        val instanceTypeProvider = getService(InstanceTypeProvider::class.java)
-        return instanceTypeProvider.runModes
     }
 
     private fun logStatus(scriptPath: String, success: Boolean) {
