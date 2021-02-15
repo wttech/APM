@@ -23,6 +23,16 @@ import static com.cognifide.apm.api.scripts.LaunchEnvironment.AUTHOR;
 import static com.cognifide.apm.api.scripts.LaunchEnvironment.PUBLISH;
 import static com.cognifide.apm.core.scripts.ScriptFilters.onStartupIfModified;
 
+import java.util.List;
+import java.util.Set;
+
+import org.apache.sling.api.resource.PersistenceException;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
 import com.cognifide.apm.api.scripts.LaunchEnvironment;
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ScriptManager;
@@ -30,13 +40,6 @@ import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.services.ModifiedScriptFinder;
 import com.cognifide.apm.core.utils.InstanceTypeProvider;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
-import java.util.List;
-import org.apache.sling.api.resource.PersistenceException;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 @Component(
     immediate = true,
@@ -66,7 +69,8 @@ public class StartupModifiedScriptLauncher extends AbstractLauncher {
 
   private void runOnStartupIfModified(ResourceResolver resolver) throws PersistenceException {
     LaunchEnvironment environment = instanceTypeProvider.isOnAuthor() ? AUTHOR : PUBLISH;
-    List<Script> scripts = modifiedScriptFinder.findAll(onStartupIfModified(environment), resolver);
+    Set<String> runModes = instanceTypeProvider.getRunModes();
+    List<Script> scripts = modifiedScriptFinder.findAll(onStartupIfModified(environment, runModes), resolver);
     processScripts(scripts, resolver, LauncherType.STARTUP_MODIFIED);
   }
 

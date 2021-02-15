@@ -21,12 +21,15 @@ package com.cognifide.apm.core.scripts;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
+import java.util.Date;
+import java.util.Set;
+import java.util.function.Predicate;
+
+import org.apache.commons.lang.StringUtils;
+
 import com.cognifide.apm.api.scripts.LaunchEnvironment;
 import com.cognifide.apm.api.scripts.LaunchMode;
 import com.cognifide.apm.api.scripts.Script;
-import java.util.Date;
-import java.util.function.Predicate;
-import org.apache.commons.lang.StringUtils;
 
 /**
  * Due to the ResourceResolver dependency these filters should not be used lazy
@@ -34,37 +37,42 @@ import org.apache.commons.lang.StringUtils;
  */
 public class ScriptFilters {
 
-  public static Predicate<Script> onInstall(LaunchEnvironment environment, String currentHook) {
+  public static Predicate<Script> onInstall(LaunchEnvironment environment, Set<String> runModes, String currentHook) {
     return enabled()
         .and(withLaunchMode(LaunchMode.ON_INSTALL))
         .and(withLaunchEnvironment(environment))
+        .and(withLaunchRunModes(runModes))
         .and(withLaunchHook(currentHook));
   }
 
-  public static Predicate<Script> onInstallIfModified(LaunchEnvironment environment, String currentHook) {
+  public static Predicate<Script> onInstallIfModified(LaunchEnvironment environment, Set<String> runModes, String currentHook) {
     return enabled()
         .and(withLaunchMode(LaunchMode.ON_INSTALL_IF_MODIFIED))
         .and(withLaunchEnvironment(environment))
+        .and(withLaunchRunModes(runModes))
         .and(withLaunchHook(currentHook));
   }
 
-  public static Predicate<Script> onSchedule(LaunchEnvironment environment, Date date) {
+  public static Predicate<Script> onSchedule(LaunchEnvironment environment, Set<String> runModes, Date date) {
     return enabled()
         .and(withLaunchMode(LaunchMode.ON_SCHEDULE))
         .and(withLaunchEnvironment(environment))
+        .and(withLaunchRunModes(runModes))
         .and(script -> script.getLastExecuted() == null && script.getLaunchSchedule().before(date));
   }
 
-  public static Predicate<Script> onStartup(LaunchEnvironment environment) {
+  public static Predicate<Script> onStartup(LaunchEnvironment environment, Set<String> runModes) {
     return enabled()
         .and(withLaunchMode(LaunchMode.ON_STARTUP))
-        .and(withLaunchEnvironment(environment));
+        .and(withLaunchEnvironment(environment))
+        .and(withLaunchRunModes(runModes));
   }
 
-  public static Predicate<Script> onStartupIfModified(LaunchEnvironment environment) {
+  public static Predicate<Script> onStartupIfModified(LaunchEnvironment environment, Set<String> runModes) {
     return enabled()
         .and(withLaunchMode(LaunchMode.ON_STARTUP_IF_MODIFIED))
-        .and(withLaunchEnvironment(environment));
+        .and(withLaunchEnvironment(environment))
+        .and(withLaunchRunModes(runModes));
   }
 
   public static Predicate<Script> noChecksum() {
@@ -81,11 +89,16 @@ public class ScriptFilters {
         || environment == script.getLaunchEnvironment();
   }
 
+  private static Predicate<? super Script> withLaunchRunModes(Set<String> runModes) {
+    return script -> script.getLaunchRunModes() == null
+        || runModes.containsAll(script.getLaunchRunModes());
+  }
+
   private static Predicate<Script> withLaunchMode(final LaunchMode mode) {
     return script -> script.getLaunchMode() == mode;
   }
 
   private static Predicate<Script> enabled() {
-    return script -> script.isLaunchEnabled();
+    return Script::isLaunchEnabled;
   }
 }

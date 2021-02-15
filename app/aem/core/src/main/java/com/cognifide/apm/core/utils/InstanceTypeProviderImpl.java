@@ -19,10 +19,13 @@
  */
 package com.cognifide.apm.core.utils;
 
-import com.cognifide.apm.core.Property;
+import java.util.Set;
+
 import org.apache.sling.settings.SlingSettingsService;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+
+import com.cognifide.apm.core.Property;
 
 @Component(
 		immediate = true,
@@ -42,6 +45,11 @@ public class InstanceTypeProviderImpl implements InstanceTypeProvider {
 	@Override
 	public boolean isOnAuthor() {
 		return settingsService.getRunModes().contains(RUNMODE_AUTHOR);
+	}
+
+	@Override
+	public Set<String> getRunModes() {
+		return settingsService.getRunModes();
 	}
 
 }

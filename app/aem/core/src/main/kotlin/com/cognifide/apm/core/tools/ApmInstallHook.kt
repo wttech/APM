@@ -48,19 +48,20 @@ class ApmInstallHook : OsgiAwareInstallHook() {
     override fun execute(context: InstallContext) {
         if (context.phase == InstallContext.Phase.INSTALLED) {
             val currentEnvironment = getCurrentEnvironment()
+            val currentRunModes = getCurrentRunModes()
             val currentHook = getCurrentHook(context)
 
-            handleScripts(currentEnvironment, currentHook)
+            handleScripts(currentEnvironment, currentRunModes, currentHook)
         }
     }
 
-    private fun handleScripts(currentEnvironment: LaunchEnvironment, currentHook: String) {
+    private fun handleScripts(currentEnvironment: LaunchEnvironment, currentRunModes: Set<String>, currentHook: String) {
         val resolverFactory = getService(ResourceResolverFactory::class.java)
         val scriptFinder = getService(ScriptFinder::class.java)
 
         try {
             getResourceResolverForService(resolverFactory).use { resolver ->
-                executeScripts(currentEnvironment, currentHook, resolver)
+                executeScripts(currentEnvironment, currentRunModes, currentHook, resolver)
                 applyChecksum(scriptFinder, resolver)
             }
             val eventManager = getService(EventManager::class.java)
@@ -70,14 +71,14 @@ class ApmInstallHook : OsgiAwareInstallHook() {
         }
     }
 
-    private fun executeScripts(currentEnvironment: LaunchEnvironment, currentHook: String, resolver: ResourceResolver) {
+    private fun executeScripts(currentEnvironment: LaunchEnvironment, currentRunModes: Set<String>, currentHook: String, resolver: ResourceResolver) {
         val scriptManager = getService(ScriptManager::class.java)
         val scriptFinder = getService(ScriptFinder::class.java)
         val modifiedScriptFinder = getService(ModifiedScriptFinder::class.java)
 
         val scripts = mutableListOf<Script>()
-        scripts.addAll(scriptFinder.findAll(onInstall(currentEnvironment, currentHook), resolver))
-        scripts.addAll(modifiedScriptFinder.findAll(onInstallIfModified(currentEnvironment, currentHook), resolver))
+        scripts.addAll(scriptFinder.findAll(onInstall(currentEnvironment, currentRunModes, currentHook), resolver))
+        scripts.addAll(modifiedScriptFinder.findAll(onInstallIfModified(currentEnvironment, currentRunModes, currentHook), resolver))
         scripts.forEach { script ->
             val result: ExecutionResult = scriptManager.process(script, ExecutionMode.AUTOMATIC_RUN, resolver)
             logStatus(script.path, result.isSuccess)
@@ -106,6 +107,11 @@ class ApmInstallHook : OsgiAwareInstallHook() {
     private fun getCurrentEnvironment(): LaunchEnvironment {
         val instanceTypeProvider = getService(InstanceTypeProvider::class.java)
         return if (instanceTypeProvider.isOnAuthor) LaunchEnvironment.AUTHOR else LaunchEnvironment.PUBLISH
+    }
+
+    private fun getCurrentRunModes(): Set<String> {
+        val instanceTypeProvider = getService(InstanceTypeProvider::class.java)
+        return instanceTypeProvider.runModes
     }
 
     private fun logStatus(scriptPath: String, success: Boolean) {
