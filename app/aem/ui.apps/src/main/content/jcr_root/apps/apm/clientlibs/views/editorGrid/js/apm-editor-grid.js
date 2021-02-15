@@ -28,6 +28,7 @@
     launchEnabled: 'apm:launchEnabled',
     launchMode: 'apm:launchMode',
     launchEnvironment: 'apm:launchEnvironment',
+    launchRunModes: 'apm:launchRunModes',
     launchHook: 'apm:launchHook',
     launchSchedule: 'apm:launchSchedule',
   };
@@ -48,6 +49,7 @@
         launchEnabled: fields[FieldNames.launchEnabled],
         launchMode: fields[FieldNames.launchMode],
         launchEnvironment: fields[FieldNames.launchEnvironment],
+        launchRunModes: fields[FieldNames.launchRunModes],
         launchHook: fields[FieldNames.launchHook],
         launchSchedule: fields[FieldNames.launchSchedule],
       };
@@ -92,6 +94,7 @@
         const launchMode = this.fields.launchMode.getValue();
         let showFields = [this.fields.launchEnabled, this.fields.launchMode];
         if (launchMode === LaunchModes.onInstall || launchMode === LaunchModes.onInstallIfModified) {
+          showFields.push(this.fields.launchRunModes);
           showFields.push(this.fields.launchHook);
         }
         if (launchMode === LaunchModes.onSchedule) {

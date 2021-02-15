@@ -38,6 +38,7 @@
       'apm:launchEnabled',
       'apm:launchMode',
       'apm:launchEnvironment',
+      'apm:launchRunModes',
       'apm:launchHook',
       'apm:launchSchedule',
     ];
@@ -96,7 +97,9 @@
 
         const formData = new FormData();
         $.each(fieldNames, (index, fieldName) => {
-          const originalValue = originalFormData.get(fieldName);
+          const originalValue = fieldName === 'apm:launchRunModes'
+              ? originalFormData.getAll(fieldName)
+              : originalFormData.get(fieldName);
           if (originalValue) {
             formData.set(fieldName, originalValue);
           }

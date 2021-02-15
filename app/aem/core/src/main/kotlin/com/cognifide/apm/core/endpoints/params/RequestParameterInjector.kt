@@ -78,6 +78,7 @@ class RequestParameterInjector : Injector, StaticInjectAnnotationProcessorFactor
             Enum::class.java.isAssignableFrom(fieldClass) -> {
                 fieldClass.enumConstants.firstOrNull { it.toString() == parameterValue.string }
             }
+            fieldClass.canonicalName == "java.lang.String[]" -> parameterValue.string.split(",").toTypedArray()
             else -> parameterValue.string
         }
     }

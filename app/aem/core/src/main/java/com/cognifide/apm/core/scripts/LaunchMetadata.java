@@ -21,7 +21,6 @@
 package com.cognifide.apm.core.scripts;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
 import com.cognifide.apm.api.scripts.LaunchEnvironment;
 import com.cognifide.apm.api.scripts.LaunchMode;
@@ -31,7 +30,7 @@ public class LaunchMetadata {
   private final boolean executionEnabled;
   private final LaunchMode launchMode;
   private final LaunchEnvironment launchEnvironment;
-  private final Set<String> launchRunModes;
+  private final String[] launchRunModes;
   private final String executionHook;
   private final LocalDateTime executionSchedule;
 
@@ -60,7 +59,7 @@ public class LaunchMetadata {
   }
 
   public LaunchMetadata(boolean executionEnabled, LaunchMode launchMode, LaunchEnvironment launchEnvironment,
-                        Set<String> launchRunModes, String executionHook, LocalDateTime executionSchedule) {
+                        String[] launchRunModes, String executionHook, LocalDateTime executionSchedule) {
     this.executionEnabled = executionEnabled;
     this.launchMode = launchMode;
     this.launchEnvironment = launchEnvironment;
@@ -81,7 +80,7 @@ public class LaunchMetadata {
     return launchEnvironment;
   }
 
-  public Set<String> getLaunchRunModes() {
+  public String[] getLaunchRunModes() {
     return launchRunModes;
   }
 

@@ -150,6 +150,8 @@ public class ScriptStorageImpl implements ScriptStorage {
       calendar.set(localDateTime.getYear(), localDateTime.getMonthValue() - 1, localDateTime.getDayOfMonth(),
           localDateTime.getHour(), localDateTime.getMinute(), localDateTime.getSecond());
       node.setProperty(name, calendar);
+    } else if (value instanceof String[]) {
+      node.setProperty(name, (String[]) value);
     } else {
       node.setProperty(name, value.toString());
     }
