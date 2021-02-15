@@ -94,7 +94,6 @@
         const launchMode = this.fields.launchMode.getValue();
         let showFields = [this.fields.launchEnabled, this.fields.launchMode];
         if (launchMode === LaunchModes.onInstall || launchMode === LaunchModes.onInstallIfModified) {
-          showFields.push(this.fields.launchRunModes);
           showFields.push(this.fields.launchHook);
         }
         if (launchMode === LaunchModes.onSchedule) {
@@ -102,6 +101,7 @@
         }
         if (launchMode !== LaunchModes.onDemand) {
           showFields.push(this.fields.launchEnvironment);
+          showFields.push(this.fields.launchRunModes);
         }
         this.showFields(showFields);
       }
