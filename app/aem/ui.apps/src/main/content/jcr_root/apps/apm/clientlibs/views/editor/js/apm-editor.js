@@ -104,6 +104,7 @@
         formData.set('apm:launchEnabled', this.getLaunchEnabled());
         formData.set('overwrite', this.getOverwrite());
         formData.set('file', new Blob([value], {type: 'text/plain'}), this.getFullPath());
+        formData.set('apm:savePath', this.savePath);
 
         $.ajax({
           type: 'POST',
