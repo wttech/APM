@@ -20,10 +20,9 @@
 
 package com.cognifide.apm.core.scripts;
 
-import java.time.LocalDateTime;
-
 import com.cognifide.apm.api.scripts.LaunchEnvironment;
 import com.cognifide.apm.api.scripts.LaunchMode;
+import java.time.LocalDateTime;
 
 public class LaunchMetadata {
 

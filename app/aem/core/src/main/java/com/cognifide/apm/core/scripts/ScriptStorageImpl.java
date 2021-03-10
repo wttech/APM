@@ -21,6 +21,11 @@ package com.cognifide.apm.core.scripts;
 
 import static java.lang.String.format;
 
+import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.ScriptFinder;
+import com.cognifide.apm.core.Apm;
+import com.cognifide.apm.core.Property;
+import com.day.cq.commons.jcr.JcrConstants;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -32,13 +37,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
 import javax.jcr.Binary;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.ValueFactory;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.sling.api.resource.PersistenceException;
@@ -47,12 +50,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.cognifide.apm.api.scripts.Script;
-import com.cognifide.apm.api.services.ScriptFinder;
-import com.cognifide.apm.core.Apm;
-import com.cognifide.apm.core.Property;
-import com.day.cq.commons.jcr.JcrConstants;
 
 @Component(
     immediate = true,

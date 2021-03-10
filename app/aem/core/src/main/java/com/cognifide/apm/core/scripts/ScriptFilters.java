@@ -21,16 +21,14 @@ package com.cognifide.apm.core.scripts;
 
 import static org.apache.commons.lang.StringUtils.isBlank;
 
-import java.util.Date;
-import java.util.Set;
-import java.util.function.Predicate;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.sling.settings.SlingSettingsService;
-
 import com.cognifide.apm.api.scripts.LaunchEnvironment;
 import com.cognifide.apm.api.scripts.LaunchMode;
 import com.cognifide.apm.api.scripts.Script;
+import java.util.Date;
+import java.util.Set;
+import java.util.function.Predicate;
+import org.apache.commons.lang.StringUtils;
+import org.apache.sling.settings.SlingSettingsService;
 
 /**
  * Due to the ResourceResolver dependency these filters should not be used lazy

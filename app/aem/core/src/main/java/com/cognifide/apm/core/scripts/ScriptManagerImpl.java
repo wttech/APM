@@ -19,26 +19,6 @@
  */
 package com.cognifide.apm.core.scripts;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
-
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-
-import org.apache.jackrabbit.api.JackrabbitSession;
-import org.apache.sling.api.resource.PersistenceException;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.settings.SlingSettingsService;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.apm.api.actions.Context;
 import com.cognifide.apm.api.actions.SessionSavingMode;
@@ -67,6 +47,23 @@ import com.cognifide.apm.core.services.event.ApmEvent.ScriptLaunchedEvent;
 import com.cognifide.apm.core.services.event.EventManager;
 import com.cognifide.apm.core.services.version.VersionService;
 import com.google.common.collect.Maps;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import org.apache.jackrabbit.api.JackrabbitSession;
+import org.apache.sling.api.resource.PersistenceException;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.settings.SlingSettingsService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component(
     immediate = true,
@@ -109,7 +106,7 @@ public class ScriptManagerImpl implements ScriptManager {
   private final Set<DefinitionsProvider> definitionsProviders = new CopyOnWriteArraySet<>();
 
   private Progress execute(Script script, final ExecutionMode mode, Map<String, String> customDefinitions,
-      ResourceResolver resolver) throws ExecutionException, RepositoryException {
+                           ResourceResolver resolver) throws ExecutionException, RepositoryException {
     if (script == null) {
       throw new ExecutionException("Script is not specified");
     }
@@ -169,7 +166,7 @@ public class ScriptManagerImpl implements ScriptManager {
 
   @Override
   public Progress process(Script script, final ExecutionMode mode, final Map<String, String> customDefinitions,
-      ResourceResolver resolver) throws RepositoryException, PersistenceException {
+                          ResourceResolver resolver) throws RepositoryException, PersistenceException {
     Progress progress;
     try {
       progress = execute(script, mode, customDefinitions, resolver);
