@@ -22,6 +22,7 @@ aem {
         jar {
             bundle {
                 exportPackage("com.cognifide.apm.core.*")
+                importPackage("javax.annotation;version=0.0.0")
                 attribute("Sling-Model-Packages",
                         listOf(
                                 "com.cognifide.apm.core.endpoints",
