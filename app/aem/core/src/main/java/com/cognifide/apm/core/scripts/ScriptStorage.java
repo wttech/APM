@@ -19,14 +19,11 @@
  */
 package com.cognifide.apm.core.scripts;
 
+import com.cognifide.apm.api.scripts.Script;
 import java.io.InputStream;
-
 import javax.jcr.RepositoryException;
-
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
-
-import com.cognifide.apm.api.scripts.Script;
 
 public interface ScriptStorage {
 
