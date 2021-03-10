@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * AEM Permission Management
  * %%
- * Copyright (C) 2013 Cognifide Limited
+ * Copyright (C) 2013 Wunderman Thompson Technology
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,18 +19,20 @@
  */
 package com.cognifide.apm.core.jobs;
 
+import java.io.Serializable;
+import java.util.concurrent.TimeUnit;
+
+import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+
 import com.cognifide.apm.api.services.ExecutionResult;
 import com.cognifide.apm.core.Property;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import java.io.Serializable;
-import java.util.concurrent.TimeUnit;
+
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.osgi.service.component.ComponentContext;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
 
 @Component(
     immediate = true,
@@ -59,7 +61,6 @@ public class JobResultsCache {
 		return cache.getIfPresent(id);
 	}
 
-	@Getter
 	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class ExecutionSummary implements Serializable {
 
@@ -73,6 +74,18 @@ public class JobResultsCache {
 
 		public static ExecutionSummary finished(ExecutionResult result, String path) {
 			return  new ExecutionSummary(true, result, path);
+		}
+
+		public boolean isFinished() {
+			return finished;
+		}
+
+		public ExecutionResult getResult() {
+			return result;
+		}
+
+		public String getPath() {
+			return path;
 		}
 	}
 }

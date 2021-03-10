@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * AEM Permission Management
  * %%
- * Copyright (C) 2013 Cognifide Limited
+ * Copyright (C) 2013 Wunderman Thompson Technology
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ import javax.servlet.Servlet
             Property.DESCRIPTION + "APM References Servlet",
             Property.VENDOR
         ])
-class ReferenceServlet : SlingAllMethodsServlet() {
+class ReferencesServlet : SlingAllMethodsServlet() {
 
     @Reference
     @Transient

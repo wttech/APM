@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * AEM Permission Management
  * %%
- * Copyright (C) 2013 Cognifide Limited
+ * Copyright (C) 2013 Wunderman Thompson Technology
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,16 +21,11 @@ package com.cognifide.apm.core.jobs;
 
 import static com.cognifide.apm.core.utils.sling.SlingHelper.resolveDefault;
 
-import com.cognifide.apm.api.scripts.Script;
-import com.cognifide.apm.api.services.ExecutionMode;
-import com.cognifide.apm.api.services.ExecutionResult;
-import com.cognifide.apm.api.services.ScriptFinder;
-import com.cognifide.apm.api.services.ScriptManager;
-import com.cognifide.apm.core.Property;
-import com.cognifide.apm.core.history.History;
-import com.cognifide.apm.core.jobs.JobResultsCache.ExecutionSummary;
-import com.cognifide.apm.core.utils.sling.ResolveCallback;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.jcr.RepositoryException;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -41,6 +36,16 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.ExecutionMode;
+import com.cognifide.apm.api.services.ExecutionResult;
+import com.cognifide.apm.api.services.ScriptFinder;
+import com.cognifide.apm.api.services.ScriptManager;
+import com.cognifide.apm.core.Property;
+import com.cognifide.apm.core.history.History;
+import com.cognifide.apm.core.jobs.JobResultsCache.ExecutionSummary;
+import com.cognifide.apm.core.utils.sling.ResolveCallback;
 
 @Component(
     immediate = true,
@@ -79,7 +84,7 @@ public class ScriptRunnerJobConsumer implements JobConsumer {
       final Script script = getScript(job, resolver);
       if (script != null && mode != null) {
         try {
-          ExecutionResult executionResult = scriptManager.process(script, mode, resolver);
+          ExecutionResult executionResult = scriptManager.process(script, mode, getDefinitions(job), resolver);
           String summaryPath = getSummaryPath(script, mode);
           jobResultsCache.put(id, ExecutionSummary.finished(executionResult, summaryPath));
           result = JobResult.OK;
@@ -112,6 +117,14 @@ public class ScriptRunnerJobConsumer implements JobConsumer {
       LOG.error("Mode is null");
     }
     return result;
+  }
+
+  private Map<String, String> getDefinitions(Job job) {
+    HashMap<String, String> definitions = (HashMap<String, String>) job.getProperty("definitions");
+    if(definitions == null) {
+      definitions = new HashMap<>();
+    }
+    return definitions;
   }
 
   private Script getScript(Job job, ResourceResolver resolver) {

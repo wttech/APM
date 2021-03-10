@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://assets.cognifide.com/github/cognifide-logo.png" style="vertical-align: middle">
+    <img src="docs/wtt-logo.png" style="vertical-align: middle">
 </p><p align="center">
     <img src="docs/apm-logo.png" alt="APM Logo" style="width: 128px; vertical-align: middle">
 </p>
@@ -32,7 +32,7 @@ This page identifies the versions of Adobe Experience Manager with which a parti
 
 ## Getting started
 To start using **APM** an AEM in version at least 6.3 is required.
-The latest AEM packages are available [here](https://github.com/Cognifide/APM/releases/latest). Download both packages *cq-actions-msg-replication* and *apm*, and install them using [CRX Package Manager](http://localhost:4502/crx/packmgr).
+The latest AEM packages are available [here](https://github.com/wttech/APM/releases/latest). Download both packages *cq-actions-msg-replication* and *apm*, and install them using [CRX Package Manager](http://localhost:4502/crx/packmgr).
 
 ### How to use
 Open **APM** dashboard [http://localhost:4502/apm.html](http://localhost:4502/apm.html), and start using the tool. For more information visit [user guide](docs/ui.md).
@@ -54,7 +54,7 @@ Open **APM** dashboard [http://localhost:4502/apm.html](http://localhost:4502/ap
 * Code separated in several modules (cleaner API).
 
 ## How to contribute
-See details in [Contributing section](https://github.com/Cognifide/APM/blob/master/CONTRIBUTING.md)
+See details in [Contributing section](https://github.com/wttech/APM/blob/master/CONTRIBUTING.md)
 
 ## License
 **APM** is licensed under [Apache License, Version 2.0 (the "License")](https://www.apache.org/licenses/LICENSE-2.0.txt)

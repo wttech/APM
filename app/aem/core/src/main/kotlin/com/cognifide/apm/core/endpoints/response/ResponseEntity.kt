@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * AEM Permission Management
  * %%
- * Copyright (C) 2013 Cognifide Limited
+ * Copyright (C) 2013 Wunderman Thompson Technology
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,10 @@ class ResponseEntity<T>(val statusCode: Int, val body: T)
 
 fun badRequest(body: ErrorBody.() -> Unit): ResponseEntity<Any> {
     return error(HttpServletResponse.SC_BAD_REQUEST, body)
+}
+
+fun notFound(body: ErrorBody.() -> Unit): ResponseEntity<Any> {
+    return error(HttpServletResponse.SC_NOT_FOUND, body)
 }
 
 fun internalServerError(body: ErrorBody.() -> Unit): ResponseEntity<Any> {

@@ -2,7 +2,7 @@
  * ========================LICENSE_START=================================
  * AEM Permission Management
  * %%
- * Copyright (C) 2013 Cognifide Limited
+ * Copyright (C) 2013 Wunderman Thompson Technology
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,15 @@
  */
 package com.cognifide.apm.core.jobs;
 
-import com.cognifide.apm.core.endpoints.BackgroundJobParameters;
-import com.cognifide.apm.core.scriptrunnerjob.JobProgressOutput;
 import org.apache.sling.event.jobs.Job;
 
+import com.cognifide.apm.core.endpoints.BackgroundJobParameters;
+import com.cognifide.apm.core.scriptrunnerjob.JobProgressOutput;
+
+/**
+ * @deprecated use {@link com.cognifide.apm.core.services.async.AsyncScriptExecutor} instead
+ */
+@Deprecated
 public interface ScriptRunnerJobManager {
 
 	Job scheduleJob(BackgroundJobParameters parameters);
