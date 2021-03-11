@@ -54,7 +54,7 @@
       this.$saveAndCloseButton = this.$el.find('#saveAndCloseButton').eq(0);
       this.$logger = this.$el.find('.apm-console-logger');
       this.initialValue = this.$textArea.val();
-      this.savePath = this.$el.find('#script-form').attr('action');
+      this.formAction = this.$el.find('#script-form').attr('action');
       this.editor = this.initEditor();
       this.delegateEvents();
     }
@@ -73,14 +73,16 @@
       getFileName: function () {
         return this.$fileName.val() + '.apm';
       },
-      getFullPath: function () {
+      getSavePath: function () {
         let fileName = this.getFileName();
-        if (this.savePath.endsWith('/' + fileName)) {
-          fileName = this.savePath;
-        } else {
-          fileName = this.savePath + '/' + fileName;
+        let savePath = this.formAction;
+        if (savePath.endsWith('/' + fileName)) {
+          savePath = savePath.split('/' + fileName)[0];
         }
-        return fileName;
+        return savePath;
+      },
+      getFullPath: function () {
+        return this.getSavePath() + '/' + this.getFileName();
       },
       getOverwrite: function () {
         return this.isFileNameLocked() ? 'true' : 'false';
@@ -104,7 +106,7 @@
         formData.set('apm:launchEnabled', this.getLaunchEnabled());
         formData.set('overwrite', this.getOverwrite());
         formData.set('file', new Blob([value], {type: 'text/plain'}), this.getFullPath());
-        formData.set('apm:savePath', this.savePath);
+        formData.set('apm:savePath', this.getSavePath());
 
         $.ajax({
           type: 'POST',
