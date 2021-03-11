@@ -25,8 +25,8 @@ import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.apm.core.Apm;
 import com.cognifide.apm.core.Property;
+import com.cognifide.apm.core.endpoints.ScriptUploadForm;
 import com.day.cq.commons.jcr.JcrConstants;
-import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -83,11 +83,10 @@ public class ScriptStorageImpl implements ScriptStorage {
   }
 
   @Override
-  public Script save(String savePath, String fileName, InputStream input, LaunchMetadata launchMetadata,
-                     boolean overwrite, ResourceResolver resolver) throws RepositoryException, PersistenceException {
-    FileDescriptor fileDescriptor = FileDescriptor.createFileDescriptor(fileName, savePath, input);
+  public Script save(ScriptUploadForm form, ResourceResolver resolver) throws RepositoryException, PersistenceException {
+    FileDescriptor fileDescriptor = FileDescriptor.createFileDescriptor(form.getFileName(), form.getSavePath(), form.getFile());
     validate(Collections.singletonList(fileDescriptor));
-    return saveScript(fileDescriptor, launchMetadata, overwrite, resolver);
+    return saveScript(fileDescriptor, form.toLaunchMetadata(), form.getOverwrite(), resolver);
   }
 
   private Script saveScript(FileDescriptor descriptor, LaunchMetadata launchMetadata, boolean overwrite,

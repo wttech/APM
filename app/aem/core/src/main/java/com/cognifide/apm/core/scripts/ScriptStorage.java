@@ -20,7 +20,7 @@
 package com.cognifide.apm.core.scripts;
 
 import com.cognifide.apm.api.scripts.Script;
-import java.io.InputStream;
+import com.cognifide.apm.core.endpoints.ScriptUploadForm;
 import javax.jcr.RepositoryException;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -35,7 +35,6 @@ public interface ScriptStorage {
   /**
    * Save script, for example from upload
    */
-  Script save(String savePath, String fileName, InputStream input, LaunchMetadata launchMetadata,
-              boolean overwrite, ResourceResolver resolver) throws RepositoryException, PersistenceException;
+  Script save(ScriptUploadForm form, ResourceResolver resolver) throws RepositoryException, PersistenceException;
 
 }
