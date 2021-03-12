@@ -37,6 +37,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.servlets.HttpConstants;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -46,7 +47,7 @@ import org.osgi.service.component.annotations.Reference;
 		service = Servlet.class,
 		property = {
 				Property.PATH + "/bin/cqsm/remove",
-				Property.METHOD + "POST",
+				Property.METHOD + HttpConstants.METHOD_POST,
 				Property.DESCRIPTION + "CQSM Remove Scripts Servlet",
 				Property.VENDOR
 		}
@@ -54,10 +55,10 @@ import org.osgi.service.component.annotations.Reference;
 public class ScriptRemoveServlet extends SlingAllMethodsServlet {
 
 	@Reference
-	private ScriptStorage scriptStorage;
+	private transient ScriptStorage scriptStorage;
 
 	@Reference
-	private ScriptFinder scriptFinder;
+	private transient ScriptFinder scriptFinder;
 
 	@Override
 	protected void doPost(SlingHttpServletRequest request, SlingHttpServletResponse response)
@@ -71,14 +72,14 @@ public class ScriptRemoveServlet extends SlingAllMethodsServlet {
 			removeAllFiles(resolver, response, all);
 		} else {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			ServletUtils.writeMessage(response, "error", "Invalid arguments specified");
+			ServletUtils.writeMessage(response, ServletUtils.ERROR_RESPONSE_TYPE, "Invalid arguments specified");
 		}
 	}
 
 	private void removeAllFiles(ResourceResolver resolver, SlingHttpServletResponse response, String all)
 			throws IOException {
 		if (!Boolean.parseBoolean(all)) {
-			ServletUtils.writeMessage(response, "error", "Remove all scripts is not confirmed");
+			ServletUtils.writeMessage(response, ServletUtils.ERROR_RESPONSE_TYPE, "Remove all scripts is not confirmed");
 		} else {
 			final List<String> paths = new LinkedList<>();
 			final List<Script> scripts = scriptFinder.findAll(resolver);
@@ -94,7 +95,7 @@ public class ScriptRemoveServlet extends SlingAllMethodsServlet {
 				final Map<String, Object> context = new HashMap<>();
 				context.put("paths", paths);
 
-				ServletUtils.writeMessage(response, "success",
+				ServletUtils.writeMessage(response, ServletUtils.SUCCESS_RESPONSE_TYPE,
 						String.format("Scripts removed successfully, total: %d", scripts.size()), context);
 			} catch (RepositoryException e) {
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -107,19 +108,19 @@ public class ScriptRemoveServlet extends SlingAllMethodsServlet {
 	private void removeSingleFile(ResourceResolver resolver, SlingHttpServletResponse response,
 			String fileName) throws IOException {
 		if (StringUtils.isEmpty(fileName)) {
-			ServletUtils.writeMessage(response, "error", "File name to be removed cannot be empty");
+			ServletUtils.writeMessage(response, ServletUtils.ERROR_RESPONSE_TYPE, "File name to be removed cannot be empty");
 		} else {
 			final Script script = scriptFinder.find(fileName, resolver);
 			if (script == null) {
 				ServletUtils
-						.writeMessage(response, "error", String.format("Script not found: '%s'", fileName));
+						.writeMessage(response, ServletUtils.ERROR_RESPONSE_TYPE, String.format("Script not found: '%s'", fileName));
 			} else {
 				final String scriptPath = script.getPath();
 
 				try {
 					scriptStorage.remove(script, resolver);
 
-					ServletUtils.writeMessage(response, "success",
+					ServletUtils.writeMessage(response, ServletUtils.SUCCESS_RESPONSE_TYPE,
 							String.format("Script removed successfully: %s", scriptPath));
 				} catch (RepositoryException e) {
 					response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

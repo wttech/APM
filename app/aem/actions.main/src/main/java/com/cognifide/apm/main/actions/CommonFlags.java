@@ -20,6 +20,10 @@
 
 package com.cognifide.apm.main.actions;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CommonFlags {
 
   public static final String IF_EXISTS = "IF-EXISTS";

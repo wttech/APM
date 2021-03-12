@@ -70,5 +70,5 @@ public enum ExecutionMode implements Serializable {
 		return false;
 	}
 
-	abstract public String getName();
+	 public abstract String getName();
 }

@@ -26,16 +26,14 @@ import java.util.Iterator;
 import java.util.Set;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
+import lombok.RequiredArgsConstructor;
 import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.apache.jackrabbit.api.security.user.Group;
 
+@RequiredArgsConstructor
 public class MockGroup implements Group {
 
   private final String id;
-
-  public MockGroup(final String id) {
-    this.id = id;
-  }
 
   @Override
   public String getID() throws RepositoryException {
@@ -64,6 +62,7 @@ public class MockGroup implements Group {
 
   @Override
   public void remove() throws RepositoryException {
+    // intentionally empty
   }
 
   @Override
@@ -83,10 +82,12 @@ public class MockGroup implements Group {
 
   @Override
   public void setProperty(String relPath, Value value) throws RepositoryException {
+    // intentionally empty
   }
 
   @Override
   public void setProperty(String relPath, Value[] value) throws RepositoryException {
+    // intentionally empty
   }
 
   @Override

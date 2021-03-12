@@ -63,7 +63,7 @@ abstract class AbstractLauncher {
         final ExecutionResult result = getScriptManager().process(script, ExecutionMode.AUTOMATIC_RUN, resolver);
         logStatus(scriptPath, result.isSuccess(), launcherType);
       } else {
-        logger.warn("{} launcher cannot execute script which is not valid: {}", launcherType.toString(), scriptPath);
+        logger.warn("{} launcher cannot execute script which is not valid: {}", launcherType, scriptPath);
       }
     } catch (RepositoryException e) {
       logger.error("Script cannot be processed because of repository error: {}", scriptPath, e);
@@ -72,9 +72,9 @@ abstract class AbstractLauncher {
 
   private void logStatus(String scriptPath, boolean success, LauncherType launcherType) {
     if (success) {
-      logger.info("{} script successfully executed: {}", launcherType.toString(), scriptPath);
+      logger.info("{} script successfully executed: {}", launcherType, scriptPath);
     } else {
-      logger.error("{} script cannot be executed properly: {}", launcherType.toString(), scriptPath);
+      logger.error("{} script cannot be executed properly: {}", launcherType, scriptPath);
     }
   }
 

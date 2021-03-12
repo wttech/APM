@@ -22,6 +22,7 @@ package com.cognifide.apm.core.ui.models;
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ScriptFinder;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import javax.inject.Inject;
 import lombok.Getter;
 import org.apache.commons.io.FilenameUtils;
@@ -42,8 +43,6 @@ public final class ConsoleModel {
 	private static final String FILE_NAME_DEFAULT = "filename";
 
 	private static final String CONTENT_FILE = "content.apm";
-
-	private static final String CONTENT_FILE_CHARSET = "UTF-8";
 
 	@Getter
 	private final String fileName;
@@ -70,7 +69,7 @@ public final class ConsoleModel {
 
 	private String getContentDefault() {
 		try {
-			return IOUtils.toString(getClass().getResourceAsStream(CONTENT_FILE), CONTENT_FILE_CHARSET);
+			return IOUtils.toString(getClass().getResourceAsStream(CONTENT_FILE), StandardCharsets.UTF_8.toString());
 		} catch (IOException e) {
 			LOG.warn("Cannot read content of default script template.", e);
 			return "";

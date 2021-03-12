@@ -22,7 +22,10 @@ package com.cognifide.apm.core.actions.executor;
 import com.cognifide.apm.api.actions.Context;
 import com.cognifide.apm.api.services.ExecutionMode;
 import com.cognifide.apm.core.actions.ActionFactory;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ActionExecutorFactory {
 
   public static ActionExecutor create(ExecutionMode mode, Context context, ActionFactory actionFactory) {

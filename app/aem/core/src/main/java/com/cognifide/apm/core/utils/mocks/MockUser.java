@@ -63,6 +63,7 @@ public class MockUser implements User {
 
   @Override
   public void remove() throws RepositoryException {
+    // intentionally empty
   }
 
   @Override
@@ -82,10 +83,12 @@ public class MockUser implements User {
 
   @Override
   public void setProperty(String relPath, Value value) throws RepositoryException {
+    // intentionally empty
   }
 
   @Override
   public void setProperty(String relPath, Value[] value) throws RepositoryException {
+    // intentionally empty
   }
 
   @Override
@@ -125,14 +128,17 @@ public class MockUser implements User {
 
   @Override
   public void changePassword(String password) throws RepositoryException {
+    // intentionally empty
   }
 
   @Override
   public void changePassword(String password, String oldPassword) throws RepositoryException {
+    // intentionally empty
   }
 
   @Override
   public void disable(String reason) throws RepositoryException {
+    // intentionally empty
   }
 
   @Override

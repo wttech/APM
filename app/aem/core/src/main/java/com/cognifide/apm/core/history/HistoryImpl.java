@@ -24,6 +24,7 @@ import static com.day.crx.JcrConstants.NT_UNSTRUCTURED;
 import static org.apache.jackrabbit.commons.JcrUtils.getOrCreateByPath;
 import static org.apache.jackrabbit.commons.JcrUtils.getOrCreateUniqueByPath;
 
+import com.adobe.aemds.guide.utils.JcrResourceConstants;
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ExecutionMode;
 import com.cognifide.apm.core.Property;
@@ -80,8 +81,6 @@ public class HistoryImpl implements History {
   private static final String APM_HISTORY_SCRIPT = "script";
 
   private static final String APM_HISTORY_ENTRY = "entry";
-
-  private static final String SLING_ORDERED_FOLDER = "sling:OrderedFolder";
 
   private static final String HISTORY_ENTRIES_QUERY = String.format("SELECT * FROM [nt:unstructured] "
       + " WHERE ISDESCENDANTNODE([%s]) AND apmHistory = '%s' "
@@ -225,7 +224,7 @@ public class HistoryImpl implements History {
   @NotNull
   private Node createScriptHistoryNode(Script script, Session session) throws RepositoryException {
     String path = getScriptHistoryPath(script);
-    Node scriptHistory = getOrCreateByPath(path, SLING_ORDERED_FOLDER, NT_UNSTRUCTURED, session, true);
+    Node scriptHistory = getOrCreateByPath(path, JcrResourceConstants.NT_SLING_ORDERED_FOLDER, NT_UNSTRUCTURED, session, true);
     scriptHistory.setProperty(APM_HISTORY, APM_HISTORY_SCRIPT);
     scriptHistory.setProperty(ScriptHistoryImpl.SCRIPT_PATH, script.getPath());
     return scriptHistory;

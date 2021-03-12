@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 
 public class ProgressImpl implements Progress {
 
-  private final List<ProgressEntry> entries;
+  private final transient List<ProgressEntry> entries;
 
   private final String executor;
 
@@ -74,7 +74,9 @@ public class ProgressImpl implements Progress {
   }
 
   private List<String> toMessages(List<Message> messages) {
-    return messages.stream().map(it -> it.getText()).collect(Collectors.toList());
+    return messages.stream()
+        .map(Message::getText)
+        .collect(Collectors.toList());
   }
 
   private List<String> toParameters(Arguments arguments) {

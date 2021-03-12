@@ -34,6 +34,7 @@ import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceWrapper;
+import org.apache.sling.api.servlets.HttpConstants;
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 import org.osgi.service.component.annotations.Component;
 
@@ -42,7 +43,7 @@ import org.osgi.service.component.annotations.Component;
     service = Servlet.class,
     property = {
         Property.RESOURCE_TYPE + "apm/datasource/scripts",
-        Property.METHOD + "GET",
+        Property.METHOD + HttpConstants.METHOD_GET,
         Property.DESCRIPTION + "APM Scripts Data Source Servlet",
         Property.VENDOR
     }

@@ -53,10 +53,9 @@ public class ScriptFinderImpl implements ScriptFinder {
 
   @Override
   public List<Script> findAll(Predicate<Script> filter, ResourceResolver resolver) {
-    final List<Script> scripts = findAll(resolver).stream()
+    return findAll(resolver).stream()
         .filter(filter)
         .collect(Collectors.toList());
-    return scripts;
   }
 
   @Override

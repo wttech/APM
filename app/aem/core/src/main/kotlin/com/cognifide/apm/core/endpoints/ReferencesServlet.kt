@@ -24,6 +24,7 @@ import com.cognifide.apm.core.actions.ActionFactory
 import com.cognifide.apm.core.utils.ServletUtils
 import org.apache.sling.api.SlingHttpServletRequest
 import org.apache.sling.api.SlingHttpServletResponse
+import org.apache.sling.api.servlets.HttpConstants
 import org.apache.sling.api.servlets.SlingAllMethodsServlet
 import org.osgi.service.component.annotations.Component
 import org.osgi.service.component.annotations.Reference
@@ -34,7 +35,7 @@ import javax.servlet.Servlet
         service = [Servlet::class],
         property = [
             Property.PATH + "/bin/apm/references",
-            Property.METHOD + "GET",
+            Property.METHOD + HttpConstants.METHOD_GET,
             Property.DESCRIPTION + "APM References Servlet",
             Property.VENDOR
         ])

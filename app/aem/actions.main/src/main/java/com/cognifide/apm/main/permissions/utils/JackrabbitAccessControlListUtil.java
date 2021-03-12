@@ -24,15 +24,15 @@ import javax.jcr.security.AccessControlException;
 import javax.jcr.security.AccessControlManager;
 import javax.jcr.security.AccessControlPolicy;
 import javax.jcr.security.AccessControlPolicyIterator;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.jackrabbit.api.security.JackrabbitAccessControlList;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class JackrabbitAccessControlListUtil {
 
-	private JackrabbitAccessControlListUtil() {
-	}
-
 	public static JackrabbitAccessControlList getModifiableAcl(final AccessControlManager accessManager,
-			final String path) throws RepositoryException {
+																														 final String path) throws RepositoryException {
 		final JackrabbitAccessControlList acl = getAccessControlList(accessManager, path);
 		if (null != acl) {
 			return acl;

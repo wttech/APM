@@ -19,21 +19,6 @@
  */
 package com.cognifide.apm.core.endpoints;
 
-import java.io.IOException;
-
-import javax.jcr.RepositoryException;
-import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.sling.api.SlingHttpServletRequest;
-import org.apache.sling.api.SlingHttpServletResponse;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.servlets.SlingAllMethodsServlet;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ExecutionMode;
 import com.cognifide.apm.api.services.ExecutionResult;
@@ -42,13 +27,26 @@ import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.progress.ProgressHelper;
 import com.cognifide.apm.core.utils.ServletUtils;
+import java.io.IOException;
+import javax.jcr.RepositoryException;
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.lang.StringUtils;
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.SlingHttpServletResponse;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.servlets.HttpConstants;
+import org.apache.sling.api.servlets.SlingAllMethodsServlet;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 @Component(
 		immediate = true,
 		service = Servlet.class,
 		property = {
 				Property.PATH + "/bin/cqsm/run",
-				Property.METHOD + "POST",
+				Property.METHOD + HttpConstants.METHOD_POST,
 				Property.DESCRIPTION + "CQSM Run Servlet",
 				Property.VENDOR
 		}
@@ -60,10 +58,10 @@ import com.cognifide.apm.core.utils.ServletUtils;
 public class ScriptRunServlet extends SlingAllMethodsServlet {
 
 	@Reference
-	private ScriptManager scriptManager;
+	private transient ScriptManager scriptManager;
 
 	@Reference
-	private ScriptFinder scriptFinder;
+	private transient ScriptFinder scriptFinder;
 
 	@Override
 	protected void doPost(final SlingHttpServletRequest request, final SlingHttpServletResponse response)
@@ -73,21 +71,21 @@ public class ScriptRunServlet extends SlingAllMethodsServlet {
 		final String modeName = request.getParameter("mode");
 
 		if (StringUtils.isEmpty(searchPath)) {
-			ServletUtils.writeMessage(response, "error",
+			ServletUtils.writeMessage(response, ServletUtils.ERROR_RESPONSE_TYPE,
 					"Please set the script file name: -d \"file=[name]\"");
 			return;
 		}
 
 		if (StringUtils.isEmpty(modeName)) {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			ServletUtils.writeMessage(response, "error", "Running mode not specified.");
+			ServletUtils.writeMessage(response, ServletUtils.ERROR_RESPONSE_TYPE, "Running mode not specified.");
 			return;
 		}
 
 		final Script script = scriptFinder.find(searchPath, resolver);
 		if (script == null) {
 			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-			ServletUtils.writeMessage(response, "error", String.format("Script not found: %s", searchPath));
+			ServletUtils.writeMessage(response, ServletUtils.ERROR_RESPONSE_TYPE, String.format("Script not found: %s", searchPath));
 			return;
 		}
 
@@ -104,7 +102,7 @@ public class ScriptRunServlet extends SlingAllMethodsServlet {
 
 		} catch (RepositoryException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			ServletUtils.writeMessage(response, "error", String.format("Script cannot be executed because of"
+			ServletUtils.writeMessage(response, ServletUtils.ERROR_RESPONSE_TYPE, String.format("Script cannot be executed because of"
 					+ " repository error: %s", e.getMessage()));
 		}
 	}

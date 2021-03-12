@@ -19,6 +19,10 @@
  */
 package com.cognifide.apm.core.scripts;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ScriptNode {
 
   public static final String APM_SCRIPT = "apm:Script";
@@ -43,6 +47,4 @@ public final class ScriptNode {
 
   public static final String APM_VERIFIED = "apm:verified";
 
-  private ScriptNode() {
-  }
 }

@@ -62,10 +62,7 @@ public class AddChildren implements Action {
       actionResult.setAuthorizable(group.getID());
       LOGGER.info(String.format("Adding authorizables %s to group with id = %s",
           StringUtils.join(authorizableIds, ", "), group.getID()));
-    } catch (ActionExecutionException e) {
-      actionResult.logError(MessagingUtils.createMessage(e));
-      return actionResult;
-    } catch (RepositoryException e) {
+    } catch (ActionExecutionException | RepositoryException e) {
       actionResult.logError(MessagingUtils.createMessage(e));
       return actionResult;
     }

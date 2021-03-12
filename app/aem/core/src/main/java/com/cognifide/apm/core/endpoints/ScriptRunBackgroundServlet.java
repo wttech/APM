@@ -19,20 +19,6 @@
  */
 package com.cognifide.apm.core.endpoints;
 
-import java.io.IOException;
-import java.util.Map;
-
-import javax.servlet.Servlet;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.sling.api.SlingHttpServletRequest;
-import org.apache.sling.api.SlingHttpServletResponse;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.servlets.SlingAllMethodsServlet;
-import org.apache.sling.event.jobs.Job;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.apm.core.Property;
@@ -40,17 +26,29 @@ import com.cognifide.apm.core.jobs.ScriptRunnerJobManager;
 import com.cognifide.apm.core.scriptrunnerjob.JobProgressOutput;
 import com.cognifide.apm.core.utils.ServletUtils;
 import com.google.common.collect.ImmutableMap;
+import java.io.IOException;
+import java.util.Map;
+import javax.servlet.Servlet;
+import org.apache.commons.lang.StringUtils;
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.SlingHttpServletResponse;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.servlets.HttpConstants;
+import org.apache.sling.api.servlets.SlingAllMethodsServlet;
+import org.apache.sling.event.jobs.Job;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 @Component(
 		immediate = true,
 		service = Servlet.class,
 		property = {
-				Property.PATH + "/bin/cqsm/run-background",
-				Property.METHOD + "GET",
-				Property.METHOD + "POST",
-				Property.DESCRIPTION + "CQSM Servlet for running scripts in background and checking theirs status",
-				Property.VENDOR
-		}
+        Property.PATH + "/bin/cqsm/run-background",
+        Property.METHOD + HttpConstants.METHOD_GET,
+        Property.METHOD + HttpConstants.METHOD_POST,
+        Property.DESCRIPTION + "CQSM Servlet for running scripts in background and checking theirs status",
+        Property.VENDOR
+    }
 )
 /**
  * @deprecated use {@link ScriptExecutionServlet} instead
@@ -60,8 +58,6 @@ public class ScriptRunBackgroundServlet extends SlingAllMethodsServlet {
 
   private static final String BACKGROUND_RESPONSE_TYPE = "background";
 
-  private static final String ERROR_RESPONSE_TYPE = "error";
-
   private static final String FILE_REQUEST_PARAMETER = "file";
 
   private static final String MODE_REQUEST_PARAMETER = "mode";
@@ -69,10 +65,10 @@ public class ScriptRunBackgroundServlet extends SlingAllMethodsServlet {
   private static final String ID_REQUEST_PARAMETER = "id";
 
   @Reference
-  private ScriptRunnerJobManager scriptRunnerJobManager;
+  private transient ScriptRunnerJobManager scriptRunnerJobManager;
 
   @Reference
-  private ScriptFinder scriptFinder;
+  private transient ScriptFinder scriptFinder;
 
   @Override
   protected void doPost(final SlingHttpServletRequest request, final SlingHttpServletResponse response)
@@ -86,7 +82,7 @@ public class ScriptRunBackgroundServlet extends SlingAllMethodsServlet {
     final boolean isExecutable = script.isLaunchEnabled();
 
     if (!(isValid && isExecutable)) {
-      ServletUtils.writeMessage(response, ERROR_RESPONSE_TYPE, String.format("Script '%s' cannot be processed. " +
+      ServletUtils.writeMessage(response, ServletUtils.ERROR_RESPONSE_TYPE, String.format("Script '%s' cannot be processed. " +
               "Script needs to be executable and valid. Actual script status: valid - %s, executable - %s",
           searchPath, isValid, isExecutable));
       return;
@@ -119,13 +115,13 @@ public class ScriptRunBackgroundServlet extends SlingAllMethodsServlet {
     final String userName = request.getResourceResolver().getUserID();
 
     if (StringUtils.isEmpty(searchPath)) {
-      ServletUtils.writeMessage(response, ERROR_RESPONSE_TYPE,
+      ServletUtils.writeMessage(response, ServletUtils.ERROR_RESPONSE_TYPE,
           "Please set the script file name: -d \"file=[name]\"");
       return null;
     }
 
     if (StringUtils.isEmpty(modeName)) {
-      ServletUtils.writeMessage(response, ERROR_RESPONSE_TYPE, "Running mode not specified.");
+      ServletUtils.writeMessage(response, ServletUtils.ERROR_RESPONSE_TYPE, "Running mode not specified.");
       return null;
     }
 

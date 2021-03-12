@@ -30,8 +30,9 @@ import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 
 public abstract class AbstractDatasourceServlet<E> extends SlingSafeMethodsServlet {
 
-  private final Option emptyOption;
-  private final List<E> options;
+  private final transient Option emptyOption;
+
+  private final transient List<E> options;
 
   protected AbstractDatasourceServlet(List<E> options, Option emptyOption) {
     this.emptyOption = emptyOption;

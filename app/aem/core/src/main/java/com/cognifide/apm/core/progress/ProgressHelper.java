@@ -25,13 +25,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.util.Arrays;
 import java.util.List;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ProgressHelper {
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-
-	private ProgressHelper() {
-	}
 
 	public static List<ProgressEntry> fromJson(String executionSummaryJson) {
 		return Arrays.asList(GSON.fromJson(executionSummaryJson, ProgressEntry[].class));

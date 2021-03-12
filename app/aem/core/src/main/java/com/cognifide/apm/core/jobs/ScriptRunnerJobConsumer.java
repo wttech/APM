@@ -133,7 +133,7 @@ public class ScriptRunnerJobConsumer implements JobConsumer {
     if (StringUtils.isNotBlank(scriptSearchPath)) {
       final Script script = scriptFinder.find(scriptSearchPath, resolver);
       if (script == null) {
-        LOG.error("Script not found: %s", scriptSearchPath);
+        LOG.error("Script not found: {}", scriptSearchPath);
         return null;
       }
       return script;

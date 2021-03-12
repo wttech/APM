@@ -109,7 +109,8 @@ public class ScriptStorageImpl implements ScriptStorage {
       final Binary binary = valueFactory.createBinary(descriptor.getInputStream());
       final Node saveNode = session.getNode(descriptor.getPath());
 
-      final Node fileNode, contentNode;
+      final Node fileNode;
+      final Node contentNode;
       if (overwrite && saveNode.hasNode(descriptor.getName())) {
         fileNode = saveNode.getNode(descriptor.getName());
         contentNode = fileNode.getNode(JcrConstants.JCR_CONTENT);

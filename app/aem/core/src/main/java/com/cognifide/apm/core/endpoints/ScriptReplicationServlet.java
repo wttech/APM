@@ -37,6 +37,7 @@ import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.servlets.HttpConstants;
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -46,7 +47,7 @@ import org.osgi.service.component.annotations.Reference;
     service = Servlet.class,
     property = {
         Property.PATH + "/bin/cqsm/replicate",
-        Property.METHOD + "GET",
+        Property.METHOD + HttpConstants.METHOD_GET,
         Property.DESCRIPTION + "CQSM Replicate Servlet",
         Property.VENDOR
     }
@@ -56,10 +57,10 @@ public class ScriptReplicationServlet extends SlingSafeMethodsServlet {
   private static final String PUBLISH_RUN = "publish";
 
   @Reference
-  private ScriptReplicator scriptReplicator;
+  private transient ScriptReplicator scriptReplicator;
 
   @Reference
-  private ScriptFinder scriptFinder;
+  private transient ScriptFinder scriptFinder;
 
   @Override
   protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response)
@@ -71,7 +72,7 @@ public class ScriptReplicationServlet extends SlingSafeMethodsServlet {
 
     if (StringUtils.isEmpty(searchPath)) {
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-      ServletUtils.writeMessage(response, "error", "File name parameter is required");
+      ServletUtils.writeMessage(response, ServletUtils.ERROR_RESPONSE_TYPE, "File name parameter is required");
       return;
     }
 
@@ -79,7 +80,7 @@ public class ScriptReplicationServlet extends SlingSafeMethodsServlet {
     if (script == null) {
       response.setStatus(HttpServletResponse.SC_NOT_FOUND);
       ServletUtils
-          .writeMessage(response, "error", String.format("Script cannot be found: %s", searchPath));
+          .writeMessage(response, ServletUtils.ERROR_RESPONSE_TYPE, String.format("Script cannot be found: %s", searchPath));
       return;
     }
 
@@ -93,20 +94,20 @@ public class ScriptReplicationServlet extends SlingSafeMethodsServlet {
       }
       scriptReplicator.replicate(script, resolver);
 
-      ServletUtils.writeMessage(response, "success",
+      ServletUtils.writeMessage(response, ServletUtils.SUCCESS_RESPONSE_TYPE,
           String.format("Script '%s' replicated successfully", scriptPath));
     } catch (PersistenceException | RepositoryException e) {
       response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-      ServletUtils.writeMessage(response, "error",
+      ServletUtils.writeMessage(response, ServletUtils.ERROR_RESPONSE_TYPE,
           String.format("Script '%s' cannot be processed because of repository error: %s",
               scriptPath, e.getMessage()));
     } catch (ExecutionException e) {
       response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-      ServletUtils.writeMessage(response, "error",
+      ServletUtils.writeMessage(response, ServletUtils.ERROR_RESPONSE_TYPE,
           String.format("Script '%s' cannot be processed: %s", scriptPath, e.getMessage()));
     } catch (ReplicationException e) {
       response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-      ServletUtils.writeMessage(response, "error",
+      ServletUtils.writeMessage(response, ServletUtils.ERROR_RESPONSE_TYPE,
           String.format("Script '%s' cannot be replicated: %s", scriptPath, e.getMessage()));
     }
   }

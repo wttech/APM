@@ -67,7 +67,7 @@ public class CreateAuthorizable implements Action {
     ActionResult actionResult = context.createActionResult();
     try {
       Authorizable authorizable = context.getAuthorizableManager().getAuthorizableIfExists(id);
-      LOGGER.info("Creating authorizable with id = " + id);
+      LOGGER.info("Creating authorizable with id = {}", id);
       if (authorizable != null) {
         logMessage(actionResult, authorizable);
       } else {

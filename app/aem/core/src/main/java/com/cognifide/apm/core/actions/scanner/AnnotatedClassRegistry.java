@@ -90,7 +90,7 @@ public class AnnotatedClassRegistry {
     this.listeners.add(changeListener);
   }
 
-  public List<Class<?>> getClasses() {
+  public List<Class<?>> getFlattenedClasses() {
     List<Class<?>> flattened = new ArrayList<>();
     for (Map.Entry<Long, List<Class<?>>> entry : classes.entrySet()) {
       flattened.addAll(entry.getValue());
@@ -102,7 +102,7 @@ public class AnnotatedClassRegistry {
   private void registerClasses(Bundle bundle) {
     final List<Class<?>> scanned = new ClassScanner(bundle, bundleContext)
         .findClasses(bundleHeader, annotationClass);
-    if (scanned.size() > 0) {
+    if (!scanned.isEmpty()) {
       classes.put(bundle.getBundleId(), scanned);
       notifyChangeListeners();
     }
@@ -121,9 +121,9 @@ public class AnnotatedClassRegistry {
   }
 
   private void notifyChangeListeners() {
-    List<Class<?>> classes = getClasses();
+    List<Class<?>> flattenedClasses = getFlattenedClasses();
     for (RegistryChangedListener listener : listeners) {
-      listener.registryChanged(classes);
+      listener.registryChanged(flattenedClasses);
     }
   }
 

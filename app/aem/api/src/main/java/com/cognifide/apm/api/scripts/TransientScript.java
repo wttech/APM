@@ -108,22 +108,22 @@ public class TransientScript implements MutableScript {
 
   @Override
   public void setValid(boolean flag) {
-
+    // intentionally empty
   }
 
   @Override
   public void setLastExecuted(Date date) {
-
+    // intentionally empty
   }
 
   @Override
   public void setPublishRun(boolean flag) {
-
+    // intentionally empty
   }
 
   @Override
   public void setReplicatedBy(String userId) {
-
+    // intentionally empty
   }
 
   @Override
