@@ -48,7 +48,9 @@ object ApmLangParserFactory {
             throw InvalidSyntaxException(InputMismatchException(recognizer))
         }
 
-        override fun sync(recognizer: Parser) {}
+        override fun sync(recognizer: Parser) {
+            // intentionally empty
+        }
     }
 
     private class LexerErrorListener : BaseErrorListener() {

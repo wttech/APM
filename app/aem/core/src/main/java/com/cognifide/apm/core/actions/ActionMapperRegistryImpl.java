@@ -34,13 +34,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.scribe.utils.Preconditions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Component(
     immediate = true,
@@ -50,9 +49,8 @@ import org.slf4j.LoggerFactory;
         Property.VENDOR
     }
 )
+@Slf4j
 public class ActionMapperRegistryImpl implements RegistryChangedListener, ActionMapperRegistry {
-
-  private static final Logger LOG = LoggerFactory.getLogger(ActionMapperRegistryImpl.class);
 
   private static final String BUNDLE_HEADER = "APM-Actions";
 
@@ -101,12 +99,12 @@ public class ActionMapperRegistryImpl implements RegistryChangedListener, Action
         MapperDescriptor mapperDescriptor = mapperDescriptorFactory.create(clazz);
         mappers.put(mapperDescriptor.getName(), mapperDescriptor);
       } catch (InvalidActionMapperException e) {
-        LOG.warn("Cannot register ActionMapper of class " + clazz.getName(), e);
+        log.warn("Cannot register ActionMapper of class " + clazz.getName(), e);
       }
     }
 
-    if (LOG.isDebugEnabled()) {
-      LOG.debug("Created {} action mappers from {} classes", mappers.size(), classes.size());
+    if (log.isDebugEnabled()) {
+      log.debug("Created {} action mappers from {} classes", mappers.size(), classes.size());
     }
     return mappers;
   }

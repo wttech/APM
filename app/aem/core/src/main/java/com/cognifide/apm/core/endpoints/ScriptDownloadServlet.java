@@ -31,6 +31,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
@@ -38,8 +39,6 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.servlets.HttpConstants;
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 import org.osgi.service.component.annotations.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Component(
 		immediate = true,
@@ -51,9 +50,8 @@ import org.slf4j.LoggerFactory;
 				Property.VENDOR
 		}
 )
+@Slf4j
 public class ScriptDownloadServlet extends SlingSafeMethodsServlet {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(ScriptDownloadServlet.class);
 
 	private static final int BYTES_DOWNLOAD = 1024;
 
@@ -65,8 +63,8 @@ public class ScriptDownloadServlet extends SlingSafeMethodsServlet {
 
 		String mode = request.getParameter("mode");
 
+		final ResourceResolver resourceResolver = request.getResourceResolver();
 		try {
-			final ResourceResolver resourceResolver = request.getResourceResolver();
 			final Session session = resourceResolver.adaptTo(Session.class);
 
 			if (!("view").equals(mode)) {
@@ -94,7 +92,7 @@ public class ScriptDownloadServlet extends SlingSafeMethodsServlet {
 			os.close();
 
 		} catch (RepositoryException e) {
-			LOGGER.error(e.getMessage(), e);
+			log.error(e.getMessage(), e);
 			response.sendRedirect("/etc/cqsm.html");
 		}
 	}

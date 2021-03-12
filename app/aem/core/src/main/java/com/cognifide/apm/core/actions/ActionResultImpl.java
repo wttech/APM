@@ -127,7 +127,7 @@ public class ActionResultImpl implements ActionResult {
     for (ActionResult actionResult : actionResults) {
       String current = actionResult.getAuthorizable();
       if (current != null && !StringUtils.equals(current, pattern)) {
-        String error = format("Cannot create CompositeActionResult, mismatch of authorizables. Found: {} Expected: {}",
+        String error = format("Cannot create CompositeActionResult, mismatch of authorizables. Found: %s Expected: %s",
             actionResult.getAuthorizable(), pattern);
         throw new IllegalArgumentException(error);
       }

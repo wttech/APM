@@ -25,14 +25,12 @@ import com.cognifide.apm.api.actions.Context;
 import com.cognifide.apm.api.status.Status;
 import com.cognifide.apm.main.utils.MessagingUtils;
 import javax.jcr.RepositoryException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.apache.jackrabbit.api.security.user.Group;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+@Slf4j
 public class CreateAuthorizable implements Action {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(CreateAuthorizable.class);
 
   private final String path;
 
@@ -45,7 +43,7 @@ public class CreateAuthorizable implements Action {
   private final CreateAuthorizableStrategy createStrategy;
 
   public CreateAuthorizable(final String id, final String password, final String path,
-      final Boolean ignoreIfExists, final CreateAuthorizableStrategy createStrategy) {
+                            final Boolean ignoreIfExists, final CreateAuthorizableStrategy createStrategy) {
     this.id = id;
     this.password = password;
     this.path = path;
@@ -67,7 +65,7 @@ public class CreateAuthorizable implements Action {
     ActionResult actionResult = context.createActionResult();
     try {
       Authorizable authorizable = context.getAuthorizableManager().getAuthorizableIfExists(id);
-      LOGGER.info("Creating authorizable with id = {}", id);
+      log.info("Creating authorizable with id = {}", id);
       if (authorizable != null) {
         logMessage(actionResult, authorizable);
       } else {

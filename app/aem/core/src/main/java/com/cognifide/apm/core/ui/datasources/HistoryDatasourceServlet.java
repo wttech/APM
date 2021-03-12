@@ -50,7 +50,7 @@ public class HistoryDatasourceServlet extends SlingSafeMethodsServlet {
   private static final int DEFAULT_LIMIT = 10;
 
   @Reference
-  private History history;
+  private transient History history;
 
   @Override
   protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) {
@@ -65,7 +65,7 @@ public class HistoryDatasourceServlet extends SlingSafeMethodsServlet {
 
   private Pagination createPagination(SlingHttpServletRequest request) {
     String[] selectors = request.getRequestPathInfo().getSelectors();
-    if (selectors == null || selectors.length < 2) {
+    if (selectors.length < 2) {
       return new Pagination(0, DEFAULT_LIMIT + 1);
     } else {
       Integer offset = Ints.tryParse(selectors[0]);

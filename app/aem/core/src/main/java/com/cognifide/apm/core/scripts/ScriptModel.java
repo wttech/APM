@@ -31,6 +31,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
@@ -38,13 +39,10 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.Optional;
 import org.apache.sling.models.annotations.injectorspecific.Self;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Model(adaptables = Resource.class)
+@Slf4j
 public class ScriptModel implements MutableScript {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(ScriptModel.class);
 
   private final String path;
 
@@ -126,7 +124,7 @@ public class ScriptModel implements MutableScript {
   public LaunchMode getLaunchMode() {
     return (launchMode == null) ? LaunchMode.ON_DEMAND : LaunchMode.from(launchMode)
         .orElseGet(() -> {
-          LOGGER.warn("Cannot match {} to existing launch modes. Using default one", launchMode);
+          log.warn("Cannot match {} to existing launch modes. Using default one", launchMode);
           return LaunchMode.ON_DEMAND;
         });
   }
@@ -140,7 +138,7 @@ public class ScriptModel implements MutableScript {
   public LaunchEnvironment getLaunchEnvironment() {
     return (launchEnvironment == null) ? LaunchEnvironment.ALL : LaunchEnvironment.from(launchEnvironment)
         .orElseGet(() -> {
-          LOGGER.warn("Cannot match {} to existing launch environments. Using default one", launchEnvironment);
+          log.warn("Cannot match {} to existing launch environments. Using default one", launchEnvironment);
           return LaunchEnvironment.ALL;
         });
   }

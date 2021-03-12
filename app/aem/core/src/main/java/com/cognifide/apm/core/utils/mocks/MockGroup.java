@@ -92,7 +92,7 @@ public class MockGroup implements Group {
 
   @Override
   public Value[] getProperty(String relPath) throws RepositoryException {
-    return null;
+    return new Value[0];
   }
 
   @Override

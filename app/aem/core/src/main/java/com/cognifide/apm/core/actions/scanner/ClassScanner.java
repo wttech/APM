@@ -26,17 +26,17 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.sling.commons.osgi.PropertiesUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Utility class for searching classes in specified bundle
  * If bundle context is provided it can also support fragment bundles
  */
+@Slf4j
 public class ClassScanner {
 
 	private final Bundle bundle;
@@ -52,8 +52,6 @@ public class ClassScanner {
 		this.context = context;
 	}
 
-	private static final Logger LOG = LoggerFactory.getLogger(ClassScanner.class);
-
 	public List<Class<?>> findClasses(String packageName) {
 		@SuppressWarnings("unchecked") final Enumeration<URL> classUrls = bundle
 				.findEntries(packageName.replace('.', '/'), "*.class", true);
@@ -61,7 +59,7 @@ public class ClassScanner {
 		final ArrayList<Class<?>> classes = new ArrayList<>();
 
 		if (classUrls == null) {
-			LOG.warn("No classes found in bundle: {}", bundleName);
+			log.warn("No classes found in bundle: {}", bundleName);
 		} else {
 			while (classUrls.hasMoreElements()) {
 				final URL url = classUrls.nextElement();
@@ -70,14 +68,14 @@ public class ClassScanner {
 				try {
 					if (BundleUtils.isFragment(bundle)) {
 						if (context == null) {
-							LOG.warn("Cannot load class from fragment bundle {} if context is unspecified",
+							log.warn("Cannot load class from fragment bundle {} if context is unspecified",
 									bundleName);
 						}
 
 						final Bundle hostBundle = BundleUtils.getHostBundle(context, bundle);
 
 						if (hostBundle == null) {
-							LOG.warn("Cannot find host bundle for {}", bundleName);
+							log.warn("Cannot find host bundle for {}", bundleName);
 						} else {
 							classes.add(hostBundle.loadClass(className));
 						}
@@ -85,7 +83,7 @@ public class ClassScanner {
 						classes.add(bundle.loadClass(className));
 					}
 				} catch (ClassNotFoundException e) {
-					LOG.warn("Unable to load class", e);
+					log.warn("Unable to load class", e);
 				}
 			}
 		}

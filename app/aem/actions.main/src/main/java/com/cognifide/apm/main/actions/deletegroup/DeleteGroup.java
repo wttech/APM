@@ -27,14 +27,12 @@ import com.cognifide.apm.main.utils.MessagingUtils;
 import java.util.ArrayList;
 import java.util.List;
 import javax.jcr.RepositoryException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.api.security.user.Group;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+@Slf4j
 public class DeleteGroup implements Action {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(DeleteGroup.class);
 
   private final List<String> ids;
 
@@ -56,7 +54,7 @@ public class DeleteGroup implements Action {
     ActionResult actionResult = context.createActionResult();
 
     List<String> errors = new ArrayList<>();
-    LOGGER.info(String.format("Removing groups with ids = %s", StringUtils.join(ids, ", ")));
+    log.info("Removing groups with ids = {}", StringUtils.join(ids, ", "));
     for (String id : ids) {
       try {
         Group group = context.getAuthorizableManager().getGroupIfExists(id);

@@ -22,15 +22,13 @@ package com.cognifide.apm.core.utils.sling;
 import com.google.common.collect.Maps;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+@Slf4j
 public final class SlingHelper {
-
-  private static final Logger LOG = LoggerFactory.getLogger(SlingHelper.class);
 
   private static final String RESOLVE_ERROR_MESSAGE = "Error occurred while resolving data from repository.";
 
@@ -48,16 +46,10 @@ public final class SlingHelper {
   @SuppressWarnings("unchecked")
   public static <T> T resolve(ResourceResolverFactory factory, String userId, ResolveCallback callback)
       throws ResolveException {
-    ResourceResolver resolver = null;
-    try {
-      resolver = getResourceResolverForUser(factory, userId);
+    try (ResourceResolver resolver = getResourceResolverForUser(factory, userId)) {
       return (T) callback.resolve(resolver);
     } catch (Exception e) {
       throw new ResolveException(RESOLVE_ERROR_MESSAGE, e);
-    } finally {
-      if (resolver != null && resolver.isLive()) {
-        resolver.close();
-      }
     }
   }
 
@@ -65,7 +57,7 @@ public final class SlingHelper {
    * Retrieve values from repository with wrapped session (automatically opened and closed).
    */
   public static <T> T resolveDefault(ResourceResolverFactory factory, ResolveCallback callback,
-      T defaultValue) {
+                                     T defaultValue) {
     return resolveDefault(factory, null, callback, defaultValue);
   }
 
@@ -73,11 +65,11 @@ public final class SlingHelper {
    * Retrieve values from repository with wrapped session (automatically opened and closed).
    */
   public static <T> T resolveDefault(ResourceResolverFactory factory, String userId, ResolveCallback callback,
-      T defaultValue) {
+                                     T defaultValue) {
     try {
       return resolve(factory, userId, callback);
     } catch (ResolveException e) {
-      LOG.error(RESOLVE_ERROR_MESSAGE, e);
+      log.error(RESOLVE_ERROR_MESSAGE, e);
     }
 
     return defaultValue;
@@ -89,17 +81,11 @@ public final class SlingHelper {
    */
   public static void operate(ResourceResolverFactory factory, String userId, OperateCallback callback)
       throws OperateException {
-    ResourceResolver resolver = null;
-    try {
-      resolver = getResourceResolverForUser(factory, userId);
+    try (ResourceResolver resolver = getResourceResolverForUser(factory, userId)) {
       callback.operate(resolver);
       resolver.commit();
     } catch (Exception e) {
       throw new OperateException(OPERATE_ERROR_MESSAGE, e);
-    } finally {
-      if (resolver != null && resolver.isLive()) {
-        resolver.close();
-      }
     }
   }
 
@@ -119,7 +105,7 @@ public final class SlingHelper {
     try {
       operate(factory, userId, callback);
     } catch (OperateException e) {
-      LOG.error(OPERATE_ERROR_MESSAGE, e);
+      log.error(OPERATE_ERROR_MESSAGE, e);
     }
   }
 

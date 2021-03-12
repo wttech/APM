@@ -25,13 +25,11 @@ import com.cognifide.apm.api.actions.Context;
 import com.cognifide.apm.api.exceptions.ActionExecutionException;
 import com.cognifide.apm.main.utils.MessagingUtils;
 import javax.jcr.RepositoryException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.jackrabbit.api.security.user.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+@Slf4j
 public class SetPassword implements Action {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(SetPassword.class);
 
   private final String password;
 
@@ -54,7 +52,7 @@ public class SetPassword implements Action {
     try {
       User user = context.getCurrentUser();
       actionResult.setAuthorizable(user.getID());
-      LOGGER.info(String.format("Setting password for user with id = %s", user.getID()));
+      log.info("Setting password for user with id = {}", user.getID());
       if (execute) {
         user.changePassword(password);
       }

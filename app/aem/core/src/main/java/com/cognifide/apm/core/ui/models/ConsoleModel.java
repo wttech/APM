@@ -25,20 +25,18 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import javax.inject.Inject;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.OSGiService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Model(adaptables = SlingHttpServletRequest.class)
+@Slf4j
 public final class ConsoleModel {
 
 	public static final String PATH_PARAM = "path";
-
-	private static final Logger LOG = LoggerFactory.getLogger(ConsoleModel.class);
 
 	private static final String FILE_NAME_DEFAULT = "filename";
 
@@ -71,7 +69,7 @@ public final class ConsoleModel {
 		try {
 			return IOUtils.toString(getClass().getResourceAsStream(CONTENT_FILE), StandardCharsets.UTF_8.toString());
 		} catch (IOException e) {
-			LOG.warn("Cannot read content of default script template.", e);
+			log.warn("Cannot read content of default script template.", e);
 			return "";
 		}
 	}

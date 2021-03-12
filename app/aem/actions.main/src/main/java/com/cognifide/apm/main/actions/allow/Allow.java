@@ -31,14 +31,12 @@ import java.util.Collections;
 import java.util.List;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.api.security.user.Authorizable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+@Slf4j
 public class Allow implements Action {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(Allow.class);
 
   private final String path;
 
@@ -49,8 +47,8 @@ public class Allow implements Action {
   private final boolean ignoreNonExistingPaths;
 
   public Allow(String path, List<String> permissions,
-      String glob, List<String> ntNames,
-      List<String> itemNames, boolean ignoreNonExistingPaths) {
+               String glob, List<String> ntNames,
+               List<String> itemNames, boolean ignoreNonExistingPaths) {
     this.path = path;
     this.permissions = permissions;
     this.restrictions = new Restrictions(glob, ntNames, itemNames);
@@ -75,8 +73,8 @@ public class Allow implements Action {
       context.getSession().getNode(path);
       final PermissionActionHelper permissionActionHelper = new PermissionActionHelper(
           context.getValueFactory(), path, permissions, restrictions);
-      LOGGER.info(String.format("Adding permissions %s for authorizable with id = %s for path = %s %s",
-          permissions.toString(), context.getCurrentAuthorizable().getID(), path, restrictions));
+      log.info("Adding permissions {} for authorizable with id = {} for path = {} {}",
+          permissions.toString(), context.getCurrentAuthorizable().getID(), path, restrictions);
       if (simulate) {
         permissionActionHelper.checkPermissions(context.getAccessControlManager());
       } else {

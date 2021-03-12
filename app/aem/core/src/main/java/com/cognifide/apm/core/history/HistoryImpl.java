@@ -51,6 +51,7 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.query.Query;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
@@ -59,8 +60,6 @@ import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Component(
     immediate = true,
@@ -70,11 +69,10 @@ import org.slf4j.LoggerFactory;
         Property.VENDOR
     }
 )
+@Slf4j
 public class HistoryImpl implements History {
 
   public static final String HISTORY_FOLDER = "/var/apm/history";
-
-  private static final Logger LOG = LoggerFactory.getLogger(HistoryImpl.class);
 
   private static final String APM_HISTORY = "apmHistory";
 
@@ -196,7 +194,7 @@ public class HistoryImpl implements History {
       resolver.commit();
       return resolver.getResource(historyEntryNode.getPath()).adaptTo(HistoryEntryImpl.class);
     } catch (PersistenceException | RepositoryException e) {
-      LOG.error("Issues with saving to repository while logging script execution", e);
+      log.error("Issues with saving to repository while logging script execution", e);
       return null;
     }
   }

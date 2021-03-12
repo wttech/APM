@@ -27,14 +27,12 @@ import com.cognifide.apm.main.utils.MessagingUtils;
 import java.util.ArrayList;
 import java.util.List;
 import javax.jcr.RepositoryException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.apache.jackrabbit.api.security.user.Group;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+@Slf4j
 public class RemoveParents implements Action {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(RemoveParents.class);
 
   private final List<String> groupIds;
 
@@ -59,9 +57,7 @@ public class RemoveParents implements Action {
     try {
       authorizable = context.getCurrentAuthorizable();
       actionResult.setAuthorizable(authorizable.getID());
-      LOGGER.info(
-          String.format("Removing authorizable with id = %s from groups %s", authorizable.getID(),
-              groupIds));
+      log.info("Removing authorizable with id = {} from groups {}", authorizable.getID(), groupIds);
     } catch (ActionExecutionException | RepositoryException e) {
       actionResult.logError(MessagingUtils.createMessage(e));
       return actionResult;

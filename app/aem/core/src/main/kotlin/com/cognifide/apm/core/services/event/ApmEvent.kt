@@ -33,7 +33,9 @@ abstract class ApmEvent {
         return Event(getTopic(), properties)
     }
 
-    protected open fun fulfillProperties(properties: MutableMap<String, Any>) {}
+    protected open fun fulfillProperties(properties: MutableMap<String, Any>) {
+        // intentionally empty
+    }
 
     abstract class ScriptApmEvent(val script: Script) : ApmEvent() {
         override fun fulfillProperties(properties: MutableMap<String, Any>) {

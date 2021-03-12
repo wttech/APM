@@ -28,14 +28,12 @@ import com.cognifide.apm.main.utils.MessagingUtils;
 import java.util.ArrayList;
 import java.util.List;
 import javax.jcr.RepositoryException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.apache.jackrabbit.api.security.user.Group;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+@Slf4j
 public class AddParents implements Action {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(AddParents.class);
 
   private final List<String> groupIds;
 
@@ -72,8 +70,8 @@ public class AddParents implements Action {
         if (authorizable.isGroup()) {
           ActionUtils.checkCyclicRelations(group, (Group) authorizable);
         }
-        LOGGER.info(String.format("Adding Authorizable with id = %s to group with id = %s",
-            authorizable.getID(), group.getID()));
+        log.info("Adding Authorizable with id = {} to group with id = {}",
+            authorizable.getID(), group.getID());
 
         if (execute) {
           group.addMember(authorizable);

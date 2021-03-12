@@ -42,14 +42,13 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.ValueFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Component(
     immediate = true,
@@ -59,9 +58,8 @@ import org.slf4j.LoggerFactory;
         Property.VENDOR
     }
 )
+@Slf4j
 public class ScriptStorageImpl implements ScriptStorage {
-
-  private static final Logger LOG = LoggerFactory.getLogger(ScriptStorageImpl.class);
 
   private static final Pattern FILE_NAME_PATTERN = Pattern.compile("[\\da-zA-Z\\-]+\\.apm");
 
@@ -132,7 +130,7 @@ public class ScriptStorageImpl implements ScriptStorage {
       session.save();
       result = scriptFinder.find(fileNode.getPath(), resolver);
     } catch (RepositoryException e) {
-      LOG.error(e.getMessage(), e);
+      log.error(e.getMessage(), e);
     }
     return result;
   }

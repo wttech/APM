@@ -21,22 +21,6 @@ package com.cognifide.apm.core.jobs;
 
 import static com.cognifide.apm.core.utils.sling.SlingHelper.resolveDefault;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.jcr.RepositoryException;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.sling.api.resource.PersistenceException;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.apache.sling.event.jobs.Job;
-import org.apache.sling.event.jobs.consumer.JobConsumer;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ExecutionMode;
 import com.cognifide.apm.api.services.ExecutionResult;
@@ -46,6 +30,18 @@ import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.history.History;
 import com.cognifide.apm.core.jobs.JobResultsCache.ExecutionSummary;
 import com.cognifide.apm.core.utils.sling.ResolveCallback;
+import java.util.HashMap;
+import java.util.Map;
+import javax.jcr.RepositoryException;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
+import org.apache.sling.api.resource.PersistenceException;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.event.jobs.Job;
+import org.apache.sling.event.jobs.consumer.JobConsumer;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 @Component(
     immediate = true,
@@ -54,9 +50,8 @@ import com.cognifide.apm.core.utils.sling.ResolveCallback;
         Property.TOPIC + ScriptRunnerJobManagerImpl.JOB_SCRIPT_RUN_TOPIC
     }
 )
+@Slf4j
 public class ScriptRunnerJobConsumer implements JobConsumer {
-
-  private static final Logger LOG = LoggerFactory.getLogger(ScriptRunnerJobConsumer.class);
 
   @Reference
   private History history;
@@ -75,7 +70,7 @@ public class ScriptRunnerJobConsumer implements JobConsumer {
 
   @Override
   public JobResult process(final Job job) {
-    LOG.info("Script runner job consumer started");
+    log.info("Script runner job consumer started");
     final String id = job.getId();
     final ExecutionMode mode = getMode(job);
     final String userId = getUserId(job);
@@ -89,7 +84,7 @@ public class ScriptRunnerJobConsumer implements JobConsumer {
           jobResultsCache.put(id, ExecutionSummary.finished(executionResult, summaryPath));
           result = JobResult.OK;
         } catch (RepositoryException | PersistenceException e) {
-          LOG.error("Script manager failed to process script", e);
+          log.error("Script manager failed to process script", e);
           result = JobResult.FAILED;
         }
       }
@@ -114,14 +109,14 @@ public class ScriptRunnerJobConsumer implements JobConsumer {
     if (StringUtils.isNotBlank(modeName)) {
       result = StringUtils.isEmpty(modeName) ? ExecutionMode.DRY_RUN : ExecutionMode.valueOf(modeName.toUpperCase());
     } else {
-      LOG.error("Mode is null");
+      log.error("Mode is null");
     }
     return result;
   }
 
   private Map<String, String> getDefinitions(Job job) {
     HashMap<String, String> definitions = (HashMap<String, String>) job.getProperty("definitions");
-    if(definitions == null) {
+    if (definitions == null) {
       definitions = new HashMap<>();
     }
     return definitions;
@@ -133,12 +128,12 @@ public class ScriptRunnerJobConsumer implements JobConsumer {
     if (StringUtils.isNotBlank(scriptSearchPath)) {
       final Script script = scriptFinder.find(scriptSearchPath, resolver);
       if (script == null) {
-        LOG.error("Script not found: {}", scriptSearchPath);
+        log.error("Script not found: {}", scriptSearchPath);
         return null;
       }
       return script;
     } else {
-      LOG.error("Script search path is blank");
+      log.error("Script search path is blank");
       return null;
     }
   }

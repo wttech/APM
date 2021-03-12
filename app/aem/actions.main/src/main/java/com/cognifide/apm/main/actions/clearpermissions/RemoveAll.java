@@ -29,14 +29,12 @@ import java.security.Principal;
 import javax.jcr.RepositoryException;
 import javax.jcr.security.AccessControlEntry;
 import javax.jcr.security.AccessControlManager;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.jackrabbit.api.security.JackrabbitAccessControlList;
 import org.apache.jackrabbit.api.security.user.Authorizable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+@Slf4j
 public class RemoveAll implements Action {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(RemoveAll.class);
 
   private final String path;
 
@@ -59,8 +57,8 @@ public class RemoveAll implements Action {
     try {
       Authorizable authorizable = context.getCurrentAuthorizable();
       actionResult.setAuthorizable(authorizable.getID());
-      LOGGER.info(String.format("Removing all priveleges for authorizable with id = %s on path = %s",
-          authorizable.getID(), path));
+      log.info("Removing all priveleges for authorizable with id = {} on path = {}",
+          authorizable.getID(), path);
       if (execute) {
         removeAll(context, authorizable);
       }

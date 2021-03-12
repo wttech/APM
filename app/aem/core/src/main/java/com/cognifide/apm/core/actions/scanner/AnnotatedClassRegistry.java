@@ -27,22 +27,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import lombok.extern.slf4j.Slf4j;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.util.tracker.BundleTracker;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Aggregator for classes with specified annotation <p> When bundle is state is changed (added, removed,
  * modified), then it is executed class scanner which looks for classes with prefixes specified in bundle
  * header
  */
+@Slf4j
 public class AnnotatedClassRegistry {
-
-  private static final Logger LOG = LoggerFactory.getLogger(AnnotatedClassRegistry.class);
 
   private final BundleTracker tracker;
 
@@ -106,15 +104,15 @@ public class AnnotatedClassRegistry {
       classes.put(bundle.getBundleId(), scanned);
       notifyChangeListeners();
     }
-    if (LOG.isDebugEnabled()) {
-      LOG.debug("Adding classes ({}) from bundle: {}", scanned.size(), bundle.getSymbolicName());
+    if (log.isDebugEnabled()) {
+      log.debug("Adding classes ({}) from bundle: {}", scanned.size(), bundle.getSymbolicName());
     }
   }
 
   private void unregisterClasses(Bundle bundle) {
     final List<Class<?>> registered = classes.get(bundle.getBundleId());
-    if (LOG.isDebugEnabled()) {
-      LOG.debug("Removing classes ({}) from bundle: {}", registered.size(), bundle.getSymbolicName());
+    if (log.isDebugEnabled()) {
+      log.debug("Removing classes ({}) from bundle: {}", registered.size(), bundle.getSymbolicName());
     }
     classes.remove(bundle.getBundleId());
     notifyChangeListeners();

@@ -55,6 +55,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.jackrabbit.api.JackrabbitSession;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -62,8 +63,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Component(
     immediate = true,
@@ -73,9 +72,8 @@ import org.slf4j.LoggerFactory;
         Property.VENDOR
     }
 )
+@Slf4j
 public class ScriptManagerImpl implements ScriptManager {
-
-  private static final Logger LOG = LoggerFactory.getLogger(ScriptManagerImpl.class);
 
   @Reference
   private ActionFactory actionFactory;
@@ -117,7 +115,7 @@ public class ScriptManagerImpl implements ScriptManager {
 
     final String path = script.getPath();
 
-    LOG.info(String.format("Script execution started: %s [%s]", path, mode));
+    log.info(String.format("Script execution started: %s [%s]", path, mode));
     final Progress progress = new ProgressImpl(resolver.getUserID());
     final ActionExecutor actionExecutor = createExecutor(mode, resolver);
     final Context context = actionExecutor.getContext();
@@ -138,7 +136,7 @@ public class ScriptManagerImpl implements ScriptManager {
             }
             return result.getStatus();
           } catch (RepositoryException | ActionCreationException e) {
-            LOG.error("Error while processing command: {}", commandName, e);
+            log.error("Error while processing command: {}", commandName, e);
             progress.addEntry(Status.ERROR, e.getMessage(), commandName);
             return Status.ERROR;
           }
@@ -195,7 +193,7 @@ public class ScriptManagerImpl implements ScriptManager {
           HistoryEntry entry = history.logLocal(script, mode, progress);
           history.replicate(entry, progress.getExecutor());
         } catch (RepositoryException e) {
-          LOG.error("Repository error occurred while replicating script execution", e);
+          log.error("Repository error occurred while replicating script execution", e);
         }
       }
     }

@@ -25,13 +25,11 @@ import com.cognifide.apm.api.actions.Context;
 import com.cognifide.apm.api.exceptions.ActionExecutionException;
 import com.cognifide.apm.main.utils.MessagingUtils;
 import javax.jcr.RepositoryException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.jackrabbit.api.security.user.Authorizable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+@Slf4j
 public class RemoveProperty implements Action {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(RemoveProperty.class);
 
   private final String nameProperty;
 
@@ -55,8 +53,8 @@ public class RemoveProperty implements Action {
     try {
       Authorizable authorizable = context.getCurrentAuthorizable();
       actionResult.setAuthorizable(authorizable.getID());
-      LOGGER.info(String.format("Removing property %s from authorizable with id = %s", nameProperty,
-          authorizable.getID()));
+      log.info("Removing property {} from authorizable with id = {}",
+          nameProperty, authorizable.getID());
       if (!simulate) {
         authorizable.removeProperty(nameProperty);
       }

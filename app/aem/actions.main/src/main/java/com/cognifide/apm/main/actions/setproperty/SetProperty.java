@@ -26,13 +26,11 @@ import com.cognifide.apm.api.exceptions.ActionExecutionException;
 import com.cognifide.apm.main.utils.MessagingUtils;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.jackrabbit.api.security.user.Authorizable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+@Slf4j
 public class SetProperty implements Action {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(SetProperty.class);
 
   private final String nameProperty;
 
@@ -59,8 +57,8 @@ public class SetProperty implements Action {
     try {
       Authorizable authorizable = context.getCurrentAuthorizable();
       actionResult.setAuthorizable(authorizable.getID());
-      LOGGER.info(String.format("Setting property %s for authorizable with id = %s", nameProperty,
-          authorizable.getID()));
+      log.info("Setting property {} for authorizable with id = {}",
+          nameProperty, authorizable.getID());
       final Value value = context.getValueFactory().createValue(valueProperty);
 
       if (!simulate) {

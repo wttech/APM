@@ -25,14 +25,12 @@ import com.cognifide.apm.api.exceptions.ActionExecutionException;
 import com.cognifide.apm.main.utils.MessagingUtils;
 import java.util.Iterator;
 import javax.jcr.RepositoryException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.apache.jackrabbit.api.security.user.Group;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+@Slf4j
 public class ClearFromGroupDetacher {
-
-  static final Logger LOGGER = LoggerFactory.getLogger(ClearFromGroupDetacher.class);
 
   private final Context context;
 
@@ -51,7 +49,7 @@ public class ClearFromGroupDetacher {
 
       if (authorizable.isGroup()) {
         final Group group = context.getCurrentGroup();
-        LOGGER.info(String.format("Removing all members of group with id = %s", group.getID()));
+        log.info("Removing all members of group with id = {}", group.getID());
         Iterator<Authorizable> groupMembers = getGroupMembers(actionResult, group);
 
         detachAllMembers(actionResult, group, groupMembers);
@@ -71,8 +69,8 @@ public class ClearFromGroupDetacher {
       Authorizable currentAuthorizable = context.getCurrentAuthorizable();
       Iterator<Group> groups = getGroupParents(actionResult, currentAuthorizable);
 
-      LOGGER.info(String.format("Removing all memberships of authorizable with id = %s",
-          currentAuthorizable.getID()));
+      log.info("Removing all memberships of authorizable with id = {}",
+          currentAuthorizable.getID());
       detachFromParents(actionResult, currentAuthorizable, groups);
     } catch (RepositoryException | ActionExecutionException e) {
       actionResult.logError(MessagingUtils.createMessage(e));
@@ -81,7 +79,7 @@ public class ClearFromGroupDetacher {
   }
 
   private void detachFromParents(final ActionResult actionResult, final Authorizable authorizable,
-      Iterator<Group> groups) throws RepositoryException {
+                                 Iterator<Group> groups) throws RepositoryException {
     while (groups.hasNext()) {
       Group currentGroup = groups.next();
       if (currentGroup.isGroup()) {
@@ -106,7 +104,7 @@ public class ClearFromGroupDetacher {
   }
 
   private void detachAllMembers(final ActionResult actionResult, final Group group,
-      Iterator<Authorizable> groupMembers) throws RepositoryException {
+                                Iterator<Authorizable> groupMembers) throws RepositoryException {
     while (groupMembers.hasNext()) {
       Authorizable currentMember = groupMembers.next();
       if (currentMember.isGroup()) {
