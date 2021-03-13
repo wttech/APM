@@ -186,9 +186,7 @@ public class CheckPermissions implements Action {
   }
 
   private List<String> preparePrivilegesToCheck() throws RepositoryException {
-    return permissions.stream()
-        .map(String::toLowerCase)
-        .collect(Collectors.toList());
+    return permissions.stream().map(String::toLowerCase).collect(Collectors.toList());
   }
 
 }
