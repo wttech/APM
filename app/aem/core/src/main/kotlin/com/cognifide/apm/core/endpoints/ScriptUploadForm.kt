@@ -38,6 +38,7 @@ class ScriptUploadForm @Inject constructor(
         @param:RequestParameter("file", optional = false) val file: InputStream,
         @param:RequestParameter("file", optional = false) @param:FileName val fileName: String,
         @param:RequestParameter("overwrite") val overwrite: Boolean,
+        @param:RequestParameter(ScriptNode.APM_SAVE_PATH) val savePath: String?,
         @param:RequestParameter(ScriptNode.APM_LAUNCH_ENABLED) val launchEnabled: Boolean,
         @param:RequestParameter(ScriptNode.APM_LAUNCH_MODE) val launchMode: LaunchMode,
         @param:RequestParameter(ScriptNode.APM_LAUNCH_ENVIRONMENT) val launchEnvironment: LaunchEnvironment?,

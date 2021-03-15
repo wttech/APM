@@ -25,8 +25,8 @@ import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.apm.core.Apm;
 import com.cognifide.apm.core.Property;
+import com.cognifide.apm.core.endpoints.ScriptUploadForm;
 import com.day.cq.commons.jcr.JcrConstants;
-import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -67,8 +67,6 @@ public class ScriptStorageImpl implements ScriptStorage {
 
   private static final Pattern PATH_PATTERN = Pattern.compile("/[\\da-zA-Z\\-/]+");
 
-  private static final String SCRIPT_PATH = "/conf/apm/scripts";
-
   private static final Charset SCRIPT_ENCODING = StandardCharsets.UTF_8;
 
   @Reference
@@ -85,23 +83,14 @@ public class ScriptStorageImpl implements ScriptStorage {
   }
 
   @Override
-  public Script save(String fileName, InputStream input, LaunchMetadata launchMetadata, boolean overwrite,
-      ResourceResolver resolver) throws RepositoryException, PersistenceException {
-
-    FileDescriptor fileDescriptor = FileDescriptor.createFileDescriptor(fileName, getSavePath(), input);
-
+  public Script save(ScriptUploadForm form, ResourceResolver resolver) throws RepositoryException, PersistenceException {
+    FileDescriptor fileDescriptor = FileDescriptor.createFileDescriptor(form.getFileName(), form.getSavePath(), form.getFile());
     validate(Collections.singletonList(fileDescriptor));
-
-    return saveScript(fileDescriptor, launchMetadata, overwrite, resolver);
-  }
-
-  @Override
-  public String getSavePath() {
-    return SCRIPT_PATH;
+    return saveScript(fileDescriptor, form.toLaunchMetadata(), form.getOverwrite(), resolver);
   }
 
   private Script saveScript(FileDescriptor descriptor, LaunchMetadata launchMetadata, boolean overwrite,
-      ResourceResolver resolver) {
+                            ResourceResolver resolver) {
     Script result = null;
     try {
       final Session session = resolver.adaptTo(Session.class);
@@ -185,9 +174,10 @@ public class ScriptStorageImpl implements ScriptStorage {
   }
 
   private static void ensurePropertyMatchesPattern(List<String> errors, String property, String value,
-      Pattern pattern) {
+                                                   Pattern pattern) {
     if (!pattern.matcher(value).matches()) {
       errors.add(format("Invalid %s: \"%s\"", property, value));
     }
   }
+
 }
