@@ -34,16 +34,22 @@
     fileUploader
       .on('coral-fileupload:fileadded', function(event) {
         let filename = event.detail.item.file.name;
+        let savePath = window.location.pathname.split('.html')[1];
         event.detail.item._parameters = [
-          { name: "apm:launchEnabled", value: true },
-          { name: "apm:launchMode", value: "ON_DEMAND" },
+          {name: 'apm:launchEnabled', value: true},
+          {name: 'apm:launchMode', value: 'ON_DEMAND'},
+          {name: 'apm:savePath', value: savePath},
         ];
         fileUploader.upload(filename);
       })
       .on('coral-fileupload:load', function(event) {
+        let savePath = window.location.pathname.split('.html')[1];
         fileUploader.uploadQueue.forEach(function(item, index) {
           let filename = event.detail.item.file.name;
           if (item.file.name === filename) {
+            item._parameters = [
+              {name: 'apm:savePath', value: savePath},
+            ];
             fileUploader.uploadQueue.splice(index, 1);
           }
         });

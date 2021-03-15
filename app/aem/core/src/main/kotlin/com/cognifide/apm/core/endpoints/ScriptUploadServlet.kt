@@ -61,7 +61,7 @@ class ScriptUploadServlet : AbstractFormServlet<ScriptUploadForm>(ScriptUploadFo
 
     override fun doPost(form: ScriptUploadForm, resourceResolver: ResourceResolver): ResponseEntity<Any> {
         return try {
-            val script = scriptStorage.save(form.fileName, form.file, form.toLaunchMetadata(), form.overwrite, resourceResolver)
+            val script = scriptStorage.save(form, resourceResolver)
             scriptManager.process(script, ExecutionMode.VALIDATION, resourceResolver)
             ok {
                 message = "File successfully saved"
