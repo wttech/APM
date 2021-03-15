@@ -157,7 +157,7 @@ public class ScriptManagerImpl implements ScriptManager {
   }
 
   @Override
-  public synchronized Progress process(final Script script, final ExecutionMode mode, ResourceResolver resolver)
+  public Progress process(final Script script, final ExecutionMode mode, ResourceResolver resolver)
       throws RepositoryException, PersistenceException {
     return process(script, mode, Maps.newHashMap(), resolver);
   }
