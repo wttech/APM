@@ -33,4 +33,4 @@ atlassian-ide-plugin.xml
 .classpath
 
 node_modules
-clientlib-graph-view
+**/clientlibs/clientlib-graph-view
