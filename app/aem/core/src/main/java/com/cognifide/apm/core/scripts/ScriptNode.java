@@ -29,6 +29,8 @@ public final class ScriptNode {
 
   public static final String APM_LAUNCH_ENVIRONMENT = "apm:launchEnvironment";
 
+  public static final String APM_LAUNCH_RUN_MODES = "apm:launchRunModes";
+
   public static final String APM_LAUNCH_HOOK = "apm:launchHook";
 
   public static final String APM_LAUNCH_SCHEDULE = "apm:launchSchedule";

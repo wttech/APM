@@ -148,6 +148,8 @@ class ReferenceFinder(
 
         override fun getLaunchEnvironment(): LaunchEnvironment? = null
 
+        override fun getLaunchRunModes(): Set<String>? = null
+
         override fun getLaunchHook(): String? = null
 
         override fun getLaunchSchedule(): Date? = null

@@ -19,21 +19,18 @@
  */
 package com.cognifide.apm.core.launchers;
 
-import static com.cognifide.apm.api.scripts.LaunchEnvironment.AUTHOR;
-import static com.cognifide.apm.api.scripts.LaunchEnvironment.PUBLISH;
 import static com.cognifide.apm.core.scripts.ScriptFilters.onStartup;
 
-import com.cognifide.apm.api.scripts.LaunchEnvironment;
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.apm.core.Property;
-import com.cognifide.apm.core.utils.InstanceTypeProvider;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
 import java.util.List;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.settings.SlingSettingsService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -54,7 +51,7 @@ public class StartupScriptLauncher extends AbstractLauncher {
   private ScriptFinder scriptFinder;
 
   @Reference
-  private InstanceTypeProvider instanceTypeProvider;
+  private SlingSettingsService slingSettings;
 
   @Reference
   private ResourceResolverFactory resolverFactory;
@@ -65,8 +62,7 @@ public class StartupScriptLauncher extends AbstractLauncher {
   }
 
   private void runOnStartup(ResourceResolver resolver) throws PersistenceException {
-    LaunchEnvironment environment = instanceTypeProvider.isOnAuthor() ? AUTHOR : PUBLISH;
-    List<Script> scripts = scriptFinder.findAll(onStartup(environment), resolver);
+    List<Script> scripts = scriptFinder.findAll(onStartup(slingSettings), resolver);
     processScripts(scripts, resolver, LauncherType.STARTUP);
   }
 

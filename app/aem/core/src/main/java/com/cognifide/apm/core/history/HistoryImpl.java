@@ -32,7 +32,6 @@ import com.cognifide.apm.core.history.InstanceDetails.InstanceType;
 import com.cognifide.apm.core.logger.Progress;
 import com.cognifide.apm.core.progress.ProgressHelper;
 import com.cognifide.apm.core.services.version.VersionService;
-import com.cognifide.apm.core.utils.InstanceTypeProvider;
 import com.cognifide.apm.core.utils.sling.ResolveCallback;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
 import com.day.cq.commons.jcr.JcrConstants;
@@ -55,6 +54,7 @@ import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.settings.SlingSettingsService;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -94,14 +94,14 @@ public class HistoryImpl implements History {
   private ResourceResolverFactory resolverFactory;
 
   @Reference
-  private InstanceTypeProvider instanceTypeProvider;
+  private SlingSettingsService slingSettings;
 
   @Reference
   private VersionService versionService;
 
   @Override
   public HistoryEntry logLocal(Script script, ExecutionMode mode, Progress progressLogger) {
-    InstanceType instanceDetails = instanceTypeProvider.isOnAuthor() ? InstanceType.AUTHOR : InstanceType.PUBLISH;
+    InstanceType instanceDetails = slingSettings.getRunModes().contains("author") ? InstanceType.AUTHOR : InstanceType.PUBLISH;
     return resolveDefault(resolverFactory, progressLogger.getExecutor(), (ResolveCallback<HistoryEntry>) resolver -> {
       final HistoryEntryWriter historyEntryWriter = createBuilder(resolver, script, mode, progressLogger)
           .executionTime(Calendar.getInstance())
@@ -114,8 +114,7 @@ public class HistoryImpl implements History {
 
   @Override
   public HistoryEntry logRemote(Script script, ExecutionMode mode, Progress progressLogger,
-      InstanceDetails instanceDetails,
-      Calendar executionTime) {
+                                InstanceDetails instanceDetails, Calendar executionTime) {
     return resolveDefault(resolverFactory, progressLogger.getExecutor(), (ResolveCallback<HistoryEntry>) resolver -> {
       final HistoryEntryWriter historyEntryWriter = createBuilder(resolver, script, mode, progressLogger)
           .executionTime(executionTime)
@@ -127,7 +126,7 @@ public class HistoryImpl implements History {
   }
 
   private HistoryEntryWriterBuilder createBuilder(ResourceResolver resolver, Script script, ExecutionMode mode,
-      Progress progressLogger) {
+                                                  Progress progressLogger) {
     Resource source = resolver.getResource(script.getPath());
     return HistoryEntryWriter.builder()
         .author(source.getValueMap().get(JcrConstants.JCR_CREATED_BY, StringUtils.EMPTY))
@@ -184,7 +183,7 @@ public class HistoryImpl implements History {
   }
 
   private HistoryEntry createHistoryEntry(ResourceResolver resolver, Script script, ExecutionMode mode,
-      HistoryEntryWriter historyEntryWriter, boolean remote) {
+                                          HistoryEntryWriter historyEntryWriter, boolean remote) {
     try {
       Session session = resolver.adaptTo(Session.class);
 

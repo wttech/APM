@@ -20,6 +20,7 @@
 package com.cognifide.apm.api.scripts;
 
 import java.util.Date;
+import java.util.Set;
 
 public interface Script {
 
@@ -39,6 +40,8 @@ public interface Script {
 	LaunchMode getLaunchMode();
 
 	LaunchEnvironment getLaunchEnvironment();
+
+	Set<String> getLaunchRunModes();
 
 	String getLaunchHook();
 

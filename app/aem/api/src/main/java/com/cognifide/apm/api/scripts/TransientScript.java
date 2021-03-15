@@ -20,6 +20,7 @@
 package com.cognifide.apm.api.scripts;
 
 import java.util.Date;
+import java.util.Set;
 
 public class TransientScript implements MutableScript {
 
@@ -64,6 +65,11 @@ public class TransientScript implements MutableScript {
   @Override
   public LaunchEnvironment getLaunchEnvironment() {
     return LaunchEnvironment.ALL;
+  }
+
+  @Override
+  public Set<String> getLaunchRunModes() {
+    return null;
   }
 
   @Override

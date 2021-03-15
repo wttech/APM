@@ -25,10 +25,13 @@ import com.cognifide.apm.api.scripts.MutableScript;
 import com.cognifide.apm.core.utils.ResourceMixinUtil;
 import com.day.cq.commons.jcr.JcrConstants;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Set;
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.apache.commons.lang.BooleanUtils;
@@ -46,7 +49,7 @@ public class ScriptModel implements MutableScript {
 
   private static Logger LOGGER = LoggerFactory.getLogger(ScriptModel.class);
 
-  private final String path;
+  private String path;
 
   @Self
   private Resource resource;
@@ -65,6 +68,11 @@ public class ScriptModel implements MutableScript {
   @Named(ScriptNode.APM_LAUNCH_ENVIRONMENT)
   @Optional
   private String launchEnvironment;
+
+  @Inject
+  @Named(ScriptNode.APM_LAUNCH_RUN_MODES)
+  @Optional
+  private String[] launchRunModes;
 
   @Inject
   @Named(ScriptNode.APM_LAUNCH_HOOK)
@@ -113,8 +121,11 @@ public class ScriptModel implements MutableScript {
 
   private String data;
 
-  public ScriptModel(Resource resource) {
-    this.path = resource.getPath();
+  @PostConstruct
+  private void postConstruct() {
+    path = resource.getPath();
+    Resource child = resource.getChild(JcrConstants.JCR_CONTENT);
+    data = child != null ? child.getValueMap().get(JcrConstants.JCR_DATA, String.class) : "";
   }
 
   @Override
@@ -124,7 +135,7 @@ public class ScriptModel implements MutableScript {
 
   @Override
   public LaunchMode getLaunchMode() {
-    return (launchMode == null) ? LaunchMode.ON_DEMAND : LaunchMode.from(launchMode)
+    return launchMode == null ? LaunchMode.ON_DEMAND : LaunchMode.from(launchMode)
         .orElseGet(() -> {
           LOGGER.warn("Cannot match {} to existing launch modes. Using default one", launchMode);
           return LaunchMode.ON_DEMAND;
@@ -138,11 +149,16 @@ public class ScriptModel implements MutableScript {
 
   @Override
   public LaunchEnvironment getLaunchEnvironment() {
-    return (launchEnvironment == null) ? LaunchEnvironment.ALL : LaunchEnvironment.from(launchEnvironment)
+    return launchEnvironment == null ? LaunchEnvironment.ALL : LaunchEnvironment.from(launchEnvironment)
         .orElseGet(() -> {
           LOGGER.warn("Cannot match {} to existing launch environments. Using default one", launchEnvironment);
           return LaunchEnvironment.ALL;
         });
+  }
+
+  @Override
+  public Set<String> getLaunchRunModes() {
+    return launchRunModes == null ? null : Sets.newHashSet(launchRunModes);
   }
 
   @Override
@@ -187,14 +203,6 @@ public class ScriptModel implements MutableScript {
 
   @Override
   public String getData() {
-    if (data == null) {
-      Resource child = resource.getChild(JcrConstants.JCR_CONTENT);
-      if (child != null) {
-        data = child.getValueMap().get(JcrConstants.JCR_DATA, String.class);
-      } else {
-        data = "";
-      }
-    }
     return data;
   }
 

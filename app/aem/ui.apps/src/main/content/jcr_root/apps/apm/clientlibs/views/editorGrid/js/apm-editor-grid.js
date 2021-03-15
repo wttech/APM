@@ -28,6 +28,7 @@
     launchEnabled: 'apm:launchEnabled',
     launchMode: 'apm:launchMode',
     launchEnvironment: 'apm:launchEnvironment',
+    launchRunModes: 'apm:launchRunModes',
     launchHook: 'apm:launchHook',
     launchSchedule: 'apm:launchSchedule',
   };
@@ -48,6 +49,7 @@
         launchEnabled: fields[FieldNames.launchEnabled],
         launchMode: fields[FieldNames.launchMode],
         launchEnvironment: fields[FieldNames.launchEnvironment],
+        launchRunModes: fields[FieldNames.launchRunModes],
         launchHook: fields[FieldNames.launchHook],
         launchSchedule: fields[FieldNames.launchSchedule],
       };
@@ -99,6 +101,7 @@
         }
         if (launchMode !== LaunchModes.onDemand) {
           showFields.push(this.fields.launchEnvironment);
+          showFields.push(this.fields.launchRunModes);
         }
         this.showFields(showFields);
       }
