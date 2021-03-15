@@ -46,7 +46,7 @@
             rootPath="/conf/apm/scripts"
             selectionMode="row"
             size="1000"
-            src="/mnt/overlay/apm/views/scripts/jcr:content/views/list.html{+id}"
+            src="/mnt/overlay/apm/views/scripts/jcr:content/views/content/items/list.html{+id}"
             stateId="xf.shell.collectionpage">
             <columns jcr:primaryType="nt:unstructured">
               <select
