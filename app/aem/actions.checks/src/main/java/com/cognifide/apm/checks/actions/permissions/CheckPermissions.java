@@ -42,7 +42,6 @@ import javax.jcr.Session;
 import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.api.security.principal.PrincipalIterator;
 import org.apache.jackrabbit.api.security.user.Authorizable;
-import org.apache.sling.api.resource.LoginException;
 
 public class CheckPermissions implements Action {
 
@@ -101,7 +100,7 @@ public class CheckPermissions implements Action {
 
     } catch (final PathNotFoundException e) {
       actionResult.logError("Path " + path + " not found");
-    } catch (RepositoryException | ActionExecutionException | LoginException e) {
+    } catch (RepositoryException | ActionExecutionException e) {
       actionResult.logError(MessagingUtils.createMessage(e));
     }
     return actionResult;
@@ -110,7 +109,7 @@ public class CheckPermissions implements Action {
   private void checkPermissionsForGlob(Session session, final boolean execute, final ActionResult actionResult,
                                        final Authorizable authorizable, final Set<Principal> authorizablesToCheck,
                                        final CqActions actions, final List<String> privilegesToCheck)
-      throws RepositoryException, LoginException {
+      throws RepositoryException {
     final List<String> subpaths = getAllSubpaths(session, path);
     Pattern pattern = Pattern.compile(path + StringUtils.replace(glob, "*", ".*"));
     boolean foundMatch = false;
@@ -154,7 +153,7 @@ public class CheckPermissions implements Action {
     }
   }
 
-  private List<String> getAllSubpaths(Session session, final String path) throws RepositoryException, LoginException {
+  private List<String> getAllSubpaths(Session session, final String path) throws RepositoryException {
     List<String> subPaths = new ArrayList<>();
     Node node = session.getNode(path);
     subPaths.addAll(crawl(node));
@@ -185,7 +184,7 @@ public class CheckPermissions implements Action {
     return principals;
   }
 
-  private List<String> preparePrivilegesToCheck() throws RepositoryException {
+  private List<String> preparePrivilegesToCheck() {
     return permissions.stream().map(String::toLowerCase).collect(Collectors.toList());
   }
 

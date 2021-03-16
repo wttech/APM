@@ -76,7 +76,7 @@ public class CheckAuthorizableExists implements Action {
   }
 
   private boolean checkIfAuthIsNull(final boolean execute, final ActionResult actionResult,
-      final Authorizable authorizable) throws RepositoryException {
+                                    final Authorizable authorizable) {
     if (authorizable == null) {
       actionResult.logError("Authorizable " + id + " does not exist");
       if (execute) {
