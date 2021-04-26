@@ -175,8 +175,8 @@ NUMBER_LITERAL
     : [0-9]+
     ;
 STRING_LITERAL
-    : '"' (~["\\\r\n] )* '"'
-    | '\'' (~['\\\r\n] )* '\''
+    : '"' (~["\r\n] )* '"'
+    | '\'' (~['\r\n] )* '\''
     ;
 VARIABLE_PREFIX
     : '$'
@@ -188,7 +188,7 @@ EXTENDED_IDENTIFIER
     : Letter LetterOrDigitOrDash*
     ;
 COMMENT
-    : '#' (~[\\\r\n] )* -> skip
+    : '#' (~[\r\n] )* -> skip
     ;
 
 fragment Digits
