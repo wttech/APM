@@ -62,6 +62,19 @@ value
     | stringValue
     ;
 
+compositeArray
+    : ARRAY_BEGIN EOL? array (',' EOL? array)* EOL? ARRAY_END
+    ;
+
+plainIdentifier
+    : IDENTIFIER
+    ;
+
+compositeIdentifier
+    : ARRAY_BEGIN EOL? plainIdentifier (',' EOL? plainIdentifier)* EOL? ARRAY_END
+    | plainIdentifier
+    ;
+
 plus
     : '+'
     ;
@@ -69,6 +82,7 @@ plus
 expression
     : expression plus expression
     | array
+    | compositeArray
     | value
     ;
 
@@ -79,7 +93,7 @@ argument
 command
     : RUN_SCRIPT path namedArguments? # RunScript
     | IMPORT_SCRIPT path (AS name)? # ImportScript
-    | FOR_EACH IDENTIFIER IN argument EOL? body # ForEach
+    | FOR_EACH compositeIdentifier EOL? IN argument EOL? body # ForEach
     | DEFINE IDENTIFIER argument # DefineVariable
     | REQUIRE IDENTIFIER # RequireVariable
     | commandName complexArguments? EOL? body? # GenericCommand
@@ -214,4 +228,3 @@ WHITESPACE
 EOL
     : ('\r\n' | '\r' | '\n')
     ;
-

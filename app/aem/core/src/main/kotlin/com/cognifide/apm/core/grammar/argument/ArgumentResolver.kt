@@ -96,6 +96,15 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
             return ApmList(values)
         }
 
+        override fun visitCompositeArray(ctx: CompositeArrayContext): ApmType {
+            val values = ctx.children
+                    ?.map { it.accept(this) }
+                    ?.filterIsInstance<ApmList>()
+                    ?.map { it.value }
+                    ?: listOf(listOf())
+            return ApmNestedList(values)
+        }
+
         override fun visitExpression(ctx: ExpressionContext): ApmType {
             if (ctx.plus() != null) {
                 val left = visit(ctx.expression(0))
@@ -106,6 +115,7 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
                     left is ApmInteger && right is ApmString -> ApmString(left.integer.toString() + right.string)
                     left is ApmInteger && right is ApmInteger -> ApmInteger(left.integer + right.integer)
                     left is ApmList && right is ApmList -> ApmList(left.list + right.list)
+                    left is ApmNestedList && right is ApmNestedList -> ApmNestedList(left.nestedList + right.nestedList)
                     else -> throw ArgumentResolverException("Operation not supported for given values $left and $right")
                 }
             }

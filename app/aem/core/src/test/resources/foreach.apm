@@ -23,3 +23,23 @@ FOR-EACH i IN ['a', 'b'] BEGIN
     SHOW $i+'/'+$j
   END
 END
+
+FOR-EACH [i, j] IN [['a', 'b'], ['c', 'd']] BEGIN
+  FOR-EACH [m, n] IN [['e', 'f'], ['g', 'h']] BEGIN
+    SHOW $i+'/'+$j+'/'+$m+'/'+$n
+  END
+END
+
+DEFINE outerTab [
+  ['A', 'B'],
+  ['C', 'D']
+]
+DEFINE innerTab [
+  ['E', 'F'],
+  ['G', 'H']
+]
+FOR-EACH [i, j] IN $outerTab BEGIN
+  FOR-EACH [m, n] IN $innerTab BEGIN
+    SHOW $i+'/'+$j+'/'+$m+'/'+$n
+  END
+END

@@ -48,7 +48,15 @@ class ScriptRunnerTest extends Specification {
         commands == ["Executing command SHOW 'a/c'",
                      "Executing command SHOW 'a/d'",
                      "Executing command SHOW 'b/c'",
-                     "Executing command SHOW 'b/d'"]
+                     "Executing command SHOW 'b/d'",
+                     "Executing command SHOW 'a/b/e/f'",
+                     "Executing command SHOW 'a/b/g/h'",
+                     "Executing command SHOW 'c/d/e/f'",
+                     "Executing command SHOW 'c/d/g/h'",
+                     "Executing command SHOW 'A/B/E/F'",
+                     "Executing command SHOW 'A/B/G/H'",
+                     "Executing command SHOW 'C/D/E/F'",
+                     "Executing command SHOW 'C/D/G/H'"]
     }
 
     def "run define"() {

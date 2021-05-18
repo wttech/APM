@@ -27,6 +27,8 @@ abstract class ApmType(val argument: Any? = null) {
         get() = null
     open val list: List<String>?
         get() = null
+    open val nestedList: List<List<String>>?
+        get() = null
 }
 
 abstract class ApmValue(arg: Any? = null) : ApmType(arg)
@@ -55,6 +57,18 @@ data class ApmList(val value: List<String>) : ApmType(value) {
 
     override fun toString(): String {
         return value.joinToString(prefix = "[", postfix = "]") { "\"$it\"" }
+    }
+
+}
+
+data class ApmNestedList(val value: List<List<String>>) : ApmType(value) {
+    override val nestedList: List<List<String>>
+        get() = value
+
+    override fun toString(): String {
+        return value.joinToString(prefix = "[", postfix = "]") { item ->
+            item.joinToString(prefix = "[", postfix = "]") { "\"$it\"" }
+        }
     }
 
 }
