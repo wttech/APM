@@ -96,7 +96,7 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
             return ApmList(values)
         }
 
-        override fun visitCompositeArray(ctx: CompositeArrayContext): ApmType {
+        override fun visitNestedArray(ctx: NestedArrayContext): ApmType {
             val values = ctx.children
                     ?.map { it.accept(this) }
                     ?.filterIsInstance<ApmList>()

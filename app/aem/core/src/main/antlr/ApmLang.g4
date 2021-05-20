@@ -62,17 +62,17 @@ value
     | stringValue
     ;
 
-compositeArray
+nestedArray
     : ARRAY_BEGIN EOL? array (',' EOL? array)* EOL? ARRAY_END
     ;
 
-plainIdentifier
+basicIdentifier
     : IDENTIFIER
     ;
 
 compositeIdentifier
-    : ARRAY_BEGIN EOL? plainIdentifier (',' EOL? plainIdentifier)* EOL? ARRAY_END
-    | plainIdentifier
+    : ARRAY_BEGIN EOL? basicIdentifier (',' EOL? basicIdentifier)* EOL? ARRAY_END
+    | basicIdentifier
     ;
 
 plus
@@ -82,7 +82,7 @@ plus
 expression
     : expression plus expression
     | array
-    | compositeArray
+    | nestedArray
     | value
     ;
 

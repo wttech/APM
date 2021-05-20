@@ -180,7 +180,7 @@ class ScriptRunner(
         private fun readValues(ctx: ForEachContext): List<Map<String, ApmValue>> {
             val keys = ctx.compositeIdentifier()
                     .children
-                    .filterIsInstance<PlainIdentifierContext>()
+                    .filterIsInstance<BasicIdentifierContext>()
                     .map { it.IDENTIFIER().toString() }
             val values = when (val variableValue = executionContext.resolveArgument(ctx.argument())) {
                 is ApmNestedList -> variableValue.nestedList.map { list -> list.map { ApmString(it) } }

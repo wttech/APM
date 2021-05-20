@@ -38,8 +38,8 @@ DEFINE innerTab [
   ['E', 'F'],
   ['G', 'H']
 ]
-FOR-EACH [i, j] IN $outerTab BEGIN
-  FOR-EACH [m, n] IN $innerTab BEGIN
-    SHOW $i+'/'+$j+'/'+$m+'/'+$n
+FOR-EACH [a, b] IN $outerTab BEGIN
+  FOR-EACH [c, d] IN $innerTab BEGIN
+    SHOW $a+'/'+$b+'/'+$c+'/'+$d
   END
 END
