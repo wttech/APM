@@ -27,6 +27,17 @@ FOR-EACH i IN ['a', 'b', 'c', 'd'] BEGIN # starts block of code executed for eac
 END # end of block
 ```
 
+```
+FOR-EACH [name, password] 
+IN [
+    ['a', 'b'],
+    ['c', 'd']
+] 
+BEGIN # starts block of code executed for each iteration of loop
+    CREATE-USER $name password=$password
+END # end of block
+```
+
 ### Comments
 There are only single-line comments in APM. Comments start with `#`.
 ```
