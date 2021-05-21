@@ -34,7 +34,11 @@ IN [
     ['c', 'd']
 ] 
 BEGIN # starts block of code executed for each iteration of loop
-    CREATE-USER $name password=$password
+    CREATE-USER $name
+    FOR-USER $name 
+    BEGIN
+        SET-PASSWORD $password
+    END
 END # end of block
 ```
 
