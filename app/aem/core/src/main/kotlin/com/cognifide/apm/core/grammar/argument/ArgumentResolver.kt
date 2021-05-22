@@ -90,10 +90,13 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
         override fun visitArray(ctx: ArrayContext): ApmType {
             val values = ctx.children
                     ?.map { child -> child.accept(this) }
-                    ?.filterIsInstance<ApmString>()
-                    ?.map { child -> child.string }
+                    ?.filter { it is ApmString || it is ApmList }
                     ?: listOf()
-            return ApmList(values)
+            return when (values.firstOrNull()) {
+                is ApmString -> ApmList(values.map { it.string as String })
+                is ApmList -> ApmNestedList(values.map { it.list as List<String> })
+                else -> ApmList(listOf())
+            }
         }
 
         override fun visitNestedArray(ctx: NestedArrayContext): ApmType {

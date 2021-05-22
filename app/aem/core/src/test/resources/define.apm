@@ -31,3 +31,14 @@ FOR-EACH i IN ['1'] BEGIN
   SHOW $var                         # going back to '1. for-each'
 END
 SHOW $var                           # going back to 'global'
+
+DEFINE a 'a'
+DEFINE b 'b'
+DEFINE tab1 [$a, $b]
+DEFINE tab2 ['c', 'd']
+DEFINE tab [$tab1, $tab2]
+SHOW $a
+SHOW $b
+SHOW $tab1
+SHOW $tab2
+SHOW $tab
