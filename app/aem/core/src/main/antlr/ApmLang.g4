@@ -25,11 +25,7 @@ grammar ApmLang;
  */
 
 apm
-    : (line? EOL)+ line?
-    ;
-
-line
-    : command
+    : (command | EOL)+
     ;
 
 name
