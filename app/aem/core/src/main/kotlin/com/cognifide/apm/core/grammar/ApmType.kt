@@ -58,7 +58,6 @@ data class ApmList(val value: List<String>) : ApmType(value) {
     override fun toString(): String {
         return value.joinToString(prefix = "[", postfix = "]") { "\"$it\"" }
     }
-
 }
 
 data class ApmNestedList(val value: List<List<String>>) : ApmType(value) {
@@ -70,7 +69,6 @@ data class ApmNestedList(val value: List<List<String>>) : ApmType(value) {
             item.joinToString(prefix = "[", postfix = "]") { "\"$it\"" }
         }
     }
-
 }
 
 class ApmEmpty : ApmType()
