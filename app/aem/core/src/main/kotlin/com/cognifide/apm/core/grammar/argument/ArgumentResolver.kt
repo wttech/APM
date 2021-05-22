@@ -122,6 +122,7 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
             return when {
                 ctx.value() != null -> visit(ctx.value())
                 ctx.array() != null -> visit(ctx.array())
+                ctx.nestedArray() != null -> visit(ctx.nestedArray())
                 else -> super.visitExpression(ctx)
             }
         }
