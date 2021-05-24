@@ -22,9 +22,11 @@ package com.cognifide.apm.core.utils.sling;
 import com.google.common.collect.Maps;
 import java.util.HashMap;
 import java.util.Map;
+import javax.jcr.Session;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.jcr.resource.JcrResourceConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +67,7 @@ public final class SlingHelper {
    * Retrieve values from repository with wrapped session (automatically opened and closed).
    */
   public static <T> T resolveDefault(ResourceResolverFactory factory, ResolveCallback callback,
-      T defaultValue) {
+                                     T defaultValue) {
     return resolveDefault(factory, null, callback, defaultValue);
   }
 
@@ -73,7 +75,7 @@ public final class SlingHelper {
    * Retrieve values from repository with wrapped session (automatically opened and closed).
    */
   public static <T> T resolveDefault(ResourceResolverFactory factory, String userId, ResolveCallback callback,
-      T defaultValue) {
+                                     T defaultValue) {
     try {
       return resolve(factory, userId, callback);
     } catch (ResolveException e) {
@@ -145,5 +147,12 @@ public final class SlingHelper {
   public static ResourceResolver getResourceResolverForService(ResourceResolverFactory factory)
       throws LoginException {
     return getResourceResolverForUser(factory, null);
+  }
+
+  public static ResourceResolver getResourceResolverForSession(ResourceResolverFactory factory, Session session)
+      throws LoginException {
+    Map<String, Object> parameters = new HashMap<>();
+    parameters.put(JcrResourceConstants.AUTHENTICATION_INFO_SESSION, session);
+    return factory.getResourceResolver(parameters);
   }
 }
