@@ -49,14 +49,13 @@ public class ScriptFinderImpl implements ScriptFinder {
   private static final String SCRIPT_PATH = "/conf/apm/scripts";
 
   private static final String QUERY = "SELECT * FROM [nt:file] "
-      + "WHERE ISDESCENDANTNODE([%s]) AND [jcr:mixinTypes] = 'apm:Script'";
+      + "WHERE ISDESCENDANTNODE([%s])";
 
   @Override
   public List<Script> findAll(Predicate<Script> filter, ResourceResolver resolver) {
-    final List<Script> scripts = findAll(resolver).stream()
+    return findAll(resolver).stream()
         .filter(filter)
         .collect(Collectors.toList());
-    return scripts;
   }
 
   @Override
