@@ -32,7 +32,7 @@ import com.cognifide.apm.core.services.event.ApmEvent
 import com.cognifide.apm.core.services.event.EventManager
 import com.cognifide.apm.core.services.version.VersionService
 import com.cognifide.apm.core.utils.InstanceTypeProvider
-import com.cognifide.apm.core.utils.sling.SlingHelper.getResourceResolverForSession
+import com.cognifide.apm.core.utils.sling.SlingHelper.getResourceResolverForService
 import org.apache.jackrabbit.vault.packaging.InstallContext
 import org.apache.jackrabbit.vault.packaging.PackageException
 import org.apache.sling.api.resource.ResourceResolver
@@ -40,7 +40,6 @@ import org.apache.sling.api.resource.ResourceResolverFactory
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.*
-import javax.jcr.Session
 
 class ApmInstallHook : OsgiAwareInstallHook() {
 
@@ -51,16 +50,16 @@ class ApmInstallHook : OsgiAwareInstallHook() {
             val currentEnvironment = getCurrentEnvironment()
             val currentHook = getCurrentHook(context)
 
-            handleScripts(currentEnvironment, currentHook, context.session)
+            handleScripts(currentEnvironment, currentHook)
         }
     }
 
-    private fun handleScripts(currentEnvironment: LaunchEnvironment, currentHook: String, session: Session) {
+    private fun handleScripts(currentEnvironment: LaunchEnvironment, currentHook: String) {
         val resolverFactory = getService(ResourceResolverFactory::class.java)
         val scriptFinder = getService(ScriptFinder::class.java)
 
         try {
-            getResourceResolverForSession(resolverFactory, session).use { resolver ->
+            getResourceResolverForService(resolverFactory).use { resolver ->
                 executeScripts(currentEnvironment, currentHook, resolver)
                 applyChecksum(scriptFinder, resolver)
             }
