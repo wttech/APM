@@ -48,8 +48,7 @@ public class ScriptFinderImpl implements ScriptFinder {
 
   private static final String SCRIPT_PATH = "/conf/apm/scripts";
 
-  private static final String QUERY = "SELECT * FROM [nt:file] "
-      + "WHERE ISDESCENDANTNODE([%s])";
+  private static final String QUERY = "SELECT * FROM [apm:Script] WHERE ISDESCENDANTNODE([%s])";
 
   @Override
   public List<Script> findAll(Predicate<Script> filter, ResourceResolver resolver) {
