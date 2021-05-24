@@ -25,11 +25,7 @@ grammar ApmLang;
  */
 
 apm
-    : (line? EOL)+ line?
-    ;
-
-line
-    : command
+    : (command | EOL)+
     ;
 
 name
@@ -62,6 +58,19 @@ value
     | stringValue
     ;
 
+nestedArray
+    : ARRAY_BEGIN EOL? array (',' EOL? array)* EOL? ARRAY_END
+    ;
+
+basicIdentifier
+    : IDENTIFIER
+    ;
+
+compositeIdentifier
+    : ARRAY_BEGIN EOL? basicIdentifier (',' EOL? basicIdentifier)* EOL? ARRAY_END
+    | basicIdentifier
+    ;
+
 plus
     : '+'
     ;
@@ -69,6 +78,7 @@ plus
 expression
     : expression plus expression
     | array
+    | nestedArray
     | value
     ;
 
@@ -79,7 +89,7 @@ argument
 command
     : RUN_SCRIPT path namedArguments? # RunScript
     | IMPORT_SCRIPT path (AS name)? # ImportScript
-    | FOR_EACH IDENTIFIER IN argument EOL? body # ForEach
+    | FOR_EACH compositeIdentifier EOL? IN argument EOL? body # ForEach
     | DEFINE IDENTIFIER argument # DefineVariable
     | REQUIRE IDENTIFIER # RequireVariable
     | commandName complexArguments? EOL? body? # GenericCommand
@@ -214,4 +224,3 @@ WHITESPACE
 EOL
     : ('\r\n' | '\r' | '\n')
     ;
-
