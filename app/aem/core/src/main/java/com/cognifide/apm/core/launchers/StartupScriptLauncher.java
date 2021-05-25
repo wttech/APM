@@ -21,16 +21,24 @@ package com.cognifide.apm.core.launchers;
 
 import static com.cognifide.apm.api.scripts.LaunchEnvironment.AUTHOR;
 import static com.cognifide.apm.api.scripts.LaunchEnvironment.PUBLISH;
+import static com.cognifide.apm.core.scripts.ScriptFilters.noChecksum;
 import static com.cognifide.apm.core.scripts.ScriptFilters.onStartup;
+import static com.cognifide.apm.core.scripts.ScriptFilters.onStartupIfModified;
 
 import com.cognifide.apm.api.scripts.LaunchEnvironment;
 import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.ExecutionMode;
+import com.cognifide.apm.api.services.ExecutionResult;
 import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.apm.core.Property;
+import com.cognifide.apm.core.services.ModifiedScriptFinder;
+import com.cognifide.apm.core.services.version.VersionService;
 import com.cognifide.apm.core.utils.InstanceTypeProvider;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
+import java.util.ArrayList;
 import java.util.List;
+import javax.jcr.RepositoryException;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
@@ -54,24 +62,60 @@ public class StartupScriptLauncher extends AbstractLauncher {
   private ScriptFinder scriptFinder;
 
   @Reference
+  private ModifiedScriptFinder modifiedScriptFinder;
+
+  @Reference
   private InstanceTypeProvider instanceTypeProvider;
+
+  @Reference
+  private VersionService versionService;
 
   @Reference
   private ResourceResolverFactory resolverFactory;
 
   @Activate
-  private synchronized void activate() {
-    SlingHelper.operateTraced(resolverFactory, this::runOnStartup);
+  private void activate() {
+    SlingHelper.operateTraced(resolverFactory, this::execute);
   }
 
-  private void runOnStartup(ResourceResolver resolver) throws PersistenceException {
+  private void execute(ResourceResolver resolver) {
     LaunchEnvironment environment = instanceTypeProvider.isOnAuthor() ? AUTHOR : PUBLISH;
-    List<Script> scripts = scriptFinder.findAll(onStartup(environment), resolver);
-    processScripts(scripts, resolver, LauncherType.STARTUP);
+
+    executeScripts(environment, resolver);
+    applyChecksum(resolver);
+  }
+
+  private void executeScripts(LaunchEnvironment currentEnvironment, ResourceResolver resolver) {
+    List<Script> scripts = new ArrayList<>();
+    scripts.addAll(scriptFinder.findAll(onStartup(currentEnvironment), resolver));
+    scripts.addAll(modifiedScriptFinder.findAll(onStartupIfModified(currentEnvironment), resolver));
+
+    scripts.forEach(script -> {
+      try {
+        ExecutionResult result = scriptManager.process(script, ExecutionMode.AUTOMATIC_RUN, resolver);
+        logStatus(script.getPath(), result.isSuccess());
+      } catch (RepositoryException | PersistenceException e) {
+        throw new RuntimeException(e);
+      }
+    });
+  }
+
+  private void applyChecksum(ResourceResolver resolver) {
+    List<Script> scripts = scriptFinder.findAll(noChecksum(), resolver);
+    scripts.forEach(script -> versionService.updateVersionIfNeeded(resolver, script));
+  }
+
+  private void logStatus(String scriptPath, Boolean success) {
+    if (success) {
+      logger.info(String.format("Script successfully executed: %s", scriptPath));
+    } else {
+      throw new RuntimeException(String.format("Script cannot be executed properly: %s", scriptPath));
+    }
   }
 
   @Override
   public ScriptManager getScriptManager() {
     return scriptManager;
   }
+
 }
