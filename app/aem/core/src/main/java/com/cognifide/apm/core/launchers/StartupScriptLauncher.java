@@ -42,12 +42,12 @@ import javax.jcr.RepositoryException;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 @Component(
     immediate = true,
+    service = StartupScriptLauncher.class,
     property = {
         Property.DESCRIPTION + "Launches scripts on bundle startup",
         Property.VENDOR
@@ -73,12 +73,11 @@ public class StartupScriptLauncher extends AbstractLauncher {
   @Reference
   private ResourceResolverFactory resolverFactory;
 
-  @Activate
-  private void activate() {
-    SlingHelper.operateTraced(resolverFactory, this::execute);
+  public void process() {
+    SlingHelper.operateTraced(resolverFactory, this::process);
   }
 
-  private void execute(ResourceResolver resolver) {
+  private void process(ResourceResolver resolver) {
     LaunchEnvironment environment = instanceTypeProvider.isOnAuthor() ? AUTHOR : PUBLISH;
 
     executeScripts(environment, resolver);
