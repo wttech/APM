@@ -79,7 +79,8 @@ class VersionServiceImpl : VersionService {
             try {
                 val subtree = referenceFinder.findReferences(script)
                 val checksum = countChecksum(subtree)
-                if (checksum != script.checksum) {
+                val scriptVersion = getScriptVersion(resolver, script)
+                if (checksum != scriptVersion.lastChecksum) {
                     MutableScriptWrapper(script).apply {
                         setChecksum(checksum)
                     }
