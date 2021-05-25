@@ -67,11 +67,6 @@ public class ScriptFilters {
         .and(withLaunchEnvironment(environment));
   }
 
-  public static Predicate<Script> noChecksum() {
-    return enabled()
-        .and(script -> StringUtils.isBlank(script.getChecksum()));
-  }
-
   private static Predicate<Script> withLaunchHook(String currentHook) {
     return script -> isBlank(script.getLaunchHook()) || StringUtils.equals(currentHook, script.getLaunchHook());
   }

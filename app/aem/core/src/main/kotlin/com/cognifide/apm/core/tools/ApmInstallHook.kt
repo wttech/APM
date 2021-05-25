@@ -26,11 +26,11 @@ import com.cognifide.apm.api.services.ExecutionMode
 import com.cognifide.apm.api.services.ExecutionResult
 import com.cognifide.apm.api.services.ScriptFinder
 import com.cognifide.apm.api.services.ScriptManager
-import com.cognifide.apm.core.scripts.ScriptFilters.*
+import com.cognifide.apm.core.scripts.ScriptFilters.onInstall
+import com.cognifide.apm.core.scripts.ScriptFilters.onInstallIfModified
 import com.cognifide.apm.core.services.ModifiedScriptFinder
 import com.cognifide.apm.core.services.event.ApmEvent
 import com.cognifide.apm.core.services.event.EventManager
-import com.cognifide.apm.core.services.version.VersionService
 import com.cognifide.apm.core.utils.InstanceTypeProvider
 import com.cognifide.apm.core.utils.sling.SlingHelper.getResourceResolverForService
 import org.apache.jackrabbit.vault.packaging.InstallContext
@@ -61,7 +61,6 @@ class ApmInstallHook : OsgiAwareInstallHook() {
         try {
             getResourceResolverForService(resolverFactory).use { resolver ->
                 executeScripts(currentEnvironment, currentHook, resolver)
-                applyChecksum(scriptFinder, resolver)
             }
             val eventManager = getService(EventManager::class.java)
             eventManager.trigger(ApmEvent.InstallHookExecuted(currentHook))
@@ -81,14 +80,6 @@ class ApmInstallHook : OsgiAwareInstallHook() {
         scripts.forEach { script ->
             val result: ExecutionResult = scriptManager.process(script, ExecutionMode.AUTOMATIC_RUN, resolver)
             logStatus(script.path, result.isSuccess)
-        }
-    }
-
-    private fun applyChecksum(scriptFinder: ScriptFinder, resolver: ResourceResolver) {
-        val scripts = scriptFinder.findAll(noChecksum(), resolver)
-        if (scripts.isNotEmpty()) {
-            val versionService = getService(VersionService::class.java)
-            versionService.updateVersionIfNeeded(resolver, *scripts.toTypedArray())
         }
     }
 

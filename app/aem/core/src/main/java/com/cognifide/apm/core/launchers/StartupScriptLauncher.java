@@ -21,7 +21,6 @@ package com.cognifide.apm.core.launchers;
 
 import static com.cognifide.apm.api.scripts.LaunchEnvironment.AUTHOR;
 import static com.cognifide.apm.api.scripts.LaunchEnvironment.PUBLISH;
-import static com.cognifide.apm.core.scripts.ScriptFilters.noChecksum;
 import static com.cognifide.apm.core.scripts.ScriptFilters.onStartup;
 import static com.cognifide.apm.core.scripts.ScriptFilters.onStartupIfModified;
 
@@ -81,7 +80,6 @@ public class StartupScriptLauncher extends AbstractLauncher {
     LaunchEnvironment environment = instanceTypeProvider.isOnAuthor() ? AUTHOR : PUBLISH;
 
     executeScripts(environment, resolver);
-    applyChecksum(resolver);
   }
 
   private void executeScripts(LaunchEnvironment currentEnvironment, ResourceResolver resolver) {
@@ -97,11 +95,6 @@ public class StartupScriptLauncher extends AbstractLauncher {
         throw new RuntimeException(e);
       }
     });
-  }
-
-  private void applyChecksum(ResourceResolver resolver) {
-    List<Script> scripts = scriptFinder.findAll(noChecksum(), resolver);
-    scripts.forEach(script -> versionService.updateVersionIfNeeded(resolver, script));
   }
 
   private void logStatus(String scriptPath, Boolean success) {
