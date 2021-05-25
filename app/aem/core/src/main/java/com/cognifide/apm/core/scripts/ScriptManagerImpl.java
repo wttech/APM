@@ -170,7 +170,6 @@ public class ScriptManagerImpl implements ScriptManager {
     Progress progress;
     try {
       progress = execute(script, mode, customDefinitions, resolver);
-
     } catch (ExecutionException e) {
       progress = new ProgressImpl(resolver.getUserID());
       progress.addEntry(Status.ERROR, e.getMessage());
