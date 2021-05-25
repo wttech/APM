@@ -49,5 +49,6 @@ plugins.withId("com.cognifide.aem.bundle") {
         "implementation"("javax.servlet:jsp-api:2.0")
         "implementation"("javax.servlet:servlet-api:2.4")
         "implementation"("org.slf4j:slf4j-log4j12:1.7.7")
-    }
+        "implementation"("org.apache.sling:org.apache.sling.query:3.0.0")
+     }
 }

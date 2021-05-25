@@ -20,15 +20,17 @@
 
 package com.cognifide.apm.core.history;
 
+import static org.apache.sling.query.SlingQuery.$;
+
 import com.cognifide.apm.core.utils.sling.SlingHelper;
 import java.time.LocalDate;
-import java.util.stream.StreamSupport;
-import javax.jcr.query.Query;
+import java.util.Calendar;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.query.api.SearchStrategy;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -45,14 +47,6 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 )
 @Designate(ocd = HistoryAutocleanService.Config.class)
 public class HistoryAutocleanService implements Runnable {
-
-  private static final String QUERY = "SELECT * FROM [nt:unstructured] "
-      + "WHERE ISDESCENDANTNODE('" + HistoryImpl.HISTORY_FOLDER + "') "
-      + "AND executionTime IS NOT NULL";
-
-  private static final String MAX_DAYS_QUERY = QUERY + " AND executionTime <= '%s'";
-
-  private static final String ORDERED_QUERY = QUERY + " ORDER BY executionTime DESC";
 
   private Config config;
 
@@ -74,23 +68,32 @@ public class HistoryAutocleanService implements Runnable {
   private void deleteHistoryByEntries(ResourceResolver resolver) {
     if (config.maxEntries() >= 0) {
       log.info("Looking for items exceeding limit of {} items", config.maxEntries());
-      deleteHistoryByQuery(resolver, ORDERED_QUERY, config.maxEntries());
+      Resource rootResource = resolver.getResource(HistoryImpl.HISTORY_FOLDER);
+      $(rootResource).searchStrategy(SearchStrategy.BFS)
+          .find("[executionTime]")
+          .asList()
+          .stream()
+          .sorted(this::compareExecutionTime)
+          .skip(config.maxEntries())
+          .forEach(resource -> deleteItem(resolver, resource));
     }
+  }
+
+  private int compareExecutionTime(Resource resource1, Resource resource2) {
+    Calendar executionTime1 = resource1.getValueMap().get(HistoryEntryImpl.EXECUTION_TIME, Calendar.class);
+    Calendar executionTime2 = resource2.getValueMap().get(HistoryEntryImpl.EXECUTION_TIME, Calendar.class);
+    return executionTime1.compareTo(executionTime2);
   }
 
   private void deleteHistoryByDays(ResourceResolver resolver) {
     if (config.maxDays() >= 0) {
       log.info("Looking for items older than {} days", config.maxDays());
+      Resource rootResource = resolver.getResource(HistoryImpl.HISTORY_FOLDER);
       LocalDate date = LocalDate.now().minusDays(config.maxDays());
-      deleteHistoryByQuery(resolver, String.format(MAX_DAYS_QUERY, date), 0);
+      $(rootResource).searchStrategy(SearchStrategy.BFS)
+          .find(String.format("[executionTime<='%s']", date))
+          .forEach(resource -> deleteItem(resolver, resource));
     }
-  }
-
-  private void deleteHistoryByQuery(ResourceResolver resolver, String query, int offset) {
-    Iterable<Resource> iterable = () -> resolver.findResources(query, Query.JCR_SQL2);
-    StreamSupport.stream(iterable.spliterator(), false)
-        .skip(offset)
-        .forEach(resource -> deleteItem(resolver, resource));
   }
 
   private void deleteItem(ResourceResolver resolver, Resource resource) {
