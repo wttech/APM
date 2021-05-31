@@ -28,7 +28,11 @@
     function submit(wizard) {
         var uiHelper = $(window).adaptTo("foundation-ui");
         var path = $("input[name='path']").val();
-        var redirect = "/apm/scripts.html" + path.substring(0, path.lastIndexOf('/'));
+        var parent = path.substring(0, path.lastIndexOf('/'));
+        var dest = $("input[name='dest']").val();
+        if (typeof dest === "undefined") {
+            dest = parent;
+        }
         var data = wizard.serialize();
         var processData = true;
         var contentType = wizard.prop("enctype");
@@ -41,11 +45,11 @@
         }).done(function (html) {
             var message = "Item moved successfully";
             uiHelper.notify("info",  message, "success");
-            location.href = redirect;
+            location.href = "/apm/scripts.html" + dest;
         }).fail(function (xhr, error, errorThrown) {
             var message = "Failed to move item";
             uiHelper.notify("error", message, "error");
-        	location.href = redirect;
+        	location.href = "/apm/scripts.html" + parent;
         });
     }
 
