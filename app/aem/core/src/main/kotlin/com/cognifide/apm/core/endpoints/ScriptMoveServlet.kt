@@ -59,15 +59,15 @@ class ScriptMoveServlet : AbstractFormServlet<ScriptMoveForm>(ScriptMoveForm::cl
             } else {
                 form.dest
             }
-            val rename = if (form.path.endsWith(Apm.FILE_EXT)) {
-                form.rename + if (form.rename.endsWith(Apm.FILE_EXT)) "" else Apm.FILE_EXT
+            val rename = if (containsExtension(form.path)) {
+                form.rename + if (containsExtension(form.rename)) "" else Apm.FILE_EXT
             } else {
                 JcrUtil.createValidName(form.rename)
             }
             val uniquePath = createUniquePath("$dest/$rename", resolver)
             session.move(form.path, uniquePath)
             session.save()
-            if (!form.path.endsWith(Apm.FILE_EXT)) {
+            if (!containsExtension(form.path)) {
                 val valueMap = resolver.getResource(uniquePath)?.adaptTo(ModifiableValueMap::class.java)
                 valueMap?.put(JcrConstants.JCR_TITLE, form.rename)
             }
@@ -82,9 +82,11 @@ class ScriptMoveServlet : AbstractFormServlet<ScriptMoveForm>(ScriptMoveForm::cl
         }
     }
 
+    private fun containsExtension(path: String) = path.endsWith(Apm.FILE_EXT)
+
     private fun createUniquePath(pathWithExtension: String, resolver: ResourceResolver): String {
         val path = StringUtils.substringBeforeLast(pathWithExtension, Apm.FILE_EXT)
-        val extension = if (pathWithExtension.endsWith(Apm.FILE_EXT)) Apm.FILE_EXT else ""
+        val extension = if (containsExtension(pathWithExtension)) Apm.FILE_EXT else ""
         var counter = 0
         while (resolver.getResource(path + (if (counter > 0) counter else "") + extension) != null) {
             counter++
