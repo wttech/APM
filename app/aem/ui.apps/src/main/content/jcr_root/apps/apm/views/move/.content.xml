@@ -36,7 +36,6 @@
                     style="vertical">
                     <items jcr:primaryType="nt:unstructured">
                         <wizard
-                            granite:class="moveitem-wizard-title"
                             jcr:primaryType="nt:unstructured"
                             jcr:title="Move"
                             sling:resourceType="granite/ui/components/coral/foundation/wizard"

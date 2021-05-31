@@ -55,7 +55,7 @@ class ScriptMoveServlet : AbstractFormServlet<ScriptMoveForm>(ScriptMoveForm::cl
             val dest = if (form.dest.isEmpty()) {
                 StringUtils.substringBeforeLast(form.path, "/")
             } else {
-                form.dest + "/" + form.rename
+                form.dest
             }
             val rename = if (form.path.endsWith(".apm")) {
                 form.rename + if (form.rename.endsWith(".apm")) "" else ".apm"
