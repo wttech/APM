@@ -28,7 +28,7 @@
     function submit(wizard) {
         var uiHelper = $(window).adaptTo("foundation-ui");
         var path = $("input[name='path']").val();
-        var parent = path.substring(0, path.lastIndexOf('/'));
+        var parent = path.substring(0, path.lastIndexOf("/"));
         var dest = $("input[name='dest']").val();
         if (typeof dest === "undefined") {
             dest = parent;
