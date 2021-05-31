@@ -52,17 +52,15 @@
 <div class="foundation-content-path hidden" data-foundation-content-path="<%= xssAPI.encodeForHTMLAttr(item) %>"></div>
 <section class="rename-container coral-FixedColumn">
     <div class="coral-FixedColumn-column">
-        <section>
-            <section class="coral-Form-fieldset">
-                <input class="coral-Form-field coral-Textfield" name="path" type="hidden" value="<%= xssAPI.encodeForHTMLAttr(path) %>">
-                <h3 class="coral-Form-fieldset-legend"><%= i18n.get("Move {0}", null, xssAPI.filterHTML(title)) %></h3>
-                <label class="coral-Form-fieldlabel "><%= i18n.get("Rename to") %></label>
-                <input class="coral-Form-field coral-Textfield moveitem-rename-to" type="text" name="rename" value="<%= xssAPI.encodeForHTMLAttr(name) %>" aria-required="true">
-                <label class="coral-Form-fieldlabel "><%= i18n.get("Move to") %></label>
-                <div <%= attrs.build() %>>
-                    <sling:include resource="<%= pathBrowser %>"/>
-                </div>
-            </section>
+        <section class="coral-Form-fieldset">
+            <input class="coral-Form-field coral-Textfield" name="path" type="hidden" value="<%= xssAPI.encodeForHTMLAttr(path) %>">
+            <h3 class="coral-Form-fieldset-legend"><%= i18n.get("Move {0}", null, xssAPI.filterHTML(title)) %></h3>
+            <label class="coral-Form-fieldlabel "><%= i18n.get("Rename to") %></label>
+            <input class="coral-Form-field coral-Textfield moveitem-rename-to" type="text" name="rename" value="<%= xssAPI.encodeForHTMLAttr(name) %>" aria-required="true">
+            <label class="coral-Form-fieldlabel "><%= i18n.get("Move to") %></label>
+            <div <%= attrs.build() %>>
+                <sling:include resource="<%= pathBrowser %>"/>
+            </div>
         </section>
     </div>
 </section>
