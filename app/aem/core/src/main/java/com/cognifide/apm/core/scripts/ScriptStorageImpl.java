@@ -148,9 +148,9 @@ public class ScriptStorageImpl implements ScriptStorage {
 
   private String generateFileName(String fileName, Node saveNode) throws RepositoryException {
     String baseName = FilenameUtils.getBaseName(fileName);
-    int num = 1;
+    int num = 0;
     do {
-      fileName = baseName + ((num > 1) ? ("-" + num) : "") + Apm.FILE_EXT;
+      fileName = baseName + (num > 0 ? num : "") + Apm.FILE_EXT;
       num++;
     } while (saveNode.hasNode(fileName));
 

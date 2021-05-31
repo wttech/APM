@@ -19,10 +19,12 @@
  */
 package com.cognifide.apm.core.endpoints
 
+import com.cognifide.apm.core.Apm
 import com.cognifide.apm.core.Property
 import com.cognifide.apm.core.endpoints.response.ResponseEntity
 import com.cognifide.apm.core.endpoints.response.badRequest
 import com.cognifide.apm.core.endpoints.response.ok
+import com.day.cq.commons.jcr.JcrConstants
 import com.day.cq.commons.jcr.JcrUtil
 import org.apache.commons.lang.StringUtils
 import org.apache.sling.api.resource.ModifiableValueMap
@@ -49,26 +51,27 @@ class ScriptMoveServlet : AbstractFormServlet<ScriptMoveForm>(ScriptMoveForm::cl
         this.modelFactory = modelFactory
     }
 
-    override fun doPost(form: ScriptMoveForm, resourceResolver: ResourceResolver): ResponseEntity<Any> {
+    override fun doPost(form: ScriptMoveForm, resolver: ResourceResolver): ResponseEntity<Any> {
         return try {
-            val session = resourceResolver.adaptTo(Session::class.java)!!
+            val session = resolver.adaptTo(Session::class.java)!!
             val dest = if (form.dest.isEmpty()) {
                 StringUtils.substringBeforeLast(form.path, "/")
             } else {
                 form.dest
             }
-            val rename = if (form.path.endsWith(".apm")) {
-                form.rename + if (form.rename.endsWith(".apm")) "" else ".apm"
+            val rename = if (form.path.endsWith(Apm.FILE_EXT)) {
+                form.rename + if (form.rename.endsWith(Apm.FILE_EXT)) "" else Apm.FILE_EXT
             } else {
                 JcrUtil.createValidName(form.rename)
             }
-            session.move(form.path, "$dest/$rename")
+            val uniquePath = createUniquePath("$dest/$rename", resolver)
+            session.move(form.path, uniquePath)
             session.save()
-            if (!form.path.endsWith(".apm")) {
-                val valueMap = resourceResolver.getResource("$dest/$rename")?.adaptTo(ModifiableValueMap::class.java)
-                valueMap?.put("jcr:title", form.rename)
+            if (!form.path.endsWith(Apm.FILE_EXT)) {
+                val valueMap = resolver.getResource(uniquePath)?.adaptTo(ModifiableValueMap::class.java)
+                valueMap?.put(JcrConstants.JCR_TITLE, form.rename)
             }
-            resourceResolver.commit()
+            resolver.commit()
             ok {
                 message = "Item successfully moved"
             }
@@ -77,6 +80,16 @@ class ScriptMoveServlet : AbstractFormServlet<ScriptMoveForm>(ScriptMoveForm::cl
                 message = e.message ?: "Errors while moving item"
             }
         }
+    }
+
+    private fun createUniquePath(pathWithExtension: String, resolver: ResourceResolver): String {
+        val path = StringUtils.substringBeforeLast(pathWithExtension, Apm.FILE_EXT)
+        val extension = if (pathWithExtension.endsWith(Apm.FILE_EXT)) Apm.FILE_EXT else ""
+        var counter = 0
+        while (resolver.getResource(path + (if (counter > 0) counter else "") + extension) != null) {
+            counter++
+        }
+        return path + (if (counter > 0) counter else "") + extension
     }
 
 }
