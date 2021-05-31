@@ -53,13 +53,11 @@
 
     ValueMap pathBrowserProperties = new ValueMapDecorator(new HashMap<String, Object>());
     pathBrowserProperties.put("name", "dest");
-    pathBrowserProperties.put("required", true);
-    pathBrowserProperties.put("pickerSrc", templatePickerSrc);
     pathBrowserProperties.put("pickerMultiselect", false);
     pathBrowserProperties.put("pickerTitle", i18n.get("Select Parent Path"));
-    pathBrowserProperties.put("property-path", xssAPI.encodeForHTMLAttr(cfg.get("name")));
     pathBrowserProperties.put("icon", cfg.get("icon", "icon-browse"));
-    pathBrowserProperties.put("browserPath", xssAPI.encodeForHTMLAttr(request.getContextPath() + resource.getPath()));
+    pathBrowserProperties.put("rootPath", "/conf/apm/scripts");
+    pathBrowserProperties.put("crumbRoot", "APM Scripts");
     ValueMapResource pathBrowser = new ValueMapResource(resourceResolver, resource.getPath(), "granite/ui/components/foundation/form/pathbrowser", pathBrowserProperties);
 %>
 
