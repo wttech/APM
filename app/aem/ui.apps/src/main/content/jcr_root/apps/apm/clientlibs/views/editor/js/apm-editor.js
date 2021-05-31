@@ -52,7 +52,6 @@
       this.$validateButton = this.$el.find('#validateButton').eq(0);
       this.$saveButton = this.$el.find('#saveButton').eq(0);
       this.$saveAndCloseButton = this.$el.find('#saveAndCloseButton').eq(0);
-      this.$logger = this.$el.find('.apm-console-logger');
       this.initialValue = this.$textArea.val();
       this.formAction = this.$el.find('#script-form').attr('action');
       this.editor = this.initEditor();
@@ -166,7 +165,6 @@
           this.$validateButton.blur();
 
           self.uiHelper.notify('info', response.message, 'success');
-          self.log('info', response.message);
         };
 
         this.showError = function (response) {
@@ -179,14 +177,6 @@
             message += '</ul>';
           }
           self.uiHelper.notify('error', message, 'error');
-          self.log('error', message);
-        };
-
-        this.log = function (type, message) {
-          this.$logger.prepend(`<div class="apm-console-log apm-console-log-${type}">${message}</div>`);
-          if (this.$logger.hasClass('hidden')) {
-            this.$logger.removeClass('hidden');
-          }
         };
 
         this.$validateButton.click(function () {
