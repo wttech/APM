@@ -15,7 +15,7 @@
  * from Adobe Systems Incorporated.
  */
 (function (window, document, Granite, $) {
-    "use strict";    
+    "use strict";
 
     $(document).on("foundation-contentloaded", function () {
         var wizard = $("form#cq-apmadmin-item-move-form");
@@ -49,7 +49,7 @@
         }).fail(function (xhr, error, errorThrown) {
             var message = "Failed to move item";
             uiHelper.notify("error", message, "error");
-        	location.href = "/apm/scripts.html" + parent;
+            location.href = "/apm/scripts.html" + parent;
         });
     }
 
