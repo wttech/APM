@@ -23,6 +23,7 @@ import com.cognifide.apm.core.Property
 import com.cognifide.apm.core.endpoints.response.ResponseEntity
 import com.cognifide.apm.core.endpoints.response.badRequest
 import com.cognifide.apm.core.endpoints.response.ok
+import com.day.cq.commons.jcr.JcrUtil
 import org.apache.commons.lang.StringUtils
 import org.apache.sling.api.resource.ModifiableValueMap
 import org.apache.sling.api.resource.ResourceResolver
@@ -56,16 +57,16 @@ class ScriptMoveServlet : AbstractFormServlet<ScriptMoveForm>(ScriptMoveForm::cl
             } else {
                 form.dest + "/" + form.rename
             }
-            val rename = if (form.path.endsWith(".apm") && !form.rename.endsWith(".apm")) {
-                form.rename + ".apm"
+            val rename = if (form.path.endsWith(".apm")) {
+                form.rename + if (form.rename.endsWith(".apm")) "" else ".apm"
             } else {
-                form.rename
+                JcrUtil.createValidName(form.rename)
             }
             session.move(form.path, "$dest/$rename")
             session.save()
             if (!form.path.endsWith(".apm")) {
                 val valueMap = resourceResolver.getResource("$dest/$rename")?.adaptTo(ModifiableValueMap::class.java)
-                valueMap?.put("jcr:title", rename)
+                valueMap?.put("jcr:title", form.rename)
             }
             resourceResolver.commit()
             ok {
