@@ -30,12 +30,19 @@
         var path = $("input[name='path']").val();
         var parent = path.substring(0, path.lastIndexOf("/"));
         var dest = $("input[name='dest']").val();
-        if (typeof dest === "undefined") {
+        if (typeof dest === "undefined" || dest === "") {
             dest = parent;
         }
+        var rename = $("input[name='rename']").val();
         var data = wizard.serialize();
         var processData = true;
         var contentType = wizard.prop("enctype");
+
+        if (path === (dest + "/" + rename)) {
+            location.href = "/apm/scripts.html" + parent;
+            return;
+        }
+
         $.ajax({
             type: wizard.prop("method"),
             url: "/bin/apm/scripts/move",
