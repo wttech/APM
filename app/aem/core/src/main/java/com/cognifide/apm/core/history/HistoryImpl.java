@@ -23,6 +23,7 @@ import static com.cognifide.apm.core.utils.sling.SlingHelper.resolveDefault;
 import static com.day.crx.JcrConstants.NT_UNSTRUCTURED;
 import static org.apache.jackrabbit.commons.JcrUtils.getOrCreateByPath;
 import static org.apache.jackrabbit.commons.JcrUtils.getOrCreateUniqueByPath;
+import static org.apache.sling.query.SlingQuery.$;
 
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ExecutionMode;
@@ -37,24 +38,24 @@ import com.cognifide.apm.core.utils.sling.ResolveCallback;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
 import com.day.cq.commons.jcr.JcrConstants;
 import com.day.cq.replication.ReplicationAction;
-import com.google.common.collect.Lists;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Spliterator;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.query.Query;
 import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.query.api.SearchStrategy;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -83,10 +84,6 @@ public class HistoryImpl implements History {
 
   private static final String SLING_ORDERED_FOLDER = "sling:OrderedFolder";
 
-  private static final String HISTORY_ENTRIES_QUERY = String.format("SELECT * FROM [nt:unstructured] "
-      + " WHERE ISDESCENDANTNODE([%s]) AND apmHistory = '%s' "
-      + " ORDER BY executionTime DESC ", HISTORY_FOLDER, APM_HISTORY_ENTRY);
-
   @Reference
   private RemoteScriptExecutionNotifier remoteScriptExecutionNotifier;
 
@@ -114,8 +111,8 @@ public class HistoryImpl implements History {
 
   @Override
   public HistoryEntry logRemote(Script script, ExecutionMode mode, Progress progressLogger,
-      InstanceDetails instanceDetails,
-      Calendar executionTime) {
+                                InstanceDetails instanceDetails,
+                                Calendar executionTime) {
     return resolveDefault(resolverFactory, progressLogger.getExecutor(), (ResolveCallback<HistoryEntry>) resolver -> {
       final HistoryEntryWriter historyEntryWriter = createBuilder(resolver, script, mode, progressLogger)
           .executionTime(executionTime)
@@ -127,7 +124,7 @@ public class HistoryImpl implements History {
   }
 
   private HistoryEntryWriterBuilder createBuilder(ResourceResolver resolver, Script script, ExecutionMode mode,
-      Progress progressLogger) {
+                                                  Progress progressLogger) {
     Resource source = resolver.getResource(script.getPath());
     return HistoryEntryWriter.builder()
         .author(source.getValueMap().get(JcrConstants.JCR_CREATED_BY, StringUtils.EMPTY))
@@ -141,8 +138,19 @@ public class HistoryImpl implements History {
 
   @Override
   public List<Resource> findAllResources(ResourceResolver resourceResolver) {
-    Iterator<Resource> resources = resourceResolver.findResources(HISTORY_ENTRIES_QUERY, Query.JCR_SQL2);
-    return Lists.newArrayList(resources);
+    Resource rootResource = resourceResolver.getResource(HistoryImpl.HISTORY_FOLDER);
+    Spliterator<Resource> spliterator = $(rootResource).searchStrategy(SearchStrategy.BFS)
+        .find("[executionTime][apmHistory=entry]")
+        .spliterator();
+    return StreamSupport.stream(spliterator, false)
+        .sorted(this::compareExecutionTime)
+        .collect(Collectors.toList());
+  }
+
+  private int compareExecutionTime(Resource resource1, Resource resource2) {
+    Calendar executionTime1 = resource1.getValueMap().get(HistoryEntryImpl.EXECUTION_TIME, Calendar.class);
+    Calendar executionTime2 = resource2.getValueMap().get(HistoryEntryImpl.EXECUTION_TIME, Calendar.class);
+    return executionTime2.compareTo(executionTime1);
   }
 
   @Override
@@ -184,7 +192,7 @@ public class HistoryImpl implements History {
   }
 
   private HistoryEntry createHistoryEntry(ResourceResolver resolver, Script script, ExecutionMode mode,
-      HistoryEntryWriter historyEntryWriter, boolean remote) {
+                                          HistoryEntryWriter historyEntryWriter, boolean remote) {
     try {
       Session session = resolver.adaptTo(Session.class);
 
