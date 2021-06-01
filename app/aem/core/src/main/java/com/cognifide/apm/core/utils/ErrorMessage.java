@@ -31,8 +31,8 @@ import lombok.Getter;
 public class ErrorMessage implements ResponseMessage {
 
   private final String message;
+
   private final List<String> errors;
-  private final String type = "error";
 
   public static ErrorMessageBuilder errorMessageBuilder(String message) {
     return new ErrorMessageBuilder(message);
@@ -40,6 +40,11 @@ public class ErrorMessage implements ResponseMessage {
 
   public static ErrorMessage errorMessage(String message) {
     return new ErrorMessageBuilder(message).build();
+  }
+
+  @Override
+  public String getType() {
+    return ServletUtils.ERROR_RESPONSE_TYPE;
   }
 
   public static class ErrorMessageBuilder {

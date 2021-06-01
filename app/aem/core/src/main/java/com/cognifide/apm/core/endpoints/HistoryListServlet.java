@@ -31,6 +31,7 @@ import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
+import org.apache.sling.api.servlets.HttpConstants;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -40,7 +41,7 @@ import org.osgi.service.component.annotations.Reference;
     service = Servlet.class,
     property = {
         Property.PATH + "/bin/cqsm/history",
-        Property.METHOD + "GET",
+        Property.METHOD + HttpConstants.METHOD_GET,
         Property.DESCRIPTION + "CQSM History List Servlet",
         Property.VENDOR
     }
@@ -48,7 +49,7 @@ import org.osgi.service.component.annotations.Reference;
 public class HistoryListServlet extends SlingAllMethodsServlet {
 
   @Reference
-  private History history;
+  private transient History history;
 
   @Override
   protected void doGet(final SlingHttpServletRequest request, final SlingHttpServletResponse response)
@@ -82,17 +83,14 @@ public class HistoryListServlet extends SlingAllMethodsServlet {
       String value;
       switch (filterType) {
         case FILTER_AUTHOR:
-        case FILTER_PUBLISH: {
+        case FILTER_PUBLISH:
           value = executionModel.getInstanceType();
-        }
-        break;
-        case FILTER_AUTOMATIC_RUN: {
+          break;
+        case FILTER_AUTOMATIC_RUN:
           value = executionModel.getExecutor();
-        }
-        break;
-        default: {
+          break;
+        default:
           value = null;
-        }
       }
       return filterType.equals(value);
     }

@@ -29,16 +29,14 @@ import com.cognifide.apm.main.utils.MessagingUtils;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.api.JackrabbitSession;
 import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.apache.jackrabbit.oak.spi.security.authorization.permission.PermissionConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+@Slf4j
 public class Purge implements Action {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(Purge.class);
 
   private static final String PERMISSION_STORE_PATH = "/jcr:system/rep:permissionStore/crx.default/";
 
@@ -63,8 +61,8 @@ public class Purge implements Action {
     try {
       Authorizable authorizable = context.getCurrentAuthorizable();
       actionResult.setAuthorizable(authorizable.getID());
-      LOGGER.info(String.format("Purging privileges for authorizable with id = %s under path = %s",
-          authorizable.getID(), path));
+      log.info("Purging privileges for authorizable with id = {} under path = {}",
+          authorizable.getID(), path);
       if (execute) {
         purge(context, actionResult);
       }
@@ -109,10 +107,10 @@ public class Purge implements Action {
   private NodeIterator getPermissions(Context context)
       throws ActionExecutionException, RepositoryException {
     JackrabbitSession session = context.getSession();
-    String path = PERMISSION_STORE_PATH + context.getCurrentAuthorizable().getID();
+    String authorizablePath = PERMISSION_STORE_PATH + context.getCurrentAuthorizable().getID();
     NodeIterator result = null;
-    if (session.nodeExists(path)) {
-      Node node = session.getNode(path);
+    if (session.nodeExists(authorizablePath)) {
+      Node node = session.getNode(authorizablePath);
       result = node.getNodes();
     }
     return result;

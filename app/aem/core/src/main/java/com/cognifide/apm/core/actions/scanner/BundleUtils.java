@@ -19,10 +19,13 @@
  */
 package com.cognifide.apm.core.actions.scanner;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BundleUtils {
 
 	public static boolean isFragment(Bundle bundle) {

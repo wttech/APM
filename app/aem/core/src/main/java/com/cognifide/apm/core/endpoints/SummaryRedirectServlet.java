@@ -48,9 +48,10 @@ import org.osgi.service.component.annotations.Reference;
 public class SummaryRedirectServlet extends SlingAllMethodsServlet {
 
   @Reference
-  private History history;
+  private transient History history;
+
   @Reference
-  private ScriptFinder scriptFinder;
+  private transient ScriptFinder scriptFinder;
 
   @Override
   protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) throws IOException {

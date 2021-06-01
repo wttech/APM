@@ -26,13 +26,16 @@ import com.cognifide.apm.api.scripts.LaunchMode;
 import com.cognifide.apm.api.scripts.Script;
 import java.util.Date;
 import java.util.function.Predicate;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 
 /**
  * Due to the ResourceResolver dependency these filters should not be used lazy
  * i.e. in a context where the resolver passed as an argument is no longer alive.
  */
-public class ScriptFilters {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ScriptFilters {
 
   public static Predicate<Script> onInstall(LaunchEnvironment environment, String currentHook) {
     return enabled()
@@ -86,6 +89,6 @@ public class ScriptFilters {
   }
 
   private static Predicate<Script> enabled() {
-    return script -> script.isLaunchEnabled();
+    return Script::isLaunchEnabled;
   }
 }

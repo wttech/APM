@@ -20,37 +20,38 @@
 package com.cognifide.apm.core.endpoints;
 
 import com.cognifide.apm.core.Property;
+import com.day.cq.commons.jcr.JcrConstants;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.servlet.Servlet;
 import javax.servlet.ServletException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.servlets.HttpConstants;
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 import org.osgi.service.component.annotations.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Component(
 		immediate = true,
 		service = Servlet.class,
 		property = {
 				Property.PATH + "/bin/cqsm/fileDownload",
-				Property.METHOD + "GET",
+				Property.METHOD + HttpConstants.METHOD_GET,
 				Property.DESCRIPTION + "CQSM File Download Servlet",
 				Property.VENDOR
 		}
 )
+@Slf4j
 public class ScriptDownloadServlet extends SlingSafeMethodsServlet {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(ScriptDownloadServlet.class);
 
 	private static final int BYTES_DOWNLOAD = 1024;
 
@@ -62,21 +63,21 @@ public class ScriptDownloadServlet extends SlingSafeMethodsServlet {
 
 		String mode = request.getParameter("mode");
 
+		final ResourceResolver resourceResolver = request.getResourceResolver();
 		try {
-			final ResourceResolver resourceResolver = request.getResourceResolver();
 			final Session session = resourceResolver.adaptTo(Session.class);
 
 			if (!("view").equals(mode)) {
 				response.setContentType("application/octet-stream"); // Your content type
 				response.setHeader("Content-Disposition",
-						"attachment; filename=" + URLEncoder.encode(fileName, "UTF-8"));
+						"attachment; filename=" + URLEncoder.encode(fileName, StandardCharsets.UTF_8.toString()));
 			}
 
-			String path = StringUtils.replace(filePath, "_jcr_content", "jcr:content");
+			String path = StringUtils.replace(filePath, "_jcr_content", JcrConstants.JCR_CONTENT);
 
-			Node jcrContent = session.getNode(path + "/jcr:content");
+			Node jcrContent = session.getNode(path + "/" + JcrConstants.JCR_CONTENT);
 
-			InputStream input = jcrContent.getProperty("jcr:data").getBinary().getStream();
+			InputStream input = jcrContent.getProperty(JcrConstants.JCR_DATA).getBinary().getStream();
 
 			session.save();
 			int read;
@@ -91,9 +92,8 @@ public class ScriptDownloadServlet extends SlingSafeMethodsServlet {
 			os.close();
 
 		} catch (RepositoryException e) {
-			LOGGER.error(e.getMessage(), e);
+			log.error(e.getMessage(), e);
 			response.sendRedirect("/etc/cqsm.html");
-			// response.sendError(500);
 		}
 	}
 

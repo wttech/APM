@@ -19,10 +19,11 @@
  */
 package com.cognifide.apm.core;
 
-public final class Apm {
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-	private Apm() {
-	}
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class Apm {
 
 	public static final String FILE_EXT = ".apm";
 }

@@ -75,7 +75,7 @@ public class CheckExcludes implements Action {
   }
 
   private boolean checkMembers(final Context context, final ActionResult actionResult, final Group group,
-      final List<String> errors) {
+                               final List<String> errors) {
     boolean checkFailed = false;
     for (String authorizableId : authorizableIds) {
       try {
@@ -96,16 +96,11 @@ public class CheckExcludes implements Action {
   }
 
   private Group tryGetGroup(final Context context, final ActionResult actionResult) {
-    Group group;
-
+    Group group = null;
     try {
       group = context.getAuthorizableManager().getGroup(groupId);
-    } catch (RepositoryException e) {
+    } catch (RepositoryException | ActionExecutionException e) {
       actionResult.logError(MessagingUtils.createMessage(e));
-      return null;
-    } catch (ActionExecutionException e) {
-      actionResult.logError(MessagingUtils.createMessage(e));
-      return null;
     }
     return group;
   }

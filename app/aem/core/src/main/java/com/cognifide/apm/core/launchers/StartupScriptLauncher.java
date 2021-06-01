@@ -60,7 +60,7 @@ public class StartupScriptLauncher extends AbstractLauncher {
   private ResourceResolverFactory resolverFactory;
 
   @Activate
-  private synchronized void activate() {
+  private void activate() {
     SlingHelper.operateTraced(resolverFactory, this::runOnStartup);
   }
 

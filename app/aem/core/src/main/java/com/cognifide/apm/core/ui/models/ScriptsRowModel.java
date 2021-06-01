@@ -21,6 +21,7 @@ package com.cognifide.apm.core.ui.models;
 
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 
+import com.adobe.aemds.guide.utils.JcrResourceConstants;
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.core.history.History;
 import com.cognifide.apm.core.history.HistoryEntry;
@@ -48,7 +49,8 @@ import org.jetbrains.annotations.NotNull;
 public final class ScriptsRowModel {
 
   private static final Set<String> FOLDER_TYPES = ImmutableSet
-      .of(JcrConstants.NT_FOLDER, "sling:OrderedFolder", "sling:Folder");
+      .of(JcrConstants.NT_FOLDER, JcrResourceConstants.NT_SLING_ORDERED_FOLDER, JcrResourceConstants.NT_SLING_FOLDER);
+
 
   public static final String SCRIPTS_ROW_RESOURCE_TYPE = "apm/components/scriptsRow";
 

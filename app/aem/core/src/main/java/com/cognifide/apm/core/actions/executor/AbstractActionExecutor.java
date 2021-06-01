@@ -31,7 +31,7 @@ public abstract class AbstractActionExecutor implements ActionExecutor {
 
 	protected final Context context;
 
-	public AbstractActionExecutor(Context context, ActionFactory actionFactory) {
+	protected AbstractActionExecutor(Context context, ActionFactory actionFactory) {
 		this.context = context;
 		this.actionFactory = actionFactory;
 	}

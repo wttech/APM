@@ -26,8 +26,6 @@ import com.cognifide.apm.api.exceptions.ActionExecutionException;
 import com.cognifide.apm.checks.utils.ActionUtils;
 import com.cognifide.apm.checks.utils.MessagingUtils;
 import com.day.cq.security.util.CqActions;
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,6 +33,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
@@ -43,7 +42,6 @@ import javax.jcr.Session;
 import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.api.security.principal.PrincipalIterator;
 import org.apache.jackrabbit.api.security.user.Authorizable;
-import org.apache.sling.api.resource.LoginException;
 
 public class CheckPermissions implements Action {
 
@@ -58,7 +56,7 @@ public class CheckPermissions implements Action {
   private final String authorizableId;
 
   public CheckPermissions(final String authorizableId, final String path, final String glob,
-      final List<String> permissions, boolean isAllow) {
+                          final List<String> permissions, boolean isAllow) {
     this.authorizableId = authorizableId;
     this.path = path;
     this.glob = glob;
@@ -102,16 +100,16 @@ public class CheckPermissions implements Action {
 
     } catch (final PathNotFoundException e) {
       actionResult.logError("Path " + path + " not found");
-    } catch (RepositoryException | ActionExecutionException | LoginException e) {
+    } catch (RepositoryException | ActionExecutionException e) {
       actionResult.logError(MessagingUtils.createMessage(e));
     }
     return actionResult;
   }
 
   private void checkPermissionsForGlob(Session session, final boolean execute, final ActionResult actionResult,
-      final Authorizable authorizable, final Set<Principal> authorizablesToCheck,
-      final CqActions actions, final List<String> privilegesToCheck)
-      throws RepositoryException, LoginException {
+                                       final Authorizable authorizable, final Set<Principal> authorizablesToCheck,
+                                       final CqActions actions, final List<String> privilegesToCheck)
+      throws RepositoryException {
     final List<String> subpaths = getAllSubpaths(session, path);
     Pattern pattern = Pattern.compile(path + StringUtils.replace(glob, "*", ".*"));
     boolean foundMatch = false;
@@ -139,7 +137,7 @@ public class CheckPermissions implements Action {
   }
 
   private boolean checkPermissionsForPath(final Set<Principal> authorizablesToCheck,
-      final CqActions actions, final List<String> privilegesToCheck, String subpath)
+                                          final CqActions actions, final List<String> privilegesToCheck, String subpath)
       throws RepositoryException {
     Collection<String> allowedActions = actions.getAllowedActions(subpath, authorizablesToCheck);
     final boolean containsAll = allowedActions.containsAll(privilegesToCheck);
@@ -147,7 +145,7 @@ public class CheckPermissions implements Action {
   }
 
   private void logFailure(boolean execute, ActionResult actionResult, final Authorizable authorizable,
-      String subpath) throws RepositoryException {
+                          String subpath) throws RepositoryException {
     actionResult.logError(
         "Not all required privileges are set for " + authorizable.getID() + " on " + subpath);
     if (execute) {
@@ -155,7 +153,7 @@ public class CheckPermissions implements Action {
     }
   }
 
-  private List<String> getAllSubpaths(Session session, final String path) throws RepositoryException, LoginException {
+  private List<String> getAllSubpaths(Session session, final String path) throws RepositoryException {
     List<String> subPaths = new ArrayList<>();
     Node node = session.getNode(path);
     subPaths.addAll(crawl(node));
@@ -186,15 +184,8 @@ public class CheckPermissions implements Action {
     return principals;
   }
 
-  private List<String> preparePrivilegesToCheck() throws RepositoryException {
-    return Lists.transform(permissions, new toLowerCase());
+  private List<String> preparePrivilegesToCheck() {
+    return permissions.stream().map(String::toLowerCase).collect(Collectors.toList());
   }
 
-  private static class toLowerCase implements Function<String, String> {
-
-    @Override
-    public String apply(String input) {
-      return input.toLowerCase();
-    }
-  }
 }

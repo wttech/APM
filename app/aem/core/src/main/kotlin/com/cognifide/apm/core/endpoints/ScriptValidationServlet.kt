@@ -31,6 +31,7 @@ import com.cognifide.apm.core.endpoints.response.ok
 import com.cognifide.apm.core.logger.ProgressEntry
 import com.cognifide.apm.core.scripts.ScriptStorageException
 import org.apache.sling.api.resource.ResourceResolver
+import org.apache.sling.api.servlets.HttpConstants
 import org.apache.sling.models.factory.ModelFactory
 import org.osgi.service.component.annotations.Component
 import org.osgi.service.component.annotations.Reference
@@ -41,7 +42,7 @@ import javax.servlet.Servlet
         service = [Servlet::class],
         property = [
             Property.PATH + "/bin/apm/scripts/validate",
-            Property.METHOD + "POST",
+            Property.METHOD + HttpConstants.METHOD_POST,
             Property.DESCRIPTION + "APM Script Validation Servlet",
             Property.VENDOR
         ])

@@ -19,6 +19,7 @@
  */
 package com.cognifide.apm.core.services.version
 
+import com.adobe.aemds.guide.utils.JcrResourceConstants
 import com.cognifide.apm.api.scripts.Script
 import com.cognifide.apm.api.services.ScriptFinder
 import com.cognifide.apm.core.Property
@@ -107,7 +108,7 @@ class VersionServiceImpl : VersionService {
     @Throws(RepositoryException::class)
     private fun createScriptNode(script: Script, session: Session): Node {
         val path = getScriptVersionPath(script)
-        val scriptHistory = JcrUtils.getOrCreateByPath(path, "sling:OrderedFolder", JcrConstants.NT_UNSTRUCTURED, session, true)
+        val scriptHistory = JcrUtils.getOrCreateByPath(path, JcrResourceConstants.NT_SLING_ORDERED_FOLDER, JcrConstants.NT_UNSTRUCTURED, session, true)
         scriptHistory.setProperty("scriptPath", script.path)
         scriptHistory.setProperty("lastChecksum", script.checksum)
         return scriptHistory
@@ -118,7 +119,7 @@ class VersionServiceImpl : VersionService {
     @Throws(RepositoryException::class)
     private fun createVersionNode(parent: Node, script: Script, session: Session): Node {
         val path = parent.path + "/" + script.checksum
-        return JcrUtils.getOrCreateByPath(path, "sling:OrderedFolder", "sling:OrderedFolder", session, true)
+        return JcrUtils.getOrCreateByPath(path, JcrResourceConstants.NT_SLING_ORDERED_FOLDER, JcrResourceConstants.NT_SLING_ORDERED_FOLDER, session, true)
     }
 
     @Throws(RepositoryException::class)

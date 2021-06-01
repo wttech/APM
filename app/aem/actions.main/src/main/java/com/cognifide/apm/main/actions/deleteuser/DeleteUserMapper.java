@@ -69,7 +69,7 @@ public final class DeleteUserMapper {
       @Required(value = "userIds", description = "users' ids e.g.: ['author']") List<String> ids,
       @Flag(value = CLEAR_PERMISSIONS, description = CLEAR_PERMISSIONS_DESC) boolean clearPermissions) {
     if (clearPermissions) {
-      List<Action> actions = ids.stream().map(id -> new DestroyUser(id)).collect(Collectors.toList());
+      List<Action> actions = ids.stream().map(DestroyUser::new).collect(Collectors.toList());
       return new CompositeAction(actions);
     } else {
       return new RemoveUser(ids);

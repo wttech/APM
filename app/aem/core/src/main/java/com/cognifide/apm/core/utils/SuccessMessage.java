@@ -25,19 +25,14 @@ import java.util.Map;
 
 public class SuccessMessage extends HashMap<String, Object> implements ResponseMessage {
 
-  public static final String SUCCESS = "success";
-  public static final String MESSAGE = "message";
-  public static final String TYPE = "type";
-
   private SuccessMessage(String message) {
-    put(MESSAGE, message);
-    put(TYPE, SUCCESS);
+    put("message", message);
+    put("type", getType());
   }
 
   private SuccessMessage(String message, Map<String, Object> properties) {
+    this(message);
     putAll(properties);
-    put(MESSAGE, message);
-    put(TYPE, SUCCESS);
   }
 
   public static SuccessMessage successMessage(String message) {
@@ -50,7 +45,7 @@ public class SuccessMessage extends HashMap<String, Object> implements ResponseM
 
   @Override
   public String getType() {
-    return SUCCESS;
+    return ServletUtils.SUCCESS_RESPONSE_TYPE;
   }
 
   public static class SuccessMessageBuilder {

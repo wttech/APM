@@ -7,6 +7,7 @@ plugins {
     id("org.nosphere.apache.rat") version "0.6.0"
     `maven-publish`
     signing
+    id("org.sonarqube") version "2.6.2"
 }
 
 defaultTasks("deployAll")

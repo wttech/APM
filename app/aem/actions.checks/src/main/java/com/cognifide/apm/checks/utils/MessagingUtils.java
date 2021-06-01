@@ -19,12 +19,12 @@
  */
 package com.cognifide.apm.checks.utils;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MessagingUtils {
-
-	private MessagingUtils() {
-	}
 
 	public static String createMessage(Exception e) {
 		return StringUtils.isBlank(e.getMessage()) ? "Internal error: " + e.getClass() : e.getMessage();

@@ -43,7 +43,7 @@ public enum CreateAuthorizableStrategy {
         group = context.getAuthorizableManager().createMockGroup(id);
       }
 
-      actionResult.logMessage("Group with id: " + id + " created");
+      actionResult.logMessage(String.format("Group with id: %s created", id));
       return group;
     }
   },
@@ -63,7 +63,7 @@ public enum CreateAuthorizableStrategy {
         user = context.getAuthorizableManager().createMockUser(id);
       }
 
-      actionResult.logMessage("User with id: " + id + " created");
+      actionResult.logMessage(String.format("User with id: %s created", id));
       return user;
     }
   },
@@ -79,7 +79,7 @@ public enum CreateAuthorizableStrategy {
         user = context.getAuthorizableManager().createMockUser(id);
       }
 
-      actionResult.logMessage("System user with id: " + id + " created");
+      actionResult.logMessage(String.format("System user with id: %s created", id));
       return user;
     }
   };

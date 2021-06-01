@@ -23,12 +23,12 @@ import com.cognifide.apm.api.scripts.Script;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MessagingUtils {
-
-	private MessagingUtils() {
-	}
 
 	public static String createMessage(Exception e) {
 		return StringUtils.isBlank(e.getMessage()) ? "Internal error: " + e.getClass() : e.getMessage();

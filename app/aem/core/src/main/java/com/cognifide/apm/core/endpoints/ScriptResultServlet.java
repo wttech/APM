@@ -19,34 +19,32 @@
  */
 package com.cognifide.apm.core.endpoints;
 
-import static com.cognifide.apm.core.endpoints.ScriptResultServlet.EXECUTION_RESULT_SERVLET_PATH;
-
 import com.cognifide.apm.core.Property;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import javax.servlet.Servlet;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
+import org.apache.sling.api.servlets.HttpConstants;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.osgi.service.component.annotations.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Component(
-		immediate = true,
-		service = Servlet.class,
-		property = {
-				Property.PATH + EXECUTION_RESULT_SERVLET_PATH,
-				Property.METHOD + "POST",
-				Property.DESCRIPTION + "Execution result Servlet",
-				Property.VENDOR
-		}
+    immediate = true,
+    service = Servlet.class,
+    property = {
+        Property.PATH + ScriptResultServlet.EXECUTION_RESULT_SERVLET_PATH,
+        Property.METHOD + HttpConstants.METHOD_POST,
+        Property.DESCRIPTION + "Execution result Servlet",
+        Property.VENDOR
+    }
 )
+@Slf4j
 public class ScriptResultServlet extends SlingAllMethodsServlet {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(ScriptResultServlet.class);
 
   public static final String EXECUTION_RESULT_SERVLET_PATH = "/bin/cqsm/executionResultDownload";
 
@@ -58,13 +56,13 @@ public class ScriptResultServlet extends SlingAllMethodsServlet {
     String content = request.getParameter("content");
 
     if (fileName == null || fileName.length() == 0) {
-      LOGGER.error("Parameter fileName is required");
+      log.error("Parameter fileName is required");
       return;
     }
 
     response.setContentType("application/octet-stream");
     response.setHeader("Content-Disposition",
-        "attachment; filename=" + URLEncoder.encode(fileName, "UTF-8"));
+        "attachment; filename=" + URLEncoder.encode(fileName, StandardCharsets.UTF_8.toString()));
 
     InputStream input = IOUtils.toInputStream(content);
     IOUtils.copy(input, response.getOutputStream());

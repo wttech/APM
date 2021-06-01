@@ -20,7 +20,11 @@
 
 package com.cognifide.apm.checks.actions;
 
-public class ActionGroup {
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ActionGroup {
 
   public static final String CHECKS = "checks";
 }

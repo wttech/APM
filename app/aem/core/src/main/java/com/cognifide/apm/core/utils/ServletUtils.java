@@ -22,11 +22,19 @@ package com.cognifide.apm.core.utils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.sling.api.SlingHttpServletResponse;
 
-public class ServletUtils {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ServletUtils {
+
+	public static final String SUCCESS_RESPONSE_TYPE = "success";
+
+	public static final String ERROR_RESPONSE_TYPE = "error";
 
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
@@ -35,14 +43,14 @@ public class ServletUtils {
 	}
 
 	public static void writeJson(SlingHttpServletResponse response, String json) throws IOException {
-		response.setCharacterEncoding("UTF-8");
+		response.setCharacterEncoding(StandardCharsets.UTF_8.toString());
 		response.setContentType("application/json");
 		response.getWriter().print(json);
 		response.getWriter().flush();
 	}
 
 	public static void writeMessage(SlingHttpServletResponse response, String type, String text) throws IOException {
-		writeMessage(response, type, text, new HashMap<String, Object>());
+		writeMessage(response, type, text, new HashMap<>());
 	}
 
 	public static void writeMessage(SlingHttpServletResponse response, String type, String text,

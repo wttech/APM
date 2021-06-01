@@ -28,15 +28,13 @@ import com.cognifide.apm.main.utils.MessagingUtils;
 import java.util.ArrayList;
 import java.util.List;
 import javax.jcr.RepositoryException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.apache.jackrabbit.api.security.user.Group;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+@Slf4j
 public class AddChildren implements Action {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(AddChildren.class);
 
   private final List<String> authorizableIds;
 
@@ -60,12 +58,9 @@ public class AddChildren implements Action {
     try {
       group = context.getCurrentGroup();
       actionResult.setAuthorizable(group.getID());
-      LOGGER.info(String.format("Adding authorizables %s to group with id = %s",
-          StringUtils.join(authorizableIds, ", "), group.getID()));
-    } catch (ActionExecutionException e) {
-      actionResult.logError(MessagingUtils.createMessage(e));
-      return actionResult;
-    } catch (RepositoryException e) {
+      log.info("Adding authorizables {} to group with id = {}",
+          StringUtils.join(authorizableIds, ", "), group.getID());
+    } catch (ActionExecutionException | RepositoryException e) {
       actionResult.logError(MessagingUtils.createMessage(e));
       return actionResult;
     }

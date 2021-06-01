@@ -19,6 +19,14 @@
  */
 package com.cognifide.apm.api.actions;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@AllArgsConstructor
+@Getter
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Message {
 
   public static final String ERROR = "error";
@@ -26,22 +34,5 @@ public final class Message {
   private String text;
 
   private String type;
-
-  public Message(String text, String type) {
-    this.text = text;
-    this.type = type;
-  }
-
-  // Gson library needs this
-  private Message() {
-  }
-
-  public String getText() {
-    return text;
-  }
-
-  public String getType() {
-    return type;
-  }
 
 }
