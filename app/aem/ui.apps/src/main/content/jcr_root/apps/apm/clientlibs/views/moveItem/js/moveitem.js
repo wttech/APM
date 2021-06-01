@@ -41,11 +41,6 @@
         var processData = true;
         var contentType = wizard.prop("enctype");
 
-        if (path === (dest + "/" + rename)) {
-            location.href = "/apm/scripts.html" + parent;
-            return;
-        }
-
         $.ajax({
             type: wizard.prop("method"),
             url: "/bin/apm/scripts/move",

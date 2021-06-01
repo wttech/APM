@@ -60,11 +60,14 @@ class ScriptMoveServlet : AbstractFormServlet<ScriptMoveForm>(ScriptMoveForm::cl
             } else {
                 JcrUtil.createValidName(form.rename)
             }
-            val uniquePath = createUniquePath("$dest/$rename", resolver)
-            session.move(form.path, uniquePath)
-            session.save()
+            var destPath = "$dest/$rename"
+            if (form.path != destPath) {
+                destPath = createUniquePath(destPath, resolver)
+                session.move(form.path, destPath)
+                session.save()
+            }
             if (!containsExtension(form.path)) {
-                val valueMap = resolver.getResource(uniquePath)?.adaptTo(ModifiableValueMap::class.java)
+                val valueMap = resolver.getResource(destPath)?.adaptTo(ModifiableValueMap::class.java)
                 valueMap?.put(JcrConstants.JCR_TITLE, form.rename)
             }
             resolver.commit()
