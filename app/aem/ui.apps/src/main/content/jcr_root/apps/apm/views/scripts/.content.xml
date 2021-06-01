@@ -156,7 +156,7 @@
               icon="folder"
               relScope="collection"
               target=".cq-experience-fragments-admin-childpages"
-              text="Folder">
+              text="Create Folder">
               <data
                 jcr:primaryType="nt:unstructured"
                 nesting="hide"
@@ -263,6 +263,22 @@
             jcr:primaryType="nt:unstructured"
             href.uritemplate="/apm/editor.html{+item}"/>
         </edit>
+        <move
+          granite:class="foundation-collection-action"
+          jcr:primaryType="nt:unstructured"
+          sling:resourceType="granite/ui/components/coral/foundation/collection/action"
+          action="foundation.link"
+          activeSelectionCount="single"
+          icon="move"
+          pageheading="Move Item"
+          target=".cq-experience-fragments-admin-childpages"
+          text="Move"
+          title="Move"
+          variant="actionBar">
+          <data
+            jcr:primaryType="nt:unstructured"
+            href.uritemplate="/apps/apm/views/move.html{+item}"/>
+        </move>
         <deletepage
           granite:class="foundation-collection-action"
           granite:rel="cq-siteadmin-admin-actions-delete-activator"
