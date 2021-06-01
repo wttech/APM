@@ -29,12 +29,12 @@
     Config cfg = cmp.getConfig();
     String item = slingRequest.getRequestPathInfo().getSuffix();
 
-    Resource res1 = resourceResolver.getResource(item);
-    ValueMap vm1 = res1.adaptTo(ValueMap.class);
+    Resource resource = resourceResolver.getResource(item);
+    ValueMap valueMap = resource.adaptTo(ValueMap.class);
 
-    String name = res1.getName();
-    String path = res1.getPath();
-    String title = vm1.get("jcr:title", "");
+    String name = resource.getName();
+    String path = resource.getPath();
+    String title = valueMap.get("jcr:title", "");
     if (title.isEmpty()) {
         title = name;
     }
