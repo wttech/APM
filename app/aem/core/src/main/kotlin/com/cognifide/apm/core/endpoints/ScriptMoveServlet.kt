@@ -54,11 +54,7 @@ class ScriptMoveServlet : AbstractFormServlet<ScriptMoveForm>(ScriptMoveForm::cl
     override fun doPost(form: ScriptMoveForm, resolver: ResourceResolver): ResponseEntity<Any> {
         return try {
             val session = resolver.adaptTo(Session::class.java)!!
-            val dest = if (form.dest.isEmpty()) {
-                StringUtils.substringBeforeLast(form.path, "/")
-            } else {
-                form.dest
-            }
+            val dest = StringUtils.defaultIfEmpty(form.dest, StringUtils.substringBeforeLast(form.path, "/"))
             val rename = if (containsExtension(form.path)) {
                 form.rename + if (containsExtension(form.rename)) "" else Apm.FILE_EXT
             } else {
