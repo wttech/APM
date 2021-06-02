@@ -111,8 +111,7 @@ public class HistoryImpl implements History {
 
   @Override
   public HistoryEntry logRemote(Script script, ExecutionMode mode, Progress progressLogger,
-                                InstanceDetails instanceDetails,
-                                Calendar executionTime) {
+                                InstanceDetails instanceDetails, Calendar executionTime) {
     return resolveDefault(resolverFactory, progressLogger.getExecutor(), (ResolveCallback<HistoryEntry>) resolver -> {
       final HistoryEntryWriter historyEntryWriter = createBuilder(resolver, script, mode, progressLogger)
           .executionTime(executionTime)
