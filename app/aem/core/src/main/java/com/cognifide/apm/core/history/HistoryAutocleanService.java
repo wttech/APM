@@ -21,7 +21,6 @@
 package com.cognifide.apm.core.history;
 
 import com.cognifide.apm.core.utils.sling.SlingHelper;
-import java.time.LocalDate;
 import java.util.Calendar;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.sling.api.resource.PersistenceException;
@@ -78,12 +77,13 @@ public class HistoryAutocleanService implements Runnable {
   private void deleteHistoryByDays(ResourceResolver resolver) {
     if (config.maxDays() >= 0) {
       log.info("Looking for items older than {} days", config.maxDays());
-      LocalDate date = LocalDate.now().minusDays(config.maxDays());
+      Calendar calendar = Calendar.getInstance();
+      calendar.add(Calendar.DAY_OF_MONTH, -config.maxDays());
       history.findAllResources(resolver)
           .stream()
           .filter(resource -> {
             Calendar executionTime = resource.getValueMap().get(HistoryEntryImpl.EXECUTION_TIME, Calendar.class);
-            return executionTime.after(date);
+            return executionTime.before(calendar);
           })
           .forEach(resource -> deleteItem(resolver, resource));
     }
