@@ -73,19 +73,19 @@
                 jcr:primaryType="nt:unstructured"
                 jcr:title="Valid"
                 sortable="{Boolean}true"/>
+              <lastdryrun
+                jcr:primaryType="nt:unstructured"
+                jcr:title="Last Dry Run"
+                sortable="{Boolean}true"
+                sortType="date"/>
               <lastrun
                 jcr:primaryType="nt:unstructured"
-                jcr:title="Last Run"
+                jcr:title="Last Run on Author"
                 sortable="{Boolean}true"
                 sortType="date"/>
               <lastrunonpublish
                 jcr:primaryType="nt:unstructured"
                 jcr:title="Last Run on Publish"
-                sortable="{Boolean}true"
-                sortType="date"/>
-              <lastdryrun
-                jcr:primaryType="nt:unstructured"
-                jcr:title="Last Dry Run"
                 sortable="{Boolean}true"
                 sortType="date"/>
             </columns>
