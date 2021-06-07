@@ -21,9 +21,7 @@
 package com.cognifide.apm.core.history;
 
 import com.cognifide.apm.core.utils.sling.SlingHelper;
-import java.time.LocalDate;
-import java.util.stream.StreamSupport;
-import javax.jcr.query.Query;
+import java.util.Calendar;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
@@ -46,18 +44,13 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 @Designate(ocd = HistoryAutocleanService.Config.class)
 public class HistoryAutocleanService implements Runnable {
 
-  private static final String QUERY = "SELECT * FROM [nt:unstructured] "
-      + "WHERE ISDESCENDANTNODE('" + HistoryImpl.HISTORY_FOLDER + "') "
-      + "AND executionTime IS NOT NULL";
-
-  private static final String MAX_DAYS_QUERY = QUERY + " AND executionTime <= '%s'";
-
-  private static final String ORDERED_QUERY = QUERY + " ORDER BY executionTime DESC";
-
   private Config config;
 
   @Reference
   private ResourceResolverFactory resolverFactory;
+
+  @Reference
+  private History history;
 
   @Activate
   @Modified
@@ -74,23 +67,26 @@ public class HistoryAutocleanService implements Runnable {
   private void deleteHistoryByEntries(ResourceResolver resolver) {
     if (config.maxEntries() >= 0) {
       log.info("Looking for items exceeding limit of {} items", config.maxEntries());
-      deleteHistoryByQuery(resolver, ORDERED_QUERY, config.maxEntries());
+      history.findAllResources(resolver)
+          .stream()
+          .skip(config.maxEntries())
+          .forEach(resource -> deleteItem(resolver, resource));
     }
   }
 
   private void deleteHistoryByDays(ResourceResolver resolver) {
     if (config.maxDays() >= 0) {
       log.info("Looking for items older than {} days", config.maxDays());
-      LocalDate date = LocalDate.now().minusDays(config.maxDays());
-      deleteHistoryByQuery(resolver, String.format(MAX_DAYS_QUERY, date), 0);
+      Calendar calendar = Calendar.getInstance();
+      calendar.add(Calendar.DAY_OF_MONTH, -config.maxDays());
+      history.findAllResources(resolver)
+          .stream()
+          .filter(resource -> {
+            Calendar executionTime = resource.getValueMap().get(HistoryEntryImpl.EXECUTION_TIME, Calendar.class);
+            return executionTime.before(calendar);
+          })
+          .forEach(resource -> deleteItem(resolver, resource));
     }
-  }
-
-  private void deleteHistoryByQuery(ResourceResolver resolver, String query, int offset) {
-    Iterable<Resource> iterable = () -> resolver.findResources(query, Query.JCR_SQL2);
-    StreamSupport.stream(iterable.spliterator(), false)
-        .skip(offset)
-        .forEach(resource -> deleteItem(resolver, resource));
   }
 
   private void deleteItem(ResourceResolver resolver, Resource resource) {
