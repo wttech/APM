@@ -272,16 +272,16 @@
             href.uritemplate="/apps/apm/views/move.html{+item}"/>
         </move>
         <deletepage
-                granite:class="foundation-collection-action"
-                granite:rel="cq-siteadmin-admin-actions-delete-activator"
-                jcr:primaryType="nt:unstructured"
-                sling:resourceType="granite/ui/components/coral/foundation/collection/action"
-                action="cq.wcm.delete"
-                icon="delete"
-                relScope="collection"
-                target=".cq-experience-fragments-admin-childpages"
-                text="Delete"
-                variant="actionBar"/>
+          granite:class="foundation-collection-action"
+          granite:rel="cq-siteadmin-admin-actions-delete-activator"
+          jcr:primaryType="nt:unstructured"
+          sling:resourceType="granite/ui/components/coral/foundation/collection/action"
+          action="cq.wcm.delete"
+          icon="delete"
+          relScope="collection"
+          target=".cq-experience-fragments-admin-childpages"
+          text="Delete"
+          variant="actionBar"/>
       </selection>
     </actions>
   </jcr:content>
