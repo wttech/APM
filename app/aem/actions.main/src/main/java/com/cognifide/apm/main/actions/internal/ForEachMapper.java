@@ -25,7 +25,7 @@ import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.apm.main.actions.ActionGroup;
 import org.apache.commons.lang.NotImplementedException;
 
-@Mapper(value = "for-each", group = ActionGroup.CORE)
+@Mapper(value = "FOR-EACH", group = ActionGroup.CORE)
 public final class ForEachMapper {
 
   @Mapping(

@@ -30,7 +30,7 @@ import com.cognifide.apm.api.actions.annotations.Named;
 import com.cognifide.apm.api.actions.annotations.Required;
 import com.cognifide.apm.main.actions.ActionGroup;
 
-@Mapper(value = "create-user", group = ActionGroup.CORE)
+@Mapper(value = "CREATE-USER", group = ActionGroup.CORE)
 public class CreateUserMapper {
 
   public static final String REFERENCE = "Create a user. If user already exists, the following block of code will be skipped.";

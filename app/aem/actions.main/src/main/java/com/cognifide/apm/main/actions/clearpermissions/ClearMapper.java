@@ -30,7 +30,7 @@ import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.apm.api.actions.annotations.Required;
 import com.cognifide.apm.main.actions.ActionGroup;
 
-@Mapper(value = "clear", group = ActionGroup.CORE)
+@Mapper(value = "CLEAR", group = ActionGroup.CORE)
 public final class ClearMapper {
 
   @Mapping(

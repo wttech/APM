@@ -25,7 +25,7 @@ import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.apm.api.actions.annotations.Required;
 import com.cognifide.apm.main.actions.ActionGroup;
 
-@Mapper(value = "session-save", group = ActionGroup.CORE)
+@Mapper(value = "SESSION-SAVE", group = ActionGroup.CORE)
 public final class SessionSaveMapper {
 
   @Mapping(

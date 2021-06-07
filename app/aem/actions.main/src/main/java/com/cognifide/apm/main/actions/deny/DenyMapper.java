@@ -30,7 +30,7 @@ import com.cognifide.apm.api.actions.annotations.Required;
 import com.cognifide.apm.main.actions.ActionGroup;
 import java.util.List;
 
-@Mapper(value = "deny", group = ActionGroup.CORE)
+@Mapper(value = "DENY", group = ActionGroup.CORE)
 public class DenyMapper {
 
   public static final String REFERENCE = "This action is an complementary one for ALLOW action, and can be used to"

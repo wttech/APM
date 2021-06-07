@@ -30,7 +30,7 @@ import com.cognifide.apm.api.actions.annotations.Named;
 import com.cognifide.apm.api.actions.annotations.Required;
 import com.cognifide.apm.main.actions.ActionGroup;
 
-@Mapper(value = "create-group", group = ActionGroup.CORE)
+@Mapper(value = "CREATE-GROUP", group = ActionGroup.CORE)
 public class CreateGroupMapper {
 
   public static final String REFERENCE = "Create a group. Script fails if group already exists.";

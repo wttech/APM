@@ -26,7 +26,7 @@ import com.cognifide.apm.checks.actions.ActionGroup;
 import java.util.Collections;
 import java.util.List;
 
-@Mapper(value = "check-not-exists", group = ActionGroup.CHECKS)
+@Mapper(value = "CHECK-NOT-EXISTS", group = ActionGroup.CHECKS)
 public final class CheckNotExistsMapper {
 
   public static final String REFERENCE = "Verify that specific authorizables do not exist.";
