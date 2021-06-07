@@ -27,7 +27,7 @@ import com.cognifide.apm.main.actions.ActionGroup;
 import java.util.Collections;
 import java.util.List;
 
-@Mapper(value = "remove-from-group", group = ActionGroup.CORE)
+@Mapper(value = "REMOVE-FROM-GROUP", group = ActionGroup.CORE)
 public final class RemoveFromGroupMapper {
 
   public static final String REFERENCE = "Remove current authorizable from specified groups. "

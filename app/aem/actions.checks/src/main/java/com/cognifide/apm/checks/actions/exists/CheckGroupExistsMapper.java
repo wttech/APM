@@ -25,7 +25,7 @@ import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.apm.api.actions.annotations.Named;
 import com.cognifide.apm.checks.actions.ActionGroup;
 
-@Mapper(value = "check-group-exists", group = ActionGroup.CHECKS)
+@Mapper(value = "CHECK-GROUP-EXISTS", group = ActionGroup.CHECKS)
 public final class CheckGroupExistsMapper {
 
   public static final String REFERENCE = "Verify that provided authorizable exists and is a group."

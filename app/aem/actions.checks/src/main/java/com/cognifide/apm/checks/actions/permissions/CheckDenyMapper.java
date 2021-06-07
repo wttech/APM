@@ -25,7 +25,7 @@ import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.apm.checks.actions.ActionGroup;
 import java.util.List;
 
-@Mapper(value = "check-deny", group = ActionGroup.CHECKS)
+@Mapper(value = "CHECK-DENY", group = ActionGroup.CHECKS)
 public final class CheckDenyMapper {
 
   public static final String REFERENCE = "Check that specific permissions are denied for current authorizable"
