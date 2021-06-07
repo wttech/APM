@@ -27,7 +27,7 @@ import com.cognifide.apm.main.actions.ActionGroup;
 import java.util.Collections;
 import java.util.List;
 
-@Mapper(value = "delete-group", group = ActionGroup.CORE)
+@Mapper(value = "DELETE-GROUP", group = ActionGroup.CORE)
 public final class DeleteGroupMapper {
 
   public static final String REFERENCE = "Remove specified groups.\n"

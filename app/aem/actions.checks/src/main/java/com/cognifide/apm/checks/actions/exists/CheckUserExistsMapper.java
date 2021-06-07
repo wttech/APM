@@ -25,7 +25,7 @@ import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.apm.api.actions.annotations.Named;
 import com.cognifide.apm.checks.actions.ActionGroup;
 
-@Mapper(value = "check-user-exists", group = ActionGroup.CHECKS)
+@Mapper(value = "CHECK-USER-EXISTS", group = ActionGroup.CHECKS)
 public final class CheckUserExistsMapper {
 
   public static final String REFERENCE = "Verify that provided authorizable exists and is a user."

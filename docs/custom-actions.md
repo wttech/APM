@@ -32,7 +32,7 @@ The actions available within the tool are collected based on the methods annotat
 Adding new action, or it's variation means implementing new method that will return `com.cognifide.apm.api.actions.Action` interface object.
 
 ```java
-@Mapper(value = "allow", group = ActionGroup.CORE)
+@Mapper(value = "ALLOW", group = ActionGroup.CORE)
 public class AllowMapper {
 
   public static final String REFERENCE = "Add allow permissions for current authorizable on specified path. "

@@ -26,7 +26,7 @@ import com.cognifide.apm.api.actions.annotations.Named;
 import com.cognifide.apm.checks.actions.ActionGroup;
 import java.util.List;
 
-@Mapper(value = "check-allow", group = ActionGroup.CHECKS)
+@Mapper(value = "CHECK-ALLOW", group = ActionGroup.CHECKS)
 public final class CheckAllowMapper {
 
   public static final String REFERENCE = "Check that specific permissions are allowed for current authorizable"

@@ -24,7 +24,7 @@ import com.cognifide.apm.api.actions.annotations.Mapper;
 import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.apm.checks.actions.ActionGroup;
 
-@Mapper(value = "check-property", group = ActionGroup.CHECKS)
+@Mapper(value = "CHECK-PROPERTY", group = ActionGroup.CHECKS)
 public final class CheckPropertyMapper {
 
   public static final String REFERENCE = "Verify that a property is set to specific value for given authorizable.";

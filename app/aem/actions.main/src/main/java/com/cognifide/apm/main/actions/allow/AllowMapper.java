@@ -30,7 +30,7 @@ import com.cognifide.apm.api.actions.annotations.Required;
 import com.cognifide.apm.main.actions.ActionGroup;
 import java.util.List;
 
-@Mapper(value = "allow", group = ActionGroup.CORE)
+@Mapper(value = "ALLOW", group = ActionGroup.CORE)
 public class AllowMapper {
 
   public static final String REFERENCE = "Add allow permissions for current authorizable on specified path. "
