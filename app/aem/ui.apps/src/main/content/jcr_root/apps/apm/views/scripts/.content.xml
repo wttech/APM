@@ -258,18 +258,18 @@
             foundation-mode-value="default"/>
         </copypage>
         <move
-                granite:class="foundation-collection-action"
-                jcr:primaryType="nt:unstructured"
-                sling:resourceType="granite/ui/components/coral/foundation/collection/action"
-                action="foundation.link"
-                activeSelectionCount="single"
-                icon="move"
-                target=".cq-experience-fragments-admin-childpages"
-                text="Move"
-                variant="actionBar">
+          granite:class="foundation-collection-action"
+          jcr:primaryType="nt:unstructured"
+          sling:resourceType="granite/ui/components/coral/foundation/collection/action"
+          action="foundation.link"
+          activeSelectionCount="single"
+          icon="move"
+          target=".cq-experience-fragments-admin-childpages"
+          text="Move"
+          variant="actionBar">
           <data
-                  jcr:primaryType="nt:unstructured"
-                  href.uritemplate="/apps/apm/views/move.html{+item}"/>
+            jcr:primaryType="nt:unstructured"
+            href.uritemplate="/apps/apm/views/move.html{+item}"/>
         </move>
         <deletepage
                 granite:class="foundation-collection-action"
