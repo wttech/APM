@@ -30,7 +30,7 @@ import com.cognifide.apm.api.actions.annotations.Named;
 import com.cognifide.apm.api.actions.annotations.Required;
 import com.cognifide.apm.main.actions.ActionGroup;
 
-@Mapper(value = "create-system-user", group = ActionGroup.CORE)
+@Mapper(value = "CREATE-SYSTEM-USER", group = ActionGroup.CORE)
 public class CreateSystemUserMapper {
 
   public static final String REFERENCE = "Create a system user. Script fails if user already exists.";

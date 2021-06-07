@@ -25,7 +25,7 @@ import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.apm.api.actions.annotations.Required;
 import com.cognifide.apm.main.actions.ActionGroup;
 
-@Mapper(value = "set-property", group = ActionGroup.CORE)
+@Mapper(value = "SET-PROPERTY", group = ActionGroup.CORE)
 public final class SetPropertyMapper {
 
   @Mapping(

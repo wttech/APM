@@ -27,7 +27,7 @@ import com.cognifide.apm.main.actions.ActionGroup;
 import java.util.Collections;
 import java.util.List;
 
-@Mapper(value = "remove-parents", group = ActionGroup.CORE)
+@Mapper(value = "REMOVE-PARENTS", group = ActionGroup.CORE)
 public final class RemoveParentsMapper {
 
   public static final String REFERENCE = "Remove current authorizable from specified groups.";

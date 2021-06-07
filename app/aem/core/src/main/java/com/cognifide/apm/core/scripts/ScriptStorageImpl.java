@@ -63,9 +63,9 @@ public class ScriptStorageImpl implements ScriptStorage {
 
   private static final Logger LOG = LoggerFactory.getLogger(ScriptStorageImpl.class);
 
-  private static final Pattern FILE_NAME_PATTERN = Pattern.compile("[\\da-zA-Z\\-]+\\.apm");
+  private static final Pattern FILE_NAME_PATTERN = Pattern.compile("[0-9a-zA-Z_\\-]+\\.apm");
 
-  private static final Pattern PATH_PATTERN = Pattern.compile("/[\\da-zA-Z\\-/]+");
+  private static final Pattern PATH_PATTERN = Pattern.compile("/[0-9a-zA-Z_\\-/]+");
 
   private static final Charset SCRIPT_ENCODING = StandardCharsets.UTF_8;
 
@@ -148,9 +148,9 @@ public class ScriptStorageImpl implements ScriptStorage {
 
   private String generateFileName(String fileName, Node saveNode) throws RepositoryException {
     String baseName = FilenameUtils.getBaseName(fileName);
-    int num = 1;
+    int num = 0;
     do {
-      fileName = baseName + ((num > 1) ? ("-" + num) : "") + Apm.FILE_EXT;
+      fileName = baseName + (num > 0 ? num : "") + Apm.FILE_EXT;
       num++;
     } while (saveNode.hasNode(fileName));
 

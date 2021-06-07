@@ -83,7 +83,7 @@ public class ActionMapperRegistryImpl implements RegistryChangedListener, Action
   @Override
   public Optional<MapperDescriptor> getMapper(String name) {
     Preconditions.checkNotNull(name, "Name cannot be null");
-    return Optional.ofNullable(mappers.get().get(name.trim().toLowerCase()));
+    return Optional.ofNullable(mappers.get().get(name.trim().toUpperCase()));
   }
 
   @Override

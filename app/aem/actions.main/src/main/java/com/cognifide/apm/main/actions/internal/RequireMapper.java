@@ -26,7 +26,7 @@ import com.cognifide.apm.api.actions.annotations.Required;
 import com.cognifide.apm.main.actions.ActionGroup;
 import org.apache.commons.lang.NotImplementedException;
 
-@Mapper(value = "require", group = ActionGroup.CORE)
+@Mapper(value = "REQUIRE", group = ActionGroup.CORE)
 public final class RequireMapper {
 
   @Mapping(

@@ -31,6 +31,3 @@ atlassian-ide-plugin.xml
 #eclipse
 .settings
 .classpath
-
-node_modules
-**/clientlibs/clientlib-graph-view
