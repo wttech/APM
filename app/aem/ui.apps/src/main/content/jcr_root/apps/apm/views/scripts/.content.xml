@@ -25,7 +25,7 @@
       <clientlibs
         jcr:primaryType="nt:unstructured"
         sling:resourceType="granite/ui/components/coral/foundation/includeclientlibs"
-        categories="[apm.graphview,apm.scripts,cq.common.wcm,cq.sites.collectionpage,cq.siteadmin.admin.page.row,cq.experiencefragments.components.experiencefragment,cq.siteadmin.common]"/>
+        categories="[apm.scripts,cq.common.wcm,cq.sites.collectionpage,cq.siteadmin.admin.page.row,cq.experiencefragments.components.experiencefragment,cq.siteadmin.common]"/>
     </head>
     <views jcr:primaryType="nt:unstructured">
       <content
@@ -94,10 +94,6 @@
               sling:resourceType="apm/datasource/scripts"
               itemResourceType="apm/components/scriptsRow"/>
           </list>
-          <tree
-                  jcr:primaryType="nt:unstructured"
-                  granite:id="graph-view-root"
-                  sling:resourceType="granite/ui/components/coral/foundation/container"/>
         </items>
       </content>
     </views>
@@ -164,38 +160,6 @@
             </createfolder>
           </items>
         </create>
-        <viewMode
-          granite:class="granite-toggleable-control-view"
-          jcr:primaryType="nt:unstructured"
-          sling:resourceType="granite/ui/components/coral/foundation/cyclebutton"
-          displayMode="icontext">
-          <items jcr:primaryType="nt:unstructured">
-            <viewList
-              jcr:primaryType="nt:unstructured"
-              sling:resourceType="granite/ui/components/coral/foundation/button"
-              granite:id="list-view-switcher"
-              action="foundation.link"
-              icon="viewList"
-              text="List View">
-              <granite:data
-                jcr:primaryType="nt:unstructured"
-                hideView="graph-view-root"
-                showView="list-view-root"/>
-            </viewList>
-            <graphView
-              jcr:primaryType="nt:unstructured"
-              sling:resourceType="granite/ui/components/coral/foundation/button"
-              granite:id="graph-view-switcher"
-              action="foundation.link"
-              icon="workflow"
-              text="Graph View">
-              <granite:data
-                jcr:primaryType="nt:unstructured"
-                hideView="list-view-root"
-                showView="graph-view-root"/>
-            </graphView>
-          </items>
-        </viewMode>
       </secondary>
       <selection jcr:primaryType="nt:unstructured">
         <dryrun

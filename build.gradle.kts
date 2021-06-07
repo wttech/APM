@@ -77,10 +77,6 @@ tasks {
 
         // Swagger API Definition
         excludes.add("**/apidefinition/*.yaml")
-        excludes.add("**/clientlibs/clientlib-graph-view/**")
-
-        // Node dependencies
-        excludes.add("**/node_modules/**")
     }
 }
 
