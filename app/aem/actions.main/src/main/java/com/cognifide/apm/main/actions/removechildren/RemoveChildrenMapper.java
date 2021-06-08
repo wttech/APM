@@ -27,7 +27,7 @@ import com.cognifide.apm.main.actions.ActionGroup;
 import java.util.Collections;
 import java.util.List;
 
-@Mapper(value = "remove-children", group = ActionGroup.CORE)
+@Mapper(value = "REMOVE-CHILDREN", group = ActionGroup.CORE)
 public final class RemoveChildrenMapper {
 
   public static final String REFERENCE = "Remove specified users and groups from current group.";

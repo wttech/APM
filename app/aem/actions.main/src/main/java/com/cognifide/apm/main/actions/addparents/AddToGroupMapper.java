@@ -27,7 +27,7 @@ import com.cognifide.apm.main.actions.ActionGroup;
 import java.util.Collections;
 import java.util.List;
 
-@Mapper(value = "add-to-group", group = ActionGroup.CORE)
+@Mapper(value = "ADD-TO-GROUP", group = ActionGroup.CORE)
 public final class AddToGroupMapper {
 
   public static final String REFERENCE = "Add current authorizable to specified groups. "

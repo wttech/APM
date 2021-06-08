@@ -21,18 +21,6 @@
       sling:resourceType="granite/ui/components/coral/foundation/text"
       text="APM View"/>
     <actions jcr:primaryType="nt:unstructured">
-      <primary jcr:primaryType="nt:unstructured">
-        <showReferences
-          granite:id="showReference"
-          granite:class="foundation-collection-action"
-          jcr:primaryType="nt:unstructured"
-          sling:resourceType="granite/ui/components/coral/foundation/anchorbutton"
-          href="/apm/references.html"
-          icon="infoCircle"
-          target="_blank"
-          text="Show References"
-          variant="actionBar"/>
-      </primary>
       <secondary jcr:primaryType="nt:unstructured">
         <back
           granite:id="backButton"

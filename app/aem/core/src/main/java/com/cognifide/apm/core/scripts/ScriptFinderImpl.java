@@ -19,21 +19,21 @@
  */
 package com.cognifide.apm.core.scripts;
 
+import static org.apache.sling.query.SlingQuery.$;
+
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.apm.core.Property;
 import java.util.List;
-import java.util.Objects;
 import java.util.Spliterator;
-import java.util.Spliterators;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import javax.jcr.query.Query;
 import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.query.api.SearchStrategy;
 import org.osgi.service.component.annotations.Component;
 
 @Component(
@@ -48,22 +48,15 @@ public class ScriptFinderImpl implements ScriptFinder {
 
   private static final String SCRIPT_PATH = "/conf/apm/scripts";
 
-  private static final String QUERY = "SELECT * FROM [nt:file] "
-      + "WHERE ISDESCENDANTNODE([%s]) AND [jcr:mixinTypes] = 'apm:Script'";
-
   @Override
   public List<Script> findAll(Predicate<Script> filter, ResourceResolver resolver) {
-    final List<Script> scripts = findAll(resolver).stream()
-        .filter(filter)
+    return findScripts(resolver).filter(filter)
         .collect(Collectors.toList());
-    return scripts;
   }
 
   @Override
   public List<Script> findAll(ResourceResolver resolver) {
-    return findScripts(resolver)
-        .map(resource -> resource.adaptTo(ScriptModel.class))
-        .collect(Collectors.toList());
+    return findScripts(resolver).collect(Collectors.toList());
   }
 
   @Override
@@ -83,12 +76,13 @@ public class ScriptFinderImpl implements ScriptFinder {
     return result;
   }
 
-  private Stream<Resource> findScripts(ResourceResolver resolver) {
-    final String query = String.format(QUERY, SCRIPT_PATH);
-    return Stream.of(resolver.findResources(query, Query.JCR_SQL2))
-        .map(resourceIterator -> Spliterators.spliteratorUnknownSize(resourceIterator, Spliterator.ORDERED))
-        .flatMap(resourceSpliterator -> StreamSupport.stream(resourceSpliterator, false))
-        .filter(Objects::nonNull);
+  private Stream<Script> findScripts(ResourceResolver resolver) {
+    Resource rootResource = resolver.getResource(SCRIPT_PATH);
+    Spliterator<Resource> spliterator = $(rootResource).searchStrategy(SearchStrategy.BFS)
+        .find(ScriptNode.APM_SCRIPT)
+        .spliterator();
+    return StreamSupport.stream(spliterator, false)
+        .map(resource -> resource.adaptTo(ScriptModel.class));
   }
 
   private boolean isAbsolute(String path) {

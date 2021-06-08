@@ -53,5 +53,3 @@ publishing {
         }
     }
 }
-
-tasks["packageCompose"].dependsOn(":app:aem:ui.frontend:build")

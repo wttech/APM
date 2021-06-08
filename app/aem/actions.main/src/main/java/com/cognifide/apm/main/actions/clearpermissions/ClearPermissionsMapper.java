@@ -26,7 +26,7 @@ import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.apm.api.actions.annotations.Required;
 import com.cognifide.apm.main.actions.ActionGroup;
 
-@Mapper(value = "clear-permissions", group = ActionGroup.CORE)
+@Mapper(value = "CLEAR-PERMISSIONS", group = ActionGroup.CORE)
 public final class ClearPermissionsMapper {
 
   public static final String STRICT_PATH = "STRICT-PATH";

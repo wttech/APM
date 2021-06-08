@@ -26,7 +26,7 @@ import com.cognifide.apm.checks.actions.ActionGroup;
 import java.util.Collections;
 import java.util.List;
 
-@Mapper(value = "check-includes", group = ActionGroup.CHECKS)
+@Mapper(value = "CHECK-INCLUDES", group = ActionGroup.CHECKS)
 public final class CheckIncludesMapper {
 
   public static final String REFERENCE = "Verify that provided group contains all listed authorizables.";

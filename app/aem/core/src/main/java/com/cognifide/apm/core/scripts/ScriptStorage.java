@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,27 +20,21 @@
 package com.cognifide.apm.core.scripts;
 
 import com.cognifide.apm.api.scripts.Script;
-import java.io.InputStream;
+import com.cognifide.apm.core.endpoints.ScriptUploadForm;
 import javax.jcr.RepositoryException;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 
 public interface ScriptStorage {
 
-	/**
-	 * Get scripts path depending on instance type
-	 */
-	String getSavePath();
+  /**
+   * Remove script
+   */
+  void remove(Script script, ResourceResolver resolver) throws RepositoryException;
 
-	/**
-	 * Remove script
-	 */
-	void remove(Script script, ResourceResolver resolver) throws RepositoryException;
-
-	/**
-	 * Save script, for example from upload
-	 */
-	Script save(String fileName, InputStream input, LaunchMetadata launchMetadata, boolean overwrite,
-			ResourceResolver resolver) throws RepositoryException, PersistenceException;
+  /**
+   * Save script, for example from upload
+   */
+  Script save(ScriptUploadForm form, ResourceResolver resolver) throws RepositoryException, PersistenceException;
 
 }

@@ -80,15 +80,16 @@ class ScriptRunner(
         }
 
         override fun visitForEach(ctx: ForEachContext) {
-            val index = ctx.IDENTIFIER().toString()
-            val values: List<ApmValue> = readValues(ctx.argument())
-            for ((iteration, value) in values.withIndex()) {
+            val values: List<Map<String, ApmValue>> = readValues(ctx)
+            for ((index, value) in values.withIndex()) {
                 try {
                     executionContext.createLocalContext()
-                    progress(ctx, Status.SUCCESS, "for-each", "$iteration. Begin: $index= $value")
-                    executionContext.setVariable(index, value)
+                    val valueStr = value.map { it.key + "=" + it.value }
+                            .joinToString()
+                    progress(ctx, Status.SUCCESS, "for-each", "$index. Begin: $valueStr")
+                    value.forEach { (k, v) -> executionContext.setVariable(k, v) }
                     visit(ctx.body())
-                    progress(ctx, Status.SUCCESS, "for-each", "$iteration. End")
+                    progress(ctx, Status.SUCCESS, "for-each", "$index. End")
                 } finally {
                     executionContext.removeLocalContext()
                 }
@@ -176,12 +177,18 @@ class ScriptRunner(
             progress(ctx, Status.SUCCESS, "import", result.toMessages())
         }
 
-        private fun readValues(argumentContext: ArgumentContext): List<ApmValue> {
-            return when (val variableValue = executionContext.resolveArgument(argumentContext)) {
-                is ApmList -> variableValue.list.map { ApmString(it) }
-                is ApmEmpty -> listOf()
-                else -> listOf(variableValue as ApmValue)
+        private fun readValues(ctx: ForEachContext): List<Map<String, ApmValue>> {
+            val keys = ctx.compositeIdentifier()
+                    .children
+                    .filterIsInstance<BasicIdentifierContext>()
+                    .map { it.IDENTIFIER().toString() }
+            val values = when (val variableValue = executionContext.resolveArgument(ctx.argument())) {
+                is ApmNestedList -> variableValue.nestedList.map { list -> list.map { ApmString(it) } }
+                is ApmList -> variableValue.list.map { listOf(ApmString(it)) }
+                is ApmEmpty -> listOf(listOf())
+                else -> listOf(listOf(variableValue as ApmValue))
             }
+            return values.map { keys.zip(it).toMap() }
         }
 
         private fun progress(ctx: ParserRuleContext, status: Status = Status.SUCCESS, command: String, details: String = "", arguments: Arguments? = null) {

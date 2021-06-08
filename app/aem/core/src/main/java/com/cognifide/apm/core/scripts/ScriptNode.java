@@ -23,6 +23,8 @@ public final class ScriptNode {
 
   public static final String APM_SCRIPT = "apm:Script";
 
+  public static final String APM_SAVE_PATH = "apm:savePath";
+
   public static final String APM_LAUNCH_ENABLED = "apm:launchEnabled";
 
   public static final String APM_LAUNCH_MODE = "apm:launchMode";

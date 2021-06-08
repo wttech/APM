@@ -27,7 +27,7 @@ import com.cognifide.apm.main.actions.ActionGroup;
 import java.util.Collections;
 import java.util.List;
 
-@Mapper(value = "add-children", group = ActionGroup.CORE)
+@Mapper(value = "ADD-CHILDREN", group = ActionGroup.CORE)
 public final class AddChildrenMapper {
 
   public static final String REFERENCE = "Add specified users and groups to current group.";

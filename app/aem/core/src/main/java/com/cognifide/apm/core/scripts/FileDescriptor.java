@@ -29,8 +29,12 @@ import org.apache.commons.lang.StringUtils;
 @RequiredArgsConstructor
 class FileDescriptor {
 
+  private static final String SCRIPT_PATH = "/conf/apm/scripts";
+
   private final String path;
+
   private final String name;
+
   private final InputStream inputStream;
 
   public static FileDescriptor createFileDescriptor(String originalFileName, String savePath, InputStream inputStream) {
@@ -40,20 +44,28 @@ class FileDescriptor {
   }
 
   private static String getPathFromOriginalFileName(String savePath, String originalFileName) {
+    String path = savePath;
     if (originalFileName.contains("/")) {
       String subPath = StringUtils.substringBeforeLast(originalFileName, "/");
       if (subPath.startsWith(savePath)) {
         subPath = StringUtils.substringAfter(subPath, savePath);
       }
-      return savePath + (subPath.startsWith("/") ? subPath : "/" + subPath);
+      if (!subPath.isEmpty()) {
+        path = savePath + (subPath.startsWith("/") ? "" : "/") + subPath;
+      }
     }
-    return savePath;
+    if (!path.startsWith(SCRIPT_PATH)) {
+      path = SCRIPT_PATH + (path.startsWith("/") ? "" : "/") + path;
+    }
+    return path;
   }
 
   private static String getFileNameFromOriginalFileName(String originalFileName) {
+    String fileName = originalFileName;
     if (originalFileName.contains("/")) {
-      return StringUtils.substringAfterLast(originalFileName, "/");
+      fileName = StringUtils.substringAfterLast(originalFileName, "/");
     }
-    return originalFileName;
+    return fileName;
   }
+
 }

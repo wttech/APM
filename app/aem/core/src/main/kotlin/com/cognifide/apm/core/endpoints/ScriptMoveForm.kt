@@ -1,4 +1,4 @@
-/*-
+/*
  * ========================LICENSE_START=================================
  * AEM Permission Management
  * %%
@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *       http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,14 +17,17 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.core.endpoints.dto
 
-import com.cognifide.apm.core.grammar.ReferenceGraph
+package com.cognifide.apm.core.endpoints
 
-class TransitionDto(transition: ReferenceGraph.Transition) {
-    val id: String = transition.id
-    val from: NodeDto = NodeDto(transition.from)
-    val to: NodeDto = NodeDto(transition.to)
-    val refType: String = transition.transitionType.name
-    val cycleDetected: Boolean = transition.cycleDetected
-}
+import com.cognifide.apm.core.endpoints.params.RequestParameter
+import org.apache.sling.api.SlingHttpServletRequest
+import org.apache.sling.models.annotations.Model
+import javax.inject.Inject
+
+@Model(adaptables = [SlingHttpServletRequest::class])
+class ScriptMoveForm @Inject constructor(
+        @param:RequestParameter("path") val path: String,
+        @param:RequestParameter("dest") val dest: String,
+        @param:RequestParameter("rename") val rename: String
+)

@@ -30,7 +30,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Mapper(value = "delete-user", group = ActionGroup.CORE)
+@Mapper(value = "DELETE-USER", group = ActionGroup.CORE)
 public final class DeleteUserMapper {
 
   public static final String CLEAR_PERMISSIONS = "CLEAR-PERMISSIONS";
