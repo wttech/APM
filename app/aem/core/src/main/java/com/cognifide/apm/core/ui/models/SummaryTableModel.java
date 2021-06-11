@@ -19,7 +19,6 @@
  */
 package com.cognifide.apm.core.ui.models;
 
-import com.cognifide.apm.core.endpoints.ScriptResultServlet;
 import com.cognifide.apm.core.history.History;
 import com.cognifide.apm.core.history.HistoryEntry;
 import javax.inject.Inject;
@@ -39,7 +38,4 @@ public final class SummaryTableModel {
 		entry = history.findHistoryEntry(request.getResourceResolver(), request.getRequestPathInfo().getSuffix());
 	}
 
-	public String getResultDownloadActionPath() {
-		return ScriptResultServlet.EXECUTION_RESULT_SERVLET_PATH;
-	}
 }
