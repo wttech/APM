@@ -79,9 +79,8 @@ class ApmInstallHook : OsgiAwareInstallHook() {
         scripts.addAll(scriptFinder.findAll(onInstall(currentEnvironment, currentHook), resolver))
         scripts.addAll(modifiedScriptFinder.findAll(onInstallIfModified(currentEnvironment, currentHook), resolver))
         scripts.forEach { script ->
-            context.options.listener.onMessage(ProgressTrackerListener.Mode.TEXT, "", script.path)
             val result: ExecutionResult = scriptManager.process(script, ExecutionMode.AUTOMATIC_RUN, resolver)
-            logStatus(script.path, result)
+            logStatus(context, script.path, result)
         }
     }
 
@@ -101,11 +100,14 @@ class ApmInstallHook : OsgiAwareInstallHook() {
         return if (instanceTypeProvider.isOnAuthor) LaunchEnvironment.AUTHOR else LaunchEnvironment.PUBLISH
     }
 
-    private fun logStatus(scriptPath: String, result: ExecutionResult) {
+    private fun logStatus(context: InstallContext, scriptPath: String, result: ExecutionResult) {
+        context.options.listener.onMessage(ProgressTrackerListener.Mode.TEXT, "", scriptPath)
         if (result.isSuccess) {
             logger.info("Script successfully executed: $scriptPath")
         } else {
-            throw PackageException("Script cannot be executed properly: $scriptPath")
+            val packageException = PackageException("Script cannot be executed properly: $scriptPath")
+            context.options.listener.onError(ProgressTrackerListener.Mode.TEXT, "", packageException)
+            throw packageException
         }
     }
 }
