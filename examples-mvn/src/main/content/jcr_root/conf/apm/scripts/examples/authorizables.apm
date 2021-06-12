@@ -1,0 +1,61 @@
+# This script provides example actions for authorizable manipulation.
+
+# With "DEFINE" action we can set constant value that can be used in whole script
+DEFINE profilePath "profile"
+
+# This action will create group.
+CREATE-GROUP "test_group_1"
+
+CREATE-GROUP "test_group_2"
+
+# We can specify path where group will be created.
+CREATE-GROUP "test_group_3" path= "/home/groups/company/cognifide"
+
+# This action will create user. If user already exists, action and following block of code are skipped.
+CREATE-USER "test_user_1" BEGIN
+  SET-PROPERTY $profilePath + "/firstName" "John"
+  SET-PROPERTY $profilePath + "/familyName" "Doe"
+END
+
+# We can also set password while creating user.
+CREATE-USER "test_user_2" BEGIN
+  SET-PASSWORD "newPassword2"
+END
+
+# We can also set password while creating user.
+CREATE-USER "test_user_3" password= "password3"
+
+# We can specify path where user will be created.
+CREATE-USER "test_user_4" path= "/home/users/company/cognifide"
+
+# For these actions we need context. To set context use "FOR-USER" or "FOR-GROUP" action.
+FOR-USER "test_user_1" BEGIN
+	ADD-PARENTS ["test_group_1", "test_group_2"]
+END
+
+FOR-USER "test_user_2" BEGIN
+	ADD-PARENTS ["test_group_1"]
+END
+
+FOR-USER "test_user_3" BEGIN
+	ADD-PARENTS ["test_group_1", "test_group_2"]
+	REMOVE-PARENTS "test_group_1"
+END
+
+FOR-USER "test_user_2" BEGIN
+	SET-PASSWORD "newPassword2"
+END
+
+# "ADD-CHILDREN" and "REMOVE-CHILDREN" actions work only with group context
+# "REMOVE-CHILDREN" action will remove specified user from context group
+# "ADD-CHILDREN" action will add specified user to context group
+FOR-GROUP "test_group_2" BEGIN
+	REMOVE-CHILDREN "test_user_3"
+	ADD-CHILDREN "test_user_2"
+END
+
+# "DELETE-USER" do not need context to work. We can delete specified users.
+DELETE-USER ["test_user_1", "test_user_2", "test_user_3", "test_user_4"]
+
+# "DELETE-GROUP" do not need context to work. We can delete specified groups.
+DELETE-GROUP ["test_group_1", "test_group_2", "test_group_3"]
