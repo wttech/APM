@@ -26,6 +26,7 @@ import com.cognifide.apm.api.services.ExecutionMode
 import com.cognifide.apm.api.services.ExecutionResult
 import com.cognifide.apm.api.services.ScriptFinder
 import com.cognifide.apm.api.services.ScriptManager
+import com.cognifide.apm.api.status.Status
 import com.cognifide.apm.core.scripts.ScriptFilters.onInstall
 import com.cognifide.apm.core.scripts.ScriptFilters.onInstallIfModified
 import com.cognifide.apm.core.services.ModifiedScriptFinder
@@ -107,6 +108,12 @@ class ApmInstallHook : OsgiAwareInstallHook() {
         } else {
             val packageException = PackageException("Script cannot be executed properly: $scriptPath")
             context.options.listener.onError(ProgressTrackerListener.Mode.TEXT, "", packageException)
+            result.entries
+                    .stream()
+                    .filter { it.status == Status.ERROR }
+                    .map { it.messages }
+                    .flatMap { it.stream() }
+                    .forEach { context.options.listener.onMessage(ProgressTrackerListener.Mode.TEXT, "E", it) }
             throw packageException
         }
     }
