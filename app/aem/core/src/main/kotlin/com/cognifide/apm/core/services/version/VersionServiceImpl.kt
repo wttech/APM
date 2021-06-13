@@ -66,7 +66,7 @@ class VersionServiceImpl : VersionService {
     override fun countChecksum(root: Iterable<Script>): String {
         val checksums = root
                 .asSequence()
-                .filter {it.isValid }
+                .filter { it.isValid }
                 .map { it.data }
                 .map { DigestUtils.md5Hex(it) }
                 .reduce { previous, current -> previous + current }
@@ -80,13 +80,15 @@ class VersionServiceImpl : VersionService {
                 val subtree = referenceFinder.findReferences(script)
                 val checksum = countChecksum(subtree)
                 val scriptVersion = getScriptVersion(resolver, script)
-                if (checksum != scriptVersion.lastChecksum) {
+                if (checksum != script.checksum) {
                     MutableScriptWrapper(script).apply {
                         setChecksum(checksum)
                     }
+                }
+                if (checksum != scriptVersion.lastChecksum) {
                     createVersion(resolver, script)
                 }
-            } catch(e: ScriptExecutionException) {
+            } catch (e: ScriptExecutionException) {
                 logger.error(e.message)
             }
         }

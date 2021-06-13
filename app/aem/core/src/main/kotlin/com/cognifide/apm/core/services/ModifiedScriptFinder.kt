@@ -69,7 +69,7 @@ class ModifiedScriptFinder {
                         val scriptVersion = versionService.getScriptVersion(resolver, script)
                         var scriptHistory = history.findScriptHistory(resolver, script)
                         if (checksum != scriptVersion.lastChecksum
-                                || scriptHistory.lastLocalDryRun == null
+                                || scriptHistory.lastLocalRun == null
                                 || checksum != scriptHistory.lastLocalRun.checksum) {
                             modified.add(script)
                         }
