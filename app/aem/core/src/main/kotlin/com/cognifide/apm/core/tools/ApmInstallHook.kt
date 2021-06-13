@@ -83,6 +83,7 @@ class ApmInstallHook : OsgiAwareInstallHook() {
             val result: ExecutionResult = scriptManager.process(script, ExecutionMode.AUTOMATIC_RUN, resolver)
             logStatus(context, script.path, result)
         }
+        context.options.listener.onMessage(ProgressTrackerListener.Mode.TEXT, "APM scripts installed.", "")
     }
 
     private fun getCurrentHook(context: InstallContext): String {
@@ -114,6 +115,7 @@ class ApmInstallHook : OsgiAwareInstallHook() {
                     .map { it.messages }
                     .flatMap { it.stream() }
                     .forEach { context.options.listener.onMessage(ProgressTrackerListener.Mode.TEXT, "E", it) }
+            context.options.listener.onMessage(ProgressTrackerListener.Mode.TEXT, "APM scripts installed (with errors, check logs!)", "")
             throw packageException
         }
     }
