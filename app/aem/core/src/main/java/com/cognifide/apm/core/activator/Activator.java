@@ -25,8 +25,12 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.SynchronousBundleListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Activator implements BundleActivator, SynchronousBundleListener {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(Activator.class);
 
   @Override
   public void start(BundleContext context) throws Exception {
@@ -35,16 +39,19 @@ public class Activator implements BundleActivator, SynchronousBundleListener {
 
   @Override
   public void stop(BundleContext context) throws Exception {
-
   }
 
   @Override
   public void bundleChanged(BundleEvent event) {
-    if (event.getType() == BundleEvent.STARTED) {
-      BundleContext context = event.getBundle().getBundleContext();
-      ServiceReference<StartupScriptLauncher> reference = context.getServiceReference(StartupScriptLauncher.class);
-      StartupScriptLauncher startupScriptLauncher = context.getService(reference);
-      startupScriptLauncher.process();
+    try {
+      if (event.getType() == BundleEvent.STARTED) {
+        BundleContext context = event.getBundle().getBundleContext();
+        ServiceReference<StartupScriptLauncher> reference = context.getServiceReference(StartupScriptLauncher.class);
+        StartupScriptLauncher startupScriptLauncher = context.getService(reference);
+        startupScriptLauncher.process();
+      }
+    } catch (Exception e) {
+      LOGGER.error(e.getMessage(), e);
     }
   }
 
