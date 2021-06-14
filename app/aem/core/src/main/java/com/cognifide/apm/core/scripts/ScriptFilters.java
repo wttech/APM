@@ -19,8 +19,6 @@
  */
 package com.cognifide.apm.core.scripts;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
-
 import com.cognifide.apm.api.scripts.LaunchEnvironment;
 import com.cognifide.apm.api.scripts.LaunchMode;
 import com.cognifide.apm.api.scripts.Script;
@@ -67,13 +65,8 @@ public class ScriptFilters {
         .and(withLaunchEnvironment(environment));
   }
 
-  public static Predicate<Script> noChecksum() {
-    return enabled()
-        .and(script -> StringUtils.isBlank(script.getChecksum()));
-  }
-
   private static Predicate<Script> withLaunchHook(String currentHook) {
-    return script -> isBlank(script.getLaunchHook()) || StringUtils.equals(currentHook, script.getLaunchHook());
+    return script -> StringUtils.equals(currentHook, script.getLaunchHook());
   }
 
   private static Predicate<Script> withLaunchEnvironment(LaunchEnvironment environment) {
