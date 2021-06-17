@@ -22,7 +22,6 @@ package com.cognifide.apm.core.scripts;
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.apm.core.Property;
-import com.cognifide.apm.core.utils.ResourceMixinUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -79,7 +78,7 @@ public class ScriptFinderImpl implements ScriptFinder {
     AbstractResourceVisitor visitor = new AbstractResourceVisitor() {
       @Override
       protected void visit(Resource resource) {
-        if (ResourceMixinUtil.containsMixin(resource, ScriptNode.APM_SCRIPT)) {
+        if (ScriptModel.isScript(resource)) {
           resources.add(resource);
         }
       }
