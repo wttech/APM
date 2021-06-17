@@ -25,8 +25,6 @@ import com.cognifide.apm.core.Property;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.resource.AbstractResourceVisitor;
 import org.apache.sling.api.resource.Resource;
@@ -47,13 +45,26 @@ public class ScriptFinderImpl implements ScriptFinder {
 
   @Override
   public List<Script> findAll(Predicate<Script> filter, ResourceResolver resolver) {
-    return findScripts(resolver).filter(filter)
-        .collect(Collectors.toList());
+    List<Script> scripts = new ArrayList<>();
+    AbstractResourceVisitor visitor = new AbstractResourceVisitor() {
+      @Override
+      protected void visit(Resource resource) {
+        if (ScriptModel.isScript(resource)) {
+          Script script = resource.adaptTo(ScriptModel.class);
+          if (filter.test(script)) {
+            scripts.add(script);
+          }
+        }
+      }
+    };
+    Resource rootResource = resolver.getResource(SCRIPT_PATH);
+    visitor.accept(rootResource);
+    return scripts;
   }
 
   @Override
   public List<Script> findAll(ResourceResolver resolver) {
-    return findScripts(resolver).collect(Collectors.toList());
+    return findAll(filter -> true, resolver);
   }
 
   @Override
@@ -71,22 +82,6 @@ public class ScriptFinderImpl implements ScriptFinder {
       }
     }
     return result;
-  }
-
-  private Stream<Script> findScripts(ResourceResolver resolver) {
-    List<Resource> resources = new ArrayList<>();
-    AbstractResourceVisitor visitor = new AbstractResourceVisitor() {
-      @Override
-      protected void visit(Resource resource) {
-        if (ScriptModel.isScript(resource)) {
-          resources.add(resource);
-        }
-      }
-    };
-    Resource rootResource = resolver.getResource(SCRIPT_PATH);
-    visitor.accept(rootResource);
-    return resources.stream()
-        .map(resource -> resource.adaptTo(ScriptModel.class));
   }
 
   private boolean isAbsolute(String path) {
