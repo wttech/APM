@@ -39,9 +39,9 @@ import com.day.cq.commons.jcr.JcrConstants;
 import com.day.cq.replication.ReplicationAction;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -136,7 +136,7 @@ public class HistoryImpl implements History {
 
   @Override
   public List<Resource> findAllResources(ResourceResolver resourceResolver) {
-    List<Resource> resources = new ArrayList<>();
+    List<Resource> resources = new LinkedList<>();
     AbstractResourceVisitor visitor = new AbstractResourceVisitor() {
       @Override
       protected void visit(Resource resource) {
