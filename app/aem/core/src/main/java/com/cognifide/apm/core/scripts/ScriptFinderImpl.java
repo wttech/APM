@@ -22,7 +22,7 @@ package com.cognifide.apm.core.scripts;
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.apm.core.Property;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
 import org.apache.commons.lang.StringUtils;
@@ -45,7 +45,7 @@ public class ScriptFinderImpl implements ScriptFinder {
 
   @Override
   public List<Script> findAll(Predicate<Script> filter, ResourceResolver resolver) {
-    List<Script> scripts = new ArrayList<>();
+    List<Script> scripts = new LinkedList<>();
     AbstractResourceVisitor visitor = new AbstractResourceVisitor() {
       @Override
       protected void visit(Resource resource) {
