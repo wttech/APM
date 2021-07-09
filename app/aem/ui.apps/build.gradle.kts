@@ -31,12 +31,6 @@ aem {
     }
 }
 
-tasks {
-    getByName("packageDeploy") {
-        mustRunAfter(":env:instanceProvision")
-    }
-}
-
 publishing {
     publications {
         register<MavenPublication>("apmCrx") {
