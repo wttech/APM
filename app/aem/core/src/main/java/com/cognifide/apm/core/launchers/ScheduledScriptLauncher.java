@@ -32,8 +32,7 @@ import com.cognifide.apm.core.utils.InstanceTypeProvider;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
 import java.util.Date;
 import java.util.List;
-import org.apache.sling.api.resource.PersistenceException;
-import org.apache.sling.api.resource.ResourceResolver;
+import java.util.stream.Collectors;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -73,11 +72,14 @@ public class ScheduledScriptLauncher extends AbstractLauncher implements Runnabl
 
   @Override
   public void run() {
-    SlingHelper.operateTraced(resolverFactory, this::runScheduled);
-  }
-
-  private void runScheduled(ResourceResolver resolver) throws PersistenceException {
-    processScripts(scripts, resolver, LauncherType.SCHEDULED);
+    SlingHelper.operateTraced(resolverFactory, resolver -> {
+      Date date = new Date();
+      List<Script> scheduledScripts = scripts.stream()
+          .filter(script -> script.getLaunchSchedule().before(date))
+          .collect(Collectors.toList());
+      scripts.removeAll(scheduledScripts);
+      processScripts(scheduledScripts, resolver, LauncherType.SCHEDULED);
+    });
   }
 
   @Override

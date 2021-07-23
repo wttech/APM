@@ -49,8 +49,7 @@ public class ScriptFilters {
   public static Predicate<Script> onSchedule(LaunchEnvironment environment, Date date) {
     return enabled()
         .and(withLaunchMode(LaunchMode.ON_SCHEDULE))
-        .and(withLaunchEnvironment(environment))
-        .and(script -> script.getLastExecuted() == null && script.getLaunchSchedule().before(date));
+        .and(withLaunchEnvironment(environment));
   }
 
   public static Predicate<Script> onStartup(LaunchEnvironment environment) {
