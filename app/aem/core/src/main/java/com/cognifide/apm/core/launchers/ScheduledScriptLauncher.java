@@ -74,7 +74,7 @@ public class ScheduledScriptLauncher extends AbstractLauncher implements Runnabl
   }
 
   @Override
-  public synchronized void run() {
+  public void run() {
     if (enabled) {
       SlingHelper.operateTraced(resolverFactory, this::runScheduled);
     }

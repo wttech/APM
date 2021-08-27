@@ -26,7 +26,7 @@ import com.cognifide.apm.checks.actions.ActionGroup;
 import java.util.Collections;
 import java.util.List;
 
-@Mapper(value = "check-excludes", group = ActionGroup.CHECKS)
+@Mapper(value = "CHECK-EXCLUDES", group = ActionGroup.CHECKS)
 public final class CheckExcludesMapper {
 
   public static final String REFERENCE = "Verify that provided group DOES NOT contain any of listed authorizables.";

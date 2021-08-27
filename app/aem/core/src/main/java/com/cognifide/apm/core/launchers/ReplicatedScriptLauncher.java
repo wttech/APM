@@ -59,7 +59,7 @@ public class ReplicatedScriptLauncher extends AbstractLauncher implements JobCon
   private ResourceResolverFactory resolverFactory;
 
   @Override
-  public synchronized JobResult process(Job job) {
+  public JobResult process(Job job) {
     JobResult result = JobResult.FAILED;
     final String searchPath = job.getProperty(SlingConstants.PROPERTY_PATH).toString();
     final Script script = getScript(searchPath);

@@ -24,7 +24,7 @@ import com.cognifide.apm.api.actions.annotations.Mapper;
 import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.apm.checks.actions.ActionGroup;
 
-@Mapper(value = "check-password", group = ActionGroup.CHECKS)
+@Mapper(value = "CHECK-PASSWORD", group = ActionGroup.CHECKS)
 public final class CheckPasswordMapper {
 
   public static final String REFERENCE = "Verify that specific password is set for given authorizable.";

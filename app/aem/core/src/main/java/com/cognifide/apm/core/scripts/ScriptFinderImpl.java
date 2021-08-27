@@ -22,16 +22,11 @@ package com.cognifide.apm.core.scripts;
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.apm.core.Property;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Spliterator;
-import java.util.Spliterators;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-import javax.jcr.query.Query;
 import org.apache.commons.lang.StringUtils;
+import org.apache.sling.api.resource.AbstractResourceVisitor;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;
@@ -48,22 +43,28 @@ public class ScriptFinderImpl implements ScriptFinder {
 
   private static final String SCRIPT_PATH = "/conf/apm/scripts";
 
-  private static final String QUERY = "SELECT * FROM [nt:file] "
-      + "WHERE ISDESCENDANTNODE([%s]) AND [jcr:mixinTypes] = 'apm:Script'";
-
   @Override
   public List<Script> findAll(Predicate<Script> filter, ResourceResolver resolver) {
-    final List<Script> scripts = findAll(resolver).stream()
-        .filter(filter)
-        .collect(Collectors.toList());
+    List<Script> scripts = new LinkedList<>();
+    AbstractResourceVisitor visitor = new AbstractResourceVisitor() {
+      @Override
+      protected void visit(Resource resource) {
+        if (ScriptModel.isScript(resource)) {
+          Script script = resource.adaptTo(ScriptModel.class);
+          if (filter.test(script)) {
+            scripts.add(script);
+          }
+        }
+      }
+    };
+    Resource rootResource = resolver.getResource(SCRIPT_PATH);
+    visitor.accept(rootResource);
     return scripts;
   }
 
   @Override
   public List<Script> findAll(ResourceResolver resolver) {
-    return findScripts(resolver)
-        .map(resource -> resource.adaptTo(ScriptModel.class))
-        .collect(Collectors.toList());
+    return findAll(filter -> true, resolver);
   }
 
   @Override
@@ -81,14 +82,6 @@ public class ScriptFinderImpl implements ScriptFinder {
       }
     }
     return result;
-  }
-
-  private Stream<Resource> findScripts(ResourceResolver resolver) {
-    final String query = String.format(QUERY, SCRIPT_PATH);
-    return Stream.of(resolver.findResources(query, Query.JCR_SQL2))
-        .map(resourceIterator -> Spliterators.spliteratorUnknownSize(resourceIterator, Spliterator.ORDERED))
-        .flatMap(resourceSpliterator -> StreamSupport.stream(resourceSpliterator, false))
-        .filter(Objects::nonNull);
   }
 
   private boolean isAbsolute(String path) {

@@ -159,7 +159,7 @@ public class ScriptManagerImpl implements ScriptManager {
   }
 
   @Override
-  public synchronized Progress process(final Script script, final ExecutionMode mode, ResourceResolver resolver)
+  public Progress process(final Script script, final ExecutionMode mode, ResourceResolver resolver)
       throws RepositoryException, PersistenceException {
     return process(script, mode, Maps.newHashMap(), resolver);
   }
@@ -170,7 +170,6 @@ public class ScriptManagerImpl implements ScriptManager {
     Progress progress;
     try {
       progress = execute(script, mode, customDefinitions, resolver);
-
     } catch (ExecutionException e) {
       progress = new ProgressImpl(resolver.getUserID());
       progress.addEntry(Status.ERROR, e.getMessage());

@@ -25,8 +25,8 @@ import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.apm.core.Apm;
 import com.cognifide.apm.core.Property;
+import com.cognifide.apm.core.endpoints.ScriptUploadForm;
 import com.day.cq.commons.jcr.JcrConstants;
-import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -63,11 +63,9 @@ public class ScriptStorageImpl implements ScriptStorage {
 
   private static final Logger LOG = LoggerFactory.getLogger(ScriptStorageImpl.class);
 
-  private static final Pattern FILE_NAME_PATTERN = Pattern.compile("[\\da-zA-Z\\-]+\\.apm");
+  private static final Pattern FILE_NAME_PATTERN = Pattern.compile("[0-9a-zA-Z_\\-]+\\.apm");
 
-  private static final Pattern PATH_PATTERN = Pattern.compile("/[\\da-zA-Z\\-/]+");
-
-  private static final String SCRIPT_PATH = "/conf/apm/scripts";
+  private static final Pattern PATH_PATTERN = Pattern.compile("/[0-9a-zA-Z_\\-/]+");
 
   private static final Charset SCRIPT_ENCODING = StandardCharsets.UTF_8;
 
@@ -85,19 +83,10 @@ public class ScriptStorageImpl implements ScriptStorage {
   }
 
   @Override
-  public Script save(String fileName, InputStream input, LaunchMetadata launchMetadata, boolean overwrite,
-                     ResourceResolver resolver) throws RepositoryException, PersistenceException {
-
-    FileDescriptor fileDescriptor = FileDescriptor.createFileDescriptor(fileName, getSavePath(), input);
-
+  public Script save(ScriptUploadForm form, ResourceResolver resolver) throws RepositoryException, PersistenceException {
+    FileDescriptor fileDescriptor = FileDescriptor.createFileDescriptor(form.getFileName(), form.getSavePath(), form.getFile());
     validate(Collections.singletonList(fileDescriptor));
-
-    return saveScript(fileDescriptor, launchMetadata, overwrite, resolver);
-  }
-
-  @Override
-  public String getSavePath() {
-    return SCRIPT_PATH;
+    return saveScript(fileDescriptor, form.toLaunchMetadata(), form.getOverwrite(), resolver);
   }
 
   private Script saveScript(FileDescriptor descriptor, LaunchMetadata launchMetadata, boolean overwrite,
@@ -124,7 +113,6 @@ public class ScriptStorageImpl implements ScriptStorage {
       fileNode.setProperty(ScriptNode.APM_LAUNCH_ENABLED, launchMetadata.isExecutionEnabled());
       setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_MODE, launchMetadata.getLaunchMode());
       setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_ENVIRONMENT, launchMetadata.getLaunchEnvironment());
-      setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_RUN_MODES, launchMetadata.getLaunchRunModes());
       setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_HOOK, launchMetadata.getExecutionHook());
       setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_SCHEDULE, launchMetadata.getExecutionSchedule());
       removeProperty(fileNode, ScriptNode.APM_LAST_EXECUTED);
@@ -147,8 +135,6 @@ public class ScriptStorageImpl implements ScriptStorage {
       calendar.set(localDateTime.getYear(), localDateTime.getMonthValue() - 1, localDateTime.getDayOfMonth(),
           localDateTime.getHour(), localDateTime.getMinute(), localDateTime.getSecond());
       node.setProperty(name, calendar);
-    } else if (value instanceof String[]) {
-      node.setProperty(name, (String[]) value);
     } else {
       node.setProperty(name, value.toString());
     }
@@ -162,9 +148,9 @@ public class ScriptStorageImpl implements ScriptStorage {
 
   private String generateFileName(String fileName, Node saveNode) throws RepositoryException {
     String baseName = FilenameUtils.getBaseName(fileName);
-    int num = 1;
+    int num = 0;
     do {
-      fileName = baseName + ((num > 1) ? ("-" + num) : "") + Apm.FILE_EXT;
+      fileName = baseName + (num > 0 ? num : "") + Apm.FILE_EXT;
       num++;
     } while (saveNode.hasNode(fileName));
 
@@ -193,4 +179,5 @@ public class ScriptStorageImpl implements ScriptStorage {
       errors.add(format("Invalid %s: \"%s\"", property, value));
     }
   }
+
 }

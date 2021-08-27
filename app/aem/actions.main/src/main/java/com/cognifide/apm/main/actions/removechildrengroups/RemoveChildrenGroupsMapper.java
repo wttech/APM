@@ -24,7 +24,7 @@ import com.cognifide.apm.api.actions.annotations.Mapper;
 import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.apm.main.actions.ActionGroup;
 
-@Mapper(value = "remove-children-groups", group = ActionGroup.CORE)
+@Mapper(value = "REMOVE-CHILDREN-GROUPS", group = ActionGroup.CORE)
 public final class RemoveChildrenGroupsMapper {
 
   @Mapping(

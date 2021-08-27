@@ -32,29 +32,29 @@ import com.cognifide.apm.core.history.InstanceDetails.InstanceType;
 import com.cognifide.apm.core.logger.Progress;
 import com.cognifide.apm.core.progress.ProgressHelper;
 import com.cognifide.apm.core.services.version.VersionService;
+import com.cognifide.apm.core.utils.InstanceTypeProvider;
 import com.cognifide.apm.core.utils.sling.ResolveCallback;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
 import com.day.cq.commons.jcr.JcrConstants;
 import com.day.cq.replication.ReplicationAction;
-import com.google.common.collect.Lists;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.query.Query;
 import org.apache.commons.lang.StringUtils;
+import org.apache.sling.api.resource.AbstractResourceVisitor;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.apache.sling.settings.SlingSettingsService;
+import org.apache.sling.api.resource.ValueMap;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -83,10 +83,6 @@ public class HistoryImpl implements History {
 
   private static final String SLING_ORDERED_FOLDER = "sling:OrderedFolder";
 
-  private static final String HISTORY_ENTRIES_QUERY = String.format("SELECT * FROM [nt:unstructured] "
-      + " WHERE ISDESCENDANTNODE([%s]) AND apmHistory = '%s' "
-      + " ORDER BY executionTime DESC ", HISTORY_FOLDER, APM_HISTORY_ENTRY);
-
   @Reference
   private RemoteScriptExecutionNotifier remoteScriptExecutionNotifier;
 
@@ -94,14 +90,14 @@ public class HistoryImpl implements History {
   private ResourceResolverFactory resolverFactory;
 
   @Reference
-  private SlingSettingsService slingSettings;
+  private InstanceTypeProvider instanceTypeProvider;
 
   @Reference
   private VersionService versionService;
 
   @Override
   public HistoryEntry logLocal(Script script, ExecutionMode mode, Progress progressLogger) {
-    InstanceType instanceDetails = slingSettings.getRunModes().contains("author") ? InstanceType.AUTHOR : InstanceType.PUBLISH;
+    InstanceType instanceDetails = instanceTypeProvider.isOnAuthor() ? InstanceType.AUTHOR : InstanceType.PUBLISH;
     return resolveDefault(resolverFactory, progressLogger.getExecutor(), (ResolveCallback<HistoryEntry>) resolver -> {
       final HistoryEntryWriter historyEntryWriter = createBuilder(resolver, script, mode, progressLogger)
           .executionTime(Calendar.getInstance())
@@ -140,8 +136,27 @@ public class HistoryImpl implements History {
 
   @Override
   public List<Resource> findAllResources(ResourceResolver resourceResolver) {
-    Iterator<Resource> resources = resourceResolver.findResources(HISTORY_ENTRIES_QUERY, Query.JCR_SQL2);
-    return Lists.newArrayList(resources);
+    List<Resource> resources = new LinkedList<>();
+    AbstractResourceVisitor visitor = new AbstractResourceVisitor() {
+      @Override
+      protected void visit(Resource resource) {
+        ValueMap valueMap = resource.getValueMap();
+        if (valueMap.containsKey("executionTime") && "entry".equals(valueMap.get("apmHistory", String.class))) {
+          resources.add(resource);
+        }
+      }
+    };
+    Resource rootResource = resourceResolver.getResource(HistoryImpl.HISTORY_FOLDER);
+    visitor.accept(rootResource);
+    return resources.stream()
+        .sorted(this::compareExecutionTime)
+        .collect(Collectors.toList());
+  }
+
+  private int compareExecutionTime(Resource resource1, Resource resource2) {
+    Calendar executionTime1 = resource1.getValueMap().get(HistoryEntryImpl.EXECUTION_TIME, Calendar.class);
+    Calendar executionTime2 = resource2.getValueMap().get(HistoryEntryImpl.EXECUTION_TIME, Calendar.class);
+    return executionTime2.compareTo(executionTime1);
   }
 
   @Override
