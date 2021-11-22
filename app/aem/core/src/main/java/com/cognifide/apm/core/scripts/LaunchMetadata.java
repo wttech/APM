@@ -23,6 +23,10 @@ package com.cognifide.apm.core.scripts;
 import com.cognifide.apm.api.scripts.LaunchEnvironment;
 import com.cognifide.apm.api.scripts.LaunchMode;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.stream.Stream;
+import org.apache.commons.lang.StringUtils;
 
 public class LaunchMetadata {
 
@@ -56,7 +60,12 @@ public class LaunchMetadata {
   }
 
   public String[] getLaunchRunModes() {
-    return launchRunModes;
+    return Optional.ofNullable(launchRunModes)
+        .map(Arrays::stream)
+        .orElse(Stream.empty())
+        .filter(StringUtils::isNotBlank)
+        .distinct()
+        .toArray(String[]::new);
   }
 
   public String getExecutionHook() {
