@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jcr:root xmlns:apm="http://www.cognifide.com/apm/1.1" xmlns:jcr="http://www.jcp.org/jcr/1.0"
   xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
-  apm:launchMode="on_install_if_modified"
+  apm:launchMode="ON_INSTALL_IF_MODIFIED"
   apm:launchHook="apm"
-  apm:launchEnvironment="author"
+  apm:launchEnvironment="AUTHOR"
   apm:verified="true"
   jcr:mixinTypes="[apm:Script]"
   jcr:primaryType="nt:file">
