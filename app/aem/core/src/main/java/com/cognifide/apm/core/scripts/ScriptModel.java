@@ -49,7 +49,7 @@ public class ScriptModel implements MutableScript {
 
   private static Logger LOGGER = LoggerFactory.getLogger(ScriptModel.class);
 
-  private String path;
+  private final String path;
 
   @Self
   private Resource resource;
@@ -121,11 +121,8 @@ public class ScriptModel implements MutableScript {
 
   private String data;
 
-  @PostConstruct
-  private void postConstruct() {
-    path = resource.getPath();
-    Resource child = resource.getChild(JcrConstants.JCR_CONTENT);
-    data = child != null ? child.getValueMap().get(JcrConstants.JCR_DATA, String.class) : "";
+  public ScriptModel(Resource resource) {
+    this.path = resource.getPath();
   }
 
   @Override
@@ -135,7 +132,7 @@ public class ScriptModel implements MutableScript {
 
   @Override
   public LaunchMode getLaunchMode() {
-    return launchMode == null ? LaunchMode.ON_DEMAND : LaunchMode.from(launchMode)
+    return (launchMode == null) ? LaunchMode.ON_DEMAND : LaunchMode.from(launchMode)
         .orElseGet(() -> {
           LOGGER.warn("Cannot match {} to existing launch modes. Using default one", launchMode);
           return LaunchMode.ON_DEMAND;
@@ -149,7 +146,7 @@ public class ScriptModel implements MutableScript {
 
   @Override
   public LaunchEnvironment getLaunchEnvironment() {
-    return launchEnvironment == null ? LaunchEnvironment.ALL : LaunchEnvironment.from(launchEnvironment)
+    return (launchEnvironment == null) ? LaunchEnvironment.ALL : LaunchEnvironment.from(launchEnvironment)
         .orElseGet(() -> {
           LOGGER.warn("Cannot match {} to existing launch environments. Using default one", launchEnvironment);
           return LaunchEnvironment.ALL;
@@ -203,6 +200,14 @@ public class ScriptModel implements MutableScript {
 
   @Override
   public String getData() {
+    if (data == null) {
+      Resource child = resource.getChild(JcrConstants.JCR_CONTENT);
+      if (child != null) {
+        data = child.getValueMap().get(JcrConstants.JCR_DATA, String.class);
+      } else {
+        data = "";
+      }
+    }
     return data;
   }
 

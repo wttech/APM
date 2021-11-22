@@ -34,41 +34,41 @@ import org.apache.sling.settings.SlingSettingsService;
  */
 public class ScriptFilters {
 
-  public static Predicate<Script> onInstall(SlingSettingsService slingSettings, String currentHook) {
+  public static Predicate<Script> onInstall(LaunchEnvironment environment, SlingSettingsService slingSettings, String currentHook) {
     return enabled()
         .and(withLaunchMode(LaunchMode.ON_INSTALL))
-        .and(withLaunchEnvironment(LaunchEnvironment.of(slingSettings)))
+        .and(withLaunchEnvironment(environment))
         .and(withLaunchRunModes(slingSettings.getRunModes()))
         .and(withLaunchHook(currentHook));
   }
 
-  public static Predicate<Script> onInstallIfModified(SlingSettingsService slingSettings, String currentHook) {
+  public static Predicate<Script> onInstallIfModified(LaunchEnvironment environment, SlingSettingsService slingSettings, String currentHook) {
     return enabled()
         .and(withLaunchMode(LaunchMode.ON_INSTALL_IF_MODIFIED))
-        .and(withLaunchEnvironment(LaunchEnvironment.of(slingSettings)))
+        .and(withLaunchEnvironment(environment))
         .and(withLaunchRunModes(slingSettings.getRunModes()))
         .and(withLaunchHook(currentHook));
   }
 
-  public static Predicate<Script> onSchedule(SlingSettingsService slingSettings, Date date) {
+  public static Predicate<Script> onSchedule(LaunchEnvironment environment, SlingSettingsService slingSettings, Date date) {
     return enabled()
         .and(withLaunchMode(LaunchMode.ON_SCHEDULE))
-        .and(withLaunchEnvironment(LaunchEnvironment.of(slingSettings)))
+        .and(withLaunchEnvironment(environment))
         .and(withLaunchRunModes(slingSettings.getRunModes()))
         .and(script -> script.getLastExecuted() == null && script.getLaunchSchedule().before(date));
   }
 
-  public static Predicate<Script> onStartup(SlingSettingsService slingSettings) {
+  public static Predicate<Script> onStartup(LaunchEnvironment environment, SlingSettingsService slingSettings) {
     return enabled()
         .and(withLaunchMode(LaunchMode.ON_STARTUP))
-        .and(withLaunchEnvironment(LaunchEnvironment.of(slingSettings)))
+        .and(withLaunchEnvironment(environment))
         .and(withLaunchRunModes(slingSettings.getRunModes()));
   }
 
-  public static Predicate<Script> onStartupIfModified(SlingSettingsService slingSettings) {
+  public static Predicate<Script> onStartupIfModified(LaunchEnvironment environment, SlingSettingsService slingSettings) {
     return enabled()
         .and(withLaunchMode(LaunchMode.ON_STARTUP_IF_MODIFIED))
-        .and(withLaunchEnvironment(LaunchEnvironment.of(slingSettings)))
+        .and(withLaunchEnvironment(environment))
         .and(withLaunchRunModes(slingSettings.getRunModes()));
   }
 
@@ -91,6 +91,6 @@ public class ScriptFilters {
   }
 
   private static Predicate<Script> enabled() {
-    return Script::isLaunchEnabled;
+    return script -> script.isLaunchEnabled();
   }
 }

@@ -19,9 +19,12 @@
  */
 package com.cognifide.apm.core.launchers;
 
+import static com.cognifide.apm.api.scripts.LaunchEnvironment.AUTHOR;
+import static com.cognifide.apm.api.scripts.LaunchEnvironment.PUBLISH;
 import static com.cognifide.apm.core.scripts.ScriptFilters.onStartup;
 import static com.cognifide.apm.core.scripts.ScriptFilters.onStartupIfModified;
 
+import com.cognifide.apm.api.scripts.LaunchEnvironment;
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ExecutionMode;
 import com.cognifide.apm.api.services.ExecutionResult;
@@ -30,6 +33,7 @@ import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.services.ModifiedScriptFinder;
 import com.cognifide.apm.core.services.version.VersionService;
+import com.cognifide.apm.core.utils.InstanceTypeProvider;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +65,9 @@ public class StartupScriptLauncher extends AbstractLauncher {
   private ModifiedScriptFinder modifiedScriptFinder;
 
   @Reference
+  private InstanceTypeProvider instanceTypeProvider;
+
+  @Reference
   private SlingSettingsService slingSettings;
 
   @Reference
@@ -74,13 +81,15 @@ public class StartupScriptLauncher extends AbstractLauncher {
   }
 
   private void process(ResourceResolver resolver) {
-    executeScripts(resolver);
+    LaunchEnvironment environment = instanceTypeProvider.isOnAuthor() ? AUTHOR : PUBLISH;
+
+    executeScripts(environment, resolver);
   }
 
-  private void executeScripts(ResourceResolver resolver) {
+  private void executeScripts(LaunchEnvironment currentEnvironment, ResourceResolver resolver) {
     List<Script> scripts = new ArrayList<>();
-    scripts.addAll(scriptFinder.findAll(onStartup(slingSettings), resolver));
-    scripts.addAll(modifiedScriptFinder.findAll(onStartupIfModified(slingSettings), resolver));
+    scripts.addAll(scriptFinder.findAll(onStartup(currentEnvironment, slingSettings), resolver));
+    scripts.addAll(modifiedScriptFinder.findAll(onStartupIfModified(currentEnvironment, slingSettings), resolver));
 
     scripts.forEach(script -> {
       try {

@@ -46,6 +46,7 @@ import com.cognifide.apm.core.services.event.ApmEvent.ScriptExecutedEvent;
 import com.cognifide.apm.core.services.event.ApmEvent.ScriptLaunchedEvent;
 import com.cognifide.apm.core.services.event.EventManager;
 import com.cognifide.apm.core.services.version.VersionService;
+import com.cognifide.apm.core.utils.InstanceTypeProvider;
 import com.google.common.collect.Maps;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -57,7 +58,6 @@ import javax.jcr.Session;
 import org.apache.jackrabbit.api.JackrabbitSession;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.settings.SlingSettingsService;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -87,7 +87,7 @@ public class ScriptManagerImpl implements ScriptManager {
   private ScriptFinder scriptFinder;
 
   @Reference
-  private SlingSettingsService slingSettings;
+  private InstanceTypeProvider instanceTypeProvider;
 
   @Reference
   private VersionService versionService;
@@ -184,7 +184,7 @@ public class ScriptManagerImpl implements ScriptManager {
   }
 
   private void saveHistory(Script script, ExecutionMode mode, Progress progress) {
-    if (slingSettings.getRunModes().contains("author")) {
+    if (instanceTypeProvider.isOnAuthor()) {
       if (mode != ExecutionMode.VALIDATION) {
         history.logLocal(script, mode, progress);
       }

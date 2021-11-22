@@ -20,6 +20,7 @@
 
 package com.cognifide.apm.core.tools
 
+import com.cognifide.apm.api.scripts.LaunchEnvironment
 import com.cognifide.apm.api.scripts.Script
 import com.cognifide.apm.api.services.ExecutionMode
 import com.cognifide.apm.api.services.ExecutionResult
@@ -31,6 +32,7 @@ import com.cognifide.apm.core.scripts.ScriptFilters.onInstallIfModified
 import com.cognifide.apm.core.services.ModifiedScriptFinder
 import com.cognifide.apm.core.services.event.ApmEvent
 import com.cognifide.apm.core.services.event.EventManager
+import com.cognifide.apm.core.utils.InstanceTypeProvider
 import com.cognifide.apm.core.utils.sling.SlingHelper
 import org.apache.jackrabbit.vault.fs.api.ProgressTrackerListener
 import org.apache.jackrabbit.vault.packaging.InstallContext
@@ -48,19 +50,19 @@ class ApmInstallHook : OsgiAwareInstallHook() {
 
     override fun execute(context: InstallContext) {
         if (context.phase == InstallContext.Phase.INSTALLED) {
-            val slingSettings = getService(SlingSettingsService::class.java)
+            val currentEnvironment = getCurrentEnvironment()
             val currentHook = getCurrentHook(context)
 
-            handleScripts(context, slingSettings, currentHook)
+            handleScripts(context, currentEnvironment, currentHook)
         }
     }
 
-    private fun handleScripts(context: InstallContext, slingSettings: SlingSettingsService, currentHook: String) {
+    private fun handleScripts(context: InstallContext, currentEnvironment: LaunchEnvironment, currentHook: String) {
         val resolverFactory = getService(ResourceResolverFactory::class.java)
 
         try {
             SlingHelper.operateTraced(resolverFactory) { resolver ->
-                executeScripts(context, slingSettings, currentHook, resolver)
+                executeScripts(context, currentEnvironment, currentHook, resolver)
             }
             val eventManager = getService(EventManager::class.java)
             eventManager.trigger(ApmEvent.InstallHookExecuted(currentHook))
@@ -69,15 +71,16 @@ class ApmInstallHook : OsgiAwareInstallHook() {
         }
     }
 
-    private fun executeScripts(context: InstallContext, slingSettings: SlingSettingsService, currentHook: String, resolver: ResourceResolver) {
+    private fun executeScripts(context: InstallContext, currentEnvironment: LaunchEnvironment, currentHook: String, resolver: ResourceResolver) {
         context.options.listener.onMessage(ProgressTrackerListener.Mode.TEXT, "Installing APM scripts...", "")
         val scriptManager = getService(ScriptManager::class.java)
         val scriptFinder = getService(ScriptFinder::class.java)
         val modifiedScriptFinder = getService(ModifiedScriptFinder::class.java)
+        val slingSettings = getService(SlingSettingsService::class.java)
 
         val scripts = mutableListOf<Script>()
-        scripts.addAll(scriptFinder.findAll(onInstall(slingSettings, currentHook), resolver))
-        scripts.addAll(modifiedScriptFinder.findAll(onInstallIfModified(slingSettings, currentHook), resolver))
+        scripts.addAll(scriptFinder.findAll(onInstall(currentEnvironment, slingSettings, currentHook), resolver))
+        scripts.addAll(modifiedScriptFinder.findAll(onInstallIfModified(currentEnvironment, slingSettings, currentHook), resolver))
         scripts.forEach { script ->
             val result: ExecutionResult = scriptManager.process(script, ExecutionMode.AUTOMATIC_RUN, resolver)
             logStatus(context, script.path, result)
@@ -94,6 +97,11 @@ class ApmInstallHook : OsgiAwareInstallHook() {
         val hookRegex = Regex("installhook\\.(\\w+)\\.class")
         val result = hookRegex.matchEntire(hookPropertyKey)
         return result?.groups?.get(1)?.value ?: ""
+    }
+
+    private fun getCurrentEnvironment(): LaunchEnvironment {
+        val instanceTypeProvider = getService(InstanceTypeProvider::class.java)
+        return if (instanceTypeProvider.isOnAuthor) LaunchEnvironment.AUTHOR else LaunchEnvironment.PUBLISH
     }
 
     private fun logStatus(context: InstallContext, scriptPath: String, result: ExecutionResult) {
@@ -113,5 +121,4 @@ class ApmInstallHook : OsgiAwareInstallHook() {
             throw packageException
         }
     }
-
 }

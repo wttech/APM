@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,19 +17,31 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.api.scripts;
+package com.cognifide.apm.core.utils;
 
-import java.util.Arrays;
-import java.util.Optional;
-import org.apache.commons.lang.StringUtils;
+import com.cognifide.apm.core.Property;
+import org.apache.sling.settings.SlingSettingsService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
-public enum LaunchEnvironment {
+@Component(
+		immediate = true,
+		service = InstanceTypeProvider.class,
+		property = {
+				Property.DESCRIPTION + "Resolves the instance type",
+				Property.VENDOR
+		}
+)
+public class InstanceTypeProviderImpl implements InstanceTypeProvider {
 
-  ALL, AUTHOR, PUBLISH;
+	private static final String RUNMODE_AUTHOR = "author";
 
-  public static Optional<LaunchEnvironment> from(String text) {
-    return Arrays.stream(LaunchEnvironment.values())
-        .filter(launchEnvironment -> StringUtils.endsWithIgnoreCase(launchEnvironment.name(), text))
-        .findFirst();
-  }
+	@Reference
+	private SlingSettingsService settingsService;
+
+	@Override
+	public boolean isOnAuthor() {
+		return settingsService.getRunModes().contains(RUNMODE_AUTHOR);
+	}
+
 }
