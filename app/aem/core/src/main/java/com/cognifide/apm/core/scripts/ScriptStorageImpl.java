@@ -113,6 +113,7 @@ public class ScriptStorageImpl implements ScriptStorage {
       fileNode.setProperty(ScriptNode.APM_LAUNCH_ENABLED, launchMetadata.isExecutionEnabled());
       setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_MODE, launchMetadata.getLaunchMode());
       setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_ENVIRONMENT, launchMetadata.getLaunchEnvironment());
+      setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_RUN_MODES, launchMetadata.getLaunchRunModes());
       setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_HOOK, launchMetadata.getExecutionHook());
       setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_SCHEDULE, launchMetadata.getExecutionSchedule());
       removeProperty(fileNode, ScriptNode.APM_LAST_EXECUTED);
@@ -135,6 +136,8 @@ public class ScriptStorageImpl implements ScriptStorage {
       calendar.set(localDateTime.getYear(), localDateTime.getMonthValue() - 1, localDateTime.getDayOfMonth(),
           localDateTime.getHour(), localDateTime.getMinute(), localDateTime.getSecond());
       node.setProperty(name, calendar);
+    } else if (value instanceof String[]) {
+      node.setProperty(name, (String[]) value);
     } else {
       node.setProperty(name, value.toString());
     }

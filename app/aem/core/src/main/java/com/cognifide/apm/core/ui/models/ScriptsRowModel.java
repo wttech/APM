@@ -37,6 +37,7 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import lombok.Getter;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.apache.sling.api.resource.Resource;
@@ -100,6 +101,9 @@ public final class ScriptsRowModel {
         this.runs.add(createScriptRun("runOnPublish", script, scriptHistory.getLastRemoteRun()));
         this.launchMode = label(script.getLaunchMode());
         this.launchEnvironment = label(script.getLaunchEnvironment());
+        if (CollectionUtils.isNotEmpty(script.getLaunchRunModes())) {
+          this.launchEnvironment += "+" + StringUtils.join(script.getLaunchRunModes(), ",");
+        }
         this.isLaunchEnabled = script.isLaunchEnabled();
       });
     }

@@ -41,6 +41,7 @@ import javax.jcr.RepositoryException;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.settings.SlingSettingsService;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -67,6 +68,9 @@ public class StartupScriptLauncher extends AbstractLauncher {
   private InstanceTypeProvider instanceTypeProvider;
 
   @Reference
+  private SlingSettingsService slingSettings;
+
+  @Reference
   private VersionService versionService;
 
   @Reference
@@ -84,8 +88,8 @@ public class StartupScriptLauncher extends AbstractLauncher {
 
   private void executeScripts(LaunchEnvironment currentEnvironment, ResourceResolver resolver) {
     List<Script> scripts = new ArrayList<>();
-    scripts.addAll(scriptFinder.findAll(onStartup(currentEnvironment), resolver));
-    scripts.addAll(modifiedScriptFinder.findAll(onStartupIfModified(currentEnvironment), resolver));
+    scripts.addAll(scriptFinder.findAll(onStartup(currentEnvironment, slingSettings), resolver));
+    scripts.addAll(modifiedScriptFinder.findAll(onStartupIfModified(currentEnvironment, slingSettings), resolver));
 
     scripts.forEach(script -> {
       try {
