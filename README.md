@@ -4,7 +4,7 @@
     <img src="docs/apm-logo.png" alt="APM Logo" style="width: 128px; vertical-align: middle">
 </p>
 
-[![Build Status](https://travis-ci.org/Cognifide/APM.svg?branch=master)](https://travis-ci.org/Cognifide/APM)
+[![Build Status](https://github.com/wttech/APM/actions/workflows/gradle.yml/badge.svg?branch=master)](https://github.com/wttech/APM/actions/workflows/gradle.yml)
 [![Apache License, Version 2.0, January 2004](https://img.shields.io/github/license/cognifide/apm.svg?label=License)](http://www.apache.org/licenses/)
 
 # AEM Permission Management
@@ -24,7 +24,7 @@ This page identifies the versions of Adobe Experience Manager with which a parti
 
 | | AEM 6.3 | AEM 6.4 | AEM 6.5 |
 | --- | :---: | :---: | :---: |
-| APM 5.x.x | | | x |
+| APM 5.x.x | | x | x |
 | APM 4.x.x | x | x | x |
 | APM 3.2.x |   | x | |
 | APM 3.1.x |   | x | |
@@ -32,7 +32,7 @@ This page identifies the versions of Adobe Experience Manager with which a parti
 
 ## Getting started
 To start using **APM** an AEM in version at least 6.3 is required.
-The latest AEM packages are available [here](https://github.com/wttech/APM/releases/latest). Download both packages *cq-actions-msg-replication* and *apm*, and install them using [CRX Package Manager](http://localhost:4502/crx/packmgr).
+The latest AEM packages are available [here](https://github.com/wttech/APM/releases/latest). Download package *apm-all*, and install it using [CRX Package Manager](http://localhost:4502/crx/packmgr).
 
 ### How to use
 Open **APM** dashboard [http://localhost:4502/apm.html](http://localhost:4502/apm.html), and start using the tool. For more information visit [user guide](docs/ui.md).
