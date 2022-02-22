@@ -39,7 +39,6 @@ import com.cognifide.apm.core.actions.executor.ActionExecutorFactory;
 import com.cognifide.apm.core.executors.ContextImpl;
 import com.cognifide.apm.core.grammar.ScriptRunner;
 import com.cognifide.apm.core.history.History;
-import com.cognifide.apm.core.history.HistoryEntry;
 import com.cognifide.apm.core.logger.Progress;
 import com.cognifide.apm.core.progress.ProgressImpl;
 import com.cognifide.apm.core.services.event.ApmEvent.ScriptExecutedEvent;
@@ -184,19 +183,8 @@ public class ScriptManagerImpl implements ScriptManager {
   }
 
   private void saveHistory(Script script, ExecutionMode mode, Progress progress) {
-    if (instanceTypeProvider.isOnAuthor()) {
-      if (mode != ExecutionMode.VALIDATION) {
-        history.logLocal(script, mode, progress);
-      }
-    } else {
-      if (mode.isRun()) {
-        try {
-          HistoryEntry entry = history.logLocal(script, mode, progress);
-          history.replicate(entry, progress.getExecutor());
-        } catch (RepositoryException e) {
-          LOG.error("Repository error occurred while replicating script execution", e);
-        }
-      }
+    if (mode != ExecutionMode.VALIDATION) {
+      history.logLocal(script, mode, progress);
     }
   }
 
