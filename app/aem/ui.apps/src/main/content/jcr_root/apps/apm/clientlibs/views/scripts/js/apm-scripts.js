@@ -160,51 +160,6 @@
     },
   }
 
-  var RemoteScript = function (element) {
-    this.scriptPath = element.attributes['data-path'].value;
-    this.status = ScriptStatus.NEW;
-    this.$element = $(element);
-    this.$cell = this.$element.find('[data-run-type="runOnPublish"]');
-  }
-
-  RemoteScript.prototype = {
-    showWait: function () {
-      this.$cell.html('<coral-wait/>');
-    },
-
-    showRunStatus: function () {
-      this.status = ScriptStatus.FINISHED;
-      this.$cell.html('Script started on publish 1 second ago');
-    },
-
-    updateScript: function () {
-      if (this.status === ScriptStatus.NEW) {
-        this.runScript();
-      }
-    },
-
-    runScript: function () {
-      const self = this;
-      this.status = ScriptStatus.RUNNING;
-      this.showWait();
-      $.ajax({
-        type: 'GET',
-        url: '/bin/cqsm/replicate?run=publish&fileName=' + this.scriptPath,
-        dataType: 'json'
-      })
-      .done(function (data) {
-        console.log('publish response: ' + JSON.stringify(data));
-        Notifier.notify('info', 'Script was successfully started on publish', 'info');
-        self.showRunStatus();
-      })
-      .fail(function (data) {
-        console.log('publish  response: ' + JSON.stringify(data));
-        Notifier.notify('error', 'Script wasn\'t started on publish: ' + data.responseJSON.message, 'error');
-        self.showRunStatus();
-      });
-    },
-  }
-
   const scriptProcessor = new ScriptProcessor();
   const scriptUpdater = setInterval(function () {
     scriptProcessor.updateScripts()
@@ -252,16 +207,6 @@
         }
       });
 
-  $(window).adaptTo('foundation-registry').register(
-      'foundation.collection.action.action', {
-        name: 'scripts.runonpublish',
-        handler: function (name, el, config, collection, selections) {
-          selections.forEach(function (selection) {
-            scriptProcessor.addScript(new RemoteScript(selection));
-          });
-        }
-      });
-
   function showMessageOnFinished(mode, status) {
     let title;
 
@@ -270,7 +215,7 @@
         title = 'Dry Run';
         break;
       case Mode.RUN:
-        title = 'Run on Author';
+        title = 'Run';
         break;
     }
 
@@ -293,7 +238,7 @@
         Notifier.notify('error', 'Dry Run finished with status: ' + jobMessage, 'error');
         break;
       case Mode.RUN:
-        Notifier.notify('error', 'Run on Author finished with status: ' + jobMessage, 'error');
+        Notifier.notify('error', 'Run finished with status: ' + jobMessage, 'error');
         break;
     }
   }

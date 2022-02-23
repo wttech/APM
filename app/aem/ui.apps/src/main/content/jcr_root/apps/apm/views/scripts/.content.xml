@@ -80,12 +80,7 @@
                 sortType="date"/>
               <lastrun
                 jcr:primaryType="nt:unstructured"
-                jcr:title="Last Run on Author"
-                sortable="{Boolean}true"
-                sortType="date"/>
-              <lastrunonpublish
-                jcr:primaryType="nt:unstructured"
-                jcr:title="Last Run on Publish"
+                jcr:title="Last Run"
                 sortable="{Boolean}true"
                 sortType="date"/>
             </columns>
@@ -182,18 +177,7 @@
           icon="play"
           relScope="item"
           target=".cq-experience-fragments-admin-childpages"
-          text="Run on Author"
-          variant="actionBar"/>
-        <runonpublish
-          granite:class="foundation-collection-action"
-          jcr:primaryType="nt:unstructured"
-          sling:resourceType="granite/ui/components/coral/foundation/collection/action"
-          action="scripts.runonpublish"
-          activeCondition="is-available"
-          icon="play"
-          relScope="item"
-          target=".cq-experience-fragments-admin-childpages"
-          text="Run on Publish"
+          text="Run"
           variant="actionBar"/>
         <view
           granite:class="foundation-collection-action"
