@@ -22,29 +22,16 @@ package com.cognifide.apm.core.history;
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ExecutionMode;
 import com.cognifide.apm.core.logger.Progress;
-import java.util.Calendar;
 import java.util.List;
-import javax.jcr.RepositoryException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 
 public interface History {
 
   /**
-   * Save detailed script execution on a remote host as entry
-   */
-  HistoryEntry logRemote(Script script, ExecutionMode mode, Progress progress, InstanceDetails instance,
-      Calendar executionTime);
-
-  /**
    * Save detailed script execution as entry
    */
   HistoryEntry logLocal(Script script, ExecutionMode mode, Progress progress);
-
-  /**
-   * Replicate log entry from publish to author instance
-   */
-  void replicate(HistoryEntry entry, String executor) throws RepositoryException;
 
   List<Resource> findAllResources(ResourceResolver resourceResolver);
 

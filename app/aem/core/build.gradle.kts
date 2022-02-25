@@ -51,8 +51,6 @@ dependencies {
     compileOnly("org.projectlombok:lombok:1.18.8")
     annotationProcessor("org.projectlombok:lombok:1.18.8")
 
-    compileOnly("com.cognifide.cq.actions:com.cognifide.cq.actions.api:6.4.0")
-
     compileOnly(kotlin("stdlib-jdk8"))
     compileOnly(kotlin("reflect"))
 }

@@ -34,16 +34,12 @@ import com.cognifide.apm.core.progress.ProgressHelper;
 import com.cognifide.apm.core.services.version.VersionService;
 import com.cognifide.apm.core.utils.InstanceTypeProvider;
 import com.cognifide.apm.core.utils.sling.ResolveCallback;
-import com.cognifide.apm.core.utils.sling.SlingHelper;
 import com.day.cq.commons.jcr.JcrConstants;
-import com.day.cq.replication.ReplicationAction;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
@@ -84,9 +80,6 @@ public class HistoryImpl implements History {
   private static final String SLING_ORDERED_FOLDER = "sling:OrderedFolder";
 
   @Reference
-  private RemoteScriptExecutionNotifier remoteScriptExecutionNotifier;
-
-  @Reference
   private ResourceResolverFactory resolverFactory;
 
   @Reference
@@ -105,19 +98,6 @@ public class HistoryImpl implements History {
           .instanceHostname(getHostname())
           .build();
       return createHistoryEntry(resolver, script, mode, historyEntryWriter, false);
-    }, null);
-  }
-
-  @Override
-  public HistoryEntry logRemote(Script script, ExecutionMode mode, Progress progressLogger,
-                                InstanceDetails instanceDetails, Calendar executionTime) {
-    return resolveDefault(resolverFactory, progressLogger.getExecutor(), (ResolveCallback<HistoryEntry>) resolver -> {
-      final HistoryEntryWriter historyEntryWriter = createBuilder(resolver, script, mode, progressLogger)
-          .executionTime(executionTime)
-          .instanceType(instanceDetails.getInstanceType().getInstanceName())
-          .instanceHostname(instanceDetails.getHostname())
-          .build();
-      return createHistoryEntry(resolver, script, mode, historyEntryWriter, true);
     }, null);
   }
 
@@ -165,18 +145,6 @@ public class HistoryImpl implements History {
         .stream()
         .map(resource -> resource.adaptTo(HistoryEntryImpl.class))
         .collect(Collectors.toList());
-  }
-
-  @Override
-  public void replicate(final HistoryEntry entry, String userId) {
-    SlingHelper.operateTraced(resolverFactory, userId, resolver -> {
-      Resource resource = resolver.getResource(entry.getPath());
-      if (resource != null) {
-        Map<String, Object> properties = new HashMap<>(resource.getValueMap());
-        properties.put(ReplicationAction.PROPERTY_USER_ID, resolver.getUserID());
-        remoteScriptExecutionNotifier.notifyRemoteInstance(properties);
-      }
-    });
   }
 
   @Override
