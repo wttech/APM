@@ -20,12 +20,12 @@
 <sly data-sly-use.item="com.cognifide.apm.core.history.HistoryEntryImpl"/>
 <tr class="foundation-collection-item foundation-collection-navigator"
     data-foundation-collection-item-id="${resource.path}" data-path="${resource.path}"
-    data-timeline="true" is="coral-table-row" data-script-name="${item.fileName}">
+    data-timeline="true" is="coral-table-row" data-script-name="${item.scriptName}">
 
   <td is="coral-table-cell" coral-table-rowselect>
     <coral-icon icon="fileKey" size="M"></coral-icon>
   </td>
-  <td is="coral-table-cell" value="${item.fileName}">
+  <td is="coral-table-cell" value="${item.scriptName}">
     <a href="${item.scriptContentPath}" download="${item.scriptName}"
        style="text-decoration:none">${item.scriptName}</a>
   </td>
