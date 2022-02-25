@@ -125,7 +125,6 @@
   - apm:executionSchedule (date)
   - apm:executionLast (date)
   - apm:checksum (string)
-  - apm:publishRun (boolean)
   - apm:verified (string)
 
 [rep:User] > rep:Authorizable, rep:Impersonatable

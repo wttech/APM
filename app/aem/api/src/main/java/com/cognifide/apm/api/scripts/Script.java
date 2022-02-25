@@ -56,11 +56,6 @@ public interface Script {
 	Date getLastExecuted();
 
 	/**
-	 * Check run on publish
-	 */
-	boolean isPublishRun();
-
-	/**
 	 * Returns the path for the script file
 	 */
 	String getPath();

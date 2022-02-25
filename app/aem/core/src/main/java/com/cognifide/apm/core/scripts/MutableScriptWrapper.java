@@ -43,12 +43,6 @@ public class MutableScriptWrapper {
     }
   }
 
-  public void setPublishRun(boolean flag) throws PersistenceException {
-    if (script != null) {
-      script.setPublishRun(flag);
-    }
-  }
-
   public void setValid(boolean flag) throws PersistenceException {
     if (script != null) {
       script.setValid(flag);

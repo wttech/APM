@@ -88,11 +88,6 @@ public class TransientScript implements MutableScript {
   }
 
   @Override
-  public boolean isPublishRun() {
-    return false;
-  }
-
-  @Override
   public String getChecksum() {
     return checksum;
   }
@@ -114,11 +109,6 @@ public class TransientScript implements MutableScript {
 
   @Override
   public void setLastExecuted(Date date) {
-
-  }
-
-  @Override
-  public void setPublishRun(boolean flag) {
 
   }
 
