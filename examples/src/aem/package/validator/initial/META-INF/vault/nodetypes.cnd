@@ -121,6 +121,7 @@
   - apm:launchEnabled (boolean)
   - apm:launchMode (string)
   - apm:launchEnvironment (string)
+  - apm:launchRunModes (string) multiple
   - apm:launchHook (string)
   - apm:launchSchedule (date)
   - apm:lastExecuted (date)

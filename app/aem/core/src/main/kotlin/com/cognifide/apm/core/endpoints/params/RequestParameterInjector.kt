@@ -20,7 +20,6 @@
 
 package com.cognifide.apm.core.endpoints.params
 
-
 import com.cognifide.apm.core.Property
 import com.google.common.primitives.Ints
 import org.apache.commons.lang.StringUtils
@@ -77,6 +76,7 @@ class RequestParameterInjector : Injector, StaticInjectAnnotationProcessorFactor
             fieldClass == InputStream::class.java -> parameterValue.inputStream
             fieldClass == LocalDateTime::class.java -> toLocalDateTime(annotatedElement, parameterValue)
             Enum::class.java.isAssignableFrom(fieldClass) -> toEnum(fieldClass, parameterValue)
+            fieldClass.canonicalName == "java.lang.String[]" -> parameterValue.string.split(",").toTypedArray()
             else -> parameterValue.string
         }
     }

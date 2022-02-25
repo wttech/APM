@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,18 +17,20 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-<apm='http://www.cognifide.com/apm/1.1'>
+package com.cognifide.apm.core.jobs;
 
-[apm:Script]
- mixin
-  - apm:launchEnabled (boolean)
-  - apm:launchMode (string)
-  - apm:launchEnvironment (string)
-  - apm:launchRunModes (string) multiple
-  - apm:launchHook (string)
-  - apm:launchSchedule (date)
-  - apm:lastExecuted (date)
-  - apm:checksum (string)
-  - apm:publishRun (boolean)
-  - apm:replicatedBy (string)
-  - apm:verified (string)
+import org.apache.sling.event.jobs.Job;
+
+import com.cognifide.apm.core.endpoints.BackgroundJobParameters;
+import com.cognifide.apm.core.scriptrunnerjob.JobProgressOutput;
+
+/**
+ * @deprecated use {@link com.cognifide.apm.core.services.async.AsyncScriptExecutor} instead
+ */
+@Deprecated
+public interface ScriptRunnerJobManager {
+
+	Job scheduleJob(BackgroundJobParameters parameters);
+
+	JobProgressOutput checkJobStatus(String id);
+}

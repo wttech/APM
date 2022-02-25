@@ -39,6 +39,7 @@ import org.apache.jackrabbit.vault.packaging.InstallContext
 import org.apache.jackrabbit.vault.packaging.PackageException
 import org.apache.sling.api.resource.ResourceResolver
 import org.apache.sling.api.resource.ResourceResolverFactory
+import org.apache.sling.settings.SlingSettingsService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.*
@@ -75,10 +76,11 @@ class ApmInstallHook : OsgiAwareInstallHook() {
         val scriptManager = getService(ScriptManager::class.java)
         val scriptFinder = getService(ScriptFinder::class.java)
         val modifiedScriptFinder = getService(ModifiedScriptFinder::class.java)
+        val slingSettings = getService(SlingSettingsService::class.java)
 
         val scripts = mutableListOf<Script>()
-        scripts.addAll(scriptFinder.findAll(onInstall(currentEnvironment, currentHook), resolver))
-        scripts.addAll(modifiedScriptFinder.findAll(onInstallIfModified(currentEnvironment, currentHook), resolver))
+        scripts.addAll(scriptFinder.findAll(onInstall(currentEnvironment, slingSettings, currentHook), resolver))
+        scripts.addAll(modifiedScriptFinder.findAll(onInstallIfModified(currentEnvironment, slingSettings, currentHook), resolver))
         scripts.forEach { script ->
             val result: ExecutionResult = scriptManager.process(script, ExecutionMode.AUTOMATIC_RUN, resolver)
             logStatus(context, script.path, result)

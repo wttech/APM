@@ -23,7 +23,6 @@ import static com.cognifide.apm.core.utils.sling.SlingHelper.resolveDefault;
 import static com.day.crx.JcrConstants.NT_UNSTRUCTURED;
 import static org.apache.jackrabbit.commons.JcrUtils.getOrCreateByPath;
 import static org.apache.jackrabbit.commons.JcrUtils.getOrCreateUniqueByPath;
-import static org.apache.sling.query.SlingQuery.$;
 
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ExecutionMode;
@@ -42,20 +41,20 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Spliterator;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import org.apache.commons.lang.StringUtils;
+import org.apache.sling.api.resource.AbstractResourceVisitor;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.apache.sling.query.api.SearchStrategy;
+import org.apache.sling.api.resource.ValueMap;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -137,11 +136,19 @@ public class HistoryImpl implements History {
 
   @Override
   public List<Resource> findAllResources(ResourceResolver resourceResolver) {
+    List<Resource> resources = new LinkedList<>();
+    AbstractResourceVisitor visitor = new AbstractResourceVisitor() {
+      @Override
+      protected void visit(Resource resource) {
+        ValueMap valueMap = resource.getValueMap();
+        if (valueMap.containsKey("executionTime") && "entry".equals(valueMap.get("apmHistory", String.class))) {
+          resources.add(resource);
+        }
+      }
+    };
     Resource rootResource = resourceResolver.getResource(HistoryImpl.HISTORY_FOLDER);
-    Spliterator<Resource> spliterator = $(rootResource).searchStrategy(SearchStrategy.BFS)
-        .find("[executionTime][apmHistory=entry]")
-        .spliterator();
-    return StreamSupport.stream(spliterator, false)
+    visitor.accept(rootResource);
+    return resources.stream()
         .sorted(this::compareExecutionTime)
         .collect(Collectors.toList());
   }
