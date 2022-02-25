@@ -40,11 +40,6 @@ public interface MutableScript extends Script {
   void setPublishRun(boolean flag) throws PersistenceException;
 
   /**
-   * Set replicated by user
-   */
-  void setReplicatedBy(String userId) throws PersistenceException;
-
-  /**
    * Set checksum
    */
   void setChecksum(String checksum) throws PersistenceException;

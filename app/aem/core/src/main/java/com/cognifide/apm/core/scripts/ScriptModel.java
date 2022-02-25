@@ -100,11 +100,6 @@ public class ScriptModel implements MutableScript {
   private Boolean publishRun;
 
   @Inject
-  @Named(ScriptNode.APM_REPLICATED_BY)
-  @Optional
-  private String replicatedBy;
-
-  @Inject
   @Named(ScriptNode.APM_VERIFIED)
   @Optional
   private Boolean verified;
@@ -212,11 +207,6 @@ public class ScriptModel implements MutableScript {
   }
 
   @Override
-  public String getReplicatedBy() {
-    return replicatedBy;
-  }
-
-  @Override
   public void setChecksum(String checksum) throws PersistenceException {
     this.checksum = checksum;
     setProperty(ScriptNode.APM_CHECKSUM, checksum);
@@ -238,12 +228,6 @@ public class ScriptModel implements MutableScript {
   public void setPublishRun(boolean flag) throws PersistenceException {
     this.publishRun = flag;
     setProperty(ScriptNode.APM_PUBLISH_RUN, flag);
-  }
-
-  @Override
-  public void setReplicatedBy(String userId) throws PersistenceException {
-    this.replicatedBy = userId;
-    setProperty(ScriptNode.APM_REPLICATED_BY, userId);
   }
 
   private void setProperty(String name, Object value) throws PersistenceException {

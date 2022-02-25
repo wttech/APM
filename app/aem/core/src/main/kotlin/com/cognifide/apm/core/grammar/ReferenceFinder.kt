@@ -165,8 +165,6 @@ class ReferenceFinder(
         override fun getLastModified(): Date? = null
 
         override fun getData(): String? = null
-
-        override fun getReplicatedBy(): String? = null
     }
 
 }

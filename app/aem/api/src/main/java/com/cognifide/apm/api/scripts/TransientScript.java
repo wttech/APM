@@ -108,11 +108,6 @@ public class TransientScript implements MutableScript {
   }
 
   @Override
-  public String getReplicatedBy() {
-    return null;
-  }
-
-  @Override
   public void setValid(boolean flag) {
 
   }
@@ -124,11 +119,6 @@ public class TransientScript implements MutableScript {
 
   @Override
   public void setPublishRun(boolean flag) {
-
-  }
-
-  @Override
-  public void setReplicatedBy(String userId) {
 
   }
 

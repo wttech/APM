@@ -49,12 +49,6 @@ public class MutableScriptWrapper {
     }
   }
 
-  public void setReplicatedBy(String userId) throws PersistenceException {
-    if (script != null) {
-      script.setReplicatedBy(userId);
-    }
-  }
-
   public void setValid(boolean flag) throws PersistenceException {
     if (script != null) {
       script.setValid(flag);

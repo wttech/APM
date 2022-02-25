@@ -85,9 +85,4 @@ public interface Script {
 	 */
 	String getData();
 
-	/**
-	 * Return user that replicated script
-	 */
-	String getReplicatedBy();
-
 }
