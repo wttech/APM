@@ -46,8 +46,6 @@ public class HistoryEntryImpl implements HistoryEntry {
   public static final String EXECUTOR = "executor";
   public static final String SCRIPT_PATH = "scriptPath";
   public static final String SCRIPT_NAME = "scriptName";
-  public static final String INSTANCE_HOSTNAME = "instanceHostname";
-  public static final String INSTANCE_TYPE = "instanceType";
   public static final String IS_RUN_SUCCESSFUL = "isRunSuccessful";
   public static final String MODE = "mode";
   public static final String CHECKSUM = "checksum";
@@ -74,14 +72,6 @@ public class HistoryEntryImpl implements HistoryEntry {
   @Inject
   @Named(SCRIPT_NAME)
   private String scriptName;
-
-  @Inject
-  @Named(INSTANCE_HOSTNAME)
-  private String instanceHostname;
-
-  @Inject
-  @Named(INSTANCE_TYPE)
-  private String instanceType;
 
   @Inject
   @Named(IS_RUN_SUCCESSFUL)

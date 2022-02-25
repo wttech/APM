@@ -33,7 +33,6 @@ import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.services.ModifiedScriptFinder;
 import com.cognifide.apm.core.services.version.VersionService;
-import com.cognifide.apm.core.utils.InstanceTypeProvider;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,9 +64,6 @@ public class StartupScriptLauncher extends AbstractLauncher {
   private ModifiedScriptFinder modifiedScriptFinder;
 
   @Reference
-  private InstanceTypeProvider instanceTypeProvider;
-
-  @Reference
   private SlingSettingsService slingSettings;
 
   @Reference
@@ -81,7 +77,7 @@ public class StartupScriptLauncher extends AbstractLauncher {
   }
 
   private void process(ResourceResolver resolver) {
-    LaunchEnvironment environment = instanceTypeProvider.isOnAuthor() ? AUTHOR : PUBLISH;
+    LaunchEnvironment environment = LaunchEnvironment.of(slingSettings);
 
     executeScripts(environment, resolver);
   }

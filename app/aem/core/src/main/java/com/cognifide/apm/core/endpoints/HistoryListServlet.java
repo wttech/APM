@@ -53,48 +53,8 @@ public class HistoryListServlet extends SlingAllMethodsServlet {
   @Override
   protected void doGet(final SlingHttpServletRequest request, final SlingHttpServletResponse response)
       throws IOException {
-
-    String filter = request.getParameter("filter");
     List<HistoryEntry> executions = history.findAllHistoryEntries(request.getResourceResolver());
-    if (StringUtils.isNotBlank(filter)) {
-      CollectionUtils.filter(executions, new ExecutionHistoryFilter(filter));
-    }
     ServletUtils.writeJson(response, executions);
   }
 
-  private static class ExecutionHistoryFilter implements Predicate {
-
-    private static final String FILTER_AUTOMATIC_RUN = "automatic run";
-
-    private static final String FILTER_AUTHOR = "author";
-
-    private static final String FILTER_PUBLISH = "publish";
-
-    private final String filterType;
-
-    private ExecutionHistoryFilter(String filterType) {
-      this.filterType = filterType;
-    }
-
-    @Override
-    public boolean evaluate(Object object) {
-      HistoryEntry executionModel = (HistoryEntry) object;
-      String value;
-      switch (filterType) {
-        case FILTER_AUTHOR:
-        case FILTER_PUBLISH: {
-          value = executionModel.getInstanceType();
-        }
-        break;
-        case FILTER_AUTOMATIC_RUN: {
-          value = executionModel.getExecutor();
-        }
-        break;
-        default: {
-          value = null;
-        }
-      }
-      return filterType.equals(value);
-    }
-  }
 }
