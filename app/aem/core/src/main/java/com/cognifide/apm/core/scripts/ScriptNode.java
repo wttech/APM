@@ -41,10 +41,6 @@ public final class ScriptNode {
 
   public static final String APM_CHECKSUM = "apm:checksum";
 
-  public static final String APM_PUBLISH_RUN = "apm:publishRun";
-
-  public static final String APM_REPLICATED_BY = "apm:replicatedBy";
-
   public static final String APM_VERIFIED = "apm:verified";
 
   private ScriptNode() {

@@ -45,7 +45,6 @@ import com.cognifide.apm.core.services.event.ApmEvent.ScriptExecutedEvent;
 import com.cognifide.apm.core.services.event.ApmEvent.ScriptLaunchedEvent;
 import com.cognifide.apm.core.services.event.EventManager;
 import com.cognifide.apm.core.services.version.VersionService;
-import com.cognifide.apm.core.utils.InstanceTypeProvider;
 import com.google.common.collect.Maps;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -84,9 +83,6 @@ public class ScriptManagerImpl implements ScriptManager {
 
   @Reference
   private ScriptFinder scriptFinder;
-
-  @Reference
-  private InstanceTypeProvider instanceTypeProvider;
 
   @Reference
   private VersionService versionService;

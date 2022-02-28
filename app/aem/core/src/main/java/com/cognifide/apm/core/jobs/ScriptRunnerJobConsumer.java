@@ -21,6 +21,8 @@ package com.cognifide.apm.core.jobs;
 
 import static com.cognifide.apm.core.utils.sling.SlingHelper.resolveDefault;
 
+import com.cognifide.apm.core.services.async.AsyncScriptExecutor;
+import com.cognifide.apm.core.services.async.AsyncScriptExecutorImpl;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,7 +53,7 @@ import com.cognifide.apm.core.utils.sling.ResolveCallback;
     immediate = true,
     service = JobConsumer.class,
     property = {
-        Property.TOPIC + ScriptRunnerJobManagerImpl.JOB_SCRIPT_RUN_TOPIC
+        Property.TOPIC + AsyncScriptExecutorImpl.TOPIC
     }
 )
 public class ScriptRunnerJobConsumer implements JobConsumer {
@@ -110,7 +112,7 @@ public class ScriptRunnerJobConsumer implements JobConsumer {
 
   private ExecutionMode getMode(Job job) {
     ExecutionMode result = null;
-    String modeName = (String) job.getProperty(ScriptRunnerJobManagerImpl.MODE_NAME_PROPERTY_NAME);
+    String modeName = (String) job.getProperty(AsyncScriptExecutorImpl.EXECUTION_MODE);
     if (StringUtils.isNotBlank(modeName)) {
       result = StringUtils.isEmpty(modeName) ? ExecutionMode.DRY_RUN : ExecutionMode.valueOf(modeName.toUpperCase());
     } else {
@@ -128,8 +130,7 @@ public class ScriptRunnerJobConsumer implements JobConsumer {
   }
 
   private Script getScript(Job job, ResourceResolver resolver) {
-    String scriptSearchPath = (String) job
-        .getProperty(ScriptRunnerJobManagerImpl.SCRIPT_PATH_PROPERTY_NAME);
+    String scriptSearchPath = (String) job.getProperty(AsyncScriptExecutorImpl.SCRIPT_PATH);
     if (StringUtils.isNotBlank(scriptSearchPath)) {
       final Script script = scriptFinder.find(scriptSearchPath, resolver);
       if (script == null) {
@@ -144,6 +145,6 @@ public class ScriptRunnerJobConsumer implements JobConsumer {
   }
 
   private String getUserId(Job job) {
-    return job.getProperty(ScriptRunnerJobManagerImpl.USER_NAME_PROPERTY_NAME, String.class);
+    return job.getProperty(AsyncScriptExecutorImpl.USER_ID, String.class);
   }
 }

@@ -76,7 +76,7 @@
     this.mode = mode;
     this.status = ScriptStatus.NEW;
     this.$element = $(element);
-    const type = mode === Mode.RUN ? 'runOnAuthor' : 'dryRun';
+    const type = mode === Mode.RUN ? 'runOnLocal' : 'dryRun';
     this.$cell = this.$element.find('[data-run-type="' + type + '"]')
   }
 
@@ -87,10 +87,7 @@
 
     showRunStatus: function (success, summaryPath) {
       let icon = success ? 'check' : 'close';
-      let href = '/bin/cqsm/lastSummary.local' + self.mode + '.html' + self.scriptPath;
-      if (summaryPath && summaryPath.length && summaryPath.length > 0) {
-        href = '/apm/summary.html' + summaryPath;
-      }
+      let href = '/apm/summary.html' + summaryPath;
       this.$cell.html('<a data-sly-test="${run.time}" '
           + 'is="coral-anchorbutton" '
           + 'iconsize="S" '
@@ -199,7 +196,7 @@
 
   $(window).adaptTo('foundation-registry').register(
       'foundation.collection.action.action', {
-        name: 'scripts.runonauthor',
+        name: 'scripts.runonlocal',
         handler: function (name, el, config, collection, selections) {
           selections.forEach(function (selection) {
             scriptProcessor.addScript(new LocalScript(Mode.RUN, selection));

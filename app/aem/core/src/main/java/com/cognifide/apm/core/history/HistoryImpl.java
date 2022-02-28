@@ -28,11 +28,9 @@ import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ExecutionMode;
 import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.history.HistoryEntryWriter.HistoryEntryWriterBuilder;
-import com.cognifide.apm.core.history.InstanceDetails.InstanceType;
 import com.cognifide.apm.core.logger.Progress;
 import com.cognifide.apm.core.progress.ProgressHelper;
 import com.cognifide.apm.core.services.version.VersionService;
-import com.cognifide.apm.core.utils.InstanceTypeProvider;
 import com.cognifide.apm.core.utils.sling.ResolveCallback;
 import com.day.cq.commons.jcr.JcrConstants;
 import java.net.InetAddress;
@@ -83,21 +81,15 @@ public class HistoryImpl implements History {
   private ResourceResolverFactory resolverFactory;
 
   @Reference
-  private InstanceTypeProvider instanceTypeProvider;
-
-  @Reference
   private VersionService versionService;
 
   @Override
   public HistoryEntry logLocal(Script script, ExecutionMode mode, Progress progressLogger) {
-    InstanceType instanceDetails = instanceTypeProvider.isOnAuthor() ? InstanceType.AUTHOR : InstanceType.PUBLISH;
     return resolveDefault(resolverFactory, progressLogger.getExecutor(), (ResolveCallback<HistoryEntry>) resolver -> {
       final HistoryEntryWriter historyEntryWriter = createBuilder(resolver, script, mode, progressLogger)
           .executionTime(Calendar.getInstance())
-          .instanceType(instanceDetails.getInstanceName())
-          .instanceHostname(getHostname())
           .build();
-      return createHistoryEntry(resolver, script, mode, historyEntryWriter, false);
+      return createHistoryEntry(resolver, script, mode, historyEntryWriter);
     }, null);
   }
 
@@ -166,12 +158,12 @@ public class HistoryImpl implements History {
   }
 
   private HistoryEntry createHistoryEntry(ResourceResolver resolver, Script script, ExecutionMode mode,
-                                          HistoryEntryWriter historyEntryWriter, boolean remote) {
+                                          HistoryEntryWriter historyEntryWriter) {
     try {
       Session session = resolver.adaptTo(Session.class);
 
       Node scriptHistoryNode = createScriptHistoryNode(script, session);
-      Node historyEntryNode = createHistoryEntryNode(scriptHistoryNode, script, mode, remote);
+      Node historyEntryNode = createHistoryEntryNode(scriptHistoryNode, script, mode);
       historyEntryNode.setProperty(HistoryEntryImpl.SCRIPT_CONTENT_PATH, versionService.getVersionPath(script));
       writeProperties(resolver, historyEntryNode, historyEntryWriter);
 
@@ -193,9 +185,9 @@ public class HistoryImpl implements History {
     return entryResource;
   }
 
-  private Node createHistoryEntryNode(Node scriptHistoryNode, Script script, ExecutionMode mode, boolean remote)
+  private Node createHistoryEntryNode(Node scriptHistoryNode, Script script, ExecutionMode mode)
       throws RepositoryException {
-    String modeName = getModeName(mode, remote);
+    String modeName = getModeName(mode);
     Node historyEntry = getOrCreateUniqueByPath(scriptHistoryNode, modeName, NT_UNSTRUCTURED);
     historyEntry.setProperty(APM_HISTORY, APM_HISTORY_ENTRY);
     historyEntry.setProperty(HistoryEntryImpl.CHECKSUM, script.getChecksum());
@@ -214,15 +206,8 @@ public class HistoryImpl implements History {
   }
 
   @NotNull
-  private String getModeName(ExecutionMode mode, boolean remote) {
-    String modeName = (remote ? "Remote" : "Local");
-    if (mode == ExecutionMode.AUTOMATIC_RUN || mode == ExecutionMode.RUN) {
-      modeName += "Run";
-    } else {
-      modeName += "DryRun";
-    }
-    modeName = modeName.replace("_", "");
-    return modeName;
+  private String getModeName(ExecutionMode mode) {
+    return mode == ExecutionMode.AUTOMATIC_RUN || mode == ExecutionMode.RUN ? "Run" : "DryRun";
   }
 
   @NotNull

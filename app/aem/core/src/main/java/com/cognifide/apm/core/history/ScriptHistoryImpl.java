@@ -34,7 +34,6 @@ public class ScriptHistoryImpl implements ScriptHistory {
   public static final String SCRIPT_PATH = "scriptPath";
   public static final String LAST_LOCAL_RUN = "lastLocalRun";
   public static final String LAST_LOCAL_DRY_RUN = "lastLocalDryRun";
-  public static final String LAST_REMOTE_RUN = "lastRemoteRun";
   public static final String LAST_CHECKSUM = "lastChecksum";
 
   @Self
@@ -60,17 +59,11 @@ public class ScriptHistoryImpl implements ScriptHistory {
 
   @Inject
   @Getter
-  @Named(LAST_REMOTE_RUN)
-  private String lastRemoteRunPath;
-
-  @Inject
-  @Getter
   @Named(LAST_CHECKSUM)
   private String lastChecksum;
 
   private HistoryEntry lastLocalRun;
   private HistoryEntry lastLocalDryRun;
-  private HistoryEntry lastRemoteRun;
 
   public static ScriptHistoryImpl empty(String scriptPath) {
     ScriptHistoryImpl scriptHistoryImpl = new ScriptHistoryImpl();
@@ -88,12 +81,6 @@ public class ScriptHistoryImpl implements ScriptHistory {
   public HistoryEntry getLastLocalDryRun() {
     lastLocalDryRun = getHistoryEntry(lastLocalDryRun, lastLocalDryRunPath);
     return lastLocalDryRun;
-  }
-
-  @Override
-  public HistoryEntry getLastRemoteRun() {
-    lastRemoteRun = getHistoryEntry(lastRemoteRun, lastRemoteRunPath);
-    return lastRemoteRun;
   }
 
   private HistoryEntry getHistoryEntry(HistoryEntry entry, String historyEntryPath) {

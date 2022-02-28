@@ -156,8 +156,6 @@ class ReferenceFinder(
 
         override fun getLastExecuted(): Date? = null
 
-        override fun isPublishRun(): Boolean = false
-
         override fun getChecksum(): String? = null
 
         override fun getAuthor(): String? = null
@@ -165,8 +163,6 @@ class ReferenceFinder(
         override fun getLastModified(): Date? = null
 
         override fun getData(): String? = null
-
-        override fun getReplicatedBy(): String? = null
     }
 
 }
