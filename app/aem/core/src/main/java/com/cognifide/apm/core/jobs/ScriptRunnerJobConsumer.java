@@ -21,13 +21,19 @@ package com.cognifide.apm.core.jobs;
 
 import static com.cognifide.apm.core.utils.sling.SlingHelper.resolveDefault;
 
-import com.cognifide.apm.core.services.async.AsyncScriptExecutor;
+import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.ExecutionMode;
+import com.cognifide.apm.api.services.ExecutionResult;
+import com.cognifide.apm.api.services.ScriptFinder;
+import com.cognifide.apm.api.services.ScriptManager;
+import com.cognifide.apm.core.Property;
+import com.cognifide.apm.core.history.History;
+import com.cognifide.apm.core.jobs.JobResultsCache.ExecutionSummary;
 import com.cognifide.apm.core.services.async.AsyncScriptExecutorImpl;
+import com.cognifide.apm.core.utils.sling.ResolveCallback;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.jcr.RepositoryException;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -38,16 +44,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.cognifide.apm.api.scripts.Script;
-import com.cognifide.apm.api.services.ExecutionMode;
-import com.cognifide.apm.api.services.ExecutionResult;
-import com.cognifide.apm.api.services.ScriptFinder;
-import com.cognifide.apm.api.services.ScriptManager;
-import com.cognifide.apm.core.Property;
-import com.cognifide.apm.core.history.History;
-import com.cognifide.apm.core.jobs.JobResultsCache.ExecutionSummary;
-import com.cognifide.apm.core.utils.sling.ResolveCallback;
 
 @Component(
     immediate = true,

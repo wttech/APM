@@ -26,7 +26,6 @@ import com.cognifide.apm.api.exceptions.ActionExecutionException;
 import com.cognifide.apm.checks.utils.ActionUtils;
 import com.cognifide.apm.checks.utils.MessagingUtils;
 import com.day.cq.security.util.CqActions;
-import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -187,14 +186,7 @@ public class CheckPermissions implements Action {
   }
 
   private List<String> preparePrivilegesToCheck() throws RepositoryException {
-    return Lists.transform(permissions, new toLowerCase());
+    return Lists.transform(permissions, String::toLowerCase);
   }
 
-  private static class toLowerCase implements Function<String, String> {
-
-    @Override
-    public String apply(String input) {
-      return input.toLowerCase();
-    }
-  }
 }

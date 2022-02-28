@@ -91,6 +91,6 @@ public class ScriptFilters {
   }
 
   private static Predicate<Script> enabled() {
-    return script -> script.isLaunchEnabled();
+    return Script::isLaunchEnabled;
   }
 }

@@ -102,7 +102,7 @@ public class AnnotatedClassRegistry {
   private void registerClasses(Bundle bundle) {
     final List<Class<?>> scanned = new ClassScanner(bundle, bundleContext)
         .findClasses(bundleHeader, annotationClass);
-    if (scanned.size() > 0) {
+    if (!scanned.isEmpty()) {
       classes.put(bundle.getBundleId(), scanned);
       notifyChangeListeners();
     }

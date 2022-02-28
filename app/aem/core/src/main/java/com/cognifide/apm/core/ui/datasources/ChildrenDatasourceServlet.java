@@ -47,7 +47,7 @@ public class ChildrenDatasourceServlet extends SlingSafeMethodsServlet {
   protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) {
     Iterator<Resource> iterator = Optional.ofNullable(request.getResource())
         .flatMap(parent -> Optional.ofNullable(parent.getChild("items")))
-        .map(items -> items.listChildren())
+        .map(Resource::listChildren)
         .orElse(Collections.emptyIterator());
     DataSource dataSource = new SimpleDataSource(iterator);
     request.setAttribute(DataSource.class.getName(), dataSource);

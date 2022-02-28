@@ -74,7 +74,7 @@ public class ProgressImpl implements Progress {
   }
 
   private List<String> toMessages(List<Message> messages) {
-    return messages.stream().map(it -> it.getText()).collect(Collectors.toList());
+    return messages.stream().map(Message::getText).collect(Collectors.toList());
   }
 
   private List<String> toParameters(Arguments arguments) {
