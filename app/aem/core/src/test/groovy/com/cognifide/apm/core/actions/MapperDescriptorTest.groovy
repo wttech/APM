@@ -27,10 +27,13 @@ import com.cognifide.apm.core.grammar.ApmList
 import com.cognifide.apm.core.grammar.ApmString
 import com.cognifide.apm.core.grammar.ApmType
 import com.cognifide.apm.core.grammar.argument.Arguments
+import com.cognifide.apm.core.services.crypto.DecryptionService
 import spock.lang.Specification
 import spock.lang.Unroll
 
 class MapperDescriptorTest extends Specification {
+
+    def decryptionService = Mock(DecryptionService)
 
     def "cannot create MapperDescriptor for class without Mapper annotation"() {
         given:
@@ -91,7 +94,7 @@ class MapperDescriptorTest extends Specification {
         expect:
         MapperDescriptorFactory mapperDescriptorFactory = new MapperDescriptorFactory()
         def mapperDescriptor = mapperDescriptorFactory.create(SampleMapper.class)
-        mapperDescriptor.handle(toArguments(required, named, flags)).name == result
+        mapperDescriptor.handle(toArguments(required, named, flags), decryptionService).name == result
 
         where:
         required                         | named         | flags         || result
@@ -105,7 +108,7 @@ class MapperDescriptorTest extends Specification {
         expect:
         MapperDescriptorFactory mapperDescriptorFactory = new MapperDescriptorFactory()
         def mapperDescriptor = mapperDescriptorFactory.create(SampleMapper.class)
-        mapperDescriptor.handle(toArguments([], [:], flags)).name == result
+        mapperDescriptor.handle(toArguments([], [:], flags), decryptionService).name == result
 
         where:
         flags                 || result
@@ -119,7 +122,7 @@ class MapperDescriptorTest extends Specification {
         expect:
         MapperDescriptorFactory mapperDescriptorFactory = new MapperDescriptorFactory()
         def mapperDescriptor = mapperDescriptorFactory.create(SampleMapper.class)
-        mapperDescriptor.handle(toArguments(["/content"], [:], flags)).name == result
+        mapperDescriptor.handle(toArguments(["/content"], [:], flags), decryptionService).name == result
 
         where:
         flags                 || result

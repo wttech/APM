@@ -22,6 +22,7 @@ package com.cognifide.apm.core.actions;
 
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.core.grammar.argument.Arguments;
+import com.cognifide.apm.core.services.crypto.DecryptionService;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -40,10 +41,10 @@ public class MapperDescriptor {
     return mappingDescriptors.stream().anyMatch(it -> it.handles(arguments));
   }
 
-  public Action handle(Arguments arguments) {
+  public Action handle(Arguments arguments, DecryptionService decryptionService) {
     return mappingDescriptors.stream()
         .filter(it -> it.handles(arguments)).findFirst()
         .orElseThrow(() -> new RuntimeException("Cannot find matching mapping method"))
-        .handle(mapper, arguments);
+        .handle(mapper, arguments, decryptionService);
   }
 }

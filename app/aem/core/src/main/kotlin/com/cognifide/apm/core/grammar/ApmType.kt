@@ -20,7 +20,10 @@
 
 package com.cognifide.apm.core.grammar
 
-abstract class ApmType(val argument: Any? = null) {
+import com.cognifide.apm.core.services.crypto.DecryptionService
+
+abstract class ApmType {
+    abstract fun getArgument(decryptionService: DecryptionService): Any?
     open val integer: Int?
         get() = null
     open val string: String?
@@ -31,9 +34,9 @@ abstract class ApmType(val argument: Any? = null) {
         get() = null
 }
 
-abstract class ApmValue(arg: Any? = null) : ApmType(arg)
+data class ApmInteger(val value: Int) : ApmType() {
+    override fun getArgument(decryptionService: DecryptionService): Int = value
 
-data class ApmInteger(val value: Int) : ApmValue(value) {
     override val integer: Int
         get() = value
 
@@ -42,7 +45,9 @@ data class ApmInteger(val value: Int) : ApmValue(value) {
     }
 }
 
-data class ApmString(val value: String) : ApmValue(value) {
+data class ApmString(val value: String) : ApmType() {
+    override fun getArgument(decryptionService: DecryptionService) = decryptionService.decrypt(value)
+
     override val string: String
         get() = value
 
@@ -51,7 +56,9 @@ data class ApmString(val value: String) : ApmValue(value) {
     }
 }
 
-data class ApmList(val value: List<String>) : ApmType(value) {
+data class ApmList(val value: List<String>) : ApmType() {
+    override fun getArgument(decryptionService: DecryptionService) = value.map { decryptionService.decrypt(it) }
+
     override val list: List<String>
         get() = value
 
@@ -60,7 +67,11 @@ data class ApmList(val value: List<String>) : ApmType(value) {
     }
 }
 
-data class ApmNestedList(val value: List<List<String>>) : ApmType(value) {
+data class ApmNestedList(val value: List<List<String>>) : ApmType() {
+    override fun getArgument(decryptionService: DecryptionService) = value.map { item ->
+        item.map { decryptionService.decrypt(it) }
+    }
+
     override val nestedList: List<List<String>>
         get() = value
 
@@ -71,4 +82,6 @@ data class ApmNestedList(val value: List<List<String>>) : ApmType(value) {
     }
 }
 
-class ApmEmpty : ApmType()
+class ApmEmpty : ApmType() {
+    override fun getArgument(decryptionService: DecryptionService): Any? = null
+}

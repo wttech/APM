@@ -23,6 +23,7 @@ import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.exceptions.ActionCreationException;
 import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.grammar.argument.Arguments;
+import com.cognifide.apm.core.services.crypto.DecryptionService;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -42,8 +43,12 @@ import org.osgi.service.component.annotations.Reference;
 public class ActionFactoryImpl implements ActionFactory {
 
   public static final String CORE_GROUP = "core";
+
   @Reference
   private ActionMapperRegistry registry;
+
+  @Reference
+  private DecryptionService decryptionService;
 
   public ActionDescriptor evaluate(String command, Arguments arguments) throws ActionCreationException {
     Optional<MapperDescriptor> mapper = registry.getMapper(command);
@@ -56,7 +61,7 @@ public class ActionFactoryImpl implements ActionFactory {
   private Action tryToEvaluateCommand(MapperDescriptor mapper, Arguments arguments)
       throws ActionCreationException {
     if (mapper.handles(arguments)) {
-      return mapper.handle(arguments);
+      return mapper.handle(arguments, decryptionService);
     }
     throw new ActionCreationException("Mapper cannot handle given arguments: " + arguments);
   }

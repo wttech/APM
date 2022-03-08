@@ -80,7 +80,7 @@ class ScriptRunner(
         }
 
         override fun visitForEach(ctx: ForEachContext) {
-            val values: List<Map<String, ApmValue>> = readValues(ctx)
+            val values: List<Map<String, ApmType>> = readValues(ctx)
             for ((index, value) in values.withIndex()) {
                 try {
                     executionContext.createLocalContext()
@@ -177,7 +177,7 @@ class ScriptRunner(
             progress(ctx, Status.SUCCESS, "import", result.toMessages())
         }
 
-        private fun readValues(ctx: ForEachContext): List<Map<String, ApmValue>> {
+        private fun readValues(ctx: ForEachContext): List<Map<String, ApmType>> {
             val keys = ctx.compositeIdentifier()
                     .children
                     .filterIsInstance<BasicIdentifierContext>()
@@ -186,7 +186,7 @@ class ScriptRunner(
                 is ApmNestedList -> variableValue.nestedList.map { list -> list.map { ApmString(it) } }
                 is ApmList -> variableValue.list.map { listOf(ApmString(it)) }
                 is ApmEmpty -> listOf(listOf())
-                else -> listOf(listOf(variableValue as ApmValue))
+                else -> listOf(listOf(variableValue))
             }
             return values.map { keys.zip(it).toMap() }
         }
