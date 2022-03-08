@@ -87,10 +87,7 @@
 
     showRunStatus: function (success, summaryPath) {
       let icon = success ? 'check' : 'close';
-      let href = '/bin/cqsm/lastSummary.local' + self.mode + '.html' + self.scriptPath;
-      if (summaryPath && summaryPath.length && summaryPath.length > 0) {
-        href = '/apm/summary.html' + summaryPath;
-      }
+      let href = '/apm/summary.html' + summaryPath;
       this.$cell.html('<a data-sly-test="${run.time}" '
           + 'is="coral-anchorbutton" '
           + 'iconsize="S" '
