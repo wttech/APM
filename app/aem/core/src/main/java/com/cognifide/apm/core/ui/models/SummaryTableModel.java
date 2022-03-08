@@ -30,12 +30,12 @@ import org.apache.sling.models.annotations.injectorspecific.OSGiService;
 @Model(adaptables = SlingHttpServletRequest.class)
 public final class SummaryTableModel {
 
-	@Getter
-	private final HistoryEntry entry;
+  @Getter
+  private final HistoryEntry entry;
 
-	@Inject
-	public SummaryTableModel(@OSGiService History history, SlingHttpServletRequest request) {
-		entry = history.findHistoryEntry(request.getResourceResolver(), request.getRequestPathInfo().getSuffix());
-	}
+  @Inject
+  public SummaryTableModel(@OSGiService History history, SlingHttpServletRequest request) {
+    entry = history.findHistoryEntry(request.getResourceResolver(), request.getRequestPathInfo().getSuffix());
+  }
 
 }
