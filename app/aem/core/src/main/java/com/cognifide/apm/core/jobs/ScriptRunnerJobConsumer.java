@@ -119,7 +119,7 @@ public class ScriptRunnerJobConsumer implements JobConsumer {
 
   private Map<String, String> getDefinitions(Job job) {
     HashMap<String, String> definitions = (HashMap<String, String>) job.getProperty("definitions");
-    if(definitions == null) {
+    if (definitions == null) {
       definitions = new HashMap<>();
     }
     return definitions;
