@@ -21,11 +21,19 @@ package com.cognifide.apm.core.jobs;
 
 import static com.cognifide.apm.core.utils.sling.SlingHelper.resolveDefault;
 
+import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.ExecutionMode;
+import com.cognifide.apm.api.services.ExecutionResult;
+import com.cognifide.apm.api.services.ScriptFinder;
+import com.cognifide.apm.api.services.ScriptManager;
+import com.cognifide.apm.core.Property;
+import com.cognifide.apm.core.history.History;
+import com.cognifide.apm.core.jobs.JobResultsCache.ExecutionSummary;
+import com.cognifide.apm.core.services.async.AsyncScriptExecutorImpl;
+import com.cognifide.apm.core.utils.sling.ResolveCallback;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.jcr.RepositoryException;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -37,21 +45,11 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cognifide.apm.api.scripts.Script;
-import com.cognifide.apm.api.services.ExecutionMode;
-import com.cognifide.apm.api.services.ExecutionResult;
-import com.cognifide.apm.api.services.ScriptFinder;
-import com.cognifide.apm.api.services.ScriptManager;
-import com.cognifide.apm.core.Property;
-import com.cognifide.apm.core.history.History;
-import com.cognifide.apm.core.jobs.JobResultsCache.ExecutionSummary;
-import com.cognifide.apm.core.utils.sling.ResolveCallback;
-
 @Component(
     immediate = true,
     service = JobConsumer.class,
     property = {
-        Property.TOPIC + ScriptRunnerJobManagerImpl.JOB_SCRIPT_RUN_TOPIC
+        Property.TOPIC + AsyncScriptExecutorImpl.TOPIC
     }
 )
 public class ScriptRunnerJobConsumer implements JobConsumer {
@@ -110,7 +108,7 @@ public class ScriptRunnerJobConsumer implements JobConsumer {
 
   private ExecutionMode getMode(Job job) {
     ExecutionMode result = null;
-    String modeName = (String) job.getProperty(ScriptRunnerJobManagerImpl.MODE_NAME_PROPERTY_NAME);
+    String modeName = (String) job.getProperty(AsyncScriptExecutorImpl.EXECUTION_MODE);
     if (StringUtils.isNotBlank(modeName)) {
       result = StringUtils.isEmpty(modeName) ? ExecutionMode.DRY_RUN : ExecutionMode.valueOf(modeName.toUpperCase());
     } else {
@@ -121,15 +119,14 @@ public class ScriptRunnerJobConsumer implements JobConsumer {
 
   private Map<String, String> getDefinitions(Job job) {
     HashMap<String, String> definitions = (HashMap<String, String>) job.getProperty("definitions");
-    if(definitions == null) {
+    if (definitions == null) {
       definitions = new HashMap<>();
     }
     return definitions;
   }
 
   private Script getScript(Job job, ResourceResolver resolver) {
-    String scriptSearchPath = (String) job
-        .getProperty(ScriptRunnerJobManagerImpl.SCRIPT_PATH_PROPERTY_NAME);
+    String scriptSearchPath = (String) job.getProperty(AsyncScriptExecutorImpl.SCRIPT_PATH);
     if (StringUtils.isNotBlank(scriptSearchPath)) {
       final Script script = scriptFinder.find(scriptSearchPath, resolver);
       if (script == null) {
@@ -144,6 +141,6 @@ public class ScriptRunnerJobConsumer implements JobConsumer {
   }
 
   private String getUserId(Job job) {
-    return job.getProperty(ScriptRunnerJobManagerImpl.USER_NAME_PROPERTY_NAME, String.class);
+    return job.getProperty(AsyncScriptExecutorImpl.USER_ID, String.class);
   }
 }
