@@ -19,6 +19,7 @@
  */
 package com.cognifide.apm.core.services.crypto
 
+import com.adobe.granite.crypto.CryptoException
 import com.adobe.granite.crypto.CryptoSupport
 import com.cognifide.apm.core.Property
 import org.apache.commons.lang3.StringUtils
@@ -43,10 +44,18 @@ class DecryptionServiceImpl : DecryptionService {
     override fun decrypt(text: String): String {
         val tokens = StringUtils.substringsBetween(text, "{", "}")
                 .orEmpty()
-                .map { it to cryptoSupport.unprotect("{$it}") }
+                .map { it to unprotect("{$it}") }
                 .toMap()
         val strSubstitutor = StrSubstitutor(tokens, "{", "}")
         return strSubstitutor.replace(text)
+    }
+
+    private fun unprotect(text: String): String {
+        return try {
+            cryptoSupport.unprotect(text)
+        } catch (e: CryptoException) {
+            text
+        }
     }
 
 }
