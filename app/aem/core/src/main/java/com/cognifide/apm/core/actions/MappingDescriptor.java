@@ -26,7 +26,7 @@ import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.apm.core.actions.ParameterDescriptor.NamedParameterDescriptor;
 import com.cognifide.apm.core.actions.ParameterDescriptor.RequiredParameterDescriptor;
 import com.cognifide.apm.core.grammar.argument.Arguments;
-import com.cognifide.apm.core.services.crypto.DecryptionService;
+import com.cognifide.apm.core.crypto.DecryptionService;
 import com.google.common.collect.ImmutableList;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

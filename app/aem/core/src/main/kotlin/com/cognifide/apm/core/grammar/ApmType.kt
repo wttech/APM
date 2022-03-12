@@ -20,7 +20,7 @@
 
 package com.cognifide.apm.core.grammar
 
-import com.cognifide.apm.core.services.crypto.DecryptionService
+import com.cognifide.apm.core.crypto.DecryptionService
 
 abstract class ApmType {
     abstract fun getArgument(decryptionService: DecryptionService): Any?

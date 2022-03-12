@@ -17,7 +17,7 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.core.services.crypto
+package com.cognifide.apm.core.crypto
 
 import com.adobe.granite.crypto.CryptoException
 import com.adobe.granite.crypto.CryptoSupport

@@ -22,7 +22,7 @@ package com.cognifide.apm.core.actions;
 
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.core.grammar.argument.Arguments;
-import com.cognifide.apm.core.services.crypto.DecryptionService;
+import com.cognifide.apm.core.crypto.DecryptionService;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;

@@ -27,7 +27,7 @@ import com.cognifide.apm.api.actions.annotations.Named;
 import com.cognifide.apm.api.actions.annotations.Required;
 import com.cognifide.apm.core.grammar.ApmType;
 import com.cognifide.apm.core.grammar.argument.Arguments;
-import com.cognifide.apm.core.services.crypto.DecryptionService;
+import com.cognifide.apm.core.crypto.DecryptionService;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;

@@ -23,7 +23,7 @@ import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.exceptions.ActionCreationException;
 import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.grammar.argument.Arguments;
-import com.cognifide.apm.core.services.crypto.DecryptionService;
+import com.cognifide.apm.core.crypto.DecryptionService;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
