@@ -25,6 +25,7 @@ aem {
                 importPackage("javax.annotation;version=0.0.0")
                 attribute("Sling-Model-Packages",
                         listOf(
+                                "com.cognifide.apm.core.crypto",
                                 "com.cognifide.apm.core.endpoints",
                                 "com.cognifide.apm.core.ui.models",
                                 "com.cognifide.apm.core.scripts",

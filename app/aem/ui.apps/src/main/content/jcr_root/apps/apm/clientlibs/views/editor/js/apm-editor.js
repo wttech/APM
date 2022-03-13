@@ -132,8 +132,41 @@
           }
         });
       },
+      protectText: function () {
+        const self = this;
+        let range = self.editor.find(/{{.*}}/g, {
+          wrap: true,
+          caseSensitive: false,
+          wholeWord: false,
+          regExp: true,
+          preventScroll: true
+        });
+        const value = range && self.editor.session.getTextRange(range);
+
+        $.ajax({
+          type: 'POST',
+          async: false,
+          url: '/bin/apm/scripts/protect',
+          data: {
+            token: value
+          },
+          success: function (response) {
+            range = self.editor.find(value, {
+              wrap: true,
+              caseSensitive: false,
+              wholeWord: false,
+              regExp: false,
+              preventScroll: true
+            });
+            range && self.editor.session.replace(range, response.text);
+          },
+          error: function (response) {
+          }
+        });
+      },
 
       initEditor: function () {
+        const self = this;
         let editor = null;
 
         ace.config.set('basePath', '/apps/apm/clientlibs/externals/ace/js');
@@ -153,6 +186,14 @@
             enableSnippets: true,
             enableLiveAutocompletion: true
           });
+        });
+
+        editor.session.on('change', function (delta) {
+          const value = editor.session.getValue();
+          if (value.includes("{{") && value.includes("}}")
+              && delta.data.action.startsWith("insert")) {
+            self.protectText();
+          }
         });
 
         return editor;
