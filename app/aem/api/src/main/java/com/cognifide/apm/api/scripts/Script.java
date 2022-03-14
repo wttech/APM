@@ -56,11 +56,6 @@ public interface Script {
 	Date getLastExecuted();
 
 	/**
-	 * Check run on publish
-	 */
-	boolean isPublishRun();
-
-	/**
 	 * Returns the path for the script file
 	 */
 	String getPath();
@@ -84,10 +79,5 @@ public interface Script {
 	 * Return copy of the file
 	 */
 	String getData();
-
-	/**
-	 * Return user that replicated script
-	 */
-	String getReplicatedBy();
 
 }
