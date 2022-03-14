@@ -35,10 +35,6 @@ public interface HistoryEntry {
 
   String getScriptName();
 
-  String getInstanceHostname();
-
-  String getInstanceType();
-
   boolean isRunSuccessful();
 
   String getMode();

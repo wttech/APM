@@ -41,7 +41,7 @@
     ${item.author}
   </td>
   <td is="coral-table-cell" value="${item.launchEnabled ? item.launchMode : 'Disabled'}" class="launch-${item.launchEnabled ? 'enabled' : 'disabled'}">
-    <sly data-sly-test="${item.launchEnabled}">${item.launchMode}${item.launchMode != 'On Demand' ? ' ({0})' : '' @ format=[item.launchEnvironment]}</sly>
+    <sly data-sly-test="${item.launchEnabled}">${item.launchMode}${item.launchMode == 'On Demand' || item.launchEnvironment == '' ? '' : ' ({0})' @ format=[item.launchEnvironment]}</sly>
     <sly data-sly-test="${!item.folder && !item.launchEnabled}">Disabled</sly>
     <sly data-sly-test="${item.folder}"></sly>
   </td>
