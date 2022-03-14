@@ -62,10 +62,6 @@
             jcr:primaryType="nt:unstructured"
             jcr:title="Mode"
             sortable="{Boolean}true"/>
-          <instance
-            jcr:primaryType="nt:unstructured"
-            jcr:title="Instance"
-            sortable="{Boolean}true"/>
           <runStatus
             jcr:primaryType="nt:unstructured"
             jcr:title="Run status"
