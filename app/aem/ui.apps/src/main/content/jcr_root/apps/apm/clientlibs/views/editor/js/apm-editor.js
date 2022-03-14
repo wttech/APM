@@ -192,7 +192,8 @@
 
         editor.session.on('change', function (delta) {
           const value = editor.session.getValue();
-          if (value.includes('{{') && value.includes('}}')
+          if (value.indexOf('{{') > -1
+              && value.indexOf('{{') < value.lastIndexOf('}}')
               && delta.data.action.startsWith('insert')) {
             self.protectText();
           }

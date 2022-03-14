@@ -47,7 +47,7 @@ class DecryptionServiceImpl : DecryptionService {
                 .map { it to unprotect("{$it}") }
                 .toMap()
         val strSubstitutor = StrSubstitutor(tokens, "{", "}")
-        return strSubstitutor.replace(text)
+        return if (tokens.isEmpty()) text else strSubstitutor.replace(text)
     }
 
     private fun unprotect(text: String): String {
