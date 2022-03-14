@@ -141,18 +141,18 @@
           regExp: true,
           preventScroll: true
         });
-        const value = range && self.editor.session.getTextRange(range);
+        const token = range && self.editor.session.getTextRange(range);
 
         $.ajax({
           type: 'POST',
           async: false,
           url: '/bin/apm/scripts/protect',
           data: {
-            token: value
+            text: token.substring(token.indexOf('{{') + 1, token.indexOf('}}'))
           },
           success: function (response) {
             setTimeout(function () {
-              range = self.editor.find(value, {
+              range = self.editor.find(token, {
                 wrap: true,
                 caseSensitive: false,
                 wholeWord: false,
@@ -192,8 +192,8 @@
 
         editor.session.on('change', function (delta) {
           const value = editor.session.getValue();
-          if (value.includes("{{") && value.includes("}}")
-              && delta.data.action.startsWith("insert")) {
+          if (value.includes('{{') && value.includes('}}')
+              && delta.data.action.startsWith('insert')) {
             self.protectText();
           }
         });
