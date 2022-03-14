@@ -32,7 +32,6 @@ import com.cognifide.apm.core.scripts.ScriptFilters.onInstallIfModified
 import com.cognifide.apm.core.services.ModifiedScriptFinder
 import com.cognifide.apm.core.services.event.ApmEvent
 import com.cognifide.apm.core.services.event.EventManager
-import com.cognifide.apm.core.utils.InstanceTypeProvider
 import com.cognifide.apm.core.utils.sling.SlingHelper
 import org.apache.jackrabbit.vault.fs.api.ProgressTrackerListener
 import org.apache.jackrabbit.vault.packaging.InstallContext
@@ -100,8 +99,8 @@ class ApmInstallHook : OsgiAwareInstallHook() {
     }
 
     private fun getCurrentEnvironment(): LaunchEnvironment {
-        val instanceTypeProvider = getService(InstanceTypeProvider::class.java)
-        return if (instanceTypeProvider.isOnAuthor) LaunchEnvironment.AUTHOR else LaunchEnvironment.PUBLISH
+        val slingSettings = getService(SlingSettingsService::class.java)
+        return LaunchEnvironment.of(slingSettings)
     }
 
     private fun logStatus(context: InstallContext, scriptPath: String, result: ExecutionResult) {
