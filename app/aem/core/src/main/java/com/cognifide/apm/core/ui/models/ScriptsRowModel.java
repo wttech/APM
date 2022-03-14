@@ -34,10 +34,12 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import lombok.Getter;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.apache.sling.api.resource.Resource;
@@ -99,10 +101,13 @@ public final class ScriptsRowModel {
         this.runs.add(createScriptRun("dryRun", script, scriptHistory.getLastLocalDryRun()));
         this.runs.add(createScriptRun("runOnAuthor", script, scriptHistory.getLastLocalRun()));
         this.launchMode = label(script.getLaunchMode());
-        this.launchEnvironment = label(script.getLaunchEnvironment());
-        if (CollectionUtils.isNotEmpty(script.getLaunchRunModes())) {
-          this.launchEnvironment += "+" + StringUtils.join(script.getLaunchRunModes(), ",");
-        }
+        this.launchEnvironment = Stream.concat(
+                Stream.of(script.getLaunchEnvironment().getRunMode()),
+                CollectionUtils.emptyIfNull(script.getLaunchRunModes()).stream()
+            )
+            .filter(StringUtils::isNotBlank)
+            .distinct()
+            .collect(Collectors.joining(", "));
         this.isLaunchEnabled = script.isLaunchEnabled();
       });
     }
