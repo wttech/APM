@@ -26,7 +26,6 @@ import com.cognifide.apm.core.endpoints.AbstractFormServlet
 import com.cognifide.apm.core.endpoints.response.ResponseEntity
 import com.cognifide.apm.core.endpoints.response.badRequest
 import com.cognifide.apm.core.endpoints.response.ok
-import org.apache.commons.lang3.StringUtils
 import org.apache.sling.api.resource.ResourceResolver
 import org.apache.sling.models.factory.ModelFactory
 import org.osgi.service.component.annotations.Component
@@ -55,10 +54,9 @@ class ProtectTextServlet : AbstractFormServlet<ProtectTextForm>(ProtectTextForm:
 
     override fun doPost(form: ProtectTextForm, resourceResolver: ResourceResolver): ResponseEntity<Any> {
         return try {
-            val text = StringUtils.substringBetween(form.token, "{{", "}}")
             ok {
                 message = "Text successfully encrypted"
-                "text" set cryptoSupport.protect(text)
+                "text" set cryptoSupport.protect(form.text)
             }
         } catch (e: CryptoException) {
             badRequest {
