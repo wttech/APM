@@ -151,14 +151,16 @@
             token: value
           },
           success: function (response) {
-            range = self.editor.find(value, {
-              wrap: true,
-              caseSensitive: false,
-              wholeWord: false,
-              regExp: false,
-              preventScroll: true
-            });
-            range && self.editor.session.replace(range, response.text);
+            setTimeout(function () {
+              range = self.editor.find(value, {
+                wrap: true,
+                caseSensitive: false,
+                wholeWord: false,
+                regExp: false,
+                preventScroll: true
+              });
+              range && self.editor.session.replace(range, response.text);
+            }, 10);
           },
           error: function (response) {
           }
