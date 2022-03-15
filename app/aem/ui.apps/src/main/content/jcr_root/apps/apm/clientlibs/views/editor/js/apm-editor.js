@@ -134,12 +134,9 @@
       },
       protectText: function () {
         const self = this;
-        let range = self.editor.find(/{{.*}}/g, {
+        let range = self.editor.find(/{{((?!}}).)+}}/, {
           wrap: true,
-          caseSensitive: false,
-          wholeWord: false,
-          regExp: true,
-          preventScroll: true
+          regExp: true
         });
         const token = range && self.editor.session.getTextRange(range);
 
@@ -153,11 +150,7 @@
           success: function (response) {
             setTimeout(function () {
               range = self.editor.find(token, {
-                wrap: true,
-                caseSensitive: false,
-                wholeWord: false,
-                regExp: false,
-                preventScroll: true
+                wrap: true
               });
               range && self.editor.session.replace(range, response.text);
             }, 10);
