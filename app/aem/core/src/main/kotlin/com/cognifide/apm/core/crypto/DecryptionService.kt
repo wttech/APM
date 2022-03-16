@@ -19,8 +19,43 @@
  */
 package com.cognifide.apm.core.crypto
 
-interface DecryptionService {
+import com.adobe.granite.crypto.CryptoException
+import com.adobe.granite.crypto.CryptoSupport
+import com.cognifide.apm.core.Property
+import org.apache.commons.lang3.StringUtils
+import org.apache.commons.lang3.text.StrSubstitutor
+import org.osgi.service.component.annotations.Component
+import org.osgi.service.component.annotations.Reference
 
-    fun decrypt(text: String): String
+@Component(
+        immediate = true,
+        service = [DecryptionService::class],
+        property = [
+            Property.DESCRIPTION + "APM Service for decryption encrypted values",
+            Property.VENDOR
+        ]
+)
+class DecryptionService {
+
+    @Reference
+    @Transient
+    private lateinit var cryptoSupport: CryptoSupport
+
+    fun decrypt(text: String): String {
+        val tokens = StringUtils.substringsBetween(text, "{", "}")
+                .orEmpty()
+                .map { it to unprotect("{$it}") }
+                .toMap()
+        val strSubstitutor = StrSubstitutor(tokens, "{", "}")
+        return if (tokens.isEmpty()) text else strSubstitutor.replace(text)
+    }
+
+    private fun unprotect(text: String): String {
+        return try {
+            cryptoSupport.unprotect(text)
+        } catch (e: CryptoException) {
+            text
+        }
+    }
 
 }

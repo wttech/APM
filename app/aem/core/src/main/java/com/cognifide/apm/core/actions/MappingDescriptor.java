@@ -26,7 +26,6 @@ import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.apm.core.actions.ParameterDescriptor.NamedParameterDescriptor;
 import com.cognifide.apm.core.actions.ParameterDescriptor.RequiredParameterDescriptor;
 import com.cognifide.apm.core.grammar.argument.Arguments;
-import com.cognifide.apm.core.crypto.DecryptionService;
 import com.google.common.collect.ImmutableList;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -87,9 +86,9 @@ public class MappingDescriptor {
     return ListUtils.removeAll(arguments.getNamed().keySet(), expectedKeys).isEmpty();
   }
 
-  public Action handle(Object mapper, Arguments arguments, DecryptionService decryptionService) {
+  public Action handle(Object mapper, Arguments arguments, MapperContext mapperContext) {
     List<Object> args = parameterDescriptors.stream()
-        .map(parameterDescriptor -> parameterDescriptor.getArgument(arguments, decryptionService))
+        .map(parameterDescriptor -> parameterDescriptor.getArgument(arguments, mapperContext.getDecryptionService()))
         .collect(Collectors.toList());
     try {
       return (Action) method.invoke(mapper, args.toArray());

@@ -23,7 +23,6 @@ import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.exceptions.ActionCreationException;
 import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.grammar.argument.Arguments;
-import com.cognifide.apm.core.crypto.DecryptionService;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -48,7 +47,7 @@ public class ActionFactoryImpl implements ActionFactory {
   private ActionMapperRegistry registry;
 
   @Reference
-  private DecryptionService decryptionService;
+  private MapperContext mapperContext;
 
   public ActionDescriptor evaluate(String command, Arguments arguments) throws ActionCreationException {
     Optional<MapperDescriptor> mapper = registry.getMapper(command);
@@ -61,7 +60,7 @@ public class ActionFactoryImpl implements ActionFactory {
   private Action tryToEvaluateCommand(MapperDescriptor mapper, Arguments arguments)
       throws ActionCreationException {
     if (mapper.handles(arguments)) {
-      return mapper.handle(arguments, decryptionService);
+      return mapper.handle(arguments, mapperContext);
     }
     throw new ActionCreationException("Mapper cannot handle given arguments: " + arguments);
   }
