@@ -140,24 +140,23 @@
         });
         const token = range && self.editor.session.getTextRange(range);
 
-        $.ajax({
-          type: 'POST',
-          async: false,
-          url: '/bin/apm/scripts/protect',
-          data: {
-            text: token.substring(token.indexOf('{{') + 1, token.indexOf('}}'))
-          },
-          success: function (response) {
+        if (token) {
+          $.ajax({
+            type: 'POST',
+            async: false,
+            url: '/bin/apm/scripts/protect',
+            data: {
+              text: token.substring(token.indexOf('{{') + 1, token.indexOf('}}'))
+            }
+          }).done(function (data) {
             setTimeout(function () {
               range = self.editor.find(token, {
                 wrap: true
               });
-              range && self.editor.session.replace(range, response.text);
+              range && self.editor.session.replace(range, data.text);
             }, 10);
-          },
-          error: function (response) {
-          }
-        });
+          });
+        }
       },
 
       initEditor: function () {
