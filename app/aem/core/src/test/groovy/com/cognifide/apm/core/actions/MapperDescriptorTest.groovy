@@ -33,7 +33,12 @@ import spock.lang.Unroll
 
 class MapperDescriptorTest extends Specification {
 
-    def decryptionService = Mock(DecryptionService)
+    def mapperContext = new MapperContext() {
+        @Override
+        DecryptionService getDecryptionService() {
+            return new DecryptionService()
+        }
+    }
 
     def "cannot create MapperDescriptor for class without Mapper annotation"() {
         given:
@@ -94,7 +99,7 @@ class MapperDescriptorTest extends Specification {
         expect:
         MapperDescriptorFactory mapperDescriptorFactory = new MapperDescriptorFactory()
         def mapperDescriptor = mapperDescriptorFactory.create(SampleMapper.class)
-        mapperDescriptor.handle(toArguments(required, named, flags), decryptionService).name == result
+        mapperDescriptor.handle(toArguments(required, named, flags), mapperContext).name == result
 
         where:
         required                         | named         | flags         || result
@@ -108,7 +113,7 @@ class MapperDescriptorTest extends Specification {
         expect:
         MapperDescriptorFactory mapperDescriptorFactory = new MapperDescriptorFactory()
         def mapperDescriptor = mapperDescriptorFactory.create(SampleMapper.class)
-        mapperDescriptor.handle(toArguments([], [:], flags), decryptionService).name == result
+        mapperDescriptor.handle(toArguments([], [:], flags), mapperContext).name == result
 
         where:
         flags                 || result
@@ -122,7 +127,7 @@ class MapperDescriptorTest extends Specification {
         expect:
         MapperDescriptorFactory mapperDescriptorFactory = new MapperDescriptorFactory()
         def mapperDescriptor = mapperDescriptorFactory.create(SampleMapper.class)
-        mapperDescriptor.handle(toArguments(["/content"], [:], flags), decryptionService).name == result
+        mapperDescriptor.handle(toArguments(["/content"], [:], flags), mapperContext).name == result
 
         where:
         flags                 || result
