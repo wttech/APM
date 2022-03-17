@@ -99,8 +99,8 @@
         const formData = new FormData();
         $.each(fieldNames, (index, fieldName) => {
           const originalValue = fieldName === 'apm:launchRunModes'
-              ? originalFormData.getAll(fieldName)
-              : originalFormData.get(fieldName);
+            ? originalFormData.getAll(fieldName)
+            : originalFormData.get(fieldName);
           if (originalValue) {
             formData.set(fieldName, originalValue);
           }
@@ -139,24 +139,21 @@
           regExp: true
         });
         const token = range && self.editor.session.getTextRange(range);
-
-        if (token) {
-          $.ajax({
-            type: 'POST',
-            async: false,
-            url: '/bin/apm/scripts/protect',
-            data: {
-              text: token.substring(token.indexOf('{{') + 1, token.indexOf('}}'))
-            }
-          }).done(function (data) {
-            setTimeout(function () {
-              range = self.editor.find(token, {
-                wrap: true
-              });
-              range && self.editor.session.replace(range, data.text);
-            }, 10);
-          });
-        }
+        token && $.ajax({
+          type: 'POST',
+          async: false,
+          url: '/bin/apm/scripts/protect',
+          data: {
+            text: token.substring(token.indexOf('{{') + 1, token.indexOf('}}'))
+          }
+        }).done(function (data) {
+          setTimeout(function () {
+            range = self.editor.find(token, {
+              wrap: true
+            });
+            range && self.editor.session.replace(range, data.text);
+          }, 10);
+        });
       },
 
       initEditor: function () {
@@ -185,8 +182,8 @@
         editor.session.on('change', function (delta) {
           const value = editor.session.getValue();
           if (value.indexOf('{{') > -1
-              && value.indexOf('{{') < value.lastIndexOf('}}')
-              && delta.data.action.startsWith('insert')) {
+            && value.indexOf('{{') < value.lastIndexOf('}}')
+            && delta.data.action.startsWith('insert')) {
             self.protectText();
           }
         });
