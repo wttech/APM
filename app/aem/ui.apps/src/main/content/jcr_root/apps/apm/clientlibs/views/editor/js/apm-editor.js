@@ -99,8 +99,8 @@
         const formData = new FormData();
         $.each(fieldNames, (index, fieldName) => {
           const originalValue = fieldName === 'apm:launchRunModes'
-            ? originalFormData.getAll(fieldName)
-            : originalFormData.get(fieldName);
+              ? originalFormData.getAll(fieldName)
+              : originalFormData.get(fieldName);
           if (originalValue) {
             formData.set(fieldName, originalValue);
           }
