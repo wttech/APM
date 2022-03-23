@@ -65,6 +65,8 @@ Script validation tries to parse the content of the script to make sure proper a
 
 > There is a significant difference between validation and dry run. Successful validation is required in order to even dry run script. But simple validation won't give the certainty, that the script logic is right.
 
+Additional feature: text between '{{' and '}}' is automatically encrypted.
+
 ### References
 ![References](apm-references.png)
 
