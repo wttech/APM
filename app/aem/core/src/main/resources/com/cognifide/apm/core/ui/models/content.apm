@@ -5,7 +5,7 @@
 DEFINE path "/content/foo/bar"
 
 # Users & groups creation
-CREATE-USER "author" password= "secret"
+CREATE-USER "author" password="secret"
 CREATE-GROUP "authors" --IF-NOT-EXISTS
 
 # Permissions setting

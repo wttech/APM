@@ -20,30 +20,24 @@
 
 package com.cognifide.apm.core.actions;
 
-import com.cognifide.apm.api.actions.Action;
-import com.cognifide.apm.core.grammar.argument.Arguments;
-import java.util.List;
-import lombok.AccessLevel;
+import com.cognifide.apm.core.Property;
+import com.cognifide.apm.core.crypto.DecryptionService;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
+@Component(
+    immediate = true,
+    service = MapperContext.class,
+    property = {
+        Property.DESCRIPTION + "Mapper Context service",
+        Property.VENDOR
+    }
+)
 @Getter
-@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-public class MapperDescriptor {
+public class MapperContext {
 
-  private final Object mapper;
-  private final String name;
-  private final String group;
-  private final List<MappingDescriptor> mappingDescriptors;
+  @Reference
+  private DecryptionService decryptionService;
 
-  public boolean handles(Arguments arguments) {
-    return mappingDescriptors.stream().anyMatch(it -> it.handles(arguments));
-  }
-
-  public Action handle(Arguments arguments, MapperContext mapperContext) {
-    return mappingDescriptors.stream()
-        .filter(it -> it.handles(arguments)).findFirst()
-        .orElseThrow(() -> new RuntimeException("Cannot find matching mapping method"))
-        .handle(mapper, arguments, mapperContext);
-  }
 }

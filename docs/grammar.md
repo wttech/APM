@@ -15,9 +15,11 @@ Thanks to ANTLR, APM has new layer of abstraction, which solves these and other 
 ### Definitions
 ```
 DEFINE baseGroup 'group-base'
+DEFINE encryptedBaseGroup '{284f457a09a3d7f31fbc078343bb93179647297075237025786edd28ece8b919}' # encrypted string
 
 CREATE-GROUP $baseGroup # usage of definition baseGroup
 CREATE-GROUP $baseGroup + '-2' # simple concatenation of string
+CREATE-GROUP $encryptedBaseGroup # usage of definition encryptedBaseGroup
 ```
 
 ### For Loop
