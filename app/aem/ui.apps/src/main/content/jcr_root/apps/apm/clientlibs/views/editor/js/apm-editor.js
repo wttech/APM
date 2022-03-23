@@ -144,7 +144,7 @@
           async: false,
           url: '/bin/apm/scripts/protect',
           data: {
-            text: token.substring(token.indexOf('{{') + 1, token.indexOf('}}'))
+            text: token.substring(token.indexOf('{{') + 2, token.indexOf('}}'))
           }
         }).done(function (data) {
           setTimeout(function () {
