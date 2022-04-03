@@ -21,8 +21,11 @@ aem {
             installBundleProject(":app:aem:core")
             installBundleProject(":app:aem:actions.main")
             vaultDefinition {
+                duplicatesStrategy = DuplicatesStrategy.EXCLUDE
                 version.set(rootProject.version as String)
                 description.set(project.description)
+                property("waitForOsgiEventsQuietInSec", "10")
+                property("installPathRegex", "/apps/apm/.*")
             }
         }
     }
