@@ -39,3 +39,5 @@ Then add properties to your scripts:
   apm:launchHook="orange"
 ```
 First script will be launched after installation of first package, and the other one, after installation of second package.        
+
+Packages with install hook can only be deployed after deployed package *apm-ui.apps*.
