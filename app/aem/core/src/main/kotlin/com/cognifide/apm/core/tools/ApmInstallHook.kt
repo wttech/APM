@@ -71,7 +71,8 @@ class ApmInstallHook : OsgiAwareInstallHook() {
     }
 
     private fun executeScripts(context: InstallContext, currentEnvironment: LaunchEnvironment, currentHook: String, resolver: ResourceResolver) {
-        context.options.listener.onMessage(ProgressTrackerListener.Mode.TEXT, "Installing APM scripts...", "")
+        context.options.listener?.onMessage(ProgressTrackerListener.Mode.TEXT, "Installing APM scripts...", "")
+        logger.info("Installing APM scripts...")
         val scriptManager = getService(ScriptManager::class.java)
         val scriptFinder = getService(ScriptFinder::class.java)
         val modifiedScriptFinder = getService(ModifiedScriptFinder::class.java)
@@ -84,7 +85,8 @@ class ApmInstallHook : OsgiAwareInstallHook() {
             val result: ExecutionResult = scriptManager.process(script, ExecutionMode.AUTOMATIC_RUN, resolver)
             logStatus(context, script.path, result)
         }
-        context.options.listener.onMessage(ProgressTrackerListener.Mode.TEXT, "APM scripts installed.", "")
+        context.options.listener?.onMessage(ProgressTrackerListener.Mode.TEXT, "APM scripts installed.", "")
+        logger.info("APM scripts installed.")
     }
 
     private fun getCurrentHook(context: InstallContext): String {
@@ -104,19 +106,20 @@ class ApmInstallHook : OsgiAwareInstallHook() {
     }
 
     private fun logStatus(context: InstallContext, scriptPath: String, result: ExecutionResult) {
-        context.options.listener.onMessage(ProgressTrackerListener.Mode.TEXT, "", scriptPath)
+        context.options.listener?.onMessage(ProgressTrackerListener.Mode.TEXT, "", scriptPath)
         if (result.isSuccess) {
             logger.info("Script successfully executed: $scriptPath")
         } else {
             val packageException = PackageException("Script cannot be executed properly: $scriptPath")
-            context.options.listener.onError(ProgressTrackerListener.Mode.TEXT, "", packageException)
+            context.options.listener?.onError(ProgressTrackerListener.Mode.TEXT, "", packageException)
+            logger.error("", packageException)
             result.entries
                     .stream()
                     .filter { it.status == Status.ERROR }
                     .map { it.messages }
                     .flatMap { it.stream() }
-                    .forEach { context.options.listener.onMessage(ProgressTrackerListener.Mode.TEXT, "E", it) }
-            context.options.listener.onMessage(ProgressTrackerListener.Mode.TEXT, "APM scripts installed (with errors, check logs!)", "")
+                    .forEach { context.options.listener?.onMessage(ProgressTrackerListener.Mode.TEXT, "E", it) }
+            context.options.listener?.onMessage(ProgressTrackerListener.Mode.TEXT, "APM scripts installed (with errors, check logs!)", "")
             throw packageException
         }
     }
