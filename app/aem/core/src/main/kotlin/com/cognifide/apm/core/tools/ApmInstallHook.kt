@@ -60,6 +60,8 @@ class ApmInstallHook : OsgiAwareInstallHook() {
         val resolverFactory = getService(ResourceResolverFactory::class.java)
 
         try {
+            context.options.listener?.onMessage(ProgressTrackerListener.Mode.TEXT, "Installing APM scripts...", "")
+            logger.info("Installing APM scripts...")
             SlingHelper.operateTraced(resolverFactory) { resolver ->
                 executeScripts(context, currentEnvironment, currentHook, resolver)
             }
@@ -71,8 +73,6 @@ class ApmInstallHook : OsgiAwareInstallHook() {
     }
 
     private fun executeScripts(context: InstallContext, currentEnvironment: LaunchEnvironment, currentHook: String, resolver: ResourceResolver) {
-        context.options.listener?.onMessage(ProgressTrackerListener.Mode.TEXT, "Installing APM scripts...", "")
-        logger.info("Installing APM scripts...")
         val scriptManager = getService(ScriptManager::class.java)
         val scriptFinder = getService(ScriptFinder::class.java)
         val modifiedScriptFinder = getService(ModifiedScriptFinder::class.java)
