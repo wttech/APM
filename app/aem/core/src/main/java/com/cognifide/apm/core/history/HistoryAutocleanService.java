@@ -27,6 +27,7 @@ import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.serviceusermapping.ServiceUserMapped;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -48,6 +49,9 @@ public class HistoryAutocleanService implements Runnable {
 
   @Reference
   private ResourceResolverFactory resolverFactory;
+
+  @Reference
+  private ServiceUserMapped serviceUserMapped;
 
   @Reference
   private History history;

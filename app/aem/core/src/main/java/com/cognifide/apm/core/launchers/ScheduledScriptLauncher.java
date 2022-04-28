@@ -33,6 +33,7 @@ import java.util.List;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.serviceusermapping.ServiceUserMapped;
 import org.apache.sling.settings.SlingSettingsService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -62,6 +63,9 @@ public class ScheduledScriptLauncher extends AbstractLauncher implements Runnabl
 
   @Reference
   private SlingSettingsService slingSettings;
+
+  @Reference
+  private ServiceUserMapped serviceUserMapped;
 
   @Reference
   private ResourceResolverFactory resolverFactory;

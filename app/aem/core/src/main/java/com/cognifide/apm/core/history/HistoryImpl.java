@@ -47,6 +47,7 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.api.resource.ValueMap;
+import org.apache.sling.serviceusermapping.ServiceUserMapped;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -77,6 +78,9 @@ public class HistoryImpl implements History {
 
   @Reference
   private ResourceResolverFactory resolverFactory;
+
+  @Reference
+  private ServiceUserMapped serviceUserMapped;
 
   @Reference
   private VersionService versionService;

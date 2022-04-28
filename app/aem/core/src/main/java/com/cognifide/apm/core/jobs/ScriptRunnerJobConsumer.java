@@ -40,6 +40,7 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.event.jobs.Job;
 import org.apache.sling.event.jobs.consumer.JobConsumer;
+import org.apache.sling.serviceusermapping.ServiceUserMapped;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -70,6 +71,9 @@ public class ScriptRunnerJobConsumer implements JobConsumer {
 
   @Reference
   private ResourceResolverFactory resolverFactory;
+
+  @Reference
+  private ServiceUserMapped serviceUserMapped;
 
   @Override
   public JobResult process(final Job job) {

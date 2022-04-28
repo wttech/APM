@@ -38,6 +38,7 @@ import javax.jcr.RepositoryException;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.serviceusermapping.ServiceUserMapped;
 import org.apache.sling.settings.SlingSettingsService;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -69,6 +70,9 @@ public class StartupScriptLauncher extends AbstractLauncher {
 
   @Reference
   private ResourceResolverFactory resolverFactory;
+
+  @Reference
+  private ServiceUserMapped serviceUserMapped;
 
   public void process() {
     SlingHelper.operateTraced(resolverFactory, this::process);
