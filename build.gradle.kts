@@ -54,6 +54,7 @@ tasks {
         excludes.add("**/*.svg")
         excludes.add("**/*.png")
         excludes.add("**/*.cnd")
+        excludes.add("**/*.config")
 
         // Module
         excludes.add("**/docs/*")
