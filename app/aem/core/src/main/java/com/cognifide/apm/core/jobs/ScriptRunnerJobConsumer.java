@@ -29,6 +29,7 @@ import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.history.History;
 import com.cognifide.apm.core.jobs.JobResultsCache.ExecutionSummary;
+import com.cognifide.apm.core.services.ResourceResolverProvider;
 import com.cognifide.apm.core.services.async.AsyncScriptExecutorImpl;
 import com.cognifide.apm.core.utils.sling.ResolveCallback;
 import java.util.HashMap;
@@ -37,10 +38,8 @@ import javax.jcr.RepositoryException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.event.jobs.Job;
 import org.apache.sling.event.jobs.consumer.JobConsumer;
-import org.apache.sling.serviceusermapping.ServiceUserMapped;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -70,10 +69,7 @@ public class ScriptRunnerJobConsumer implements JobConsumer {
   private JobResultsCache jobResultsCache;
 
   @Reference
-  private ResourceResolverFactory resolverFactory;
-
-  @Reference
-  private ServiceUserMapped serviceUserMapped;
+  private ResourceResolverProvider resolverProvider;
 
   @Override
   public JobResult process(final Job job) {
@@ -81,7 +77,7 @@ public class ScriptRunnerJobConsumer implements JobConsumer {
     final String id = job.getId();
     final ExecutionMode mode = getMode(job);
     final String userId = getUserId(job);
-    return resolveDefault(resolverFactory, userId, (ResolveCallback<JobResult>) resolver -> {
+    return resolveDefault(resolverProvider, userId, (ResolveCallback<JobResult>) resolver -> {
       JobResult result = JobResult.FAILED;
       final Script script = getScript(job, resolver);
       if (script != null && mode != null) {
@@ -100,7 +96,7 @@ public class ScriptRunnerJobConsumer implements JobConsumer {
   }
 
   private String getSummaryPath(Script script, ExecutionMode mode) {
-    return resolveDefault(resolverFactory, (ResolveCallback<String>) resolver -> {
+    return resolveDefault(resolverProvider, (ResolveCallback<String>) resolver -> {
       if (mode == ExecutionMode.DRY_RUN) {
         return history.findScriptHistory(resolver, script).getLastLocalDryRunPath();
       } else if (mode == ExecutionMode.RUN) {

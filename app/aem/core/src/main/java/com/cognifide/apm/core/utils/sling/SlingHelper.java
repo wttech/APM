@@ -19,15 +19,14 @@
  */
 package com.cognifide.apm.core.utils.sling;
 
-import com.google.common.collect.Maps;
-import java.util.HashMap;
-import java.util.Map;
-import org.apache.sling.api.resource.LoginException;
+import com.cognifide.apm.core.services.ResourceResolverProvider;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SlingHelper {
 
   private static final Logger LOG = LoggerFactory.getLogger(SlingHelper.class);
@@ -36,50 +35,37 @@ public final class SlingHelper {
 
   private static final String OPERATE_ERROR_MESSAGE = "Error occurred while operating on data from repository.";
 
-  private static final String SUBSERVICE_NAME = "apm";
-
-  private SlingHelper() {
-    // hidden constructor
-  }
-
   /**
    * Retrieve values from repository with wrapped impersonated session (automatically opened and closed).
    */
   @SuppressWarnings("unchecked")
-  public static <T> T resolve(ResourceResolverFactory factory, String userId, ResolveCallback callback)
+  public static <T> T resolve(ResourceResolverProvider provider, String userId, ResolveCallback callback)
       throws ResolveException {
-    ResourceResolver resolver = null;
-    try {
-      resolver = getResourceResolverForUser(factory, userId);
+    try (ResourceResolver resolver = provider.getResourceResolver(userId)) {
       return (T) callback.resolve(resolver);
     } catch (Exception e) {
       throw new ResolveException(RESOLVE_ERROR_MESSAGE, e);
-    } finally {
-      if (resolver != null && resolver.isLive()) {
-        resolver.close();
-      }
     }
   }
 
   /**
    * Retrieve values from repository with wrapped session (automatically opened and closed).
    */
-  public static <T> T resolveDefault(ResourceResolverFactory factory, ResolveCallback callback,
-      T defaultValue) {
-    return resolveDefault(factory, null, callback, defaultValue);
+  public static <T> T resolveDefault(ResourceResolverProvider provider, ResolveCallback callback,
+                                     T defaultValue) {
+    return resolveDefault(provider, null, callback, defaultValue);
   }
 
   /**
    * Retrieve values from repository with wrapped session (automatically opened and closed).
    */
-  public static <T> T resolveDefault(ResourceResolverFactory factory, String userId, ResolveCallback callback,
-      T defaultValue) {
+  public static <T> T resolveDefault(ResourceResolverProvider provider, String userId, ResolveCallback callback,
+                                     T defaultValue) {
     try {
-      return resolve(factory, userId, callback);
+      return resolve(provider, userId, callback);
     } catch (ResolveException e) {
       LOG.error(RESOLVE_ERROR_MESSAGE, e);
     }
-
     return defaultValue;
   }
 
@@ -87,19 +73,13 @@ public final class SlingHelper {
    * Do some operation on repository (delete or update resource etc) with wrapped impersonated session
    * (automatically opened and closed).
    */
-  public static void operate(ResourceResolverFactory factory, String userId, OperateCallback callback)
+  public static void operate(ResourceResolverProvider provider, String userId, OperateCallback callback)
       throws OperateException {
-    ResourceResolver resolver = null;
-    try {
-      resolver = getResourceResolverForUser(factory, userId);
+    try (ResourceResolver resolver = provider.getResourceResolver(userId)) {
       callback.operate(resolver);
       resolver.commit();
     } catch (Exception e) {
       throw new OperateException(OPERATE_ERROR_MESSAGE, e);
-    } finally {
-      if (resolver != null && resolver.isLive()) {
-        resolver.close();
-      }
     }
   }
 
@@ -107,43 +87,20 @@ public final class SlingHelper {
    * Do some operation on repository (delete or update resource etc) with wrapped session (automatically
    * opened and closed).
    */
-  public static void operateTraced(ResourceResolverFactory factory, OperateCallback callback) {
-    operateTraced(factory, null, callback);
+  public static void operateTraced(ResourceResolverProvider provider, OperateCallback callback) {
+    operateTraced(provider, null, callback);
   }
 
   /**
    * Do some operation on repository (delete or update resource etc) with wrapped session (automatically
    * opened and closed).
    */
-  public static void operateTraced(ResourceResolverFactory factory, String userId, OperateCallback callback) {
+  public static void operateTraced(ResourceResolverProvider provider, String userId, OperateCallback callback) {
     try {
-      operate(factory, userId, callback);
+      operate(provider, userId, callback);
     } catch (OperateException e) {
       LOG.error(OPERATE_ERROR_MESSAGE, e);
     }
   }
 
-  /**
-   * Create a new session for specified user (impersonating).
-   */
-  public static ResourceResolver getResourceResolverForUser(ResourceResolverFactory factory, String userId)
-      throws LoginException {
-    ResourceResolver resolver;
-    if (userId != null) {
-      Map<String, Object> authenticationInfo = Maps.newHashMap();
-      authenticationInfo.put(ResourceResolverFactory.USER_IMPERSONATION, userId);
-      resolver = factory.getAdministrativeResourceResolver(authenticationInfo);
-    } else {
-      Map<String, Object> parameters = new HashMap<>();
-      parameters.put(ResourceResolverFactory.SUBSERVICE, SUBSERVICE_NAME);
-      resolver = factory.getServiceResourceResolver(parameters);
-    }
-
-    return resolver;
-  }
-
-  public static ResourceResolver getResourceResolverForService(ResourceResolverFactory factory)
-      throws LoginException {
-    return getResourceResolverForUser(factory, null);
-  }
 }

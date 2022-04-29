@@ -30,6 +30,7 @@ import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.services.ModifiedScriptFinder;
+import com.cognifide.apm.core.services.ResourceResolverProvider;
 import com.cognifide.apm.core.services.version.VersionService;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
 import java.util.ArrayList;
@@ -37,8 +38,6 @@ import java.util.List;
 import javax.jcr.RepositoryException;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.apache.sling.serviceusermapping.ServiceUserMapped;
 import org.apache.sling.settings.SlingSettingsService;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -69,13 +68,10 @@ public class StartupScriptLauncher extends AbstractLauncher {
   private VersionService versionService;
 
   @Reference
-  private ResourceResolverFactory resolverFactory;
-
-  @Reference
-  private ServiceUserMapped serviceUserMapped;
+  private ResourceResolverProvider resolverProvider;
 
   public void process() {
-    SlingHelper.operateTraced(resolverFactory, this::process);
+    SlingHelper.operateTraced(resolverProvider, this::process);
   }
 
   private void process(ResourceResolver resolver) {
