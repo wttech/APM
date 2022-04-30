@@ -20,13 +20,10 @@
 package com.cognifide.apm.core.utils.sling;
 
 import com.cognifide.apm.core.services.ResourceResolverProvider;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SlingHelper {
 
   private static final Logger LOG = LoggerFactory.getLogger(SlingHelper.class);
@@ -34,6 +31,10 @@ public final class SlingHelper {
   private static final String RESOLVE_ERROR_MESSAGE = "Error occurred while resolving data from repository.";
 
   private static final String OPERATE_ERROR_MESSAGE = "Error occurred while operating on data from repository.";
+
+  private SlingHelper() {
+    // hidden constructor
+  }
 
   /**
    * Retrieve values from repository with wrapped impersonated session (automatically opened and closed).
