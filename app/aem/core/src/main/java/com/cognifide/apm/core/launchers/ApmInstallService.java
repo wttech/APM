@@ -19,24 +19,19 @@
  */
 package com.cognifide.apm.core.launchers;
 
-import static com.cognifide.apm.core.scripts.ScriptFilters.onSchedule;
-
-import com.cognifide.apm.api.scripts.LaunchEnvironment;
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.apm.core.Property;
-import com.cognifide.apm.core.launchers.ScheduledScriptLauncher.ScheduleExecutorConfiguration;
 import com.cognifide.apm.core.services.ResourceResolverProvider;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
-import java.util.Date;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.settings.SlingSettingsService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
@@ -46,13 +41,16 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
     immediate = true,
     service = Runnable.class,
     property = {
-        Property.DESCRIPTION + "Launches scheduled scripts",
+        Property.DESCRIPTION + "Launches configured scripts",
         Property.VENDOR,
         Property.SCHEDULER + "0 * * * * ?"
     }
 )
-@Designate(ocd = ScheduleExecutorConfiguration.class)
-public class ScheduledScriptLauncher extends AbstractLauncher implements Runnable {
+@Designate(ocd = ApmInstallService.Configuration.class)
+public class ApmInstallService extends AbstractLauncher {
+
+  @Reference
+  private ResourceResolverProvider resolverProvider;
 
   @Reference
   private ScriptManager scriptManager;
@@ -60,43 +58,28 @@ public class ScheduledScriptLauncher extends AbstractLauncher implements Runnabl
   @Reference
   private ScriptFinder scriptFinder;
 
-  @Reference
-  private SlingSettingsService slingSettings;
-
-  @Reference
-  private ResourceResolverProvider resolverProvider;
-
-  private boolean enabled = true;
-
   @Activate
-  @Modified
-  public void activate(ScheduleExecutorConfiguration config) {
-    enabled = !config.disableScheduleExecutor();
+  public void activate(Configuration config) {
+    SlingHelper.operateTraced(resolverProvider, resolver -> processScripts(config.scriptPaths(), resolver));
   }
 
-  @Override
-  public void run() {
-    if (enabled) {
-      SlingHelper.operateTraced(resolverProvider, this::runScheduled);
-    }
-  }
-
-  private void runScheduled(ResourceResolver resolver) throws PersistenceException {
-    LaunchEnvironment environment = LaunchEnvironment.of(slingSettings);
-    List<Script> scripts = scriptFinder.findAll(onSchedule(environment, slingSettings, new Date()), resolver);
+  private void processScripts(String[] scriptPaths, ResourceResolver resolver) throws PersistenceException {
+    List<Script> scripts = Arrays.stream(scriptPaths)
+        .map(scriptPath -> scriptFinder.find(scriptPath, resolver))
+        .collect(Collectors.toList());
     processScripts(scripts, resolver);
   }
 
   @Override
-  public ScriptManager getScriptManager() {
+  protected ScriptManager getScriptManager() {
     return scriptManager;
   }
 
-  @ObjectClassDefinition(name = "AEM Permission Management - Schedule Launcher Configuration ")
-  public @interface ScheduleExecutorConfiguration {
+  @ObjectClassDefinition(name = "AEM Permission Management - Install Launcher Configuration ")
+  public @interface Configuration {
 
-    @AttributeDefinition(name = "Disable Schedule Launcher", defaultValue = "false")
-    boolean disableScheduleExecutor();
+    @AttributeDefinition(name = "Scripts Path")
+    String[] scriptPaths();
   }
 
 }

@@ -39,44 +39,43 @@ abstract class AbstractLauncher {
     logger = LoggerFactory.getLogger(this.getClass());
   }
 
-  void processScripts(List<Script> scripts, ResourceResolver resolver, LauncherType launcherType)
+  void processScripts(List<Script> scripts, ResourceResolver resolver)
       throws PersistenceException {
-
     if (!scripts.isEmpty()) {
       logger.info("Launcher will try to run following scripts: {}", scripts.size());
       logger.info(MessagingUtils.describeScripts(scripts));
       for (Script script : scripts) {
-        processScript(script, resolver, launcherType);
+        processScript(script, resolver);
       }
     }
   }
 
-  void processScript(Script script, ResourceResolver resolver, LauncherType launcherType)
+  void processScript(Script script, ResourceResolver resolver)
       throws PersistenceException {
-
-    final String scriptPath = script.getPath();
+    String scriptPath = script.getPath();
     try {
       if (!script.isValid()) {
         getScriptManager().process(script, ExecutionMode.VALIDATION, resolver);
       }
       if (script.isValid()) {
-        final ExecutionResult result = getScriptManager().process(script, ExecutionMode.AUTOMATIC_RUN, resolver);
-        logStatus(scriptPath, result.isSuccess(), launcherType);
+        ExecutionResult result = getScriptManager().process(script, ExecutionMode.AUTOMATIC_RUN, resolver);
+        logStatus(scriptPath, result.isSuccess());
       } else {
-        logger.warn("{} launcher cannot execute script which is not valid: {}", launcherType.toString(), scriptPath);
+        logger.warn("Launcher cannot execute script which is not valid: {}", scriptPath);
       }
     } catch (RepositoryException e) {
       logger.error("Script cannot be processed because of repository error: {}", scriptPath, e);
     }
   }
 
-  private void logStatus(String scriptPath, boolean success, LauncherType launcherType) {
+  private void logStatus(String scriptPath, boolean success) {
     if (success) {
-      logger.info("{} script successfully executed: {}", launcherType.toString(), scriptPath);
+      logger.info("Script successfully executed: {}", scriptPath);
     } else {
-      logger.error("{} script cannot be executed properly: {}", launcherType.toString(), scriptPath);
+      logger.error("Script cannot be executed properly: {}", scriptPath);
     }
   }
 
   protected abstract ScriptManager getScriptManager();
+
 }
