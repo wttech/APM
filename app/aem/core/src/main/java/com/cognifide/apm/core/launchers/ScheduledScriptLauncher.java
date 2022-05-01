@@ -92,7 +92,7 @@ public class ScheduledScriptLauncher extends AbstractLauncher implements Runnabl
     return scriptManager;
   }
 
-  @ObjectClassDefinition(name = "AEM Permission Management - Schedule Launcher Configuration ")
+  @ObjectClassDefinition(name = "AEM Permission Management - Schedule Launcher Configuration")
   public @interface ScheduleExecutorConfiguration {
 
     @AttributeDefinition(name = "Disable Schedule Launcher", defaultValue = "false")

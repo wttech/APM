@@ -46,7 +46,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
         Property.SCHEDULER + "0 * * * * ?"
     }
 )
-@Designate(ocd = ApmInstallService.Configuration.class)
+@Designate(ocd = ApmInstallService.Configuration.class, factory = true)
 public class ApmInstallService extends AbstractLauncher {
 
   @Reference
@@ -75,7 +75,7 @@ public class ApmInstallService extends AbstractLauncher {
     return scriptManager;
   }
 
-  @ObjectClassDefinition(name = "AEM Permission Management - Install Launcher Configuration ")
+  @ObjectClassDefinition(name = "AEM Permission Management - Install Launcher Configuration")
   public @interface Configuration {
 
     @AttributeDefinition(name = "Scripts Path")
