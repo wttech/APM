@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
     immediate = true,
     service = ScriptStorage.class,
     property = {
-        Property.DESCRIPTION + "Storage accessor for scripts",
+        Property.DESCRIPTION + "APM Storage accessor for scripts",
         Property.VENDOR
     }
 )

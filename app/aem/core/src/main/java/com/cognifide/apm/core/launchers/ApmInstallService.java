@@ -41,7 +41,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
     immediate = true,
     service = ApmInstallService.class,
     property = {
-        Property.DESCRIPTION + "Launches configured scripts",
+        Property.DESCRIPTION + "APM Launches configured scripts",
         Property.VENDOR,
         Property.SCHEDULER + "0 * * * * ?"
     }

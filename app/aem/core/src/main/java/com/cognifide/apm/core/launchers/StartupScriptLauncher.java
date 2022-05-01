@@ -42,7 +42,7 @@ import org.osgi.service.component.annotations.Reference;
     immediate = true,
     service = StartupScriptLauncher.class,
     property = {
-        Property.DESCRIPTION + "Launches scripts on bundle startup",
+        Property.DESCRIPTION + "APM Launches scripts on bundle startup",
         Property.VENDOR
     }
 )

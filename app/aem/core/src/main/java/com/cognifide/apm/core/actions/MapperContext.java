@@ -30,7 +30,7 @@ import org.osgi.service.component.annotations.Reference;
     immediate = true,
     service = MapperContext.class,
     property = {
-        Property.DESCRIPTION + "Mapper Context service",
+        Property.DESCRIPTION + "APM Mapper Context service",
         Property.VENDOR
     }
 )

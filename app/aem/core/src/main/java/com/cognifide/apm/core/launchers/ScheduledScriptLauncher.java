@@ -46,7 +46,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
     immediate = true,
     service = Runnable.class,
     property = {
-        Property.DESCRIPTION + "Launches scheduled scripts",
+        Property.DESCRIPTION + "APM Launches scheduled scripts",
         Property.VENDOR,
         Property.SCHEDULER + "0 * * * * ?"
     }

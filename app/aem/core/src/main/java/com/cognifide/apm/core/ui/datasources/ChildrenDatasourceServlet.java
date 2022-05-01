@@ -37,7 +37,7 @@ import org.osgi.service.component.annotations.Component;
     service = Servlet.class,
     property = {
         Property.RESOURCE_TYPE + "apm/datasource/children",
-        Property.DESCRIPTION + "Provides children of datasource",
+        Property.DESCRIPTION + "APM Provides children of datasource",
         Property.VENDOR
     }
 )

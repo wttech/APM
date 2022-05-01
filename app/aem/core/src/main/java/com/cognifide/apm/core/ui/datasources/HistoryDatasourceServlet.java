@@ -41,7 +41,7 @@ import org.osgi.service.component.annotations.Reference;
     service = Servlet.class,
     property = {
         Property.RESOURCE_TYPE + "apm/datasource/history",
-        Property.DESCRIPTION + "Provides data source for history page",
+        Property.DESCRIPTION + "APM Provides data source for history page",
         Property.VENDOR
     }
 )
