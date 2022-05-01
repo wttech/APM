@@ -39,7 +39,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 @Component(
     immediate = true,
-    service = Runnable.class,
+    service = ApmInstallService.class,
     property = {
         Property.DESCRIPTION + "Launches configured scripts",
         Property.VENDOR,
