@@ -19,20 +19,17 @@
  */
 package com.cognifide.apm.core.jobs;
 
-import java.io.Serializable;
-import java.util.concurrent.TimeUnit;
-
-import org.osgi.service.component.ComponentContext;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-
 import com.cognifide.apm.api.services.ExecutionResult;
 import com.cognifide.apm.core.Property;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-
+import java.io.Serializable;
+import java.util.concurrent.TimeUnit;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
 
 @Component(
     immediate = true,
