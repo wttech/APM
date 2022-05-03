@@ -26,6 +26,7 @@ import com.cognifide.apm.api.actions.Message;
 import com.cognifide.apm.api.exceptions.ActionExecutionException;
 import com.cognifide.apm.api.status.Status;
 import com.cognifide.apm.main.utils.MessagingUtils;
+import com.cognifide.apm.main.utils.PathUtils;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
@@ -63,12 +64,16 @@ public class Purge implements Action {
     try {
       Authorizable authorizable = context.getCurrentAuthorizable();
       actionResult.setAuthorizable(authorizable.getID());
-      LOGGER.info(String.format("Purging privileges for authorizable with id = %s under path = %s",
-          authorizable.getID(), path));
-      if (execute) {
-        purge(context, actionResult);
+      if (context.isCompositeNodeStore() && PathUtils.isAppsOrLibsPath(path)) {
+        actionResult.changeStatus(Status.SKIPPED, "Skipped purging privileges for " + authorizable.getID() + " on " + path);
+      } else {
+        LOGGER.info(String.format("Purging privileges for authorizable with id = %s under path = %s",
+            authorizable.getID(), path));
+        if (execute) {
+          purge(context, actionResult);
+        }
+        actionResult.logMessage("Purged privileges for " + authorizable.getID() + " on " + path);
       }
-      actionResult.logMessage("Purged privileges for " + authorizable.getID() + " on " + path);
     } catch (RepositoryException | ActionExecutionException e) {
       actionResult.logError(MessagingUtils.createMessage(e));
     }

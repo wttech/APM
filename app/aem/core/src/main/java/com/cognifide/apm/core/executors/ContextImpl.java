@@ -27,7 +27,9 @@ import com.cognifide.apm.api.exceptions.ActionExecutionException;
 import com.cognifide.apm.core.actions.ActionResultImpl;
 import com.cognifide.apm.core.sessions.SessionSavingPolicyImpl;
 import com.cognifide.apm.core.utils.AuthorizableManagerImpl;
+import javax.jcr.Node;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import javax.jcr.ValueFactory;
 import javax.jcr.security.AccessControlManager;
 import lombok.Getter;
@@ -54,11 +56,15 @@ public final class ContextImpl implements Context {
   @Setter
   private Authorizable currentAuthorizable;
 
+  @Getter
+  private boolean compositeNodeStore;
+
   public ContextImpl(final JackrabbitSession session) throws RepositoryException {
     this.session = session;
     this.accessControlManager = session.getAccessControlManager();
     this.authorizableManager = new AuthorizableManagerImpl(session.getUserManager());
     this.savingPolicy = new SessionSavingPolicyImpl();
+    this.compositeNodeStore = determineCompositeNodeStore(session);
   }
 
   private ContextImpl(AccessControlManager accessControlManager,
@@ -68,6 +74,7 @@ public final class ContextImpl implements Context {
     this.authorizableManager = authorizableManager;
     this.savingPolicy = savingPolicy;
     this.session = session;
+    this.compositeNodeStore = determineCompositeNodeStore(session);
   }
 
   @Override
@@ -118,4 +125,17 @@ public final class ContextImpl implements Context {
   public Context newContext() {
     return new ContextImpl(accessControlManager, authorizableManager, savingPolicy, session);
   }
+
+  private boolean determineCompositeNodeStore(Session session) {
+    try {
+      String pathToCheck = "/apps";
+      Node appsNode = session.getNode(pathToCheck);
+      boolean hasPermission = session.hasPermission("/", Session.ACTION_SET_PROPERTY);
+      boolean hasCapability = session.hasCapability("addNode", appsNode, new Object[]{"nt:folder"});
+      return hasPermission && !hasCapability;
+    } catch (Exception e) {
+      throw new IllegalStateException("Could not check if session is connected to a composite node store: " + e, e);
+    }
+  }
+
 }
