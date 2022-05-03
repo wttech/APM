@@ -52,6 +52,7 @@ public class HistoryEntryImpl implements HistoryEntry {
   public static final String PROGRESS_LOG = "summaryJSON";
   public static final String UPLOAD_TIME = "uploadTime";
   public static final String SCRIPT_CONTENT_PATH = "scriptContentPath";
+  public static final String COMPOSITE_NODE_STORE = "compositeNodeStore";
 
   @Inject
   @Named(AUTHOR)
@@ -97,6 +98,10 @@ public class HistoryEntryImpl implements HistoryEntry {
   @Inject
   @Named(SCRIPT_CONTENT_PATH)
   private String scriptContentPath;
+
+  @Inject
+  @Named(COMPOSITE_NODE_STORE)
+  private boolean compositeNodeStore;
 
   private final String path;
 

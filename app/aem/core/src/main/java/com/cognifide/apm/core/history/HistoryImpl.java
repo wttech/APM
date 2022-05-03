@@ -32,6 +32,7 @@ import com.cognifide.apm.core.logger.Progress;
 import com.cognifide.apm.core.progress.ProgressHelper;
 import com.cognifide.apm.core.services.ResourceResolverProvider;
 import com.cognifide.apm.core.services.version.VersionService;
+import com.cognifide.apm.core.utils.RuntimeUtils;
 import com.cognifide.apm.core.utils.sling.ResolveCallback;
 import com.day.cq.commons.jcr.JcrConstants;
 import java.util.Calendar;
@@ -101,7 +102,8 @@ public class HistoryImpl implements History {
         .filePath(source.getPath())
         .isRunSuccessful(progressLogger.isSuccess())
         .mode(mode.toString())
-        .progressLog(ProgressHelper.toJson(progressLogger.getEntries()));
+        .progressLog(ProgressHelper.toJson(progressLogger.getEntries()))
+        .compositeNodeStore(RuntimeUtils.determineCompositeNodeStore(resolver.adaptTo(Session.class)));
   }
 
   @Override
