@@ -30,7 +30,9 @@ import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.history.HistoryEntryWriter.HistoryEntryWriterBuilder;
 import com.cognifide.apm.core.logger.Progress;
 import com.cognifide.apm.core.progress.ProgressHelper;
+import com.cognifide.apm.core.services.ResourceResolverProvider;
 import com.cognifide.apm.core.services.version.VersionService;
+import com.cognifide.apm.core.utils.RuntimeUtils;
 import com.cognifide.apm.core.utils.sling.ResolveCallback;
 import com.day.cq.commons.jcr.JcrConstants;
 import java.util.Calendar;
@@ -45,9 +47,7 @@ import org.apache.sling.api.resource.AbstractResourceVisitor;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.api.resource.ValueMap;
-import org.apache.sling.serviceusermapping.ServiceUserMapped;
 import org.jetbrains.annotations.NotNull;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -77,17 +77,14 @@ public class HistoryImpl implements History {
   private static final String SLING_ORDERED_FOLDER = "sling:OrderedFolder";
 
   @Reference
-  private ResourceResolverFactory resolverFactory;
-
-  @Reference
-  private ServiceUserMapped serviceUserMapped;
+  private ResourceResolverProvider resolverProvider;
 
   @Reference
   private VersionService versionService;
 
   @Override
   public HistoryEntry logLocal(Script script, ExecutionMode mode, Progress progressLogger) {
-    return resolveDefault(resolverFactory, progressLogger.getExecutor(), (ResolveCallback<HistoryEntry>) resolver -> {
+    return resolveDefault(resolverProvider, progressLogger.getExecutor(), (ResolveCallback<HistoryEntry>) resolver -> {
       final HistoryEntryWriter historyEntryWriter = createBuilder(resolver, script, mode, progressLogger)
           .executionTime(Calendar.getInstance())
           .build();
@@ -105,7 +102,8 @@ public class HistoryImpl implements History {
         .filePath(source.getPath())
         .isRunSuccessful(progressLogger.isSuccess())
         .mode(mode.toString())
-        .progressLog(ProgressHelper.toJson(progressLogger.getEntries()));
+        .progressLog(ProgressHelper.toJson(progressLogger.getEntries()))
+        .compositeNodeStore(RuntimeUtils.determineCompositeNodeStore(resolver.adaptTo(Session.class)));
   }
 
   @Override

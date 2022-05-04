@@ -29,7 +29,7 @@ import org.osgi.service.component.annotations.Component;
     service = Servlet.class,
     property = {
         Property.RESOURCE_TYPE + "apm/datasource/launchModes",
-        Property.DESCRIPTION + "Provides launch modes",
+        Property.DESCRIPTION + "APM Provides launch modes",
         Property.VENDOR
     }
 )

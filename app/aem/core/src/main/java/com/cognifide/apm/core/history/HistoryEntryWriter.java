@@ -36,6 +36,7 @@ public class HistoryEntryWriter {
   private final Boolean isRunSuccessful;
   private final String mode;
   private final String progressLog;
+  private final boolean compositeNodeStore;
 
   public void writeTo(Resource historyLogResource) {
     ModifiableValueMap valueMap = historyLogResource.adaptTo(ModifiableValueMap.class);
@@ -47,5 +48,6 @@ public class HistoryEntryWriter {
     valueMap.put(HistoryEntryImpl.IS_RUN_SUCCESSFUL, isRunSuccessful);
     valueMap.put(HistoryEntryImpl.EXECUTION_TIME, executionTime);
     valueMap.put(HistoryEntryImpl.EXECUTOR, executor);
+    valueMap.put(HistoryEntryImpl.COMPOSITE_NODE_STORE, compositeNodeStore);
   }
 }

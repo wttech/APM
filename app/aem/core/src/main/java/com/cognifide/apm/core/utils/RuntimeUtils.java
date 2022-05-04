@@ -17,40 +17,26 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.core.history;
+package com.cognifide.apm.core.utils;
 
+import javax.jcr.Node;
+import javax.jcr.Session;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-import java.util.Calendar;
-import java.util.Date;
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class RuntimeUtils {
 
-public interface HistoryEntry {
-
-  String getAuthor();
-
-  Date getExecutionTime();
-
-  String getExecutor();
-
-  String getScriptPath();
-
-  String getScriptName();
-
-  boolean isRunSuccessful();
-
-  String getMode();
-
-  String getChecksum();
-
-  Date getUploadTime();
-
-  String getExecutionSummaryJson();
-
-  String getPath();
-
-  Calendar getExecutionTimeCalendar();
-
-  String getScriptContentPath();
-
-  boolean isCompositeNodeStore();
+  public static boolean determineCompositeNodeStore(Session session) {
+    try {
+      String pathToCheck = "/apps";
+      Node appsNode = session.getNode(pathToCheck);
+      boolean hasPermission = session.hasPermission("/", Session.ACTION_SET_PROPERTY);
+      boolean hasCapability = session.hasCapability("addNode", appsNode, new Object[]{"nt:folder"});
+      return hasPermission && !hasCapability;
+    } catch (Exception e) {
+      throw new IllegalStateException("Could not check if session is connected to a composite node store: " + e, e);
+    }
+  }
 
 }

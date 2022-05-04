@@ -30,6 +30,7 @@ import com.cognifide.apm.api.status.Status
 import com.cognifide.apm.core.scripts.ScriptFilters.onInstall
 import com.cognifide.apm.core.scripts.ScriptFilters.onInstallIfModified
 import com.cognifide.apm.core.services.ModifiedScriptFinder
+import com.cognifide.apm.core.services.ResourceResolverProvider
 import com.cognifide.apm.core.services.event.ApmEvent
 import com.cognifide.apm.core.services.event.EventManager
 import com.cognifide.apm.core.utils.sling.SlingHelper
@@ -37,7 +38,6 @@ import org.apache.jackrabbit.vault.fs.api.ProgressTrackerListener
 import org.apache.jackrabbit.vault.packaging.InstallContext
 import org.apache.jackrabbit.vault.packaging.PackageException
 import org.apache.sling.api.resource.ResourceResolver
-import org.apache.sling.api.resource.ResourceResolverFactory
 import org.apache.sling.settings.SlingSettingsService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -57,12 +57,12 @@ class ApmInstallHook : OsgiAwareInstallHook() {
     }
 
     private fun handleScripts(context: InstallContext, currentEnvironment: LaunchEnvironment, currentHook: String) {
-        val resolverFactory = getService(ResourceResolverFactory::class.java)
+        val resolverProvider = getService(ResourceResolverProvider::class.java)
 
         try {
             context.options.listener?.onMessage(ProgressTrackerListener.Mode.TEXT, "Installing APM scripts...", "")
             logger.info("Installing APM scripts...")
-            SlingHelper.operateTraced(resolverFactory) { resolver ->
+            SlingHelper.operateTraced(resolverProvider) { resolver ->
                 executeScripts(context, currentEnvironment, currentHook, resolver)
             }
             val eventManager = getService(EventManager::class.java)

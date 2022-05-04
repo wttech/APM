@@ -27,6 +27,7 @@ import com.cognifide.apm.api.exceptions.ActionExecutionException;
 import com.cognifide.apm.core.actions.ActionResultImpl;
 import com.cognifide.apm.core.sessions.SessionSavingPolicyImpl;
 import com.cognifide.apm.core.utils.AuthorizableManagerImpl;
+import com.cognifide.apm.core.utils.RuntimeUtils;
 import javax.jcr.RepositoryException;
 import javax.jcr.ValueFactory;
 import javax.jcr.security.AccessControlManager;
@@ -54,11 +55,15 @@ public final class ContextImpl implements Context {
   @Setter
   private Authorizable currentAuthorizable;
 
+  @Getter
+  private boolean compositeNodeStore;
+
   public ContextImpl(final JackrabbitSession session) throws RepositoryException {
     this.session = session;
     this.accessControlManager = session.getAccessControlManager();
     this.authorizableManager = new AuthorizableManagerImpl(session.getUserManager());
     this.savingPolicy = new SessionSavingPolicyImpl();
+    this.compositeNodeStore = RuntimeUtils.determineCompositeNodeStore(session);
   }
 
   private ContextImpl(AccessControlManager accessControlManager,
@@ -68,6 +73,7 @@ public final class ContextImpl implements Context {
     this.authorizableManager = authorizableManager;
     this.savingPolicy = savingPolicy;
     this.session = session;
+    this.compositeNodeStore = RuntimeUtils.determineCompositeNodeStore(session);
   }
 
   @Override
@@ -118,4 +124,5 @@ public final class ContextImpl implements Context {
   public Context newContext() {
     return new ContextImpl(accessControlManager, authorizableManager, savingPolicy, session);
   }
+
 }

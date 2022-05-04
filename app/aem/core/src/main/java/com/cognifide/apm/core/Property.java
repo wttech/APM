@@ -50,6 +50,6 @@ public class Property {
 
 	public static final String CHANGE_TYPE = ResourceChangeListener.CHANGES + "=";
 
-	public static final String VENDOR = Constants.SERVICE_VENDOR + "=Cognifide";
+	public static final String VENDOR = Constants.SERVICE_VENDOR + "=Wunderman Thompson Technology";
 
 }

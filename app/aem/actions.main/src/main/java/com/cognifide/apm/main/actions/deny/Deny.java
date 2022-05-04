@@ -23,10 +23,12 @@ import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.apm.api.actions.Context;
 import com.cognifide.apm.api.exceptions.ActionExecutionException;
+import com.cognifide.apm.api.status.Status;
 import com.cognifide.apm.main.permissions.PermissionActionHelper;
 import com.cognifide.apm.main.permissions.Restrictions;
 import com.cognifide.apm.main.permissions.exceptions.PermissionException;
 import com.cognifide.apm.main.utils.MessagingUtils;
+import com.cognifide.apm.main.utils.PathUtils;
 import java.util.ArrayList;
 import java.util.List;
 import javax.jcr.PathNotFoundException;
@@ -72,25 +74,29 @@ public class Deny implements Action {
     try {
       Authorizable authorizable = context.getCurrentAuthorizable();
       actionResult.setAuthorizable(authorizable.getID());
-      context.getSession().getNode(path);
-      final PermissionActionHelper permissionActionHelper = new PermissionActionHelper(
-          context.getValueFactory(), path, permissions, restrictions);
-      LOGGER.info(String.format("Denying permissions %s for authorizable with id = %s for path = %s %s",
-          permissions.toString(), context.getCurrentAuthorizable().getID(), path, restrictions));
-      if (simulate) {
-        permissionActionHelper.checkPermissions(context.getAccessControlManager());
+      if (context.isCompositeNodeStore() && PathUtils.isAppsOrLibsPath(path)) {
+        actionResult.changeStatus(Status.SKIPPED, "Skipped adding deny privilege for " + authorizable.getID() + " on " + path);
       } else {
-        permissionActionHelper.applyPermissions(context.getAccessControlManager(), authorizable.getPrincipal(), false);
-      }
-      actionResult.logMessage("Added deny privilege for " + authorizable.getID() + " on " + path);
-      if (permissions.contains("MODIFY")) {
-        List<String> globModifyPermission = new ArrayList<>();
-        globModifyPermission.add("MODIFY_PAGE");
-        String preparedGlob = recalculateGlob(restrictions.getGlob());
-        new Deny(path, globModifyPermission,
-            preparedGlob + "*/jcr:content*", restrictions.getNtNames(), restrictions.getItemNames(),
-            ignoreNonExistingPaths)
-            .process(context, simulate);
+        context.getSession().getNode(path);
+        final PermissionActionHelper permissionActionHelper = new PermissionActionHelper(
+            context.getValueFactory(), path, permissions, restrictions);
+        LOGGER.info(String.format("Denying permissions %s for authorizable with id = %s for path = %s %s",
+            permissions.toString(), context.getCurrentAuthorizable().getID(), path, restrictions));
+        if (simulate) {
+          permissionActionHelper.checkPermissions(context.getAccessControlManager());
+        } else {
+          permissionActionHelper.applyPermissions(context.getAccessControlManager(), authorizable.getPrincipal(), false);
+        }
+        actionResult.logMessage("Added deny privilege for " + authorizable.getID() + " on " + path);
+        if (permissions.contains("MODIFY")) {
+          List<String> globModifyPermission = new ArrayList<>();
+          globModifyPermission.add("MODIFY_PAGE");
+          String preparedGlob = recalculateGlob(restrictions.getGlob());
+          new Deny(path, globModifyPermission,
+              preparedGlob + "*/jcr:content*", restrictions.getNtNames(), restrictions.getItemNames(),
+              ignoreNonExistingPaths)
+              .process(context, simulate);
+        }
       }
     } catch (final PathNotFoundException e) {
       if (ignoreNonExistingPaths) {

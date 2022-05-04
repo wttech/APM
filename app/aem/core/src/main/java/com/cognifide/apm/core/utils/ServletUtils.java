@@ -42,7 +42,7 @@ public class ServletUtils {
 	}
 
 	public static void writeMessage(SlingHttpServletResponse response, String type, String text) throws IOException {
-		writeMessage(response, type, text, new HashMap<String, Object>());
+		writeMessage(response, type, text, new HashMap<>());
 	}
 
 	public static void writeMessage(SlingHttpServletResponse response, String type, String text,

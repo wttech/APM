@@ -17,15 +17,16 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.core.launchers;
+package com.cognifide.apm.main.utils;
 
-import org.apache.commons.lang.WordUtils;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-enum LauncherType {
-  SCHEDULED, REPLICATED, STARTUP, STARTUP_MODIFIED;
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class PathUtils {
 
-  @Override
-  public String toString() {
-    return WordUtils.capitalizeFully(name());
+  public static boolean isAppsOrLibsPath(String path) {
+    return path.startsWith("/apps") || path.startsWith("/libs");
   }
+
 }
