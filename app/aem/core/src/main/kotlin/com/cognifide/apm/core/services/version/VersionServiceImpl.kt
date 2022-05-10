@@ -66,7 +66,6 @@ class VersionServiceImpl : VersionService {
     override fun countChecksum(root: Iterable<Script>): String {
         val checksums = root
                 .asSequence()
-                .filter { it.isValid }
                 .map { it.data }
                 .map { DigestUtils.md5Hex(it) }
                 .reduce { previous, current -> previous + current }

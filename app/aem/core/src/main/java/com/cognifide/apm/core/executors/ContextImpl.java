@@ -27,7 +27,6 @@ import com.cognifide.apm.api.exceptions.ActionExecutionException;
 import com.cognifide.apm.core.actions.ActionResultImpl;
 import com.cognifide.apm.core.sessions.SessionSavingPolicyImpl;
 import com.cognifide.apm.core.utils.AuthorizableManagerImpl;
-import com.cognifide.apm.core.utils.RuntimeUtils;
 import javax.jcr.RepositoryException;
 import javax.jcr.ValueFactory;
 import javax.jcr.security.AccessControlManager;
@@ -58,22 +57,22 @@ public final class ContextImpl implements Context {
   @Getter
   private boolean compositeNodeStore;
 
-  public ContextImpl(final JackrabbitSession session) throws RepositoryException {
+  public ContextImpl(JackrabbitSession session, boolean compositeNodeStore) throws RepositoryException {
     this.session = session;
     this.accessControlManager = session.getAccessControlManager();
     this.authorizableManager = new AuthorizableManagerImpl(session.getUserManager());
     this.savingPolicy = new SessionSavingPolicyImpl();
-    this.compositeNodeStore = RuntimeUtils.determineCompositeNodeStore(session);
+    this.compositeNodeStore = compositeNodeStore;
   }
 
   private ContextImpl(AccessControlManager accessControlManager,
-      AuthorizableManager authorizableManager, SessionSavingPolicy savingPolicy,
-      JackrabbitSession session) {
+                      AuthorizableManager authorizableManager, SessionSavingPolicy savingPolicy,
+                      JackrabbitSession session, boolean compositeNodeStore) {
     this.accessControlManager = accessControlManager;
     this.authorizableManager = authorizableManager;
     this.savingPolicy = savingPolicy;
     this.session = session;
-    this.compositeNodeStore = RuntimeUtils.determineCompositeNodeStore(session);
+    this.compositeNodeStore = compositeNodeStore;
   }
 
   @Override
@@ -122,7 +121,7 @@ public final class ContextImpl implements Context {
 
   @Override
   public Context newContext() {
-    return new ContextImpl(accessControlManager, authorizableManager, savingPolicy, session);
+    return new ContextImpl(accessControlManager, authorizableManager, savingPolicy, session, compositeNodeStore);
   }
 
 }

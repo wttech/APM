@@ -34,9 +34,9 @@ import com.cognifide.apm.core.utils.sling.SlingHelper;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.jcr.Session;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -71,6 +71,9 @@ public class ApmInstallService extends AbstractLauncher {
   @Reference
   private History history;
 
+  @Reference
+  private ConfigurationAdmin configurationAdmin;
+
   @Activate
   public void activate(Configuration config) {
     SlingHelper.operateTraced(resolverProvider, resolver -> processScripts(config, resolver));
@@ -78,7 +81,7 @@ public class ApmInstallService extends AbstractLauncher {
 
   private void processScripts(Configuration config, ResourceResolver resolver) throws PersistenceException {
     ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resolver);
-    boolean compositeNodeStore = RuntimeUtils.determineCompositeNodeStore(resolver.adaptTo(Session.class));
+    boolean compositeNodeStore = RuntimeUtils.determineCompositeNodeStore(configurationAdmin);
     List<Script> scripts = Arrays.stream(config.scriptPaths())
         .map(scriptPath -> scriptFinder.find(scriptPath, resolver))
         .filter(script -> {

@@ -19,29 +19,14 @@
  */
 package com.cognifide.apm.core.utils;
 
-import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.osgi.service.cm.Configuration;
-import org.osgi.service.cm.ConfigurationAdmin;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class RuntimeUtils {
+public final class PathUtils {
 
-  public static final String SERVICE_PID = "org.apache.jackrabbit.oak.composite.CompositeNodeStoreService";
-
-  public static boolean determineCompositeNodeStore(ConfigurationAdmin configurationAdmin) {
-    boolean result;
-    try {
-      Configuration configuration = configurationAdmin.getConfiguration(SERVICE_PID, null);
-      result = Optional.ofNullable(configuration)
-          .map(Configuration::getProperties)
-          .map(dict -> (Boolean) dict.get("enabled"))
-          .orElse(false);
-    } catch (Exception e) {
-      result = false;
-    }
-    return result;
+  public static boolean isAppsOrLibsPath(String path) {
+    return path.startsWith("/apps") || path.startsWith("/libs");
   }
 
 }

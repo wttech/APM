@@ -45,6 +45,7 @@ import com.cognifide.apm.core.services.event.ApmEvent.ScriptExecutedEvent;
 import com.cognifide.apm.core.services.event.ApmEvent.ScriptLaunchedEvent;
 import com.cognifide.apm.core.services.event.EventManager;
 import com.cognifide.apm.core.services.version.VersionService;
+import com.cognifide.apm.core.utils.RuntimeUtils;
 import com.google.common.collect.Maps;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -56,6 +57,7 @@ import javax.jcr.Session;
 import org.apache.jackrabbit.api.JackrabbitSession;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
@@ -92,6 +94,9 @@ public class ScriptManagerImpl implements ScriptManager {
 
   @Reference
   private History history;
+
+  @Reference
+  private ConfigurationAdmin configurationAdmin;
 
   @Reference(
       cardinality = ReferenceCardinality.MULTIPLE,
@@ -206,7 +211,8 @@ public class ScriptManagerImpl implements ScriptManager {
   }
 
   private ActionExecutor createExecutor(ExecutionMode mode, ResourceResolver resolver) throws RepositoryException {
-    final Context context = new ContextImpl((JackrabbitSession) resolver.adaptTo(Session.class));
+    boolean compositeNodeStore = RuntimeUtils.determineCompositeNodeStore(configurationAdmin);
+    final Context context = new ContextImpl((JackrabbitSession) resolver.adaptTo(Session.class), compositeNodeStore);
     return ActionExecutorFactory.create(mode, context, actionFactory);
   }
 }
