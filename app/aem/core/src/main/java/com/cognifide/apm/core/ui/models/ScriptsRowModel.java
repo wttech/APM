@@ -45,7 +45,6 @@ import org.apache.commons.lang.WordUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
-import org.jetbrains.annotations.NotNull;
 
 @Model(adaptables = Resource.class)
 public final class ScriptsRowModel {
@@ -119,7 +118,6 @@ public final class ScriptsRowModel {
     return words;
   }
 
-  @NotNull
   private ScriptRun createScriptRun(String name, Script script, HistoryEntry historyEntry) {
     if (historyEntry != null && StringUtils.equals(historyEntry.getChecksum(), script.getChecksum())) {
       return new ScriptRun(name, historyEntry);

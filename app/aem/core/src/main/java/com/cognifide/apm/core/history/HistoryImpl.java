@@ -48,7 +48,7 @@ import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
-import org.jetbrains.annotations.NotNull;
+import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -82,13 +82,16 @@ public class HistoryImpl implements History {
   @Reference
   private VersionService versionService;
 
+  @Reference
+  private ConfigurationAdmin configurationAdmin;
+
   @Override
   public HistoryEntry logLocal(Script script, ExecutionMode mode, Progress progressLogger) {
     return resolveDefault(resolverProvider, progressLogger.getExecutor(), (ResolveCallback<HistoryEntry>) resolver -> {
       final HistoryEntryWriter historyEntryWriter = createBuilder(resolver, script, mode, progressLogger)
           .executionTime(Calendar.getInstance())
           .build();
-      return createHistoryEntry(resolver, script, mode, historyEntryWriter, false);
+      return createHistoryEntry(resolver, script, mode, historyEntryWriter);
     }, null);
   }
 
@@ -103,7 +106,7 @@ public class HistoryImpl implements History {
         .isRunSuccessful(progressLogger.isSuccess())
         .mode(mode.toString())
         .progressLog(ProgressHelper.toJson(progressLogger.getEntries()))
-        .compositeNodeStore(RuntimeUtils.determineCompositeNodeStore(resolver.adaptTo(Session.class)));
+        .compositeNodeStore(RuntimeUtils.determineCompositeNodeStore(configurationAdmin));
   }
 
   @Override
@@ -158,12 +161,12 @@ public class HistoryImpl implements History {
   }
 
   private HistoryEntry createHistoryEntry(ResourceResolver resolver, Script script, ExecutionMode mode,
-                                          HistoryEntryWriter historyEntryWriter, boolean remote) {
+                                          HistoryEntryWriter historyEntryWriter) {
     try {
       Session session = resolver.adaptTo(Session.class);
 
       Node scriptHistoryNode = createScriptHistoryNode(script, session);
-      Node historyEntryNode = createHistoryEntryNode(scriptHistoryNode, script, mode, remote);
+      Node historyEntryNode = createHistoryEntryNode(scriptHistoryNode, script, mode);
       historyEntryNode.setProperty(HistoryEntryImpl.SCRIPT_CONTENT_PATH, versionService.getVersionPath(script));
       writeProperties(resolver, historyEntryNode, historyEntryWriter);
 
@@ -176,7 +179,6 @@ public class HistoryImpl implements History {
     }
   }
 
-  @NotNull
   private Resource writeProperties(ResourceResolver resolver, Node historyEntry, HistoryEntryWriter
       historyEntryWriter)
       throws RepositoryException {
@@ -185,9 +187,9 @@ public class HistoryImpl implements History {
     return entryResource;
   }
 
-  private Node createHistoryEntryNode(Node scriptHistoryNode, Script script, ExecutionMode mode, boolean remote)
+  private Node createHistoryEntryNode(Node scriptHistoryNode, Script script, ExecutionMode mode)
       throws RepositoryException {
-    String modeName = getModeName(mode, remote);
+    String modeName = getModeName(mode);
     Node historyEntry = getOrCreateUniqueByPath(scriptHistoryNode, modeName, NT_UNSTRUCTURED);
     historyEntry.setProperty(APM_HISTORY, APM_HISTORY_ENTRY);
     historyEntry.setProperty(HistoryEntryImpl.CHECKSUM, script.getChecksum());
@@ -196,7 +198,6 @@ public class HistoryImpl implements History {
     return historyEntry;
   }
 
-  @NotNull
   private Node createScriptHistoryNode(Script script, Session session) throws RepositoryException {
     String path = getScriptHistoryPath(script);
     Node scriptHistory = getOrCreateByPath(path, SLING_ORDERED_FOLDER, NT_UNSTRUCTURED, session, true);
@@ -205,19 +206,10 @@ public class HistoryImpl implements History {
     return scriptHistory;
   }
 
-  @NotNull
-  private String getModeName(ExecutionMode mode, boolean remote) {
-    String modeName = (remote ? "Remote" : "Local");
-    if (mode == ExecutionMode.AUTOMATIC_RUN || mode == ExecutionMode.RUN) {
-      modeName += "Run";
-    } else {
-      modeName += "DryRun";
-    }
-    modeName = modeName.replace("_", "");
-    return modeName;
+  private String getModeName(ExecutionMode mode) {
+    return (mode == ExecutionMode.AUTOMATIC_RUN || mode == ExecutionMode.RUN) ? "LocalRun" : "LocalDryRun";
   }
 
-  @NotNull
   private String getScriptHistoryPath(Script script) {
     return HISTORY_FOLDER + "/" + script.getPath().replace("/", "_").substring(1);
   }
