@@ -207,7 +207,7 @@ public class HistoryImpl implements History {
   }
 
   private String getModeName(ExecutionMode mode) {
-    return (mode == ExecutionMode.AUTOMATIC_RUN || mode == ExecutionMode.RUN) ? "Run" : "DryRun";
+    return (mode == ExecutionMode.AUTOMATIC_RUN || mode == ExecutionMode.RUN) ? "LocalRun" : "LocalDryRun";
   }
 
   private String getScriptHistoryPath(Script script) {

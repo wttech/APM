@@ -33,6 +33,7 @@ import com.cognifide.apm.core.utils.RuntimeUtils;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -84,6 +85,7 @@ public class ApmInstallService extends AbstractLauncher {
     boolean compositeNodeStore = RuntimeUtils.determineCompositeNodeStore(configurationAdmin);
     List<Script> scripts = Arrays.stream(config.scriptPaths())
         .map(scriptPath -> scriptFinder.find(scriptPath, resolver))
+        .filter(Objects::nonNull)
         .filter(script -> {
           List<Script> subtree = referenceFinder.findReferences(script);
           String checksum = versionService.countChecksum(subtree);
