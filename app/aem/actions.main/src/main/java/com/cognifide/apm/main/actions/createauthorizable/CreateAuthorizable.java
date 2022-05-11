@@ -40,30 +40,33 @@ public class CreateAuthorizable implements Action {
 
   private final String password;
 
+  private final String externalId;
+
   private final Boolean ignoreIfExists;
 
   private final CreateAuthorizableStrategy createStrategy;
 
-  public CreateAuthorizable(final String id, final String password, final String path,
-      final Boolean ignoreIfExists, final CreateAuthorizableStrategy createStrategy) {
+  public CreateAuthorizable(String id, String password, String path, String externalId,
+                            Boolean ignoreIfExists, CreateAuthorizableStrategy createStrategy) {
     this.id = id;
     this.password = password;
     this.path = path;
+    this.externalId = externalId;
     this.ignoreIfExists = ignoreIfExists;
     this.createStrategy = createStrategy;
   }
 
   @Override
-  public ActionResult simulate(final Context context) {
+  public ActionResult simulate(Context context) {
     return process(context, true);
   }
 
   @Override
-  public ActionResult execute(final Context context) {
+  public ActionResult execute(Context context) {
     return process(context, false);
   }
 
-  public ActionResult process(final Context context, boolean simulate) {
+  public ActionResult process(Context context, boolean simulate) {
     ActionResult actionResult = context.createActionResult();
     try {
       Authorizable authorizable = context.getAuthorizableManager().getAuthorizableIfExists(id);
@@ -71,7 +74,7 @@ public class CreateAuthorizable implements Action {
       if (authorizable != null) {
         logMessage(actionResult, authorizable);
       } else {
-        authorizable = createStrategy.create(id, password, path, context, actionResult, simulate);
+        authorizable = createStrategy.create(id, password, path, externalId, context, actionResult, simulate);
       }
       context.setCurrentAuthorizable(authorizable);
     } catch (RepositoryException e) {

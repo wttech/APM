@@ -24,6 +24,7 @@ import com.cognifide.apm.api.actions.Context;
 import com.cognifide.apm.main.RandomPasswordGenerator;
 import java.security.Principal;
 import javax.jcr.RepositoryException;
+import javax.jcr.Value;
 import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.apache.jackrabbit.api.security.user.Group;
@@ -33,12 +34,16 @@ public enum CreateAuthorizableStrategy {
 
   GROUP {
     @Override
-    public Group create(final String id, final String password, final String path, final Context context,
-        final ActionResult actionResult, boolean simulate) throws RepositoryException {
-      final Principal namePrincipal = context.getAuthorizableManager().createMockPrincipal(id);
+    public Group create(String id, String password, String path, String externalId,
+                        Context context, ActionResult actionResult, boolean simulate) throws RepositoryException {
+      Principal namePrincipal = context.getAuthorizableManager().createMockPrincipal(id);
       Group group;
       if (!simulate) {
         group = context.getAuthorizableManager().createGroup(id, namePrincipal, path);
+        if (externalId != null) {
+          Value value = context.getValueFactory().createValue(externalId);
+          group.setProperty("rep:externalId", value);
+        }
       } else {
         group = context.getAuthorizableManager().createMockGroup(id);
       }
@@ -50,14 +55,13 @@ public enum CreateAuthorizableStrategy {
 
   USER {
     @Override
-    public User create(String id, String password, String path, Context context,
-        ActionResult actionResult, boolean simulate) throws RepositoryException {
-      final RandomPasswordGenerator randomPasswordGenerator = new RandomPasswordGenerator();
-      final Principal namePrincipal = context.getAuthorizableManager().createMockPrincipal(id);
+    public User create(String id, String password, String path, String externalId,
+                       Context context, ActionResult actionResult, boolean simulate) throws RepositoryException {
+      Principal namePrincipal = context.getAuthorizableManager().createMockPrincipal(id);
       User user;
       if (!simulate) {
         user = context.getAuthorizableManager().createUser(
-            id, StringUtils.isBlank(password) ? randomPasswordGenerator.getRandomPassword() : password,
+            id, StringUtils.isBlank(password) ? RandomPasswordGenerator.getRandomPassword() : password,
             namePrincipal, path);
       } else {
         user = context.getAuthorizableManager().createMockUser(id);
@@ -70,8 +74,8 @@ public enum CreateAuthorizableStrategy {
 
   SYSTEM_USER {
     @Override
-    public User create(String id, String password, String path, Context context,
-        ActionResult actionResult, boolean simulate) throws RepositoryException {
+    public User create(String id, String password, String path, String externalId,
+                       Context context, ActionResult actionResult, boolean simulate) throws RepositoryException {
       User user;
       if (!simulate) {
         user = context.getAuthorizableManager().createSystemUser(id, path);
@@ -84,8 +88,7 @@ public enum CreateAuthorizableStrategy {
     }
   };
 
-  public abstract Authorizable create(final String id, final String password, final String path,
-      final Context context, final ActionResult actionResult, boolean simulate)
-      throws RepositoryException;
+  public abstract Authorizable create(String id, String password, String path, String externalId,
+                                      Context context, ActionResult actionResult, boolean simulate) throws RepositoryException;
 
 }

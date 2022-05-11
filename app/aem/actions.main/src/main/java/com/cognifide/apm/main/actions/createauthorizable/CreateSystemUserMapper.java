@@ -50,7 +50,7 @@ public class CreateSystemUserMapper {
       @Required(value = "userId", description = "user's login e.g.: 'apm-user'") String userId,
       @Named(value = "path", description = "user's home e.g.: '/home/users/system/client/domain'") String path,
       @Flag(value = ERROR_IF_EXISTS, description = "if user already exists, raise an error and stop script execution") boolean errorIfExists) {
-    return new CreateAuthorizable(userId, null, path, !errorIfExists, SYSTEM_USER);
+    return new CreateAuthorizable(userId, null, path, null, !errorIfExists, SYSTEM_USER);
   }
 
 }

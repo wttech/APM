@@ -51,7 +51,7 @@ public class CreateUserMapper {
       @Named(value = "password", description = "user's password e.g.: 'p@$$w0rd'") String password,
       @Named(value = "path", description = "user's home e.g.: '/home/users/client/domain'") String path,
       @Flag(value = ERROR_IF_EXISTS, description = "if user already exists, raise an error and stop script execution") boolean errorIfExists) {
-    return new CreateAuthorizable(userId, password, path, !errorIfExists, USER);
+    return new CreateAuthorizable(userId, password, path, null, !errorIfExists, USER);
   }
 
 }
