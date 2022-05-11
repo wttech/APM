@@ -81,8 +81,11 @@ public class ApmInstallService extends AbstractLauncher {
   }
 
   private void processScripts(Configuration config, ResourceResolver resolver) throws PersistenceException {
+    logger.info("scriptPaths = {}", Arrays.asList(config.scriptPaths()));
+    logger.info("ifModified = {}", config.ifModified());
     ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resolver);
     boolean compositeNodeStore = RuntimeUtils.determineCompositeNodeStore(configurationAdmin);
+    logger.info("compositeNodeStore = {}", compositeNodeStore);
     List<Script> scripts = Arrays.stream(config.scriptPaths())
         .map(scriptPath -> scriptFinder.find(scriptPath, resolver))
         .filter(Objects::nonNull)
@@ -91,13 +94,28 @@ public class ApmInstallService extends AbstractLauncher {
           String checksum = versionService.countChecksum(subtree);
           ScriptVersion scriptVersion = versionService.getScriptVersion(resolver, script);
           HistoryEntry lastLocalRun = history.findScriptHistory(resolver, script).getLastLocalRun();
-          return !config.ifModified()
+          logger.info("script.path = {}  checksum = {}", script.getPath(), checksum);
+          if (scriptVersion.getLastChecksum() == null) {
+            logger.info("script.path = {}  scriptVersion.lastChecksum = null", script.getPath());
+          } else {
+            logger.info("script.path = {}  scriptVersion.lastChecksum = {}", script.getPath(), scriptVersion.getLastChecksum());
+          }
+          if (lastLocalRun == null) {
+            logger.info("script.path = {}  lastLocalRun = null", script.getPath());
+          } else {
+            logger.info("script.path = {}  lastLocalRun.checksum = {}", script.getPath(), lastLocalRun.getChecksum());
+            logger.info("script.path = {}  lastLocalRun.compositeNodeStore = {}", script.getPath(), lastLocalRun.isCompositeNodeStore());
+          }
+          boolean result = !config.ifModified()
               || !checksum.equals(scriptVersion.getLastChecksum())
               || lastLocalRun == null
               || !checksum.equals(lastLocalRun.getChecksum())
               || compositeNodeStore != lastLocalRun.isCompositeNodeStore();
+          logger.info("script.path = {}  result = {}", script.getPath(), result);
+          return result;
         })
         .collect(Collectors.toList());
+    logger.info("scripts.size = {}", scripts.size());
     processScripts(scripts, resolver);
   }
 
