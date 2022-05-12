@@ -53,7 +53,7 @@ public final class SlingHelper {
    * Retrieve values from repository with wrapped session (automatically opened and closed).
    */
   public static <T> T resolveDefault(ResourceResolverProvider provider, ResolveCallback callback,
-                                     T defaultValue) {
+      T defaultValue) {
     return resolveDefault(provider, null, callback, defaultValue);
   }
 
@@ -61,7 +61,7 @@ public final class SlingHelper {
    * Retrieve values from repository with wrapped session (automatically opened and closed).
    */
   public static <T> T resolveDefault(ResourceResolverProvider provider, String userId, ResolveCallback callback,
-                                     T defaultValue) {
+      T defaultValue) {
     try {
       return resolve(provider, userId, callback);
     } catch (ResolveException e) {

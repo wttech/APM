@@ -24,60 +24,60 @@ import java.util.Set;
 
 public interface Script {
 
-	/**
-	 * Get validation status
-	 */
-	boolean isValid();
+  /**
+   * Get validation status
+   */
+  boolean isValid();
 
-	/**
-	 * Check whether is ready for automatic execution
-	 */
-	boolean isLaunchEnabled();
+  /**
+   * Check whether is ready for automatic execution
+   */
+  boolean isLaunchEnabled();
 
-	/**
-	 * Get launch mode
-	 */
-	LaunchMode getLaunchMode();
+  /**
+   * Get launch mode
+   */
+  LaunchMode getLaunchMode();
 
-	LaunchEnvironment getLaunchEnvironment();
+  LaunchEnvironment getLaunchEnvironment();
 
-	Set<String> getLaunchRunModes();
+  Set<String> getLaunchRunModes();
 
-	String getLaunchHook();
+  String getLaunchHook();
 
-	/**
-	 * Get date after which script will be executed by schedule executor
-	 */
-	Date getLaunchSchedule();
+  /**
+   * Get date after which script will be executed by schedule executor
+   */
+  Date getLaunchSchedule();
 
-	/**
-	 * Get last execution date
-	 */
-	Date getLastExecuted();
+  /**
+   * Get last execution date
+   */
+  Date getLastExecuted();
 
-	/**
-	 * Returns the path for the script file
-	 */
-	String getPath();
+  /**
+   * Returns the path for the script file
+   */
+  String getPath();
 
   /**
    * Returns checksum of the current script content.
    */
   String getChecksum();
 
-	/**
-	 * Return author of the file
-	 */
-	String getAuthor();
+  /**
+   * Return author of the file
+   */
+  String getAuthor();
 
-	/**
-	 * Return last modified date
-	 */
-	Date getLastModified();
+  /**
+   * Return last modified date
+   */
+  Date getLastModified();
 
-	/**
-	 * Return copy of the file
-	 */
-	String getData();
+  /**
+   * Return copy of the file
+   */
+  String getData();
 
 }

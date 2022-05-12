@@ -100,7 +100,8 @@ class ScriptExecutionServlet : SlingAllMethodsServlet() {
 
     private fun executeScript(form: ScriptExecutionForm, resourceResolver: ResourceResolver): ResponseEntity<Any> {
         try {
-            val script: Script = scriptFinder.find(form.script, resourceResolver) ?: return notFound { message = "Script not found: ${form.script}" }
+            val script: Script = scriptFinder.find(form.script, resourceResolver)
+                    ?: return notFound { message = "Script not found: ${form.script}" }
             if (!script.isLaunchEnabled) return internalServerError { message = "Script cannot be executed because it is disabled" }
             if (!script.isValid) return internalServerError { message = "Script cannot be executed because it is invalid" }
 

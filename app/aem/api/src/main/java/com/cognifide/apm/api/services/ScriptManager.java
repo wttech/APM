@@ -27,20 +27,20 @@ import org.apache.sling.api.resource.ResourceResolver;
 
 public interface ScriptManager {
 
-	/**
-	 * Fail-safe execution of script in concrete mode (dry run, automatic execution, validation)
-	 */
-	ExecutionResult process(Script script, ExecutionMode mode, ResourceResolver resolver)
-			throws RepositoryException, PersistenceException;
+  /**
+   * Fail-safe execution of script in concrete mode (dry run, automatic execution, validation)
+   */
+  ExecutionResult process(Script script, ExecutionMode mode, ResourceResolver resolver)
+      throws RepositoryException, PersistenceException;
 
-	/**
-	 * Fail-safe execution of script in concrete mode (dry run, automatic execution, validation)
-	 */
-	ExecutionResult process(Script script, ExecutionMode mode, Map<String, String> customDefinitions, ResourceResolver resolver)
-			throws RepositoryException, PersistenceException;
+  /**
+   * Fail-safe execution of script in concrete mode (dry run, automatic execution, validation)
+   */
+  ExecutionResult process(Script script, ExecutionMode mode, Map<String, String> customDefinitions, ResourceResolver resolver)
+      throws RepositoryException, PersistenceException;
 
-	/**
-	 * Get predefined variables accessible in script via syntax: ${definitionName}
-	 */
-	Map<String, String> getPredefinedDefinitions();
+  /**
+   * Get predefined variables accessible in script via syntax: ${definitionName}
+   */
+  Map<String, String> getPredefinedDefinitions();
 }

@@ -38,7 +38,7 @@ public class LaunchMetadata {
   private final LocalDateTime executionSchedule;
 
   public LaunchMetadata(boolean executionEnabled, LaunchMode launchMode, LaunchEnvironment launchEnvironment,
-                        String[] launchRunModes, String executionHook, LocalDateTime executionSchedule) {
+      String[] launchRunModes, String executionHook, LocalDateTime executionSchedule) {
     this.executionEnabled = executionEnabled;
     this.launchMode = launchMode;
     this.launchEnvironment = launchEnvironment;

@@ -66,8 +66,8 @@ public final class ContextImpl implements Context {
   }
 
   private ContextImpl(AccessControlManager accessControlManager,
-                      AuthorizableManager authorizableManager, SessionSavingPolicy savingPolicy,
-                      JackrabbitSession session, boolean compositeNodeStore) {
+      AuthorizableManager authorizableManager, SessionSavingPolicy savingPolicy,
+      JackrabbitSession session, boolean compositeNodeStore) {
     this.accessControlManager = accessControlManager;
     this.authorizableManager = authorizableManager;
     this.savingPolicy = savingPolicy;

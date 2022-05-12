@@ -67,7 +67,7 @@ public class ProgressImpl implements Progress {
   @Override
   public void addEntry(ActionDescriptor descriptor, ActionResult result) {
     this.entries.add(
-        new ProgressEntry(result.getStatus(), toMessages(((ActionResultImpl)result).getMessages()), descriptor.getCommand(),
+        new ProgressEntry(result.getStatus(), toMessages(((ActionResultImpl) result).getMessages()), descriptor.getCommand(),
             result.getAuthorizable(), toParameters(descriptor.getArguments()), null
         )
     );

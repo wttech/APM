@@ -96,7 +96,7 @@ public class HistoryImpl implements History {
   }
 
   private HistoryEntryWriterBuilder createBuilder(ResourceResolver resolver, Script script, ExecutionMode mode,
-                                                  Progress progressLogger) {
+      Progress progressLogger) {
     Resource source = resolver.getResource(script.getPath());
     return HistoryEntryWriter.builder()
         .author(source.getValueMap().get(JcrConstants.JCR_CREATED_BY, StringUtils.EMPTY))
@@ -161,7 +161,7 @@ public class HistoryImpl implements History {
   }
 
   private HistoryEntry createHistoryEntry(ResourceResolver resolver, Script script, ExecutionMode mode,
-                                          HistoryEntryWriter historyEntryWriter) {
+      HistoryEntryWriter historyEntryWriter) {
     try {
       Session session = resolver.adaptTo(Session.class);
 
