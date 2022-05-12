@@ -87,7 +87,12 @@ public class ApmInstallService extends AbstractLauncher {
     boolean compositeNodeStore = RuntimeUtils.determineCompositeNodeStore(configurationAdmin);
     logger.info("compositeNodeStore = {}", compositeNodeStore);
     List<Script> scripts = Arrays.stream(config.scriptPaths())
-        .map(scriptPath -> scriptFinder.find(scriptPath, resolver))
+        .map(scriptPath -> {
+          logger.info("scriptPath = {}", scriptPath);
+          Script script = scriptFinder.find(scriptPath, resolver);
+          logger.info("scriptPath = {}  script.exists = {}", scriptPath, script != null);
+          return script;
+        })
         .filter(Objects::nonNull)
         .filter(script -> {
           List<Script> subtree = referenceFinder.findReferences(script);
