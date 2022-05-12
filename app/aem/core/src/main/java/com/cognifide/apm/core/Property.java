@@ -26,30 +26,30 @@ import org.osgi.framework.Constants;
 
 public class Property {
 
-	private Property() {
-		// util constructor
-	}
+  private Property() {
+    // util constructor
+  }
 
-	public static final String PATH = ServletResolverConstants.SLING_SERVLET_PATHS + "=";
+  public static final String PATH = ServletResolverConstants.SLING_SERVLET_PATHS + "=";
 
-	public static final String METHOD = ServletResolverConstants.SLING_SERVLET_METHODS + "=";
+  public static final String METHOD = ServletResolverConstants.SLING_SERVLET_METHODS + "=";
 
-	public static final String RESOURCE_TYPE = ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES + "=";
+  public static final String RESOURCE_TYPE = ServletResolverConstants.SLING_SERVLET_RESOURCE_TYPES + "=";
 
-	public static final String SELECTOR = ServletResolverConstants.SLING_SERVLET_SELECTORS + "=";
+  public static final String SELECTOR = ServletResolverConstants.SLING_SERVLET_SELECTORS + "=";
 
-	public static final String EXTENSION = ServletResolverConstants.SLING_SERVLET_EXTENSIONS + "=";
+  public static final String EXTENSION = ServletResolverConstants.SLING_SERVLET_EXTENSIONS + "=";
 
-	public static final String DESCRIPTION = Constants.SERVICE_DESCRIPTION + "=";
+  public static final String DESCRIPTION = Constants.SERVICE_DESCRIPTION + "=";
 
-	public static final String TOPIC = JobConsumer.PROPERTY_TOPICS + "=";
+  public static final String TOPIC = JobConsumer.PROPERTY_TOPICS + "=";
 
-	public static final String SCHEDULER = "scheduler.expression=";
+  public static final String SCHEDULER = "scheduler.expression=";
 
-	public static final String RESOURCE_PATH = ResourceChangeListener.PATHS + "=";
+  public static final String RESOURCE_PATH = ResourceChangeListener.PATHS + "=";
 
-	public static final String CHANGE_TYPE = ResourceChangeListener.CHANGES + "=";
+  public static final String CHANGE_TYPE = ResourceChangeListener.CHANGES + "=";
 
-	public static final String VENDOR = Constants.SERVICE_VENDOR + "=Wunderman Thompson Technology";
+  public static final String VENDOR = Constants.SERVICE_VENDOR + "=Wunderman Thompson Technology";
 
 }

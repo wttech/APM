@@ -90,7 +90,7 @@ public class ScriptStorageImpl implements ScriptStorage {
   }
 
   private Script saveScript(FileDescriptor descriptor, LaunchMetadata launchMetadata, boolean overwrite,
-                            ResourceResolver resolver) {
+      ResourceResolver resolver) {
     Script result = null;
     try {
       final Session session = resolver.adaptTo(Session.class);
@@ -177,7 +177,7 @@ public class ScriptStorageImpl implements ScriptStorage {
   }
 
   private static void ensurePropertyMatchesPattern(List<String> errors, String property, String value,
-                                                   Pattern pattern) {
+      Pattern pattern) {
     if (!pattern.matcher(value).matches()) {
       errors.add(format("Invalid %s: \"%s\"", property, value));
     }

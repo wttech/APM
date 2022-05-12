@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,22 +28,22 @@ import com.cognifide.apm.core.actions.ActionResultImpl;
 
 public final class ValidationActionExecutor extends AbstractActionExecutor {
 
-	public ValidationActionExecutor(Context context, ActionFactory actionFactory) {
-		super(context, actionFactory);
-	}
+  public ValidationActionExecutor(Context context, ActionFactory actionFactory) {
+    super(context, actionFactory);
+  }
 
-	@Override
-	public ActionResult execute(ActionDescriptor actionDescriptor) {
-		final ActionResult result = new ActionResultImpl();
+  @Override
+  public ActionResult execute(ActionDescriptor actionDescriptor) {
+    final ActionResult result = new ActionResultImpl();
 
-		try {
-			createAction(actionDescriptor);
-		} catch (ActionException e) {
-			result.logError(e.getMessage());
+    try {
+      createAction(actionDescriptor);
+    } catch (ActionException e) {
+      result.logError(e.getMessage());
 
-			return result;
-		}
-		return result;
-	}
+      return result;
+    }
+    return result;
+  }
 
 }

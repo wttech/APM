@@ -93,7 +93,7 @@ class ScriptValidationServlet : AbstractFormServlet<ScriptValidationForm>(Script
     }
 
     private fun positionPrefix(entry: ExecutionResult.Entry): String {
-        val position = if(entry is ProgressEntry) entry.position else null
+        val position = if (entry is ProgressEntry) entry.position else null
         return if (position != null) "Invalid line ${position.line}: " else ""
     }
 }
