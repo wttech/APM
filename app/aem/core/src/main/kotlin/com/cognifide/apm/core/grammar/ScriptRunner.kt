@@ -107,7 +107,7 @@ class ScriptRunner(
                 executionContext.createScriptContext(loadScript)
                 try {
                     arguments.named.forEach { (key, value) -> executionContext.setVariable(key, value) }
-                    progress(ctx, Status.SUCCESS, "run", "Begin: path= ${loadScript.path}", arguments)
+                    progress(ctx, Status.SUCCESS, "run", "Begin: path=${loadScript.path}", arguments)
                     visit(loadScript.apm)
                     progress(ctx, Status.SUCCESS, "run", "End")
                 } finally {

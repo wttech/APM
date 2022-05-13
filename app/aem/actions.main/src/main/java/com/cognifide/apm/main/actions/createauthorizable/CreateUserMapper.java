@@ -38,9 +38,9 @@ public class CreateUserMapper {
   @Mapping(
       examples = {
           "CREATE-USER 'author'",
-          "CREATE-USER 'author' password= 'p@$$w0rd' --ERROR-IF-EXISTS",
-          "CREATE-USER 'author' path= '/home/users/client/domain'",
-          "CREATE-USER 'author' path= '/home/users/client/domain' BEGIN\n" +
+          "CREATE-USER 'author' password='p@$$w0rd' --ERROR-IF-EXISTS",
+          "CREATE-USER 'author' path='/home/users/client/domain'",
+          "CREATE-USER 'author' path='/home/users/client/domain' BEGIN\n" +
               " SET-PROPERTY 'first-name' 'Author'\n" +
               "END"
       },
@@ -49,9 +49,9 @@ public class CreateUserMapper {
   public Action mapAction(
       @Required(value = "userId", description = "user's login e.g.: 'author'") String userId,
       @Named(value = "password", description = "user's password e.g.: 'p@$$w0rd'") String password,
-      @Named(value = "path", description = "user's home e.g.: '/home/users/domain'") String path,
+      @Named(value = "path", description = "user's home e.g.: '/home/users/client/domain'") String path,
       @Flag(value = ERROR_IF_EXISTS, description = "if user already exists, raise an error and stop script execution") boolean errorIfExists) {
-    return new CreateAuthorizable(userId, password, path, !errorIfExists, USER);
+    return new CreateAuthorizable(userId, password, path, null, !errorIfExists, USER);
   }
 
 }
