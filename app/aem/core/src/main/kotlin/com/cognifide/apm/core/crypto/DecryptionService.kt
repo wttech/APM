@@ -54,7 +54,7 @@ class DecryptionService {
         return try {
             cryptoSupport.unprotect(text)
         } catch (e: CryptoException) {
-            text
+            throw IllegalArgumentException(String.format("Unable to decrypt '%s', wrong hmac or master key", text), e)
         }
     }
 
