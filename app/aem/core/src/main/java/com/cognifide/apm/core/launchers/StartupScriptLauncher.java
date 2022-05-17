@@ -35,6 +35,7 @@ import java.util.List;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.settings.SlingSettingsService;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -63,19 +64,16 @@ public class StartupScriptLauncher extends AbstractLauncher {
   @Reference
   private ResourceResolverProvider resolverProvider;
 
-  public void process() {
-    SlingHelper.operateTraced(resolverProvider, this::process);
+  @Activate
+  public void activate() {
+    SlingHelper.operateTraced(resolverProvider, this::executeScripts);
   }
 
-  private void process(ResourceResolver resolver) throws PersistenceException {
+  private void executeScripts(ResourceResolver resolver) throws PersistenceException {
     LaunchEnvironment environment = LaunchEnvironment.of(slingSettings);
-    executeScripts(environment, resolver);
-  }
-
-  private void executeScripts(LaunchEnvironment currentEnvironment, ResourceResolver resolver) throws PersistenceException {
     List<Script> scripts = new ArrayList<>();
-    scripts.addAll(scriptFinder.findAll(onStartup(currentEnvironment, slingSettings), resolver));
-    scripts.addAll(modifiedScriptFinder.findAll(onStartupIfModified(currentEnvironment, slingSettings), resolver));
+    scripts.addAll(scriptFinder.findAll(onStartup(environment, slingSettings), resolver));
+    scripts.addAll(modifiedScriptFinder.findAll(onStartupIfModified(environment, slingSettings), resolver));
     processScripts(scripts, resolver);
   }
 
