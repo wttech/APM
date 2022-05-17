@@ -28,6 +28,7 @@ jobs:
         run: |
           mkdir artifacts
           find ./app/aem/all/build/packageCompose -name "*.zip" -print0 | xargs -0 cp -t "artifacts"
+          find ./app/aem/all.cloud/build/packageCompose -name "*.zip" -print0 | xargs -0 cp -t "artifacts"
           find ./app/aem/actions.checks/build/packageCompose -name "*.zip" -print0 | xargs -0 cp -t "artifacts"
           find ./artifacts -name '*.zip' -exec bash -c ' mv $0 ${0/core/apmt}' {} \;
       - name: Upload Release Asset

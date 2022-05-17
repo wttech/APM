@@ -23,6 +23,7 @@ import com.cognifide.apm.core.Property;
 import com.google.common.collect.Maps;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.sling.adapter.Adaption;
 import org.apache.sling.api.adapter.AdapterFactory;
 import org.apache.sling.api.resource.LoginException;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -49,17 +50,29 @@ public class ResourceResolverProvider {
   @Reference
   private ServiceUserMapped serviceUserMapped;
 
-  @Reference(target = "(models.adapter.implementationClass=com.cognifide.apm.core.scripts.ScriptModel)")
+  @Reference(target = "(adapters=com.cognifide.apm.core.scripts.ScriptModel)")
   private AdapterFactory scriptModelAdapterFactory;
 
-  @Reference(target = "(models.adapter.implementationClass=com.cognifide.apm.core.services.version.ScriptVersionModel)")
+  @Reference(target = "(adapters=com.cognifide.apm.core.services.version.ScriptVersionModel)")
   private AdapterFactory scriptVersionModelAdapterFactory;
 
-  @Reference(target = "(models.adapter.implementationClass=com.cognifide.apm.core.history.ScriptHistoryImpl)")
+  @Reference(target = "(adapters=com.cognifide.apm.core.history.ScriptHistoryImpl)")
   private AdapterFactory scriptHistoryImplAdapterFactory;
 
-  @Reference(target = "(models.adapter.implementationClass=com.cognifide.apm.core.history.HistoryEntryImpl)")
+  @Reference(target = "(adapters=com.cognifide.apm.core.history.HistoryEntryImpl)")
   private AdapterFactory historyEntryImplAdapterFactory;
+
+  @Reference(target = "(adapters=com.cognifide.apm.core.scripts.ScriptModel)")
+  private Adaption scriptModelAdaption;
+
+  @Reference(target = "(adapters=com.cognifide.apm.core.services.version.ScriptVersionModel)")
+  private Adaption scriptVersionModelAdaption;
+
+  @Reference(target = "(adapters=com.cognifide.apm.core.history.ScriptHistoryImpl)")
+  private Adaption scriptHistoryImplAdaption;
+
+  @Reference(target = "(adapters=com.cognifide.apm.core.history.HistoryEntryImpl)")
+  private Adaption historyEntryImplAdaption;
 
   public ResourceResolver getResourceResolver(String userId) throws LoginException {
     ResourceResolver resolver;
