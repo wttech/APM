@@ -19,25 +19,24 @@
  */
 package com.cognifide.apm.core.utils;
 
-import java.util.Optional;
+import javax.jcr.Node;
+import javax.jcr.Session;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.osgi.service.cm.Configuration;
-import org.osgi.service.cm.ConfigurationAdmin;
+import org.apache.sling.api.resource.ResourceResolver;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RuntimeUtils {
 
-  public static final String SERVICE_PID = "org.apache.jackrabbit.oak.composite.CompositeNodeStoreService";
-
-  public static boolean determineCompositeNodeStore(ConfigurationAdmin configurationAdmin) {
+  public static boolean determineCompositeNodeStore(ResourceResolver resolver) {
     boolean result;
     try {
-      Configuration configuration = configurationAdmin.getConfiguration(SERVICE_PID, null);
-      result = Optional.ofNullable(configuration)
-          .map(Configuration::getProperties)
-          .map(dict -> (Boolean) dict.get("enabled"))
-          .orElse(false);
+      Session session = resolver.adaptTo(Session.class);
+      String path = "/apps";
+      Node node = session.getNode(path);
+      boolean hasPermission = session.hasPermission("/", Session.ACTION_SET_PROPERTY);
+      boolean hasCapability = session.hasCapability("addNode", node, new Object[]{"nt:folder"});
+      result = hasPermission && !hasCapability;
     } catch (Exception e) {
       result = false;
     }

@@ -48,7 +48,6 @@ import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
-import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -82,9 +81,6 @@ public class HistoryImpl implements History {
   @Reference
   private VersionService versionService;
 
-  @Reference
-  private ConfigurationAdmin configurationAdmin;
-
   @Override
   public HistoryEntry logLocal(Script script, ExecutionMode mode, Progress progressLogger) {
     return resolveDefault(resolverProvider, progressLogger.getExecutor(), (ResolveCallback<HistoryEntry>) resolver -> {
@@ -106,7 +102,7 @@ public class HistoryImpl implements History {
         .isRunSuccessful(progressLogger.isSuccess())
         .mode(mode.toString())
         .progressLog(ProgressHelper.toJson(progressLogger.getEntries()))
-        .compositeNodeStore(RuntimeUtils.determineCompositeNodeStore(configurationAdmin));
+        .compositeNodeStore(RuntimeUtils.determineCompositeNodeStore(resolver));
   }
 
   @Override

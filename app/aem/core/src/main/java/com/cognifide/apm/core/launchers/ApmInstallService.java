@@ -37,7 +37,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -72,9 +71,6 @@ public class ApmInstallService extends AbstractLauncher {
   @Reference
   private History history;
 
-  @Reference
-  private ConfigurationAdmin configurationAdmin;
-
   @Activate
   public void activate(Configuration config) {
     SlingHelper.operateTraced(resolverProvider, resolver -> processScripts(config, resolver));
@@ -84,7 +80,7 @@ public class ApmInstallService extends AbstractLauncher {
     logger.info("scriptPaths = {}", Arrays.asList(config.scriptPaths()));
     logger.info("ifModified = {}", config.ifModified());
     ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resolver);
-    boolean compositeNodeStore = RuntimeUtils.determineCompositeNodeStore(configurationAdmin);
+    boolean compositeNodeStore = RuntimeUtils.determineCompositeNodeStore(resolver);
     logger.info("compositeNodeStore = {}", compositeNodeStore);
     List<Script> scripts = Arrays.stream(config.scriptPaths())
         .map(scriptPath -> {
