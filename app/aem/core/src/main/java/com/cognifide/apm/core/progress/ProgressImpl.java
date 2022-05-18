@@ -83,7 +83,7 @@ public class ProgressImpl implements Progress {
     }
     final List<String> parameters = new ArrayList<>();
     arguments.getRequired().forEach(it -> parameters.add(it.toString()));
-    arguments.getNamed().forEach((key, value) -> parameters.add(format("%s= %s", key, value)));
+    arguments.getNamed().forEach((key, value) -> parameters.add(format("%s=%s", key, value)));
     arguments.getFlags().forEach(it -> parameters.add(format("--%s", it)));
     return parameters;
   }

@@ -39,8 +39,8 @@ public class AllowMapper {
   @Mapping(
       examples = {
           "ALLOW '/content/dam' [READ]",
-          "ALLOW '/content/dam' properties= ['jcr:title'] [MODIFY]",
-          "ALLOW '/content/dam' types= ['nt:folder'] [MODIFY]",
+          "ALLOW '/content/dam' properties=['jcr:title'] [MODIFY]",
+          "ALLOW '/content/dam' types=['nt:folder'] [MODIFY]",
           "ALLOW '/content/dam/domain' [READ, MODIFY] --IF-EXISTS"
       },
       reference = REFERENCE
