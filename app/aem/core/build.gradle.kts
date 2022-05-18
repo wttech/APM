@@ -45,6 +45,7 @@ aem {
 
 dependencies {
     implementation(project(":app:aem:api"))
+    implementation(project(":app:aem:actions.main"))
 
     antlr("org.antlr:antlr4:4.7.2")
 

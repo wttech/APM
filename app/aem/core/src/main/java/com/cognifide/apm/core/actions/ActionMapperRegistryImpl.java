@@ -25,6 +25,7 @@ import com.cognifide.apm.api.exceptions.InvalidActionMapperException;
 import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.actions.scanner.AnnotatedClassRegistry;
 import com.cognifide.apm.core.actions.scanner.RegistryChangedListener;
+import com.cognifide.apm.main.services.ApmActionsMainService;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import java.util.Collection;
@@ -38,6 +39,7 @@ import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.scribe.utils.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +58,9 @@ public class ActionMapperRegistryImpl implements RegistryChangedListener, Action
 
   private static final String BUNDLE_HEADER = "APM-Actions";
 
+  @Reference
+  private ApmActionsMainService apmActionsMainService;
+
   private AnnotatedClassRegistry registry;
 
   private final AtomicReference<Map<String, MapperDescriptor>> mappers = new AtomicReference<>(
@@ -66,6 +71,7 @@ public class ActionMapperRegistryImpl implements RegistryChangedListener, Action
     registry = new AnnotatedClassRegistry(componentContext.getBundleContext(), BUNDLE_HEADER, Mapper.class);
     registry.addChangeListener(this);
     registry.open();
+    LOG.info("activate {}", getMappers().size());
   }
 
   @Deactivate
@@ -78,11 +84,13 @@ public class ActionMapperRegistryImpl implements RegistryChangedListener, Action
   @Override
   public void registryChanged(List<Class<?>> registeredClasses) {
     this.mappers.set(ImmutableMap.copyOf(createActionMappers(registeredClasses)));
+    LOG.info("registryChanged {}", getMappers().size());
   }
 
   @Override
   public Optional<MapperDescriptor> getMapper(String name) {
     Preconditions.checkNotNull(name, "Name cannot be null");
+    LOG.info("getMapper {} {}", name, getMappers().size());
     return Optional.ofNullable(mappers.get().get(name.trim().toUpperCase()));
   }
 
