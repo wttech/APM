@@ -32,7 +32,6 @@ aem {
                                 "com.cognifide.apm.core.services",
                                 "com.cognifide.apm.core.history"
                         ).joinToString(","))
-                attribute("Sling-Nodetypes", "CQ-INF/nodetypes/apm_nodetypes.cnd")
                 attribute("APM-Actions", "com.cognifide.apm.foundation.actions")
                 excludePackage("org.antlr.stringtemplate", "org.antlr.v4.gui")
                 embedPackage("org.antlr:antlr4-runtime:4.7.2", "org.antlr.v4.runtime.*")
