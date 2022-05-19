@@ -19,9 +19,15 @@ aem {
     tasks {
         packageCompose {
             mergePackageProject(":app:aem:ui.apps.base")
-            installBundleProject(":app:aem:api")
-            installBundleProject(":app:aem:core")
-            installBundleProject(":app:aem:actions.main")
+            installBundleProject(":app:aem:api") {
+                dirPath.set("/apps/apm/install/27")
+            }
+            installBundleProject(":app:aem:core") {
+                dirPath.set("/apps/apm/install/27")
+            }
+            installBundleProject(":app:aem:actions.main") {
+                dirPath.set("/apps/apm/install/27")
+            }
             vaultDefinition {
                 duplicatesStrategy = DuplicatesStrategy.EXCLUDE
                 version.set(rootProject.version as String)
