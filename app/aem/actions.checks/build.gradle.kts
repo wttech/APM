@@ -72,7 +72,7 @@ publishing {
         }
         register<MavenPublication>("apmCrx") {
             groupId = project.group.toString() + ".crx"
-            artifact(common.publicationArtifact("packageCompose"))
+            artifact(tasks["packageCompose"])
             afterEvaluate {
                 artifactId = "apm-" + project.name
                 version = rootProject.version
