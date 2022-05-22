@@ -35,7 +35,7 @@ public enum CreateAuthorizableStrategy {
   GROUP {
     @Override
     public Group create(String id, String password, String path, String externalId,
-                        Context context, ActionResult actionResult, boolean simulate) throws RepositoryException {
+        Context context, ActionResult actionResult, boolean simulate) throws RepositoryException {
       Principal namePrincipal = context.getAuthorizableManager().createMockPrincipal(id);
       Group group;
       if (!simulate) {
@@ -56,7 +56,7 @@ public enum CreateAuthorizableStrategy {
   USER {
     @Override
     public User create(String id, String password, String path, String externalId,
-                       Context context, ActionResult actionResult, boolean simulate) throws RepositoryException {
+        Context context, ActionResult actionResult, boolean simulate) throws RepositoryException {
       Principal namePrincipal = context.getAuthorizableManager().createMockPrincipal(id);
       User user;
       if (!simulate) {
@@ -75,7 +75,7 @@ public enum CreateAuthorizableStrategy {
   SYSTEM_USER {
     @Override
     public User create(String id, String password, String path, String externalId,
-                       Context context, ActionResult actionResult, boolean simulate) throws RepositoryException {
+        Context context, ActionResult actionResult, boolean simulate) throws RepositoryException {
       User user;
       if (!simulate) {
         user = context.getAuthorizableManager().createSystemUser(id, path);
@@ -89,6 +89,6 @@ public enum CreateAuthorizableStrategy {
   };
 
   public abstract Authorizable create(String id, String password, String path, String externalId,
-                                      Context context, ActionResult actionResult, boolean simulate) throws RepositoryException;
+      Context context, ActionResult actionResult, boolean simulate) throws RepositoryException;
 
 }

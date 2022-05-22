@@ -31,16 +31,15 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-abstract class AbstractLauncher {
+public abstract class AbstractLauncher {
 
   protected final Logger logger;
 
-  AbstractLauncher() {
+  public AbstractLauncher() {
     logger = LoggerFactory.getLogger(this.getClass());
   }
 
-  void processScripts(List<Script> scripts, ResourceResolver resolver)
-      throws PersistenceException {
+  protected void processScripts(List<Script> scripts, ResourceResolver resolver) throws PersistenceException {
     if (!scripts.isEmpty()) {
       logger.info("Launcher will try to run following scripts: {}", scripts.size());
       logger.info(MessagingUtils.describeScripts(scripts));
@@ -50,8 +49,7 @@ abstract class AbstractLauncher {
     }
   }
 
-  void processScript(Script script, ResourceResolver resolver)
-      throws PersistenceException {
+  protected void processScript(Script script, ResourceResolver resolver) throws PersistenceException {
     String scriptPath = script.getPath();
     try {
       if (!script.isValid()) {
