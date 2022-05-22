@@ -47,7 +47,7 @@ public class CreateAuthorizable implements Action {
   private final CreateAuthorizableStrategy createStrategy;
 
   public CreateAuthorizable(String id, String password, String path, String externalId,
-                            Boolean ignoreIfExists, CreateAuthorizableStrategy createStrategy) {
+      Boolean ignoreIfExists, CreateAuthorizableStrategy createStrategy) {
     this.id = id;
     this.password = password;
     this.path = path;

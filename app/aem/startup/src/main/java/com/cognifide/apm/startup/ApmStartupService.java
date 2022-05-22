@@ -17,7 +17,7 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.core.launchers;
+package com.cognifide.apm.startup;
 
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ScriptFinder;
@@ -26,15 +26,20 @@ import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.grammar.ReferenceFinder;
 import com.cognifide.apm.core.history.History;
 import com.cognifide.apm.core.history.HistoryEntry;
+import com.cognifide.apm.core.history.HistoryImpl;
+import com.cognifide.apm.core.launchers.AbstractLauncher;
 import com.cognifide.apm.core.services.ResourceResolverProvider;
 import com.cognifide.apm.core.services.version.ScriptVersion;
 import com.cognifide.apm.core.services.version.VersionService;
+import com.cognifide.apm.core.services.version.VersionServiceImpl;
 import com.cognifide.apm.core.utils.RuntimeUtils;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Activate;
@@ -46,14 +51,18 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 @Component(
     immediate = true,
-    service = ApmInstallService.class,
+    service = ApmStartupService.class,
     property = {
-        Property.DESCRIPTION + "APM Launches configured scripts",
+        Property.DESCRIPTION + "APM Launches configured scripts on startup",
         Property.VENDOR
     }
 )
-@Designate(ocd = ApmInstallService.Configuration.class, factory = true)
-public class ApmInstallService extends AbstractLauncher {
+@Designate(ocd = ApmStartupService.Configuration.class)
+public class ApmStartupService extends AbstractLauncher {
+
+  private static final String HISTORY_APPS_FOLDER = "/apps/apm/history";
+
+  private static final String VERSIONS_APPS_FOLDER = "/apps/apm/versions";
 
   @Reference
   private ResourceResolverProvider resolverProvider;
@@ -75,7 +84,7 @@ public class ApmInstallService extends AbstractLauncher {
     SlingHelper.operateTraced(resolverProvider, resolver -> processScripts(config, resolver));
   }
 
-  private void processScripts(Configuration config, ResourceResolver resolver) throws PersistenceException {
+  private void processScripts(Configuration config, ResourceResolver resolver) throws PersistenceException, RepositoryException {
     logger.info("scriptPaths = {}", Arrays.asList(config.scriptPaths()));
     logger.info("ifModified = {}", config.ifModified());
     ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resolver);
@@ -117,6 +126,18 @@ public class ApmInstallService extends AbstractLauncher {
         .collect(Collectors.toList());
     logger.info("scripts.size = {}", scripts.size());
     processScripts(scripts, resolver);
+    copyHistory(resolver);
+  }
+
+  private void copyHistory(ResourceResolver resolver) throws RepositoryException {
+    Session session = resolver.adaptTo(Session.class);
+    if (!session.nodeExists(HISTORY_APPS_FOLDER)) {
+      session.getWorkspace().copy(HistoryImpl.HISTORY_FOLDER, HISTORY_APPS_FOLDER);
+    }
+    if (!session.nodeExists(VERSIONS_APPS_FOLDER)) {
+      session.getWorkspace().copy(VersionServiceImpl.versionsRoot, VERSIONS_APPS_FOLDER);
+    }
+    session.save();
   }
 
   @Override
@@ -124,7 +145,7 @@ public class ApmInstallService extends AbstractLauncher {
     return scriptManager;
   }
 
-  @ObjectClassDefinition(name = "AEM Permission Management - Install Launcher Configuration")
+  @ObjectClassDefinition(name = "AEM Permission Management - Startup Launcher Configuration")
   public @interface Configuration {
 
     @AttributeDefinition(name = "Scripts Path")

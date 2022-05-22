@@ -28,7 +28,7 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.72")
+    implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.21")
     implementation("org.apache.sling:org.apache.sling.caconfig.bnd-plugin:1.0.2")
-    implementation("com.cognifide.gradle:aem-plugin:14.2.13")
+    implementation("com.cognifide.gradle:aem-plugin:15.5.5")
 }

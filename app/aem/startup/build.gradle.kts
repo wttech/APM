@@ -3,32 +3,21 @@ import org.gradle.jvm.tasks.Jar
 
 plugins {
     id("com.cognifide.aem.bundle")
-    id("com.cognifide.aem.package")
     java
     `maven-publish`
     signing
 }
 
-description = "APM Actions Checks"
+description = "APM Startup"
 
 apply(from = rootProject.file("app/common.gradle.kts"))
 apply(from = rootProject.file("app/aem/common.gradle.kts"))
 
 aem {
     tasks {
-        packageCompose {
-            installBundleProject(":app:aem:actions.checks")
-            vaultDefinition {
-                val currentVersion = rootProject.version as String
-                version.set(currentVersion)
-                description.set(project.description)
-                property("dependencies", "com.cognifide.apm:apm-ui.apps:" + currentVersion.substringBefore("-SNAPSHOT"))
-            }
-        }
         jar {
             bundle {
-                exportPackage("com.cognifide.apm.checks.actions.*")
-                attribute("APM-Actions", "com.cognifide.apm.checks.actions")
+                exportPackage("com.cognifide.apm.startup.*")
             }
         }
     }
@@ -36,13 +25,13 @@ aem {
 
 dependencies {
     implementation(project(":app:aem:api"))
+    implementation(project(":app:aem:core"))
+
+    compileOnly("org.projectlombok:lombok:1.18.8")
+    annotationProcessor("org.projectlombok:lombok:1.18.8")
 }
 
 tasks {
-    getByName("packageDeploy") {
-        mustRunAfter(":app:aem:ui.apps:packageDeploy")
-    }
-
     register<Jar>("sourcesJar") {
         from(sourceSets.main.get().allSource)
         archiveClassifier.set("sources")
@@ -61,18 +50,6 @@ publishing {
             from(components["java"])
             artifact(tasks["sourcesJar"])
             artifact(tasks["javadocJar"])
-            afterEvaluate {
-                artifactId = "apm-" + project.name
-                version = rootProject.version
-            }
-            pom {
-                name.set("APM - " + project.name)
-                description.set(project.description)
-            }
-        }
-        register<MavenPublication>("apmCrx") {
-            groupId = project.group.toString() + ".crx"
-            artifact(tasks["packageCompose"])
             afterEvaluate {
                 artifactId = "apm-" + project.name
                 version = rootProject.version

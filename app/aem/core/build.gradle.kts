@@ -4,7 +4,7 @@ import org.gradle.jvm.tasks.Jar
 plugins {
     id("com.cognifide.aem.bundle")
     kotlin("jvm")
-    id("org.jetbrains.kotlin.plugin.noarg") version "1.3.72"
+    id("org.jetbrains.kotlin.plugin.noarg") version "1.6.21"
     antlr
     groovy
     java
@@ -22,7 +22,7 @@ aem {
         jar {
             bundle {
                 exportPackage("com.cognifide.apm.core.*")
-                importPackage("javax.annotation;version=0.0.0")
+                importPackage("javax.annotation;version=0.0.0", "!android.os")
                 attribute("Sling-Model-Packages",
                         listOf(
                                 "com.cognifide.apm.core.crypto",
@@ -35,8 +35,8 @@ aem {
                 attribute("APM-Actions", "com.cognifide.apm.foundation.actions")
                 excludePackage("org.antlr.stringtemplate", "org.antlr.v4.gui")
                 embedPackage("org.antlr:antlr4-runtime:4.7.2", "org.antlr.v4.runtime.*")
-                embedPackage("org.jetbrains.kotlin:kotlin-reflect:1.3.72", "kotlin.reflect.*")
-                embedPackage("org.jetbrains.kotlin:kotlin-stdlib:1.3.72", "kotlin.*")
+                embedPackage("org.jetbrains.kotlin:kotlin-reflect:1.6.21", "kotlin.reflect.*")
+                embedPackage("org.jetbrains.kotlin:kotlin-stdlib:1.6.21", "kotlin.*")
             }
         }
     }

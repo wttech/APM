@@ -50,7 +50,7 @@ publishing {
     publications {
         create<MavenPublication>("apmCrx") {
             groupId = project.group.toString() + ".crx"
-            artifact(common.publicationArtifact("packageCompose"))
+            artifact(tasks["packageCompose"])
             afterEvaluate {
                 artifactId = "apm-examples"
                 version = rootProject.version
