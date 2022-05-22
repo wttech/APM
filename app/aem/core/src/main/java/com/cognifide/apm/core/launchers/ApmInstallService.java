@@ -49,8 +49,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
     service = ApmInstallService.class,
     property = {
         Property.DESCRIPTION + "APM Launches configured scripts",
-        Property.VENDOR,
-        Property.SCHEDULER + "0 * * * * ?"
+        Property.VENDOR
     }
 )
 @Designate(ocd = ApmInstallService.Configuration.class, factory = true)
