@@ -12,6 +12,7 @@ evaluationDependsOn(":app:aem:api")
 evaluationDependsOn(":app:aem:core")
 evaluationDependsOn(":app:aem:actions.main")
 evaluationDependsOn(":app:aem:startup")
+evaluationDependsOn(":app:aem:simple")
 
 apply(from = rootProject.file("app/common.gradle.kts"))
 apply(from = rootProject.file("app/aem/common.gradle.kts"))
@@ -24,6 +25,9 @@ aem {
             installBundleProject(":app:aem:core")
             installBundleProject(":app:aem:actions.main")
             installBundleProject(":app:aem:startup") {
+                startLevel.set(27)
+            }
+            installBundleProject(":app:aem:simple") {
                 startLevel.set(27)
             }
             vaultDefinition {

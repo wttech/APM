@@ -25,6 +25,7 @@ import com.cognifide.apm.api.exceptions.InvalidActionMapperException;
 import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.actions.scanner.AnnotatedClassRegistry;
 import com.cognifide.apm.core.actions.scanner.RegistryChangedListener;
+import com.cognifide.apm.core.utils.LogUtils;
 import com.cognifide.apm.main.services.ApmActionsMainService;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
@@ -71,7 +72,7 @@ public class ActionMapperRegistryImpl implements RegistryChangedListener, Action
     registry = new AnnotatedClassRegistry(componentContext.getBundleContext(), BUNDLE_HEADER, Mapper.class);
     registry.addChangeListener(this);
     registry.open();
-    LOG.info("activate {}", getMappers().size());
+    LogUtils.log(LOG, String.format("activate %s", getMappers().size()));
   }
 
   @Deactivate
@@ -84,13 +85,13 @@ public class ActionMapperRegistryImpl implements RegistryChangedListener, Action
   @Override
   public void registryChanged(List<Class<?>> registeredClasses) {
     this.mappers.set(ImmutableMap.copyOf(createActionMappers(registeredClasses)));
-    LOG.info("registryChanged {}", getMappers().size());
+    LogUtils.log(LOG, String.format("registryChanged %s", getMappers().size()));
   }
 
   @Override
   public Optional<MapperDescriptor> getMapper(String name) {
     Preconditions.checkNotNull(name, "Name cannot be null");
-    LOG.info("getMapper {} {}", name, getMappers().size());
+    LogUtils.log(LOG, String.format("getMapper %s %s", name, getMappers().size()));
     return Optional.ofNullable(mappers.get().get(name.trim().toUpperCase()));
   }
 

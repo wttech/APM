@@ -20,6 +20,7 @@
 package com.cognifide.apm.core.utils.sling;
 
 import com.cognifide.apm.core.services.ResourceResolverProvider;
+import com.cognifide.apm.core.utils.LogUtils;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,6 +101,7 @@ public final class SlingHelper {
     try {
       operate(provider, userId, callback);
     } catch (OperateException e) {
+      LogUtils.log(LOG, String.format("%s %s", OPERATE_ERROR_MESSAGE, e.getMessage()));
       LOG.error(OPERATE_ERROR_MESSAGE, e);
     }
   }
