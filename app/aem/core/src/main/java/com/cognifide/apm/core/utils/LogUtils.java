@@ -51,16 +51,15 @@ public class LogUtils {
   }
 
   public static void log(Logger logger, String message) {
-    if (logger != null) {
-      logger.info(message);
-    }
+    logger.info(message);
     sendLog(logger, message);
   }
 
   private static void sendLog(Logger logger, String message) {
     String instanceName = getInstanceName();
+    String clazzName = logger.getName();
     String executionTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy hh:mm:ss.SSS"));
-    String data = String.format("{\"text\": \"%s Message: %s, Instance: %s\"}", executionTime, message, instanceName);
+    String data = String.format("{\"text\": \"%s %s Message: %s, Instance: %s\"}", executionTime, clazzName, message, instanceName);
     try {
       HttpURLConnection postRequest = createPostRequest(getUrl(), data);
 
