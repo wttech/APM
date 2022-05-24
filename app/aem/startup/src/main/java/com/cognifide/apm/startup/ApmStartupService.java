@@ -133,11 +133,11 @@ public class ApmStartupService extends AbstractLauncher {
   private void copyHistory(ResourceResolver resolver) throws RepositoryException {
     LogUtils.log(logger, "copyHistory");
     Session session = resolver.adaptTo(Session.class);
-    if (!session.nodeExists(HISTORY_APPS_FOLDER)) {
+    if (session.nodeExists(HistoryImpl.HISTORY_FOLDER) && !session.nodeExists(HISTORY_APPS_FOLDER)) {
       LogUtils.log(logger, String.format("copyHistory %s", HistoryImpl.HISTORY_FOLDER));
       session.getWorkspace().copy(HistoryImpl.HISTORY_FOLDER, HISTORY_APPS_FOLDER);
     }
-    if (!session.nodeExists(VERSIONS_APPS_FOLDER)) {
+    if (session.nodeExists(VersionServiceImpl.versionsRoot) && !session.nodeExists(VERSIONS_APPS_FOLDER)) {
       LogUtils.log(logger, String.format("copyHistory %s", VersionServiceImpl.versionsRoot));
       session.getWorkspace().copy(VersionServiceImpl.versionsRoot, VERSIONS_APPS_FOLDER);
     }
