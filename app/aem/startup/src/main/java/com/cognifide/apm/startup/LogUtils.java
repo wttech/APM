@@ -58,7 +58,7 @@ public class LogUtils {
   private static void sendLog(Logger logger, String message) {
     String instanceName = getInstanceName();
     String clazzName = logger.getName();
-    String executionTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy hh:mm:ss.SSS"));
+    String executionTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd hh:mm:ss.SSS"));
     String data = String.format("{\"text\": \"%s %s Message: %s, Instance: %s\"}", executionTime, clazzName, message, instanceName);
     try {
       HttpURLConnection postRequest = createPostRequest(getUrl(), data);
