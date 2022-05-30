@@ -19,8 +19,12 @@
  */
 package com.cognifide.apm.simple;
 
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ResourceResolverFactory;
+import org.apache.sling.serviceusermapping.ServiceUserMapped;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,10 +36,19 @@ public class ApmSimpleService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ApmSimpleService.class);
 
+  @Reference
+  private ResourceResolverFactory resolverFactory;
+
+  @Reference
+  private ServiceUserMapped serviceUserMapped;
+
   @Activate
   public void activate() {
-    LogUtils.log(LOGGER, "test service");
+    try (ResourceResolver resolver = resolverFactory.getServiceResourceResolver(null)) {
+      LogUtils.log(LOGGER, resolver, "test service");
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
-
 
 }

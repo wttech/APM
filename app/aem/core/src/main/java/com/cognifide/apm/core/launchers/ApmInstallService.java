@@ -29,7 +29,6 @@ import com.cognifide.apm.core.history.HistoryEntry;
 import com.cognifide.apm.core.services.ResourceResolverProvider;
 import com.cognifide.apm.core.services.version.ScriptVersion;
 import com.cognifide.apm.core.services.version.VersionService;
-import com.cognifide.apm.core.utils.LogUtils;
 import com.cognifide.apm.core.utils.RuntimeUtils;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
 import java.util.Arrays;
@@ -77,46 +76,23 @@ public class ApmInstallService extends AbstractLauncher {
   }
 
   private void processScripts(Configuration config, ResourceResolver resolver) throws PersistenceException {
-    LogUtils.log(logger, String.format("scriptPaths = %s", Arrays.asList(config.scriptPaths())));
-    LogUtils.log(logger, String.format("ifModified = %s", config.ifModified()));
     ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resolver);
     boolean compositeNodeStore = RuntimeUtils.determineCompositeNodeStore(resolver);
-    LogUtils.log(logger, String.format("compositeNodeStore = %s", compositeNodeStore));
     List<Script> scripts = Arrays.stream(config.scriptPaths())
-        .map(scriptPath -> {
-          LogUtils.log(logger, String.format("scriptPath = %s", scriptPath));
-          Script script = scriptFinder.find(scriptPath, resolver);
-          LogUtils.log(logger, String.format("scriptPath = %s  script.exists = %s", scriptPath, script != null));
-          return script;
-        })
+        .map(scriptPath -> scriptFinder.find(scriptPath, resolver))
         .filter(Objects::nonNull)
         .filter(script -> {
           List<Script> subtree = referenceFinder.findReferences(script);
           String checksum = versionService.countChecksum(subtree);
           ScriptVersion scriptVersion = versionService.getScriptVersion(resolver, script);
           HistoryEntry lastLocalRun = history.findScriptHistory(resolver, script).getLastLocalRun();
-          LogUtils.log(logger, String.format("script.path = %s  checksum = %s", script.getPath(), checksum));
-          if (scriptVersion.getLastChecksum() == null) {
-            LogUtils.log(logger, String.format("script.path = %s  scriptVersion.lastChecksum = null", script.getPath()));
-          } else {
-            LogUtils.log(logger, String.format("script.path = %s  scriptVersion.lastChecksum = %s", script.getPath(), scriptVersion.getLastChecksum()));
-          }
-          if (lastLocalRun == null) {
-            LogUtils.log(logger, String.format("script.path = %s  lastLocalRun = null", script.getPath()));
-          } else {
-            LogUtils.log(logger, String.format("script.path = %s  lastLocalRun.checksum = %s", script.getPath(), lastLocalRun.getChecksum()));
-            LogUtils.log(logger, String.format("script.path = %s  lastLocalRun.compositeNodeStore = %s", script.getPath(), lastLocalRun.isCompositeNodeStore()));
-          }
-          boolean result = !config.ifModified()
+          return !config.ifModified()
               || !checksum.equals(scriptVersion.getLastChecksum())
               || lastLocalRun == null
               || !checksum.equals(lastLocalRun.getChecksum())
               || compositeNodeStore != lastLocalRun.isCompositeNodeStore();
-          LogUtils.log(logger, String.format("script.path = %s  result = %s", script.getPath(), result));
-          return result;
         })
         .collect(Collectors.toList());
-    LogUtils.log(logger, String.format("scripts.size = %s", scripts.size()));
     processScripts(scripts, resolver);
   }
 
