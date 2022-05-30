@@ -59,23 +59,22 @@ public abstract class AbstractLauncher {
       if (script.isValid()) {
         ExecutionResult result = getScriptManager().process(script, ExecutionMode.AUTOMATIC_RUN, resolver);
         logStatus(scriptPath, result.isSuccess());
+        LogUtils.log(logger, resolver, String.format("Script %s result %s", scriptPath, result.isSuccess()));
       } else {
         logger.warn("Launcher cannot execute script which is not valid: {}", scriptPath);
-        LogUtils.log(logger, "Launcher cannot execute script which is not valid: " + scriptPath);
+        LogUtils.log(logger, resolver, "Launcher cannot execute script which is not valid: " + scriptPath);
       }
     } catch (RepositoryException e) {
       logger.error("Script cannot be processed because of repository error: {}", scriptPath, e);
-      LogUtils.log(logger, "Script cannot be processed because of repository error: " + scriptPath + " " + e.getMessage());
+      LogUtils.log(logger, resolver, "Script cannot be processed because of repository error: " + scriptPath + " " + e.getMessage());
     }
   }
 
   private void logStatus(String scriptPath, boolean success) {
     if (success) {
       logger.info("Script successfully executed: {}", scriptPath);
-      LogUtils.log(logger, "Script successfully executed: " + scriptPath);
     } else {
       logger.error("Script cannot be executed properly: {}", scriptPath);
-      LogUtils.log(logger, "Script cannot be executed properly: " + scriptPath);
     }
   }
 

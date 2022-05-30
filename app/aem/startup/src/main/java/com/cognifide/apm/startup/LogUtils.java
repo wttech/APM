@@ -19,56 +19,39 @@
  */
 package com.cognifide.apm.startup;
 
-import com.adobe.xfa.ut.Base64;
-import java.io.IOException;
+import com.day.cq.commons.jcr.JcrConstants;
 import java.lang.management.ManagementFactory;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import org.apache.commons.io.IOUtils;
+import javax.jcr.Node;
+import javax.jcr.Session;
+import org.apache.jackrabbit.commons.JcrUtils;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.slf4j.Logger;
 
 public class LogUtils {
-
-  public static String getUrl() {
-    String url = "aHR0cHM6Ly9ob29rcy5zbGFjay5jb20vc2VydmljZXMvVDAzRzhCRU1ROUsvQjAzR1RCQkFENUovUUpRNHFMUldIdWl1bjE0SkVkcGRJWlY4";
-    return new String(Base64.decode(url));
-  }
 
   private static String getInstanceName() {
     return ManagementFactory.getRuntimeMXBean().getName();
   }
 
-  private static HttpURLConnection createPostRequest(String url, String data) throws IOException {
-    HttpURLConnection post = (HttpURLConnection) new URL(url).openConnection();
-    post.setRequestMethod("POST");
-    post.setDoOutput(true);
-    post.setRequestProperty("Content-Type", "application/json");
-    post.getOutputStream().write(data.getBytes("UTF-8"));
-    return post;
-  }
-
-  public static void log(Logger logger, String message) {
+  public static void log(Logger logger, ResourceResolver resolver, String message) {
     logger.info(message);
-    sendLog(logger, message);
+    saveLog(resolver, message, logger.getName());
   }
 
-  private static void sendLog(Logger logger, String message) {
+  private static void saveLog(ResourceResolver resolver, String message, String className) {
     String instanceName = getInstanceName();
-    String clazzName = logger.getName();
     String executionTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd hh:mm:ss.SSS"));
-    String data = String.format("{\"text\": \"%s %s Message: %s, Instance: %s\"}", executionTime, clazzName, message, instanceName);
     try {
-      HttpURLConnection postRequest = createPostRequest(getUrl(), data);
-
-      int postRC = postRequest.getResponseCode();
-      if (postRC == 200) {
-        String text = IOUtils.toString(postRequest.getInputStream(), StandardCharsets.UTF_8.name());
-        logger.info(text);
-      }
-    } catch (IOException e) {
+      Session session = resolver.adaptTo(Session.class);
+      Node node = JcrUtils.getOrCreateByPath("/apps/apm/logs/log", true, JcrConstants.NT_UNSTRUCTURED, JcrConstants.NT_UNSTRUCTURED, session, true);
+      node.setProperty("message", message);
+      node.setProperty("instanceName", instanceName);
+      node.setProperty("executionTime", executionTime);
+      node.setProperty("className", className);
+      session.save();
+    } catch (Exception e) {
       e.printStackTrace();
     }
   }
