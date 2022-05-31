@@ -35,6 +35,7 @@ import com.cognifide.apm.core.services.version.VersionService;
 import com.cognifide.apm.core.utils.RuntimeUtils;
 import com.cognifide.apm.core.utils.sling.ResolveCallback;
 import com.day.cq.commons.jcr.JcrConstants;
+import java.lang.management.ManagementFactory;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
@@ -102,6 +103,7 @@ public class HistoryImpl implements History {
         .isRunSuccessful(progressLogger.isSuccess())
         .mode(mode.toString())
         .progressLog(ProgressHelper.toJson(progressLogger.getEntries()))
+        .instanceName(ManagementFactory.getRuntimeMXBean().getName())
         .compositeNodeStore(RuntimeUtils.determineCompositeNodeStore(resolver));
   }
 
