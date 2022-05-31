@@ -27,7 +27,6 @@ import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 
@@ -46,7 +45,7 @@ public class JobResultsCache {
   private Cache<String, ExecutionSummary> cache;
 
   @Activate
-  public void activate(final ComponentContext componentContext) {
+  public void activate() {
     cache = CacheBuilder.newBuilder().expireAfterWrite(DEFAULT_EXPIRATION_TIME, TimeUnit.MINUTES).build();
   }
 

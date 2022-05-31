@@ -21,15 +21,19 @@ package com.cognifide.apm.core.services.async
 
 import com.cognifide.apm.api.scripts.Script
 import com.cognifide.apm.api.services.ExecutionMode
+import com.cognifide.apm.api.services.ScriptManager
 import com.cognifide.apm.api.status.Status
 import com.cognifide.apm.core.Property
+import com.cognifide.apm.core.history.History
 import com.cognifide.apm.core.jobs.JobResultsCache
 import com.cognifide.apm.core.jobs.JobResultsCache.ExecutionSummary
+import com.cognifide.apm.core.services.ResourceResolverProvider
+import com.cognifide.apm.core.utils.sling.SlingHelper
+import org.apache.commons.lang.StringUtils
 import org.apache.sling.api.resource.ResourceResolver
-import org.apache.sling.event.jobs.Job
-import org.apache.sling.event.jobs.JobManager
 import org.osgi.service.component.annotations.Component
 import org.osgi.service.component.annotations.Reference
+import java.util.*
 
 @Component(
         immediate = true,
@@ -43,28 +47,37 @@ class AsyncScriptExecutorImpl : AsyncScriptExecutor {
 
     @Reference
     @Transient
-    private lateinit var jobManager: JobManager
+    private lateinit var jobResultsCache: JobResultsCache
 
     @Reference
     @Transient
-    private lateinit var jobResultsCache: JobResultsCache
+    private lateinit var resolverProvider: ResourceResolverProvider
+
+    @Reference
+    @Transient
+    private lateinit var scriptManager: ScriptManager
+
+    @Reference
+    @Transient
+    private lateinit var history: History
 
     override fun process(script: Script, executionMode: ExecutionMode, customDefinitions: Map<String, String>, resourceResolver: ResourceResolver): String {
-        val properties = mutableMapOf<String, Any>()
-        properties[SCRIPT_PATH] = script.path
-        properties[EXECUTION_MODE] = executionMode.toString()
-        properties[USER_ID] = resourceResolver.userID!!
-        properties[DEFINITIONS] = customDefinitions
-        val job = jobManager.addJob(TOPIC, properties)
-        jobResultsCache.put(job.id, ExecutionSummary.running())
-        return job.id
+        val userId = resourceResolver.userID!!
+        val id = UUID.randomUUID().toString()
+        jobResultsCache.put(id, ExecutionSummary.running())
+        Thread({
+            SlingHelper.operateTraced(resolverProvider, userId) {
+                val executionResult = scriptManager.process(script, executionMode, customDefinitions, it)
+                val summaryPath = getSummaryPath(script, executionMode)
+                jobResultsCache.put(id, ExecutionSummary.finished(executionResult, summaryPath))
+            }
+        }, THREAD).start()
+        return id
     }
 
     override fun checkStatus(id: String): ExecutionStatus {
         val executionSummary = jobResultsCache[id]
-        val job = findJob(id)
         return when {
-            isJobRunning(job) -> RunningExecution()
             executionSummary == null -> UnknownExecution()
             executionSummary.isFinished -> finishedExecution(executionSummary)
             else -> RunningExecution()
@@ -81,19 +94,17 @@ class AsyncScriptExecutorImpl : AsyncScriptExecutor {
         }
     }
 
-    private fun isJobRunning(job: Job?): Boolean {
-        return job != null && (job.jobState == Job.JobState.ACTIVE || job.jobState == Job.JobState.QUEUED)
-    }
-
-    private fun findJob(id: String): Job? {
-        return jobManager.getJobById(id)
+    private fun getSummaryPath(script: Script, mode: ExecutionMode): String {
+        return SlingHelper.resolveDefault(resolverProvider, {
+            when (mode) {
+                ExecutionMode.DRY_RUN -> history.findScriptHistory(it, script).lastLocalDryRunPath
+                ExecutionMode.RUN -> history.findScriptHistory(it, script).lastLocalRunPath
+                else -> StringUtils.EMPTY
+            }
+        }, StringUtils.EMPTY)
     }
 
     companion object {
-        const val TOPIC = "script/job/run"
-        const val SCRIPT_PATH = "searchPath"
-        const val EXECUTION_MODE = "modeName"
-        const val USER_ID = "userName"
-        const val DEFINITIONS = "definitions"
+        const val THREAD = "apm-async"
     }
 }
