@@ -58,7 +58,7 @@ public class LogUtils {
     String instanceName = getInstanceName();
     String executionTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd hh:mm:ss.SSS"));
     try {
-      Node node = JcrUtils.getOrCreateByPath("/apps/apm/logs1/log", true, JcrConstants.NT_UNSTRUCTURED, JcrConstants.NT_UNSTRUCTURED, session, true);
+      Node node = JcrUtils.getOrCreateByPath("/apps/apm-logs/log", true, JcrConstants.NT_UNSTRUCTURED, JcrConstants.NT_UNSTRUCTURED, session, true);
       node.setProperty("message", message);
       node.setProperty("instanceName", instanceName);
       node.setProperty("executionTime", executionTime);
