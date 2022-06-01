@@ -56,7 +56,7 @@ class AsyncScriptExecutorImpl : AsyncScriptExecutor {
         properties[USER_ID] = resourceResolver.userID!!
         properties[DEFINITIONS] = customDefinitions
         val job = jobManager.addJob(TOPIC, properties)
-        jobResultsCache.put(job.id, ExecutionSummary.running())
+        jobResultsCache.putIfAbsent(job.id, ExecutionSummary.running())
         return job.id
     }
 
