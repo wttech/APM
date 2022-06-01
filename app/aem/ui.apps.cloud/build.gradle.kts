@@ -22,13 +22,13 @@ aem {
         packageCompose {
             mergePackageProject(":app:aem:ui.apps.base")
             installBundleProject(":app:aem:api") {
-                startLevel.set(27)
+                startLevel.set(20)
             }
             installBundleProject(":app:aem:core") {
-                startLevel.set(27)
+                startLevel.set(23)
             }
             installBundleProject(":app:aem:actions.main") {
-                startLevel.set(27)
+                startLevel.set(21)
             }
             installBundleProject(":app:aem:startup") {
                 startLevel.set(27)
