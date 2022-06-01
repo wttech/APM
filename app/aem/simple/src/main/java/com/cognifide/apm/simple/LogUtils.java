@@ -40,12 +40,25 @@ public class LogUtils {
     saveLog(resolver, message, logger.getName());
   }
 
+  public static void log(Logger logger, Session session, String message) {
+    logger.info(message);
+    saveLog(session, message, logger.getName());
+  }
+
   private static void saveLog(ResourceResolver resolver, String message, String className) {
+    try {
+      Session session = resolver.adaptTo(Session.class);
+      saveLog(session, message, className);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  private static void saveLog(Session session, String message, String className) {
     String instanceName = getInstanceName();
     String executionTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd hh:mm:ss.SSS"));
     try {
-      Session session = resolver.adaptTo(Session.class);
-      Node node = JcrUtils.getOrCreateByPath("/apps/apm/logs/log", true, JcrConstants.NT_UNSTRUCTURED, JcrConstants.NT_UNSTRUCTURED, session, true);
+      Node node = JcrUtils.getOrCreateByPath("/apps/apm-logs/log", true, JcrConstants.NT_UNSTRUCTURED, JcrConstants.NT_UNSTRUCTURED, session, true);
       node.setProperty("message", message);
       node.setProperty("instanceName", instanceName);
       node.setProperty("executionTime", executionTime);

@@ -21,9 +21,15 @@ aem {
     tasks {
         packageCompose {
             mergePackageProject(":app:aem:ui.apps.base")
-            installBundleProject(":app:aem:api")
-            installBundleProject(":app:aem:core")
-            installBundleProject(":app:aem:actions.main")
+            installBundleProject(":app:aem:api") {
+                startLevel.set(20)
+            }
+            installBundleProject(":app:aem:core") {
+                startLevel.set(23)
+            }
+            installBundleProject(":app:aem:actions.main") {
+                startLevel.set(21)
+            }
             installBundleProject(":app:aem:startup") {
                 startLevel.set(27)
             }
