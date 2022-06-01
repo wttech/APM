@@ -31,7 +31,7 @@ plugins.withId("com.cognifide.aem.bundle") {
     }
 
     dependencies {
-        "implementation"("com.adobe.aem:uber-jar:6.4.0:apis")
+        "implementation"("com.adobe.aem:uber-jar:6.5.5:apis")
         "implementation"("org.osgi:osgi.cmpn:6.0.0")
         "implementation"("org.osgi:org.osgi.core:6.0.0")
         "implementation"("javax.jcr:jcr:2.0")
