@@ -19,27 +19,23 @@
  */
 package com.cognifide.apm.core.jobs;
 
-import static com.cognifide.apm.core.utils.sling.SlingHelper.resolveDefault;
 
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ExecutionMode;
 import com.cognifide.apm.api.services.ExecutionResult;
 import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.apm.api.services.ScriptManager;
-import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.history.History;
 import com.cognifide.apm.core.jobs.JobResultsCache.ExecutionSummary;
 import com.cognifide.apm.core.services.ResourceResolverProvider;
 import com.cognifide.apm.core.services.async.AsyncScriptExecutorImpl;
-import com.cognifide.apm.core.utils.sling.ResolveCallback;
+import com.cognifide.apm.core.utils.sling.SlingHelper;
 import java.util.HashMap;
 import java.util.Map;
 import javax.jcr.RepositoryException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.event.jobs.Job;
-import org.apache.sling.event.jobs.consumer.JobConsumer;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -47,12 +43,9 @@ import org.slf4j.LoggerFactory;
 
 @Component(
     immediate = true,
-    service = JobConsumer.class,
-    property = {
-        Property.TOPIC + AsyncScriptExecutorImpl.TOPIC
-    }
+    service = ScriptRunnerJobConsumer.class
 )
-public class ScriptRunnerJobConsumer implements JobConsumer {
+public class ScriptRunnerJobConsumer {
 
   private static final Logger LOG = LoggerFactory.getLogger(ScriptRunnerJobConsumer.class);
 
@@ -71,44 +64,37 @@ public class ScriptRunnerJobConsumer implements JobConsumer {
   @Reference
   private ResourceResolverProvider resolverProvider;
 
-  @Override
-  public JobResult process(final Job job) {
-    LOG.info("Script runner job consumer started");
-    final String id = job.getId();
-    final ExecutionMode mode = getMode(job);
-    final String userId = getUserId(job);
-    return resolveDefault(resolverProvider, userId, (ResolveCallback<JobResult>) resolver -> {
-      JobResult result = JobResult.FAILED;
-      final Script script = getScript(job, resolver);
+  public void process(Map<String, Object> properties) {
+    LOG.info("Script runner properties consumer started");
+    final String id = (String) properties.get(AsyncScriptExecutorImpl.ID);
+    final ExecutionMode mode = getMode(properties);
+    final String userId = getUserId(properties);
+    SlingHelper.operateTraced(resolverProvider, userId, resolver -> {
+      final Script script = getScript(properties, resolver);
       if (script != null && mode != null) {
         try {
-          ExecutionResult executionResult = scriptManager.process(script, mode, getDefinitions(job), resolver);
-          String summaryPath = getSummaryPath(script, mode);
+          ExecutionResult executionResult = scriptManager.process(script, mode, getDefinitions(properties), resolver);
+          String summaryPath = getSummaryPath(resolver, script, mode);
           jobResultsCache.put(id, ExecutionSummary.finished(executionResult, summaryPath));
-          result = JobResult.OK;
         } catch (RepositoryException | PersistenceException e) {
           LOG.error("Script manager failed to process script", e);
-          result = JobResult.FAILED;
         }
       }
-      return result;
-    }, JobResult.FAILED);
+    });
   }
 
-  private String getSummaryPath(Script script, ExecutionMode mode) {
-    return resolveDefault(resolverProvider, (ResolveCallback<String>) resolver -> {
-      if (mode == ExecutionMode.DRY_RUN) {
-        return history.findScriptHistory(resolver, script).getLastLocalDryRunPath();
-      } else if (mode == ExecutionMode.RUN) {
-        return history.findScriptHistory(resolver, script).getLastLocalRunPath();
-      }
-      return StringUtils.EMPTY;
-    }, StringUtils.EMPTY);
+  private String getSummaryPath(ResourceResolver resolver, Script script, ExecutionMode mode) {
+    if (mode == ExecutionMode.DRY_RUN) {
+      return history.findScriptHistory(resolver, script).getLastLocalDryRunPath();
+    } else if (mode == ExecutionMode.RUN) {
+      return history.findScriptHistory(resolver, script).getLastLocalRunPath();
+    }
+    return StringUtils.EMPTY;
   }
 
-  private ExecutionMode getMode(Job job) {
+  private ExecutionMode getMode(Map<String, Object> properties) {
     ExecutionMode result = null;
-    String modeName = (String) job.getProperty(AsyncScriptExecutorImpl.EXECUTION_MODE);
+    String modeName = (String) properties.get(AsyncScriptExecutorImpl.EXECUTION_MODE);
     if (StringUtils.isNotBlank(modeName)) {
       result = StringUtils.isEmpty(modeName) ? ExecutionMode.DRY_RUN : ExecutionMode.valueOf(modeName.toUpperCase());
     } else {
@@ -117,16 +103,16 @@ public class ScriptRunnerJobConsumer implements JobConsumer {
     return result;
   }
 
-  private Map<String, String> getDefinitions(Job job) {
-    HashMap<String, String> definitions = (HashMap<String, String>) job.getProperty("definitions");
+  private Map<String, String> getDefinitions(Map<String, Object> properties) {
+    HashMap<String, String> definitions = (HashMap<String, String>) properties.get(AsyncScriptExecutorImpl.DEFINITIONS);
     if (definitions == null) {
       definitions = new HashMap<>();
     }
     return definitions;
   }
 
-  private Script getScript(Job job, ResourceResolver resolver) {
-    String scriptSearchPath = (String) job.getProperty(AsyncScriptExecutorImpl.SCRIPT_PATH);
+  private Script getScript(Map<String, Object> properties, ResourceResolver resolver) {
+    String scriptSearchPath = (String) properties.get(AsyncScriptExecutorImpl.SCRIPT_PATH);
     if (StringUtils.isNotBlank(scriptSearchPath)) {
       final Script script = scriptFinder.find(scriptSearchPath, resolver);
       if (script == null) {
@@ -140,7 +126,7 @@ public class ScriptRunnerJobConsumer implements JobConsumer {
     }
   }
 
-  private String getUserId(Job job) {
-    return job.getProperty(AsyncScriptExecutorImpl.USER_ID, String.class);
+  private String getUserId(Map<String, Object> properties) {
+    return (String) properties.get(AsyncScriptExecutorImpl.USER_ID);
   }
 }

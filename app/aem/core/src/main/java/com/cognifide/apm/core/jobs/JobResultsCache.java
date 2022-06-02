@@ -53,10 +53,6 @@ public class JobResultsCache {
     cache.put(id, executionSummary);
   }
 
-  public void putIfAbsent(String id, ExecutionSummary executionSummary) {
-    cache.asMap().putIfAbsent(id, executionSummary);
-  }
-
   public ExecutionSummary get(String id) {
     return cache.getIfPresent(id);
   }
