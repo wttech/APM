@@ -126,20 +126,23 @@ public class ApmStartupService extends AbstractLauncher {
         .collect(Collectors.toList());
     LogUtils.log(logger, resolver, String.format("scripts.size = %s", scripts.size()));
     processScripts(scripts, resolver);
-    copyHistory(resolver);
+    if (!compositeNodeStore) {
+      copyHistoryToApps(resolver);
+    }
   }
 
-  private void copyHistory(ResourceResolver resolver) throws RepositoryException {
+  private void copyHistoryToApps(ResourceResolver resolver) throws RepositoryException {
     LogUtils.log(logger, resolver, "copyHistory");
     Session session = resolver.adaptTo(Session.class);
     if (session.nodeExists(HistoryImpl.HISTORY_FOLDER) && !session.nodeExists(HISTORY_APPS_FOLDER)) {
-      LogUtils.log(logger, resolver, String.format("copyHistory %s", HistoryImpl.HISTORY_FOLDER));
+      LogUtils.log(logger, resolver, String.format("copyHistory1 %s", HistoryImpl.HISTORY_FOLDER));
       session.getWorkspace().copy(HistoryImpl.HISTORY_FOLDER, HISTORY_APPS_FOLDER);
-      LogUtils.log(logger, resolver, String.format("copyHistory %s", HistoryImpl.HISTORY_FOLDER));
+      LogUtils.log(logger, resolver, String.format("copyHistory2 %s", HistoryImpl.HISTORY_FOLDER));
     }
     if (session.nodeExists(VersionServiceImpl.versionsRoot) && !session.nodeExists(VERSIONS_APPS_FOLDER)) {
-      LogUtils.log(logger, resolver, String.format("copyHistory %s", VersionServiceImpl.versionsRoot));
+      LogUtils.log(logger, resolver, String.format("copyHistory3 %s", VersionServiceImpl.versionsRoot));
       session.getWorkspace().copy(VersionServiceImpl.versionsRoot, VERSIONS_APPS_FOLDER);
+      LogUtils.log(logger, resolver, String.format("copyHistory4 %s", VersionServiceImpl.versionsRoot));
     }
     session.save();
   }
