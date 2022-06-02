@@ -1,6 +1,6 @@
 {
   "user.mapping":[
-    "com.cognifide.apm.core=apm-system-user",
-    "com.cognifide.apm.simple=apm-system-user"
+    "com.cognifide.apm.core=[apm-system-user]",
+    "com.cognifide.apm.simple=[apm-system-user]"
   ]
 }
