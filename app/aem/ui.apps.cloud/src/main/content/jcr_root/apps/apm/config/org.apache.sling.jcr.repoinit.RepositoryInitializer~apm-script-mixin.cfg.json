@@ -1,0 +1,5 @@
+{
+  "scripts":[
+    "register nodetypes\r\n<<===\r\n    <apm='http://www.cognifide.com/apm/1.1'>\r\n\r\n    [apm:Script]\r\n        mixin\r\n        - apm:launchEnabled (boolean)\r\n        - apm:launchMode (string)\r\n        - apm:launchEnvironment (string)\r\n        - apm:launchRunModes (string) multiple\r\n        - apm:launchHook (string)\r\n        - apm:launchSchedule (date)\r\n        - apm:lastExecuted (date)\r\n        - apm:checksum (string)\r\n        - apm:verified (string)\r\n===>>"
+  ]
+}

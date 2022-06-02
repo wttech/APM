@@ -1,0 +1,5 @@
+{
+  "scripts":[
+    "create path /conf/apm/scripts"
+  ]
+}
