@@ -1,0 +1,6 @@
+{
+  "whitelist.bundles":[
+    "com.cognifide.apm.core"
+  ],
+  "whitelist.name":"apm"
+}
