@@ -19,11 +19,6 @@
  */
 package com.cognifide.apm.core.history;
 
-import static com.cognifide.apm.core.utils.sling.SlingHelper.resolveDefault;
-import static com.day.crx.JcrConstants.NT_UNSTRUCTURED;
-import static org.apache.jackrabbit.commons.JcrUtils.getOrCreateByPath;
-import static org.apache.jackrabbit.commons.JcrUtils.getOrCreateUniqueByPath;
-
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ExecutionMode;
 import com.cognifide.apm.core.Property;
@@ -33,7 +28,7 @@ import com.cognifide.apm.core.progress.ProgressHelper;
 import com.cognifide.apm.core.services.ResourceResolverProvider;
 import com.cognifide.apm.core.services.version.VersionService;
 import com.cognifide.apm.core.utils.RuntimeUtils;
-import com.cognifide.apm.core.utils.sling.ResolveCallback;
+import com.cognifide.apm.core.utils.sling.SlingHelper;
 import com.day.cq.commons.jcr.JcrConstants;
 import java.lang.management.ManagementFactory;
 import java.util.Calendar;
@@ -44,6 +39,7 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import org.apache.commons.lang.StringUtils;
+import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.sling.api.resource.AbstractResourceVisitor;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
@@ -84,8 +80,8 @@ public class HistoryImpl implements History {
 
   @Override
   public HistoryEntry logLocal(Script script, ExecutionMode mode, Progress progressLogger) {
-    return resolveDefault(resolverProvider, progressLogger.getExecutor(), (ResolveCallback<HistoryEntry>) resolver -> {
-      final HistoryEntryWriter historyEntryWriter = createBuilder(resolver, script, mode, progressLogger)
+    return SlingHelper.resolveDefault(resolverProvider, resolver -> {
+      HistoryEntryWriter historyEntryWriter = createBuilder(resolver, script, mode, progressLogger)
           .executionTime(Calendar.getInstance())
           .build();
       return createHistoryEntry(resolver, script, mode, historyEntryWriter);
@@ -97,7 +93,7 @@ public class HistoryImpl implements History {
     Resource source = resolver.getResource(script.getPath());
     return HistoryEntryWriter.builder()
         .author(source.getValueMap().get(JcrConstants.JCR_CREATED_BY, StringUtils.EMPTY))
-        .executor(resolver.getUserID())
+        .executor(progressLogger.getExecutor())
         .fileName(source.getName())
         .filePath(source.getPath())
         .isRunSuccessful(progressLogger.isSuccess())
@@ -141,7 +137,7 @@ public class HistoryImpl implements History {
   }
 
   @Override
-  public HistoryEntry findHistoryEntry(ResourceResolver resourceResolver, final String path) {
+  public HistoryEntry findHistoryEntry(ResourceResolver resourceResolver, String path) {
     Resource resource = resourceResolver.getResource(path);
     if (resource != null) {
       return resource.adaptTo(HistoryEntryImpl.class);
@@ -188,7 +184,7 @@ public class HistoryImpl implements History {
   private Node createHistoryEntryNode(Node scriptHistoryNode, Script script, ExecutionMode mode)
       throws RepositoryException {
     String modeName = getModeName(mode);
-    Node historyEntry = getOrCreateUniqueByPath(scriptHistoryNode, modeName, NT_UNSTRUCTURED);
+    Node historyEntry = JcrUtils.getOrCreateUniqueByPath(scriptHistoryNode, modeName, JcrConstants.NT_UNSTRUCTURED);
     historyEntry.setProperty(APM_HISTORY, APM_HISTORY_ENTRY);
     historyEntry.setProperty(HistoryEntryImpl.CHECKSUM, script.getChecksum());
     scriptHistoryNode.setProperty(ScriptHistoryImpl.LAST_CHECKSUM, script.getChecksum());
@@ -198,7 +194,7 @@ public class HistoryImpl implements History {
 
   private Node createScriptHistoryNode(Script script, Session session) throws RepositoryException {
     String path = getScriptHistoryPath(script);
-    Node scriptHistory = getOrCreateByPath(path, SLING_ORDERED_FOLDER, NT_UNSTRUCTURED, session, true);
+    Node scriptHistory = JcrUtils.getOrCreateByPath(path, SLING_ORDERED_FOLDER, JcrConstants.NT_UNSTRUCTURED, session, true);
     scriptHistory.setProperty(APM_HISTORY, APM_HISTORY_SCRIPT);
     scriptHistory.setProperty(ScriptHistoryImpl.SCRIPT_PATH, script.getPath());
     return scriptHistory;

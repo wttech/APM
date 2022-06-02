@@ -42,8 +42,6 @@ import org.osgi.service.component.annotations.Reference;
 )
 public class ResourceResolverProvider {
 
-  private static final String SUBSERVICE_NAME = "apm";
-
   @Reference
   private ResourceResolverFactory resolverFactory;
 
@@ -81,9 +79,7 @@ public class ResourceResolverProvider {
       authenticationInfo.put(ResourceResolverFactory.USER_IMPERSONATION, userId);
       resolver = resolverFactory.getAdministrativeResourceResolver(authenticationInfo);
     } else {
-      Map<String, Object> parameters = new HashMap<>();
-      parameters.put(ResourceResolverFactory.SUBSERVICE, SUBSERVICE_NAME);
-      resolver = resolverFactory.getServiceResourceResolver(parameters);
+      resolver = resolverFactory.getServiceResourceResolver(null);
     }
     return resolver;
   }
