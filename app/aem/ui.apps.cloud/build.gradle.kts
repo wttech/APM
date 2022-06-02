@@ -24,7 +24,9 @@ aem {
             installBundleProject(":app:aem:api")
             installBundleProject(":app:aem:core")
             installBundleProject(":app:aem:actions.main")
-            installBundleProject(":app:aem:simple")
+            installBundleProject(":app:aem:simple") {
+                startLevel.set(27)
+            }
             installBundleProject(":app:aem:startup") {
                 startLevel.set(27)
             }
