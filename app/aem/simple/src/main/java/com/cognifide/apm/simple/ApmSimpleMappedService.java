@@ -21,6 +21,7 @@ package com.cognifide.apm.simple;
 
 import javax.jcr.Session;
 import org.apache.sling.jcr.api.SlingRepository;
+import org.apache.sling.serviceusermapping.ServiceUserMapped;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -30,11 +31,14 @@ import org.slf4j.LoggerFactory;
 
 @Component(
     immediate = true,
-    service = ApmSimpleSessionService.class
+    service = ApmSimpleMappedService.class
 )
-public class ApmSimpleSessionService {
+public class ApmSimpleMappedService {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ApmSimpleSessionService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ApmSimpleMappedService.class);
+
+  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  private ServiceUserMapped serviceUserMapped;
 
   @Reference(policyOption = ReferencePolicyOption.GREEDY)
   private SlingRepository slingRepository;
@@ -44,7 +48,7 @@ public class ApmSimpleSessionService {
     Session session = null;
     try {
       session = slingRepository.loginService(null, null);
-      LogUtils.log(LOGGER, session, "test session service");
+      LogUtils.log(LOGGER, session, "test session mapped service");
     } catch (Exception e) {
       LOGGER.error("", e);
     } finally {

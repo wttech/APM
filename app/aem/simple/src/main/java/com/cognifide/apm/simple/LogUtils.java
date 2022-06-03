@@ -23,6 +23,7 @@ import com.day.cq.commons.jcr.JcrConstants;
 import java.lang.management.ManagementFactory;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 import javax.jcr.Node;
 import javax.jcr.Session;
 import org.apache.jackrabbit.commons.JcrUtils;
@@ -37,37 +38,37 @@ public class LogUtils {
 
   public static void log(Logger logger, ResourceResolver resolver, String message) {
     logger.info(message);
-    saveLog(resolver, "/apps/apm-logs/", message, logger.getName());
-    saveLog(resolver, "/content/apm-logs/", message, logger.getName());
+    saveLog(resolver, "/apps/apm-logs/", message, logger);
+    saveLog(resolver, "/content/apm-logs/", message, logger);
   }
 
   public static void log(Logger logger, Session session, String message) {
     logger.info(message);
-    saveLog(session, "/apps/apm-logs/", message, logger.getName());
-    saveLog(session, "/content/apm-logs/", message, logger.getName());
+    saveLog(session, "/apps/apm-logs/", message, logger);
+    saveLog(session, "/content/apm-logs/", message, logger);
   }
 
-  private static void saveLog(ResourceResolver resolver, String path, String message, String className) {
+  private static void saveLog(ResourceResolver resolver, String path, String message, Logger logger) {
     try {
       Session session = resolver.adaptTo(Session.class);
-      saveLog(session, path, message, className);
+      saveLog(session, path, message, logger);
     } catch (Exception e) {
-      e.printStackTrace();
+      logger.error("", e);
     }
   }
 
-  private static void saveLog(Session session, String path, String message, String className) {
+  private static void saveLog(Session session, String path, String message, Logger logger) {
     try {
       String instanceName = getInstanceName();
       String executionTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd hh:mm:ss.SSS"));
-      Node node = JcrUtils.getOrCreateByPath(path + "log", true, JcrConstants.NT_UNSTRUCTURED, JcrConstants.NT_UNSTRUCTURED, session, true);
+      Node node = JcrUtils.getOrCreateByPath(path + "log-" + UUID.randomUUID().toString(), true, JcrConstants.NT_UNSTRUCTURED, JcrConstants.NT_UNSTRUCTURED, session, true);
       node.setProperty("message", message);
       node.setProperty("instanceName", instanceName);
       node.setProperty("executionTime", executionTime);
-      node.setProperty("className", className);
+      node.setProperty("className", logger.getName());
       session.save();
     } catch (Exception e) {
-      e.printStackTrace();
+      logger.error("", e);
     }
   }
 
