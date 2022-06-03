@@ -25,6 +25,7 @@ import org.apache.sling.serviceusermapping.ServiceUserMapped;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,10 +37,10 @@ public class ApmSimpleService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ApmSimpleService.class);
 
-  @Reference
+  @Reference(policyOption = ReferencePolicyOption.GREEDY)
   private ResourceResolverFactory resolverFactory;
 
-  @Reference
+  @Reference(policyOption = ReferencePolicyOption.GREEDY)
   private ServiceUserMapped serviceUserMapped;
 
   @Activate
@@ -47,7 +48,7 @@ public class ApmSimpleService {
     try (ResourceResolver resolver = resolverFactory.getServiceResourceResolver(null)) {
       LogUtils.log(LOGGER, resolver, "test service");
     } catch (Exception e) {
-      e.printStackTrace();
+      LOGGER.error("", e);
     }
   }
 
