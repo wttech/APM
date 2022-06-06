@@ -26,16 +26,17 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferencePolicyOption;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Component(
-    immediate = true,
-    service = ApmSimpleMappedService.class
-)
-public class ApmSimpleMappedService {
+@Component
+@Designate(ocd = ApmSimpleMappedSessionService.Configuration.class)
+public class ApmSimpleMappedSessionService {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ApmSimpleMappedService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ApmSimpleMappedSessionService.class);
 
   @Reference(policyOption = ReferencePolicyOption.GREEDY)
   private ServiceUserMapped serviceUserMapped;
@@ -44,11 +45,11 @@ public class ApmSimpleMappedService {
   private SlingRepository slingRepository;
 
   @Activate
-  public void activate() {
+  public void activate(Configuration config) {
     Session session = null;
     try {
       session = slingRepository.loginService(null, null);
-      LogUtils.log(LOGGER, session, "test session mapped service");
+      LogUtils.log(LOGGER, session, "test mapped session service");
     } catch (Exception e) {
       LOGGER.error("", e);
     } finally {
@@ -56,6 +57,12 @@ public class ApmSimpleMappedService {
         session.logout();
       }
     }
+  }
+
+  @ObjectClassDefinition
+  public @interface Configuration {
+    @AttributeDefinition
+    boolean enabled() default true;
   }
 
 }

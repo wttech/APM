@@ -26,30 +26,37 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferencePolicyOption;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Component(
-    immediate = true,
-    service = ApmSimpleService.class
-)
-public class ApmSimpleService {
+@Component
+@Designate(ocd = ApmSimpleMappedResolverService.Configuration.class)
+public class ApmSimpleMappedResolverService {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ApmSimpleService.class);
-
-  @Reference(policyOption = ReferencePolicyOption.GREEDY)
-  private ResourceResolverFactory resolverFactory;
+  private static final Logger LOGGER = LoggerFactory.getLogger(ApmSimpleMappedResolverService.class);
 
   @Reference(policyOption = ReferencePolicyOption.GREEDY)
   private ServiceUserMapped serviceUserMapped;
 
+  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  private ResourceResolverFactory resolverFactory;
+
   @Activate
-  public void activate() {
+  public void activate(Configuration config) {
     try (ResourceResolver resolver = resolverFactory.getServiceResourceResolver(null)) {
-      LogUtils.log(LOGGER, resolver, "test service");
+      LogUtils.log(LOGGER, resolver, "test mapped resolver service");
     } catch (Exception e) {
       LOGGER.error("", e);
     }
+  }
+
+  @ObjectClassDefinition
+  public @interface Configuration {
+    @AttributeDefinition
+    boolean enabled() default true;
   }
 
 }

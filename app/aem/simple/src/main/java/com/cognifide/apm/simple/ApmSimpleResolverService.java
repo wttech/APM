@@ -19,9 +19,8 @@
  */
 package com.cognifide.apm.simple;
 
-import javax.jcr.Session;
-import org.apache.sling.jcr.api.SlingRepository;
-import org.apache.sling.serviceusermapping.ServiceUserMapped;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -33,26 +32,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Component
-@Designate(ocd = ApmSimpleSessionService.Configuration.class)
-public class ApmSimpleSessionService {
+@Designate(ocd = ApmSimpleResolverService.Configuration.class)
+public class ApmSimpleResolverService {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ApmSimpleSessionService.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ApmSimpleResolverService.class);
 
   @Reference(policyOption = ReferencePolicyOption.GREEDY)
-  private SlingRepository slingRepository;
+  private ResourceResolverFactory resolverFactory;
 
   @Activate
   public void activate(Configuration config) {
-    Session session = null;
-    try {
-      session = slingRepository.loginService(null, null);
-      LogUtils.log(LOGGER, session, "test session service");
+    try (ResourceResolver resolver = resolverFactory.getServiceResourceResolver(null)) {
+      LogUtils.log(LOGGER, resolver, "test resolver service");
     } catch (Exception e) {
       LOGGER.error("", e);
-    } finally {
-      if (session != null) {
-        session.logout();
-      }
     }
   }
 
