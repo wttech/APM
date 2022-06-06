@@ -34,7 +34,6 @@ import org.slf4j.LoggerFactory
 import java.util.function.Predicate
 
 @Component(
-        immediate = true,
         service = [ModifiedScriptFinder::class],
         property = [
             Property.VENDOR

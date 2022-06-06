@@ -39,7 +39,6 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Component(
-        immediate = true,
         service = [Injector::class, StaticInjectAnnotationProcessorFactory::class],
         property = [
             Constants.SERVICE_RANKING + "=" + Int.MIN_VALUE,

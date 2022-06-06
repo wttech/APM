@@ -28,7 +28,6 @@ import org.osgi.service.event.EventAdmin
  * Responsible for tracking Script lifecycle. Collects listeners that can hook into a lifetime of scripts.
  */
 @Component(
-        immediate = true,
         service = [EventManager::class],
         property = [
             Property.DESCRIPTION + "APM Event Manager",

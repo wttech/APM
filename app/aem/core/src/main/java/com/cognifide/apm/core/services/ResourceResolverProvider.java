@@ -33,7 +33,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 @Component(
-    immediate = true,
     service = {ResourceResolverProvider.class},
     property = {
         Property.DESCRIPTION + "APM Resource Resolver Provider",

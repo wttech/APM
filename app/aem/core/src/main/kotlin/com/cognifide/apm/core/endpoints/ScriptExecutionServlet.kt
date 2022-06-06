@@ -42,7 +42,6 @@ import javax.jcr.RepositoryException
 import javax.servlet.Servlet
 
 @Component(
-        immediate = true,
         service = [Servlet::class],
         property = [
             Property.PATH + "/bin/apm/scripts/exec",

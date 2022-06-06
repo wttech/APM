@@ -45,7 +45,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Component(
-    immediate = true,
     service = ActionMapperRegistry.class,
     property = {
         Property.DESCRIPTION + "Action mapper registry service",

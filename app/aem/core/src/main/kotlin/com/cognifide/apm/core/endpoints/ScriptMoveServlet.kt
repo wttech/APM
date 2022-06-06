@@ -36,7 +36,6 @@ import javax.jcr.Session
 import javax.servlet.Servlet
 
 @Component(
-        immediate = true,
         service = [Servlet::class],
         property = [
             Property.PATH + "/bin/apm/scripts/move",

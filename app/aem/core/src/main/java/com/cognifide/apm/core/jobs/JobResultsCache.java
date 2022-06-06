@@ -31,7 +31,6 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 
 @Component(
-    immediate = true,
     service = JobResultsCache.class,
     property = {
         Property.DESCRIPTION + "APM Job results holder service",

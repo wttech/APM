@@ -25,7 +25,6 @@ import java.util.Map;
 import org.osgi.service.component.annotations.Component;
 
 @Component(
-    immediate = true,
     service = DefinitionsProvider.class
 )
 public class DefaultDefinitionsProvider implements DefinitionsProvider {

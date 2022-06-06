@@ -25,7 +25,6 @@ import java.util.Set;
 import org.osgi.service.component.annotations.Component;
 
 @Component(
-    immediate = true,
     service = RunModesProvider.class
 )
 public class RunModesProviderService implements RunModesProvider {

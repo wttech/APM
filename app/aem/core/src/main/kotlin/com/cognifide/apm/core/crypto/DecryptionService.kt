@@ -28,7 +28,6 @@ import org.osgi.service.component.annotations.Component
 import org.osgi.service.component.annotations.Reference
 
 @Component(
-        immediate = true,
         service = [DecryptionService::class],
         property = [
             Property.DESCRIPTION + "APM Service for decryption encrypted values",

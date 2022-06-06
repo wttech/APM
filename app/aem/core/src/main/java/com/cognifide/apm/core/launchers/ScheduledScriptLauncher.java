@@ -43,7 +43,6 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 @Component(
-    immediate = true,
     service = Runnable.class,
     property = {
         Property.DESCRIPTION + "APM Launches scheduled scripts",

@@ -45,7 +45,6 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 @Component(
-    immediate = true,
     service = ApmInstallService.class,
     property = {
         Property.DESCRIPTION + "APM Launches configured scripts",

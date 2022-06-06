@@ -32,7 +32,6 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;
 
 @Component(
-    immediate = true,
     service = ScriptFinder.class,
     property = {
         Property.DESCRIPTION + "APM Script Finder Service",

@@ -37,7 +37,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 @Component(
-    immediate = true,
     service = Servlet.class,
     property = {
         Property.RESOURCE_TYPE + "apm/datasource/history",

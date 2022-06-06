@@ -71,8 +71,6 @@
               path="/apm/references.html"
               title="References"/>
           </items>
-          <datasource jcr:primaryType="nt:unstructured"
-            sling:resourceType="apm/datasource/children"/>
         </card>
       </items>
     </content>

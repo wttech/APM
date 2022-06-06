@@ -33,7 +33,6 @@ import org.osgi.service.component.annotations.Reference
 import javax.servlet.Servlet
 
 @Component(
-        immediate = true,
         service = [Servlet::class],
         property = [
             Property.PATH + "/bin/apm/scripts/protect",
