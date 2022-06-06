@@ -27,7 +27,6 @@ aem {
         }
         jar {
             bundle {
-                exportPackage("com.cognifide.apm.checks.actions.*")
                 attribute("APM-Actions", "com.cognifide.apm.checks.actions")
             }
         }

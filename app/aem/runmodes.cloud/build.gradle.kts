@@ -13,16 +13,6 @@ description = "APM RunModes (Cloud)"
 apply(from = rootProject.file("app/common.gradle.kts"))
 apply(from = rootProject.file("app/aem/common.gradle.kts"))
 
-aem {
-    tasks {
-        jar {
-            bundle {
-                exportPackage("com.cognifide.apm.runmodes.*")
-            }
-        }
-    }
-}
-
 dependencies {
     implementation(project(":app:aem:api"))
 

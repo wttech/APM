@@ -21,7 +21,6 @@ aem {
     tasks {
         jar {
             bundle {
-                exportPackage("com.cognifide.apm.core.*")
                 importPackage("javax.annotation;version=0.0.0", "!android.os")
                 attribute("Sling-Model-Packages",
                         listOf(
