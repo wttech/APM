@@ -24,7 +24,7 @@ import com.cognifide.apm.api.actions.annotations.Mapper;
 import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.apm.api.actions.annotations.Required;
 import com.cognifide.apm.main.actions.ActionGroup;
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 
 @Mapper(value = "RUN", group = ActionGroup.CORE)
 public final class RunMapper {

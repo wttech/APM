@@ -25,7 +25,7 @@ import com.cognifide.apm.main.RandomPasswordGenerator;
 import java.security.Principal;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.apache.jackrabbit.api.security.user.Group;
 import org.apache.jackrabbit.api.security.user.User;

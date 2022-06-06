@@ -26,7 +26,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Stream;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class LaunchMetadata {
 

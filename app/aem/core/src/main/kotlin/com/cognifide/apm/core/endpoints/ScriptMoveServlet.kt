@@ -26,7 +26,7 @@ import com.cognifide.apm.core.endpoints.response.badRequest
 import com.cognifide.apm.core.endpoints.response.ok
 import com.day.cq.commons.jcr.JcrConstants
 import com.day.cq.commons.jcr.JcrUtil
-import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang3.StringUtils
 import org.apache.sling.api.resource.ModifiableValueMap
 import org.apache.sling.api.resource.ResourceResolver
 import org.apache.sling.models.factory.ModelFactory

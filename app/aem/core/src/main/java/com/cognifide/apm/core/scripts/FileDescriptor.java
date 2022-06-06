@@ -23,7 +23,7 @@ package com.cognifide.apm.core.scripts;
 import java.io.InputStream;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 @Getter
 @RequiredArgsConstructor

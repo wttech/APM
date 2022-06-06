@@ -38,5 +38,6 @@ plugins.withId("com.cognifide.aem.bundle") {
         "implementation"("javax.annotation:javax.annotation-api:1.3.2")
         "implementation"("javax.inject:javax.inject:1")
         "implementation"("javax.servlet:javax.servlet-api:3.1.0")
+        "implementation"("org.apache.commons:commons-text:1.9")
      }
 }

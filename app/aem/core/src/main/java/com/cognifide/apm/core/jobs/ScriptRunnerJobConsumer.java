@@ -33,7 +33,7 @@ import com.cognifide.apm.core.utils.sling.SlingHelper;
 import java.util.HashMap;
 import java.util.Map;
 import javax.jcr.RepositoryException;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;

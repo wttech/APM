@@ -25,7 +25,7 @@ import com.cognifide.apm.api.scripts.Script;
 import java.util.Date;
 import java.util.Set;
 import java.util.function.Predicate;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.settings.SlingSettingsService;
 
 /**

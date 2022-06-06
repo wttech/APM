@@ -36,7 +36,7 @@ import java.util.Optional;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;

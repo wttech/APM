@@ -33,7 +33,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

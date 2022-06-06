@@ -19,7 +19,7 @@
  */
 package com.cognifide.apm.core.ui.models;
 
-import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.core.history.History;
@@ -40,8 +40,8 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import lombok.Getter;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.WordUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.WordUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
