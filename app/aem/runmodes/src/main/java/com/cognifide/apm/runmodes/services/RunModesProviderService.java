@@ -25,9 +25,7 @@ import org.apache.sling.settings.SlingSettingsService;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-@Component(
-    service = RunModesProvider.class
-)
+@Component
 public class RunModesProviderService implements RunModesProvider {
 
   @Reference

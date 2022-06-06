@@ -39,7 +39,6 @@ import javax.jcr.RepositoryException
 import javax.jcr.Session
 
 @Component(
-        service = [VersionService::class],
         property = [
             Property.DESCRIPTION + "APM Version Service",
             Property.VENDOR

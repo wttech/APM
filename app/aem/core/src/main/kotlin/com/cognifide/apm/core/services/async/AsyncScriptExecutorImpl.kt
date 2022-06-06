@@ -33,7 +33,6 @@ import java.util.*
 import kotlin.concurrent.thread
 
 @Component(
-        service = [AsyncScriptExecutor::class],
         property = [
             Property.DESCRIPTION + "APM Service for executing scripts in background and checking theirs status",
             Property.VENDOR

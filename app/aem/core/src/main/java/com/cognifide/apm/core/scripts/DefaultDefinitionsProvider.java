@@ -24,9 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.osgi.service.component.annotations.Component;
 
-@Component(
-    service = DefinitionsProvider.class
-)
+@Component
 public class DefaultDefinitionsProvider implements DefinitionsProvider {
 
   @Override

@@ -24,9 +24,7 @@ import java.util.Collections;
 import java.util.Set;
 import org.osgi.service.component.annotations.Component;
 
-@Component(
-    service = RunModesProvider.class
-)
+@Component
 public class RunModesProviderService implements RunModesProvider {
 
   @Override

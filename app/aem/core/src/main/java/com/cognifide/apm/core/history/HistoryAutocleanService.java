@@ -37,9 +37,7 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 @Slf4j
-@Component(
-    service = Runnable.class
-)
+@Component
 @Designate(ocd = HistoryAutocleanService.Config.class)
 public class HistoryAutocleanService implements Runnable {
 

@@ -65,7 +65,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Component(
-    service = {ScriptManager.class},
     property = {
         Property.DESCRIPTION + "APM Script Manager Service",
         Property.VENDOR

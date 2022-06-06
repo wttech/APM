@@ -52,7 +52,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Component(
-    service = ScriptStorage.class,
     property = {
         Property.DESCRIPTION + "APM Storage accessor for scripts",
         Property.VENDOR

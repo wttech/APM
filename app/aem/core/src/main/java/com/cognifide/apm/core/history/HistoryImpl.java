@@ -51,7 +51,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Component(
-    service = History.class,
     property = {
         Property.DESCRIPTION + "APM History Service",
         Property.VENDOR
