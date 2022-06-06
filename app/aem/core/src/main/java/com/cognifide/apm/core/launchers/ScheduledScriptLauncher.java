@@ -23,6 +23,7 @@ import static com.cognifide.apm.core.scripts.ScriptFilters.onSchedule;
 
 import com.cognifide.apm.api.scripts.LaunchEnvironment;
 import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.RunModesProvider;
 import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.apm.core.Property;
@@ -33,7 +34,6 @@ import java.util.Date;
 import java.util.List;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.settings.SlingSettingsService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -61,7 +61,7 @@ public class ScheduledScriptLauncher extends AbstractLauncher implements Runnabl
   private ScriptFinder scriptFinder;
 
   @Reference
-  private SlingSettingsService slingSettings;
+  private RunModesProvider runModesProvider;
 
   @Reference
   private ResourceResolverProvider resolverProvider;
@@ -82,8 +82,8 @@ public class ScheduledScriptLauncher extends AbstractLauncher implements Runnabl
   }
 
   private void runScheduled(ResourceResolver resolver) throws PersistenceException {
-    LaunchEnvironment environment = LaunchEnvironment.of(slingSettings);
-    List<Script> scripts = scriptFinder.findAll(onSchedule(environment, slingSettings, new Date()), resolver);
+    LaunchEnvironment environment = LaunchEnvironment.of(runModesProvider);
+    List<Script> scripts = scriptFinder.findAll(onSchedule(environment, runModesProvider, new Date()), resolver);
     processScripts(scripts, resolver);
   }
 
