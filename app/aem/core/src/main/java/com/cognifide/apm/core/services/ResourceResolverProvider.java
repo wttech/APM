@@ -21,7 +21,6 @@ package com.cognifide.apm.core.services;
 
 import com.cognifide.apm.core.Property;
 import com.google.common.collect.Maps;
-import java.util.HashMap;
 import java.util.Map;
 import org.apache.sling.adapter.Adaption;
 import org.apache.sling.api.adapter.AdapterFactory;
@@ -33,7 +32,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 @Component(
-    service = {ResourceResolverProvider.class},
+    service = ResourceResolverProvider.class,
     property = {
         Property.DESCRIPTION + "APM Resource Resolver Provider",
         Property.VENDOR
