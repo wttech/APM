@@ -30,11 +30,11 @@ import com.cognifide.apm.core.services.version.VersionService
 import org.apache.sling.api.resource.ResourceResolver
 import org.osgi.service.component.annotations.Component
 import org.osgi.service.component.annotations.Reference
+import org.osgi.service.component.annotations.ReferencePolicyOption
 import org.slf4j.LoggerFactory
 import java.util.function.Predicate
 
 @Component(
-        immediate = true,
         service = [ModifiedScriptFinder::class],
         property = [
             Property.VENDOR
@@ -43,15 +43,15 @@ class ModifiedScriptFinder {
 
     private val logger = LoggerFactory.getLogger(ModifiedScriptFinder::class.java)
 
-    @Reference
+    @Reference(policyOption = ReferencePolicyOption.GREEDY)
     @Transient
     lateinit var versionService: VersionService
 
-    @Reference
+    @Reference(policyOption = ReferencePolicyOption.GREEDY)
     @Transient
     lateinit var scriptFinder: ScriptFinder
 
-    @Reference
+    @Reference(policyOption = ReferencePolicyOption.GREEDY)
     @Transient
     lateinit var history: History
 

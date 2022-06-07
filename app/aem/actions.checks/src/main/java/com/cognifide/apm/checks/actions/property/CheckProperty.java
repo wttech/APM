@@ -28,7 +28,7 @@ import com.cognifide.apm.checks.utils.MessagingUtils;
 import javax.jcr.PropertyType;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.api.security.user.Authorizable;
 
 public class CheckProperty implements Action {

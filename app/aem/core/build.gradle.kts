@@ -21,7 +21,6 @@ aem {
     tasks {
         jar {
             bundle {
-                exportPackage("com.cognifide.apm.core.*")
                 importPackage("javax.annotation;version=0.0.0", "!android.os")
                 attribute("Sling-Model-Packages",
                         listOf(
@@ -32,7 +31,6 @@ aem {
                                 "com.cognifide.apm.core.services",
                                 "com.cognifide.apm.core.history"
                         ).joinToString(","))
-                attribute("APM-Actions", "com.cognifide.apm.foundation.actions")
                 excludePackage("org.antlr.stringtemplate", "org.antlr.v4.gui")
                 embedPackage("org.antlr:antlr4-runtime:4.7.2", "org.antlr.v4.runtime.*")
                 embedPackage("org.jetbrains.kotlin:kotlin-reflect:1.6.21", "kotlin.reflect.*")

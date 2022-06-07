@@ -38,7 +38,6 @@ import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 import org.osgi.service.component.annotations.Component;
 
 @Component(
-    immediate = true,
     service = Servlet.class,
     property = {
         Property.RESOURCE_TYPE + "apm/datasource/scripts",

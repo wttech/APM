@@ -31,7 +31,7 @@ import javax.jcr.ValueFactory;
 import javax.jcr.ValueFormatException;
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 @Getter
 @ToString

@@ -23,7 +23,7 @@ import com.adobe.granite.ui.components.ds.DataSource;
 import com.cognifide.apm.core.ui.datasources.SimpleDataSourceBuilder.Option;
 import java.util.Arrays;
 import java.util.List;
-import org.apache.commons.lang.WordUtils;
+import org.apache.commons.text.WordUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet;

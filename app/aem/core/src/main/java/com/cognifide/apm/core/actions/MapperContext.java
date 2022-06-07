@@ -25,9 +25,9 @@ import com.cognifide.apm.core.crypto.DecryptionService;
 import lombok.Getter;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 
 @Component(
-    immediate = true,
     service = MapperContext.class,
     property = {
         Property.DESCRIPTION + "APM Mapper Context service",
@@ -37,7 +37,7 @@ import org.osgi.service.component.annotations.Reference;
 @Getter
 public class MapperContext {
 
-  @Reference
+  @Reference(policyOption = ReferencePolicyOption.GREEDY)
   private DecryptionService decryptionService;
 
 }

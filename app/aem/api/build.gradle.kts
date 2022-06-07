@@ -13,16 +13,6 @@ description = "APM API"
 apply(from = rootProject.file("app/common.gradle.kts"))
 apply(from = rootProject.file("app/aem/common.gradle.kts"))
 
-aem {
-    tasks {
-        jar {
-            bundle {
-                exportPackage("com.cognifide.apm.api.*")
-            }
-        }
-    }
-}
-
 tasks {
     register<Jar>("sourcesJar") {
         from(sourceSets.main.get().allSource)

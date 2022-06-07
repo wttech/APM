@@ -22,11 +22,11 @@ package com.cognifide.apm.core.scripts;
 import com.cognifide.apm.api.scripts.LaunchEnvironment;
 import com.cognifide.apm.api.scripts.LaunchMode;
 import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.RunModesProvider;
 import java.util.Date;
 import java.util.Set;
 import java.util.function.Predicate;
-import org.apache.commons.lang.StringUtils;
-import org.apache.sling.settings.SlingSettingsService;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Due to the ResourceResolver dependency these filters should not be used lazy
@@ -34,42 +34,42 @@ import org.apache.sling.settings.SlingSettingsService;
  */
 public class ScriptFilters {
 
-  public static Predicate<Script> onInstall(LaunchEnvironment environment, SlingSettingsService slingSettings, String currentHook) {
+  public static Predicate<Script> onInstall(LaunchEnvironment environment, RunModesProvider runModesProvider, String currentHook) {
     return enabled()
         .and(withLaunchMode(LaunchMode.ON_INSTALL))
         .and(withLaunchEnvironment(environment))
-        .and(withLaunchRunModes(slingSettings.getRunModes()))
+        .and(withLaunchRunModes(runModesProvider.getRunModes()))
         .and(withLaunchHook(currentHook));
   }
 
-  public static Predicate<Script> onInstallIfModified(LaunchEnvironment environment, SlingSettingsService slingSettings, String currentHook) {
+  public static Predicate<Script> onInstallIfModified(LaunchEnvironment environment, RunModesProvider runModesProvider, String currentHook) {
     return enabled()
         .and(withLaunchMode(LaunchMode.ON_INSTALL_IF_MODIFIED))
         .and(withLaunchEnvironment(environment))
-        .and(withLaunchRunModes(slingSettings.getRunModes()))
+        .and(withLaunchRunModes(runModesProvider.getRunModes()))
         .and(withLaunchHook(currentHook));
   }
 
-  public static Predicate<Script> onSchedule(LaunchEnvironment environment, SlingSettingsService slingSettings, Date date) {
+  public static Predicate<Script> onSchedule(LaunchEnvironment environment, RunModesProvider runModesProvider, Date date) {
     return enabled()
         .and(withLaunchMode(LaunchMode.ON_SCHEDULE))
         .and(withLaunchEnvironment(environment))
-        .and(withLaunchRunModes(slingSettings.getRunModes()))
+        .and(withLaunchRunModes(runModesProvider.getRunModes()))
         .and(script -> script.getLastExecuted() == null && script.getLaunchSchedule().before(date));
   }
 
-  public static Predicate<Script> onStartup(LaunchEnvironment environment, SlingSettingsService slingSettings) {
+  public static Predicate<Script> onStartup(LaunchEnvironment environment, RunModesProvider runModesProvider) {
     return enabled()
         .and(withLaunchMode(LaunchMode.ON_STARTUP))
         .and(withLaunchEnvironment(environment))
-        .and(withLaunchRunModes(slingSettings.getRunModes()));
+        .and(withLaunchRunModes(runModesProvider.getRunModes()));
   }
 
-  public static Predicate<Script> onStartupIfModified(LaunchEnvironment environment, SlingSettingsService slingSettings) {
+  public static Predicate<Script> onStartupIfModified(LaunchEnvironment environment, RunModesProvider runModesProvider) {
     return enabled()
         .and(withLaunchMode(LaunchMode.ON_STARTUP_IF_MODIFIED))
         .and(withLaunchEnvironment(environment))
-        .and(withLaunchRunModes(slingSettings.getRunModes()));
+        .and(withLaunchRunModes(runModesProvider.getRunModes()));
   }
 
   private static Predicate<Script> withLaunchHook(String currentHook) {

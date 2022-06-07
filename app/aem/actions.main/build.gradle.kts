@@ -17,7 +17,7 @@ aem {
     tasks {
         jar {
             bundle {
-                exportPackage("com.cognifide.apm.main.actions.*",  "com.cognifide.apm.main.services.*")
+                exportPackage("com.cognifide.apm.main.services.*")
                 attribute("APM-Actions", "com.cognifide.apm.main.actions")
             }
         }

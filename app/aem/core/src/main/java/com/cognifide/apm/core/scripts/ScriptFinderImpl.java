@@ -25,15 +25,13 @@ import com.cognifide.apm.core.Property;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.AbstractResourceVisitor;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;
 
 @Component(
-    immediate = true,
-    service = ScriptFinder.class,
     property = {
         Property.DESCRIPTION + "APM Script Finder Service",
         Property.VENDOR

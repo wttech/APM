@@ -26,7 +26,7 @@ import com.cognifide.apm.api.exceptions.ActionExecutionException;
 import com.cognifide.apm.checks.utils.ActionUtils;
 import com.cognifide.apm.checks.utils.MessagingUtils;
 import javax.jcr.RepositoryException;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.api.security.user.Authorizable;
 
 public class CheckAuthorizableExists implements Action {

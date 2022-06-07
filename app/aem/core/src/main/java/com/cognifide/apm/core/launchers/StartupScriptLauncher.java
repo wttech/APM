@@ -24,6 +24,7 @@ import static com.cognifide.apm.core.scripts.ScriptFilters.onStartupIfModified;
 
 import com.cognifide.apm.api.scripts.LaunchEnvironment;
 import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.RunModesProvider;
 import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.apm.core.Property;
@@ -34,14 +35,13 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.settings.SlingSettingsService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 
 @Component(
     immediate = true,
-    service = StartupScriptLauncher.class,
     property = {
         Property.DESCRIPTION + "APM Launches scripts on bundle startup",
         Property.VENDOR
@@ -49,19 +49,19 @@ import org.osgi.service.component.annotations.Reference;
 )
 public class StartupScriptLauncher extends AbstractLauncher {
 
-  @Reference
+  @Reference(policyOption = ReferencePolicyOption.GREEDY)
   private ScriptManager scriptManager;
 
-  @Reference
+  @Reference(policyOption = ReferencePolicyOption.GREEDY)
   private ScriptFinder scriptFinder;
 
-  @Reference
+  @Reference(policyOption = ReferencePolicyOption.GREEDY)
   private ModifiedScriptFinder modifiedScriptFinder;
 
-  @Reference
-  private SlingSettingsService slingSettings;
+  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  private RunModesProvider runModesProvider;
 
-  @Reference
+  @Reference(policyOption = ReferencePolicyOption.GREEDY)
   private ResourceResolverProvider resolverProvider;
 
   @Activate
@@ -70,10 +70,10 @@ public class StartupScriptLauncher extends AbstractLauncher {
   }
 
   private void executeScripts(ResourceResolver resolver) throws PersistenceException {
-    LaunchEnvironment environment = LaunchEnvironment.of(slingSettings);
+    LaunchEnvironment environment = LaunchEnvironment.of(runModesProvider);
     List<Script> scripts = new ArrayList<>();
-    scripts.addAll(scriptFinder.findAll(onStartup(environment, slingSettings), resolver));
-    scripts.addAll(modifiedScriptFinder.findAll(onStartupIfModified(environment, slingSettings), resolver));
+    scripts.addAll(scriptFinder.findAll(onStartup(environment, runModesProvider), resolver));
+    scripts.addAll(modifiedScriptFinder.findAll(onStartupIfModified(environment, runModesProvider), resolver));
     processScripts(scripts, resolver);
   }
 

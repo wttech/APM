@@ -22,21 +22,20 @@ package com.cognifide.apm.core.services.event
 import com.cognifide.apm.core.Property
 import org.osgi.service.component.annotations.Component
 import org.osgi.service.component.annotations.Reference
+import org.osgi.service.component.annotations.ReferencePolicyOption
 import org.osgi.service.event.EventAdmin
 
 /**
  * Responsible for tracking Script lifecycle. Collects listeners that can hook into a lifetime of scripts.
  */
 @Component(
-        immediate = true,
-        service = [EventManager::class],
         property = [
             Property.DESCRIPTION + "APM Event Manager",
             Property.VENDOR
         ])
 class EventManagerImpl : EventManager {
 
-    @Reference
+    @Reference(policyOption = ReferencePolicyOption.GREEDY)
     @Transient
     private lateinit var eventAdmin: EventAdmin
 

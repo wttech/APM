@@ -1,6 +1,8 @@
 rootProject.name = "apm"
 
 include(":app:aem:api")
+include(":app:aem:runmodes")
+include(":app:aem:runmodes.cloud")
 include(":app:aem:core")
 include(":app:aem:actions.checks")
 include(":app:aem:actions.main")

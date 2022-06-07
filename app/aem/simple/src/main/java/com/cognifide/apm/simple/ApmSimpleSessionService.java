@@ -25,13 +25,14 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferencePolicyOption;
+import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.metatype.annotations.Designate;
+import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Component(
-    immediate = true,
-    service = ApmSimpleSessionService.class
-)
+@Component
+@Designate(ocd = ApmSimpleSessionService.Configuration.class)
 public class ApmSimpleSessionService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ApmSimpleSessionService.class);
@@ -40,7 +41,7 @@ public class ApmSimpleSessionService {
   private SlingRepository slingRepository;
 
   @Activate
-  public void activate() {
+  public void activate(Configuration config) {
     Session session = null;
     try {
       session = slingRepository.loginService(null, null);
@@ -52,6 +53,12 @@ public class ApmSimpleSessionService {
         session.logout();
       }
     }
+  }
+
+  @ObjectClassDefinition
+  public @interface Configuration {
+    @AttributeDefinition
+    boolean enabled() default true;
   }
 
 }

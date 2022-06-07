@@ -48,12 +48,11 @@ import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Component(
-    immediate = true,
-    service = ScriptStorage.class,
     property = {
         Property.DESCRIPTION + "APM Storage accessor for scripts",
         Property.VENDOR
@@ -69,7 +68,7 @@ public class ScriptStorageImpl implements ScriptStorage {
 
   private static final Charset SCRIPT_ENCODING = StandardCharsets.UTF_8;
 
-  @Reference
+  @Reference(policyOption = ReferencePolicyOption.GREEDY)
   private ScriptFinder scriptFinder;
 
   @Override

@@ -19,7 +19,7 @@
  */
 package com.cognifide.apm.core.logger;
 
-import static org.apache.commons.lang.StringUtils.defaultString;
+import static org.apache.commons.lang3.StringUtils.defaultString;
 
 import com.cognifide.apm.api.services.ExecutionResult.Entry;
 import com.cognifide.apm.api.status.Status;

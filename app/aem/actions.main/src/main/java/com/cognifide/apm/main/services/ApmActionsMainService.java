@@ -23,7 +23,6 @@ import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Component;
 
 @Component(
-    immediate = true,
     service = ApmActionsMainService.class,
     property = {
         Constants.SERVICE_DESCRIPTION + "=APM Actions Main service",

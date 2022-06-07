@@ -19,10 +19,10 @@
  */
 package com.cognifide.apm.api.scripts;
 
+import com.cognifide.apm.api.services.RunModesProvider;
 import java.util.Arrays;
 import java.util.Optional;
-import org.apache.commons.lang.StringUtils;
-import org.apache.sling.settings.SlingSettingsService;
+import org.apache.commons.lang3.StringUtils;
 
 public enum LaunchEnvironment {
 
@@ -40,8 +40,8 @@ public enum LaunchEnvironment {
         .findFirst();
   }
 
-  public static LaunchEnvironment of(SlingSettingsService slingSettings) {
-    return slingSettings.getRunModes().contains("author") ? AUTHOR : PUBLISH;
+  public static LaunchEnvironment of(RunModesProvider runModesProvider) {
+    return runModesProvider.getRunModes().contains("author") ? AUTHOR : PUBLISH;
   }
 
   public String getRunMode() {

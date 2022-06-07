@@ -61,12 +61,11 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Component(
-    immediate = true,
-    service = {ScriptManager.class},
     property = {
         Property.DESCRIPTION + "APM Script Manager Service",
         Property.VENDOR
@@ -76,25 +75,26 @@ public class ScriptManagerImpl implements ScriptManager {
 
   private static final Logger LOG = LoggerFactory.getLogger(ScriptManagerImpl.class);
 
-  @Reference
+  @Reference(policyOption = ReferencePolicyOption.GREEDY)
   private ActionFactory actionFactory;
 
-  @Reference
+  @Reference(policyOption = ReferencePolicyOption.GREEDY)
   private ScriptStorage scriptStorage;
 
-  @Reference
+  @Reference(policyOption = ReferencePolicyOption.GREEDY)
   private ScriptFinder scriptFinder;
 
-  @Reference
+  @Reference(policyOption = ReferencePolicyOption.GREEDY)
   private VersionService versionService;
 
-  @Reference
+  @Reference(policyOption = ReferencePolicyOption.GREEDY)
   private EventManager eventManager;
 
-  @Reference
+  @Reference(policyOption = ReferencePolicyOption.GREEDY)
   private History history;
 
   @Reference(
+      policyOption = ReferencePolicyOption.GREEDY,
       cardinality = ReferenceCardinality.MULTIPLE,
       policy = ReferencePolicy.DYNAMIC,
       service = DefinitionsProvider.class

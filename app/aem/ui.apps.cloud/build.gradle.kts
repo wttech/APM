@@ -9,6 +9,7 @@ description = "APM (AEM Permission Management) is an AEM based tool focused on s
 
 evaluationDependsOn(":app:aem:ui.apps.base")
 evaluationDependsOn(":app:aem:api")
+evaluationDependsOn(":app:aem:runmodes.cloud")
 evaluationDependsOn(":app:aem:core")
 evaluationDependsOn(":app:aem:actions.main")
 evaluationDependsOn(":app:aem:startup")
@@ -22,6 +23,7 @@ aem {
         packageCompose {
             mergePackageProject(":app:aem:ui.apps.base")
             installBundleProject(":app:aem:api")
+            installBundleProject(":app:aem:runmodes.cloud")
             installBundleProject(":app:aem:core")
             installBundleProject(":app:aem:actions.main")
             installBundleProject(":app:aem:simple") {
