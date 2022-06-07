@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Optional;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 
 @Component(
     property = {
@@ -41,10 +42,10 @@ public class ActionFactoryImpl implements ActionFactory {
 
   public static final String CORE_GROUP = "core";
 
-  @Reference
+  @Reference(policyOption = ReferencePolicyOption.GREEDY)
   private ActionMapperRegistry registry;
 
-  @Reference
+  @Reference(policyOption = ReferencePolicyOption.GREEDY)
   private MapperContext mapperContext;
 
   public ActionDescriptor evaluate(String command, Arguments arguments) throws ActionCreationException {

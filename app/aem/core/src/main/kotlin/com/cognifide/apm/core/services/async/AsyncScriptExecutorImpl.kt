@@ -29,6 +29,7 @@ import com.cognifide.apm.core.jobs.ScriptRunnerJobConsumer
 import org.apache.sling.api.resource.ResourceResolver
 import org.osgi.service.component.annotations.Component
 import org.osgi.service.component.annotations.Reference
+import org.osgi.service.component.annotations.ReferencePolicyOption
 import java.util.*
 import kotlin.concurrent.thread
 
@@ -40,11 +41,11 @@ import kotlin.concurrent.thread
 )
 class AsyncScriptExecutorImpl : AsyncScriptExecutor {
 
-    @Reference
+    @Reference(policyOption = ReferencePolicyOption.GREEDY)
     @Transient
     private lateinit var scriptRunnerJobConsumer: ScriptRunnerJobConsumer
 
-    @Reference
+    @Reference(policyOption = ReferencePolicyOption.GREEDY)
     @Transient
     private lateinit var jobResultsCache: JobResultsCache
 

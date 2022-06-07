@@ -45,6 +45,7 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
@@ -62,19 +63,19 @@ public class ApmStartupService extends AbstractLauncher {
 
   private static final String VERSIONS_APPS_FOLDER = "/apps/apm/versions";
 
-  @Reference
+  @Reference(policyOption = ReferencePolicyOption.GREEDY)
   private ResourceResolverProvider resolverProvider;
 
-  @Reference
+  @Reference(policyOption = ReferencePolicyOption.GREEDY)
   private ScriptManager scriptManager;
 
-  @Reference
+  @Reference(policyOption = ReferencePolicyOption.GREEDY)
   private ScriptFinder scriptFinder;
 
-  @Reference
+  @Reference(policyOption = ReferencePolicyOption.GREEDY)
   private VersionService versionService;
 
-  @Reference
+  @Reference(policyOption = ReferencePolicyOption.GREEDY)
   private History history;
 
   @Activate

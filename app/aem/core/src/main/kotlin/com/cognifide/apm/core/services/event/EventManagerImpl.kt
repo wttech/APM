@@ -22,6 +22,7 @@ package com.cognifide.apm.core.services.event
 import com.cognifide.apm.core.Property
 import org.osgi.service.component.annotations.Component
 import org.osgi.service.component.annotations.Reference
+import org.osgi.service.component.annotations.ReferencePolicyOption
 import org.osgi.service.event.EventAdmin
 
 /**
@@ -34,7 +35,7 @@ import org.osgi.service.event.EventAdmin
         ])
 class EventManagerImpl : EventManager {
 
-    @Reference
+    @Reference(policyOption = ReferencePolicyOption.GREEDY)
     @Transient
     private lateinit var eventAdmin: EventAdmin
 

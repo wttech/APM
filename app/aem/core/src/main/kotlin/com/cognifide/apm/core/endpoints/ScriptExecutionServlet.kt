@@ -38,6 +38,7 @@ import org.apache.sling.api.servlets.SlingAllMethodsServlet
 import org.apache.sling.models.factory.ModelFactory
 import org.osgi.service.component.annotations.Component
 import org.osgi.service.component.annotations.Reference
+import org.osgi.service.component.annotations.ReferencePolicyOption
 import javax.jcr.RepositoryException
 import javax.servlet.Servlet
 
@@ -51,19 +52,19 @@ import javax.servlet.Servlet
         ])
 class ScriptExecutionServlet : SlingAllMethodsServlet() {
 
-    @Reference
+    @Reference(policyOption = ReferencePolicyOption.GREEDY)
     @Transient
     private lateinit var scriptFinder: ScriptFinder
 
-    @Reference
+    @Reference(policyOption = ReferencePolicyOption.GREEDY)
     @Transient
     private lateinit var scriptManager: ScriptManager
 
-    @Reference
+    @Reference(policyOption = ReferencePolicyOption.GREEDY)
     @Transient
     private lateinit var asyncScriptExecutor: AsyncScriptExecutor
 
-    @Reference
+    @Reference(policyOption = ReferencePolicyOption.GREEDY)
     @Transient
     private lateinit var modelFactory: ModelFactory
 

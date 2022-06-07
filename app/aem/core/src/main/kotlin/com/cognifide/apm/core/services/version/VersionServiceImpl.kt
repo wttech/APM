@@ -33,6 +33,7 @@ import org.apache.jackrabbit.commons.JcrUtils
 import org.apache.sling.api.resource.ResourceResolver
 import org.osgi.service.component.annotations.Component
 import org.osgi.service.component.annotations.Reference
+import org.osgi.service.component.annotations.ReferencePolicyOption
 import org.slf4j.LoggerFactory
 import javax.jcr.Node
 import javax.jcr.RepositoryException
@@ -47,7 +48,7 @@ class VersionServiceImpl : VersionService {
 
     private val logger = LoggerFactory.getLogger(VersionServiceImpl::class.java)
 
-    @Reference
+    @Reference(policyOption = ReferencePolicyOption.GREEDY)
     @Transient
     private lateinit var scriptFinder: ScriptFinder
 

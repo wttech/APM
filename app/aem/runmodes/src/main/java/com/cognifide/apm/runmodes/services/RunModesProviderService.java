@@ -24,11 +24,12 @@ import java.util.Set;
 import org.apache.sling.settings.SlingSettingsService;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 
 @Component
 public class RunModesProviderService implements RunModesProvider {
 
-  @Reference
+  @Reference(policyOption = ReferencePolicyOption.GREEDY)
   private SlingSettingsService slingSettings;
 
   @Override

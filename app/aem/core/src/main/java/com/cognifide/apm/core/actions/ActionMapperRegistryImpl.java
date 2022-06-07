@@ -40,6 +40,7 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.scribe.utils.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +58,7 @@ public class ActionMapperRegistryImpl implements RegistryChangedListener, Action
 
   private static final String BUNDLE_HEADER = "APM-Actions";
 
-  @Reference
+  @Reference(policyOption = ReferencePolicyOption.GREEDY)
   private ApmActionsMainService apmActionsMainService;
 
   private AnnotatedClassRegistry registry;

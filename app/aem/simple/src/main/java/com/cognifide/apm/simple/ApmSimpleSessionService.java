@@ -21,7 +21,6 @@ package com.cognifide.apm.simple;
 
 import javax.jcr.Session;
 import org.apache.sling.jcr.api.SlingRepository;
-import org.apache.sling.serviceusermapping.ServiceUserMapped;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;

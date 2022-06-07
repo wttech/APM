@@ -32,6 +32,7 @@ import org.apache.sling.api.resource.ResourceResolver
 import org.apache.sling.models.factory.ModelFactory
 import org.osgi.service.component.annotations.Component
 import org.osgi.service.component.annotations.Reference
+import org.osgi.service.component.annotations.ReferencePolicyOption
 import javax.jcr.Session
 import javax.servlet.Servlet
 
@@ -45,7 +46,7 @@ import javax.servlet.Servlet
         ])
 class ScriptMoveServlet : AbstractFormServlet<ScriptMoveForm>(ScriptMoveForm::class.java) {
 
-    @Reference
+    @Reference(policyOption = ReferencePolicyOption.GREEDY)
     override fun setup(modelFactory: ModelFactory) {
         this.modelFactory = modelFactory
     }

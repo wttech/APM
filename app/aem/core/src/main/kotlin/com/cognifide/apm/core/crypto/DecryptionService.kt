@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.text.StrSubstitutor
 import org.osgi.service.component.annotations.Component
 import org.osgi.service.component.annotations.Reference
+import org.osgi.service.component.annotations.ReferencePolicyOption
 
 @Component(
         service = [DecryptionService::class],
@@ -36,7 +37,7 @@ import org.osgi.service.component.annotations.Reference
 )
 class DecryptionService {
 
-    @Reference
+    @Reference(policyOption = ReferencePolicyOption.GREEDY)
     @Transient
     private lateinit var cryptoSupport: CryptoSupport
 

@@ -30,6 +30,7 @@ import org.apache.sling.api.resource.ResourceResolver
 import org.apache.sling.models.factory.ModelFactory
 import org.osgi.service.component.annotations.Component
 import org.osgi.service.component.annotations.Reference
+import org.osgi.service.component.annotations.ReferencePolicyOption
 import javax.servlet.Servlet
 
 @Component(
@@ -42,11 +43,11 @@ import javax.servlet.Servlet
         ])
 class ProtectTextServlet : AbstractFormServlet<ProtectTextForm>(ProtectTextForm::class.java) {
 
-    @Reference
+    @Reference(policyOption = ReferencePolicyOption.GREEDY)
     @Transient
     private lateinit var cryptoSupport: CryptoSupport
 
-    @Reference
+    @Reference(policyOption = ReferencePolicyOption.GREEDY)
     override fun setup(modelFactory: ModelFactory) {
         this.modelFactory = modelFactory
     }
