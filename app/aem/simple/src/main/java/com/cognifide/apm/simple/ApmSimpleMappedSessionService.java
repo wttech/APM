@@ -38,7 +38,7 @@ public class ApmSimpleMappedSessionService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ApmSimpleMappedSessionService.class);
 
-  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  @Reference
   private ServiceUserMapped serviceUserMapped;
 
   @Reference(policyOption = ReferencePolicyOption.GREEDY)

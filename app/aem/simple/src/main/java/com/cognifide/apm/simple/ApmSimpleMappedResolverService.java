@@ -38,7 +38,7 @@ public class ApmSimpleMappedResolverService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ApmSimpleMappedResolverService.class);
 
-  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  @Reference
   private ServiceUserMapped serviceUserMapped;
 
   @Reference(policyOption = ReferencePolicyOption.GREEDY)
