@@ -15,8 +15,12 @@ apply(from = rootProject.file("app/aem/common.gradle.kts"))
 aem {
     tasks {
         packageCompose {
-            nestPackageProject(":app:aem:ui.apps.cloud")
-            nestPackageProject(":app:aem:ui.content")
+            nestPackageProject(":app:aem:ui.apps.cloud") {
+                dirPath.set("/apps/apm-packages/application/install")
+            }
+            nestPackageProject(":app:aem:ui.content") {
+                dirPath.set("/apps/apm-packages/content/install")
+            }
         }
     }
 }
