@@ -21,6 +21,8 @@ apply(from = rootProject.file("app/aem/common.gradle.kts"))
 aem {
     tasks {
         packageCompose {
+            archiveBaseName.set("ui.apps")
+            archiveClassifier.set("cloud")
             mergePackageProject(":app:aem:ui.apps.base")
             installBundleProject(":app:aem:api")
             installBundleProject(":app:aem:runmodes.cloud")
@@ -45,14 +47,11 @@ publishing {
     publications {
         register<MavenPublication>("apmCrx") {
             groupId = project.group.toString() + ".crx"
+            artifactId = "apm-ui.apps"
             artifact(tasks["packageCompose"])
             afterEvaluate {
                 artifactId = "apm-" + project.name
                 version = rootProject.version
-            }
-            pom {
-                name.set("APM - " + project.name)
-                description.set(project.description)
             }
         }
     }

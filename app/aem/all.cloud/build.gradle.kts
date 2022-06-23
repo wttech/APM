@@ -14,6 +14,8 @@ apply(from = rootProject.file("app/aem/common.gradle.kts"))
 aem {
     tasks {
         packageCompose {
+            archiveBaseName.set("all")
+            archiveClassifier.set("cloud")
             nestPackageProject(":app:aem:ui.apps.cloud") {
                 dirPath.set("/apps/apm-packages/application/install")
             }
@@ -25,14 +27,11 @@ publishing {
     publications {
         register<MavenPublication>("apmCrx") {
             groupId = project.group.toString() + ".crx"
+            artifactId = "apm-all"
             artifact(tasks["packageCompose"])
             afterEvaluate {
                 artifactId = "apm-" + project.name
                 version = rootProject.version
-            }
-            pom {
-                name.set("APM - " + project.name)
-                description.set(project.description)
             }
         }
     }
