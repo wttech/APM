@@ -31,13 +31,12 @@ plugins.withId("com.cognifide.aem.bundle") {
     }
 
     dependencies {
-        "implementation"("com.adobe.aem:uber-jar:6.5.5:apis")
+        "implementation"("com.adobe.aem:uber-jar:6.4.0:apis")
         "implementation"("org.osgi:osgi.cmpn:6.0.0")
         "implementation"("org.osgi:org.osgi.core:6.0.0")
         "implementation"("javax.jcr:jcr:2.0")
         "implementation"("javax.annotation:javax.annotation-api:1.3.2")
         "implementation"("javax.inject:javax.inject:1")
         "implementation"("javax.servlet:javax.servlet-api:3.1.0")
-        "implementation"("org.apache.commons:commons-text:1.9")
      }
 }

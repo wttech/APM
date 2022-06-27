@@ -84,46 +84,23 @@ public class ApmStartupService extends AbstractLauncher {
   }
 
   private void processScripts(Configuration config, ResourceResolver resolver) throws PersistenceException, RepositoryException {
-    LogUtils.log(logger, resolver, String.format("scriptPaths = %s", Arrays.asList(config.scriptPaths())));
-    LogUtils.log(logger, resolver, String.format("ifModified = %s", config.ifModified()));
     ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resolver);
     boolean compositeNodeStore = RuntimeUtils.determineCompositeNodeStore(resolver);
-    LogUtils.log(logger, resolver, String.format("compositeNodeStore = %s", compositeNodeStore));
     List<Script> scripts = Arrays.stream(config.scriptPaths())
-        .map(scriptPath -> {
-          LogUtils.log(logger, resolver, String.format("scriptPath = %s", scriptPath));
-          Script script = scriptFinder.find(scriptPath, resolver);
-          LogUtils.log(logger, resolver, String.format("scriptPath = %s  script.exists = %s", scriptPath, script != null));
-          return script;
-        })
+        .map(scriptPath -> scriptFinder.find(scriptPath, resolver))
         .filter(Objects::nonNull)
         .filter(script -> {
           List<Script> subtree = referenceFinder.findReferences(script);
           String checksum = versionService.countChecksum(subtree);
           ScriptVersion scriptVersion = versionService.getScriptVersion(resolver, script);
           HistoryEntry lastLocalRun = history.findScriptHistory(resolver, script).getLastLocalRun();
-          LogUtils.log(logger, resolver, String.format("script.path = %s  checksum = %s", script.getPath(), checksum));
-          if (scriptVersion.getLastChecksum() == null) {
-            LogUtils.log(logger, resolver, String.format("script.path = %s  scriptVersion.lastChecksum = null", script.getPath()));
-          } else {
-            LogUtils.log(logger, resolver, String.format("script.path = %s  scriptVersion.lastChecksum = %s", script.getPath(), scriptVersion.getLastChecksum()));
-          }
-          if (lastLocalRun == null) {
-            LogUtils.log(logger, resolver, String.format("script.path = %s  lastLocalRun = null", script.getPath()));
-          } else {
-            LogUtils.log(logger, resolver, String.format("script.path = %s  lastLocalRun.checksum = %s", script.getPath(), lastLocalRun.getChecksum()));
-            LogUtils.log(logger, resolver, String.format("script.path = %s  lastLocalRun.compositeNodeStore = %s", script.getPath(), lastLocalRun.isCompositeNodeStore()));
-          }
-          boolean result = !config.ifModified()
+          return !config.ifModified()
               || !checksum.equals(scriptVersion.getLastChecksum())
               || lastLocalRun == null
               || !checksum.equals(lastLocalRun.getChecksum())
               || compositeNodeStore != lastLocalRun.isCompositeNodeStore();
-          LogUtils.log(logger, resolver, String.format("script.path = %s  result = %s", script.getPath(), result));
-          return result;
         })
         .collect(Collectors.toList());
-    LogUtils.log(logger, resolver, String.format("scripts.size = %s", scripts.size()));
     processScripts(scripts, resolver);
     if (!compositeNodeStore) {
       copyHistoryToApps(resolver);
@@ -131,17 +108,12 @@ public class ApmStartupService extends AbstractLauncher {
   }
 
   private void copyHistoryToApps(ResourceResolver resolver) throws RepositoryException {
-    LogUtils.log(logger, resolver, "copyHistory");
     Session session = resolver.adaptTo(Session.class);
     if (session.nodeExists(HistoryImpl.HISTORY_FOLDER) && !session.nodeExists(HISTORY_APPS_FOLDER)) {
-      LogUtils.log(logger, resolver, String.format("copyHistory1 %s", HistoryImpl.HISTORY_FOLDER));
       session.getWorkspace().copy(HistoryImpl.HISTORY_FOLDER, HISTORY_APPS_FOLDER);
-      LogUtils.log(logger, resolver, String.format("copyHistory2 %s", HistoryImpl.HISTORY_FOLDER));
     }
     if (session.nodeExists(VersionServiceImpl.versionsRoot) && !session.nodeExists(VERSIONS_APPS_FOLDER)) {
-      LogUtils.log(logger, resolver, String.format("copyHistory3 %s", VersionServiceImpl.versionsRoot));
       session.getWorkspace().copy(VersionServiceImpl.versionsRoot, VERSIONS_APPS_FOLDER);
-      LogUtils.log(logger, resolver, String.format("copyHistory4 %s", VersionServiceImpl.versionsRoot));
     }
     session.save();
   }

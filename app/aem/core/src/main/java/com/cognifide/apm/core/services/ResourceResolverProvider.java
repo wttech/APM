@@ -44,7 +44,7 @@ public class ResourceResolverProvider {
   @Reference(policyOption = ReferencePolicyOption.GREEDY)
   private ResourceResolverFactory resolverFactory;
 
-  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  @Reference
   private ServiceUserMapped serviceUserMapped;
 
   @Reference(

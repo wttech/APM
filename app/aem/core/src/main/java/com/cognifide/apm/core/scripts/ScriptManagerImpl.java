@@ -79,9 +79,6 @@ public class ScriptManagerImpl implements ScriptManager {
   private ActionFactory actionFactory;
 
   @Reference(policyOption = ReferencePolicyOption.GREEDY)
-  private ScriptStorage scriptStorage;
-
-  @Reference(policyOption = ReferencePolicyOption.GREEDY)
   private ScriptFinder scriptFinder;
 
   @Reference(policyOption = ReferencePolicyOption.GREEDY)

@@ -21,9 +21,9 @@ package com.cognifide.apm.core.ui.datasources;
 
 import com.adobe.granite.ui.components.ds.DataSource;
 import com.cognifide.apm.core.ui.datasources.SimpleDataSourceBuilder.Option;
+import com.cognifide.apm.core.utils.LabelUtils;
 import java.util.Arrays;
 import java.util.List;
-import org.apache.commons.text.WordUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
@@ -31,6 +31,7 @@ import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 public abstract class AbstractDatasourceServlet<E> extends SlingSafeMethodsServlet {
 
   private final Option emptyOption;
+
   private final List<E> options;
 
   protected AbstractDatasourceServlet(List<E> options, Option emptyOption) {
@@ -39,8 +40,7 @@ public abstract class AbstractDatasourceServlet<E> extends SlingSafeMethodsServl
   }
 
   protected AbstractDatasourceServlet(E[] options, Option emptyOption) {
-    this.emptyOption = emptyOption;
-    this.options = Arrays.asList(options);
+    this(Arrays.asList(options), emptyOption);
   }
 
   @Override
@@ -49,13 +49,8 @@ public abstract class AbstractDatasourceServlet<E> extends SlingSafeMethodsServl
     if (emptyOption != null) {
       builder.addOption(emptyOption);
     }
-    options.forEach(item -> builder.addOption(getName(item.toString()), item.toString()));
+    options.forEach(item -> builder.addOption(LabelUtils.capitalize(item), item));
     request.setAttribute(DataSource.class.getName(), builder.build());
   }
 
-  private String getName(String item) {
-    String words = item.replace('_', ' ');
-    words = WordUtils.capitalizeFully(words.toLowerCase());
-    return words;
-  }
 }

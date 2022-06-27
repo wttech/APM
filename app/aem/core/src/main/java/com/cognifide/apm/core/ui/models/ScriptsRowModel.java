@@ -27,6 +27,7 @@ import com.cognifide.apm.core.history.HistoryEntry;
 import com.cognifide.apm.core.history.ScriptHistory;
 import com.cognifide.apm.core.scripts.ScriptModel;
 import com.cognifide.apm.core.utils.CalendarUtils;
+import com.cognifide.apm.core.utils.LabelUtils;
 import com.day.cq.commons.jcr.JcrConstants;
 import com.google.common.collect.ImmutableSet;
 import java.util.ArrayList;
@@ -41,7 +42,6 @@ import javax.inject.Inject;
 import lombok.Getter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.WordUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
@@ -99,7 +99,7 @@ public final class ScriptsRowModel {
         this.lastModified = CalendarUtils.asCalendar(script.getLastModified());
         this.runs.add(createScriptRun("dryRun", script, scriptHistory.getLastLocalDryRun()));
         this.runs.add(createScriptRun("runOnAuthor", script, scriptHistory.getLastLocalRun()));
-        this.launchMode = label(script.getLaunchMode());
+        this.launchMode = LabelUtils.capitalize(script.getLaunchMode());
         this.launchEnvironment = Stream.concat(
             Stream.of(script.getLaunchEnvironment().getRunMode()),
             CollectionUtils.emptyIfNull(script.getLaunchRunModes()).stream()
@@ -110,12 +110,6 @@ public final class ScriptsRowModel {
         this.isLaunchEnabled = script.isLaunchEnabled();
       });
     }
-  }
-
-  public String label(Object object) {
-    String words = object.toString().replace('_', ' ');
-    words = WordUtils.capitalizeFully(words.toLowerCase());
-    return words;
   }
 
   private ScriptRun createScriptRun(String name, Script script, HistoryEntry historyEntry) {

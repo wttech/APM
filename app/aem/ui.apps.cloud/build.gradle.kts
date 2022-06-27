@@ -13,7 +13,6 @@ evaluationDependsOn(":app:aem:runmodes.cloud")
 evaluationDependsOn(":app:aem:core")
 evaluationDependsOn(":app:aem:actions.main")
 evaluationDependsOn(":app:aem:startup")
-evaluationDependsOn(":app:aem:simple")
 
 apply(from = rootProject.file("app/common.gradle.kts"))
 apply(from = rootProject.file("app/aem/common.gradle.kts"))
@@ -21,14 +20,13 @@ apply(from = rootProject.file("app/aem/common.gradle.kts"))
 aem {
     tasks {
         packageCompose {
+            archiveBaseName.set("ui.apps")
+            archiveClassifier.set("cloud")
             mergePackageProject(":app:aem:ui.apps.base")
             installBundleProject(":app:aem:api")
             installBundleProject(":app:aem:runmodes.cloud")
             installBundleProject(":app:aem:core")
             installBundleProject(":app:aem:actions.main")
-            installBundleProject(":app:aem:simple") {
-                startLevel.set(27)
-            }
             installBundleProject(":app:aem:startup") {
                 startLevel.set(27)
             }
@@ -45,14 +43,11 @@ publishing {
     publications {
         register<MavenPublication>("apmCrx") {
             groupId = project.group.toString() + ".crx"
+            artifactId = "apm-ui.apps"
             artifact(tasks["packageCompose"])
             afterEvaluate {
                 artifactId = "apm-" + project.name
                 version = rootProject.version
-            }
-            pom {
-                name.set("APM - " + project.name)
-                description.set(project.description)
             }
         }
     }
