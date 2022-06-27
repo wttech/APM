@@ -23,7 +23,6 @@ import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ExecutionMode;
 import com.cognifide.apm.api.services.ExecutionResult;
 import com.cognifide.apm.api.services.ScriptManager;
-import com.cognifide.apm.core.utils.LogUtils;
 import com.cognifide.apm.core.utils.MessagingUtils;
 import java.util.List;
 import javax.jcr.RepositoryException;
@@ -59,14 +58,11 @@ public abstract class AbstractLauncher {
       if (script.isValid()) {
         ExecutionResult result = getScriptManager().process(script, ExecutionMode.AUTOMATIC_RUN, resolver);
         logStatus(scriptPath, result.isSuccess());
-        LogUtils.log(logger, resolver, String.format("Script %s result %s", scriptPath, result.isSuccess()));
       } else {
         logger.warn("Launcher cannot execute script which is not valid: {}", scriptPath);
-        LogUtils.log(logger, resolver, "Launcher cannot execute script which is not valid: " + scriptPath);
       }
     } catch (RepositoryException e) {
       logger.error("Script cannot be processed because of repository error: {}", scriptPath, e);
-      LogUtils.log(logger, resolver, "Script cannot be processed because of repository error: " + scriptPath + " " + e.getMessage());
     }
   }
 
