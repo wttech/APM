@@ -30,7 +30,7 @@ import com.cognifide.apm.core.jobs.JobResultsCache.ExecutionSummary;
 import com.cognifide.apm.core.services.ResourceResolverProvider;
 import com.cognifide.apm.core.services.async.AsyncScriptExecutorImpl;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 import javax.jcr.RepositoryException;
 import org.apache.commons.lang3.StringUtils;
@@ -104,9 +104,9 @@ public class ScriptRunnerJobConsumer {
   }
 
   private Map<String, String> getDefinitions(Map<String, Object> properties) {
-    HashMap<String, String> definitions = (HashMap<String, String>) properties.get(AsyncScriptExecutorImpl.DEFINITIONS);
+    Map<String, String> definitions = (Map<String, String>) properties.get(AsyncScriptExecutorImpl.DEFINITIONS);
     if (definitions == null) {
-      definitions = new HashMap<>();
+      definitions = Collections.emptyMap();
     }
     return definitions;
   }
