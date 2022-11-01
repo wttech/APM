@@ -103,7 +103,7 @@ public class ApmInstallService extends AbstractLauncher {
   @ObjectClassDefinition(name = "AEM Permission Management - Install Launcher Configuration")
   public @interface Configuration {
 
-    @AttributeDefinition(name = "Scripts Path")
+    @AttributeDefinition(name = "Script Paths")
     String[] scriptPaths();
 
     @AttributeDefinition(name = "If Modified", description = "Executed script, only if script content's changed")
