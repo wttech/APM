@@ -27,7 +27,6 @@ import com.cognifide.apm.core.logger.Progress;
 import com.cognifide.apm.core.progress.ProgressHelper;
 import com.cognifide.apm.core.services.ResourceResolverProvider;
 import com.cognifide.apm.core.services.version.VersionService;
-import com.cognifide.apm.core.utils.RuntimeUtils;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
 import com.day.cq.commons.jcr.JcrConstants;
 import java.lang.management.ManagementFactory;
@@ -98,8 +97,7 @@ public class HistoryImpl implements History {
         .isRunSuccessful(progressLogger.isSuccess())
         .mode(mode.toString())
         .progressLog(ProgressHelper.toJson(progressLogger.getEntries()))
-        .instanceName(ManagementFactory.getRuntimeMXBean().getName())
-        .compositeNodeStore(RuntimeUtils.determineCompositeNodeStore(resolver));
+        .instanceName(ManagementFactory.getRuntimeMXBean().getName());
   }
 
   @Override
