@@ -37,8 +37,10 @@ DEFINE b 'b'
 DEFINE tab1 [$a, $b]
 DEFINE tab2 ['c', 'd']
 DEFINE tab [$tab1, $tab2]
+DEFINE tab3 [['a','b'],['c','d']]
 SHOW $a
 SHOW $b
 SHOW $tab1
 SHOW $tab2
 SHOW $tab
+SHOW $tab3

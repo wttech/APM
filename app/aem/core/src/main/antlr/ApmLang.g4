@@ -56,6 +56,7 @@ value
     : variable
     | numberValue
     | stringValue
+    | array
     ;
 
 plus

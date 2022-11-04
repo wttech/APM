@@ -81,6 +81,7 @@ class ScriptRunnerTest extends Specification {
                      "Executing command SHOW \"b\"",
                      "Executing command SHOW [\"a\", \"b\"]",
                      "Executing command SHOW [\"c\", \"d\"]",
+                     "Executing command SHOW [[\"a\", \"b\"], [\"c\", \"d\"]]",
                      "Executing command SHOW [[\"a\", \"b\"], [\"c\", \"d\"]]"]
     }
 
