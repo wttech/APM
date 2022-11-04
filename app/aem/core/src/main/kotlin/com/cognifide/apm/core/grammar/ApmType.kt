@@ -30,6 +30,10 @@ abstract class ApmType {
         get() = null
     open val list: List<ApmType>?
         get() = null
+    open val map: Map<String, ApmType>?
+        get() = null
+    open val pair: Pair<String, ApmType>?
+        get() = null
 }
 
 data class ApmInteger(val value: Int) : ApmType() {
@@ -62,6 +66,30 @@ data class ApmList(val value: List<ApmType>) : ApmType() {
 
     override fun toString(): String {
         return value.joinToString(prefix = "[", postfix = "]") { "$it" }
+    }
+}
+
+data class ApmMap(val value: Map<String, ApmType>) : ApmType() {
+    override fun getArgument(decryptionService: DecryptionService) =
+        value.mapValues { it.value.getArgument(decryptionService) }
+
+    override val map: Map<String, ApmType>
+        get() = value
+
+    override fun toString(): String {
+        return value.entries.joinToString(prefix = "{", postfix = "}") { "${it.key}:${it.value}" }
+    }
+}
+
+data class ApmPair(val value: Pair<String, ApmType>) : ApmType() {
+    override fun getArgument(decryptionService: DecryptionService) =
+        Pair(value.first, value.second.getArgument(decryptionService))
+
+    override val pair: Pair<String, ApmType>
+        get() = value
+
+    override fun toString(): String {
+        return "${value.first}:${value.second}"
     }
 }
 

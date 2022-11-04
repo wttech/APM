@@ -40,6 +40,14 @@ array
     : ARRAY_BEGIN EOL? value (',' EOL? value)* EOL? ARRAY_END
     ;
 
+structure
+    : STRUCTURE_BEGIN EOL? structureValue (',' EOL? structureValue)* EOL? STRUCTURE_END
+    ;
+
+structureValue
+    : IDENTIFIER ':' value
+    ;
+
 variable
     : VARIABLE_PREFIX IDENTIFIER
     ;
@@ -57,6 +65,7 @@ value
     | numberValue
     | stringValue
     | array
+    | structure
     ;
 
 plus
@@ -65,7 +74,6 @@ plus
 
 expression
     : expression plus expression
-    | array
     | value
     ;
 
@@ -132,6 +140,12 @@ ARRAY_BEGIN
 ARRAY_END
     : ']'
     ;
+STRUCTURE_BEGIN
+    : '{'
+    ;
+STRUCTURE_END
+    : '}'
+    ;
 BLOCK_BEGIN
     : 'begin'
     | 'BEGIN'
@@ -179,7 +193,7 @@ VARIABLE_PREFIX
     : '$'
     ;
 IDENTIFIER
-    : Letter LetterOrDigit*
+    : Letter LetterOrDigitOrDot*
     ;
 EXTENDED_IDENTIFIER
     : Letter LetterOrDigitOrDash*
@@ -196,9 +210,10 @@ fragment LetterOrDigitOrDash
     | '-'
     | [0-9]
     ;
-fragment LetterOrDigit
+fragment LetterOrDigitOrDot
     : Letter
     | [0-9]
+    | '.'
     ;
 fragment Letter
     : [a-zA-Z_] // these are the "java letters" below 0x7F

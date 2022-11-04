@@ -95,6 +95,21 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
             return ApmList(values)
         }
 
+        override fun visitStructure(ctx: StructureContext): ApmType {
+            val values = ctx.children
+                ?.map { child -> child.accept(this) }
+                ?.filterIsInstance<ApmPair>()
+                ?.associate { it.pair }
+                ?: mapOf()
+            return ApmMap(values)
+        }
+
+        override fun visitStructureValue(ctx: StructureValueContext): ApmType {
+            val key = ctx.IDENTIFIER().toString()
+            val value = visit(ctx.value())
+            return ApmPair(Pair(key, value))
+        }
+
         override fun visitExpression(ctx: ExpressionContext): ApmType {
             if (ctx.plus() != null) {
                 val left = visit(ctx.expression(0))
@@ -110,7 +125,6 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
             }
             return when {
                 ctx.value() != null -> visit(ctx.value())
-                ctx.array() != null -> visit(ctx.array())
                 else -> super.visitExpression(ctx)
             }
         }
