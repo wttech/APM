@@ -38,7 +38,6 @@ import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,19 +48,19 @@ public class ScriptRunnerJobConsumer {
 
   private static final Logger LOG = LoggerFactory.getLogger(ScriptRunnerJobConsumer.class);
 
-  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  @Reference
   private History history;
 
-  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  @Reference
   private ScriptManager scriptManager;
 
-  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  @Reference
   private ScriptFinder scriptFinder;
 
-  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  @Reference
   private JobResultsCache jobResultsCache;
 
-  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  @Reference
   private ResourceResolverProvider resolverProvider;
 
   public void process(Map<String, Object> properties) {

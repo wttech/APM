@@ -39,7 +39,6 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
@@ -53,19 +52,19 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 @Designate(ocd = ApmInstallService.Configuration.class, factory = true)
 public class ApmInstallService extends AbstractLauncher {
 
-  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  @Reference
   private ResourceResolverProvider resolverProvider;
 
-  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  @Reference
   private ScriptManager scriptManager;
 
-  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  @Reference
   private ScriptFinder scriptFinder;
 
-  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  @Reference
   private VersionService versionService;
 
-  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  @Reference
   private History history;
 
   @Activate

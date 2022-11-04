@@ -38,7 +38,6 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
@@ -53,16 +52,16 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 @Designate(ocd = ScheduleExecutorConfiguration.class)
 public class ScheduledScriptLauncher extends AbstractLauncher implements Runnable {
 
-  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  @Reference
   private ScriptManager scriptManager;
 
-  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  @Reference
   private ScriptFinder scriptFinder;
 
-  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  @Reference
   private RunModesProvider runModesProvider;
 
-  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  @Reference
   private ResourceResolverProvider resolverProvider;
 
   private boolean enabled = true;

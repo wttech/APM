@@ -31,7 +31,6 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.AttributeType;
 import org.osgi.service.metatype.annotations.Designate;
@@ -44,10 +43,10 @@ public class HistoryAutocleanService implements Runnable {
 
   private Config config;
 
-  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  @Reference
   private ResourceResolverProvider resolverProvider;
 
-  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  @Reference
   private History history;
 
   @Activate

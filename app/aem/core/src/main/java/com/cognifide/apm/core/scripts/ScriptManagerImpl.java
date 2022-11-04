@@ -61,7 +61,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
-import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,23 +74,22 @@ public class ScriptManagerImpl implements ScriptManager {
 
   private static final Logger LOG = LoggerFactory.getLogger(ScriptManagerImpl.class);
 
-  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  @Reference
   private ActionFactory actionFactory;
 
-  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  @Reference
   private ScriptFinder scriptFinder;
 
-  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  @Reference
   private VersionService versionService;
 
-  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  @Reference
   private EventManager eventManager;
 
-  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  @Reference
   private History history;
 
   @Reference(
-      policyOption = ReferencePolicyOption.GREEDY,
       cardinality = ReferenceCardinality.MULTIPLE,
       policy = ReferencePolicy.DYNAMIC,
       service = DefinitionsProvider.class

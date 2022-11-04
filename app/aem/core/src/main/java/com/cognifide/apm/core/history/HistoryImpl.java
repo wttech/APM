@@ -46,7 +46,6 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,10 +69,10 @@ public class HistoryImpl implements History {
 
   private static final String SLING_ORDERED_FOLDER = "sling:OrderedFolder";
 
-  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  @Reference
   private ResourceResolverProvider resolverProvider;
 
-  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  @Reference
   private VersionService versionService;
 
   @Override
