@@ -28,8 +28,6 @@ aem {
                 duplicatesStrategy = DuplicatesStrategy.EXCLUDE
                 version.set(rootProject.version as String)
                 description.set(project.description)
-                property("waitForOsgiEventsQuietInSec", "5")
-                property("installPathRegex", "/apps/apm/.*")
             }
         }
     }

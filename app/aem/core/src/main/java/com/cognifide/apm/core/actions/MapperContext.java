@@ -25,7 +25,6 @@ import com.cognifide.apm.core.crypto.DecryptionService;
 import lombok.Getter;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferencePolicyOption;
 
 @Component(
     service = MapperContext.class,
@@ -37,7 +36,7 @@ import org.osgi.service.component.annotations.ReferencePolicyOption;
 @Getter
 public class MapperContext {
 
-  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  @Reference
   private DecryptionService decryptionService;
 
 }

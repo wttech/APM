@@ -29,7 +29,6 @@ import com.cognifide.apm.core.history.HistoryEntry;
 import com.cognifide.apm.core.services.ResourceResolverProvider;
 import com.cognifide.apm.core.services.version.ScriptVersion;
 import com.cognifide.apm.core.services.version.VersionService;
-import com.cognifide.apm.core.utils.RuntimeUtils;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
 import java.util.Arrays;
 import java.util.List;
@@ -40,7 +39,6 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
@@ -54,19 +52,19 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 @Designate(ocd = ApmInstallService.Configuration.class, factory = true)
 public class ApmInstallService extends AbstractLauncher {
 
-  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  @Reference
   private ResourceResolverProvider resolverProvider;
 
-  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  @Reference
   private ScriptManager scriptManager;
 
-  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  @Reference
   private ScriptFinder scriptFinder;
 
-  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  @Reference
   private VersionService versionService;
 
-  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  @Reference
   private History history;
 
   @Activate
@@ -76,7 +74,6 @@ public class ApmInstallService extends AbstractLauncher {
 
   private void processScripts(Configuration config, ResourceResolver resolver) throws PersistenceException {
     ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resolver);
-    boolean compositeNodeStore = RuntimeUtils.determineCompositeNodeStore(resolver);
     List<Script> scripts = Arrays.stream(config.scriptPaths())
         .map(scriptPath -> scriptFinder.find(scriptPath, resolver))
         .filter(Objects::nonNull)
@@ -88,8 +85,7 @@ public class ApmInstallService extends AbstractLauncher {
           return !config.ifModified()
               || !checksum.equals(scriptVersion.getLastChecksum())
               || lastLocalRun == null
-              || !checksum.equals(lastLocalRun.getChecksum())
-              || compositeNodeStore != lastLocalRun.isCompositeNodeStore();
+              || !checksum.equals(lastLocalRun.getChecksum());
         })
         .collect(Collectors.toList());
     processScripts(scripts, resolver);
@@ -103,7 +99,7 @@ public class ApmInstallService extends AbstractLauncher {
   @ObjectClassDefinition(name = "AEM Permission Management - Install Launcher Configuration")
   public @interface Configuration {
 
-    @AttributeDefinition(name = "Scripts Path")
+    @AttributeDefinition(name = "Script Paths")
     String[] scriptPaths();
 
     @AttributeDefinition(name = "If Modified", description = "Executed script, only if script content's changed")

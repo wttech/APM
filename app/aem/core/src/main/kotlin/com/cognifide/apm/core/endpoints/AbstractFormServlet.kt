@@ -27,12 +27,11 @@ import org.apache.sling.api.resource.ResourceResolver
 import org.apache.sling.api.servlets.SlingAllMethodsServlet
 import org.apache.sling.models.factory.ModelFactory
 import org.osgi.service.component.annotations.Reference
-import org.osgi.service.component.annotations.ReferencePolicyOption
 import java.io.IOException
 
 abstract class AbstractFormServlet<F>(private val formClass: Class<F>) : SlingAllMethodsServlet() {
 
-    @Reference(policyOption = ReferencePolicyOption.GREEDY)
+    @Reference
     @Transient
     protected lateinit var modelFactory: ModelFactory
 

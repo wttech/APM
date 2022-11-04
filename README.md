@@ -18,6 +18,7 @@ APM (**A**EM **P**ermission **M**anagement) is an AEM based tool focused on stre
 * Bulk changes for whole permission schemes.
 * HTTP API access for better CI/CD implementations.
 * Backend Java API for use of permission-based project features.
+* AEMaaCS compatibility.
 
 ### Compatibility
 This page identifies the versions of Adobe Experience Manager with which a particular version of AEM Permission Management is compatible.
@@ -44,6 +45,7 @@ Open **APM** dashboard [http://localhost:4502/apm.html](http://localhost:4502/ap
 * [Launchers](docs/launchers.md) - configuring auto execution of scripts.
 * [Backend API](docs/backend-api.md) - executing scripts from backend services.
 * [Custom actions](docs/custom-actions.md) - implement your own action.
+* [AEMaaCS](docs/aemaacs.md) - how to use APM on AEMaaCS.
 
 ## What's new?
 ### APM 5.0.0

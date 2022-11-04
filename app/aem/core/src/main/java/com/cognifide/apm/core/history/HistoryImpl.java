@@ -27,7 +27,6 @@ import com.cognifide.apm.core.logger.Progress;
 import com.cognifide.apm.core.progress.ProgressHelper;
 import com.cognifide.apm.core.services.ResourceResolverProvider;
 import com.cognifide.apm.core.services.version.VersionService;
-import com.cognifide.apm.core.utils.RuntimeUtils;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
 import com.day.cq.commons.jcr.JcrConstants;
 import java.lang.management.ManagementFactory;
@@ -47,7 +46,6 @@ import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,10 +69,10 @@ public class HistoryImpl implements History {
 
   private static final String SLING_ORDERED_FOLDER = "sling:OrderedFolder";
 
-  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  @Reference
   private ResourceResolverProvider resolverProvider;
 
-  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  @Reference
   private VersionService versionService;
 
   @Override
@@ -98,8 +96,7 @@ public class HistoryImpl implements History {
         .isRunSuccessful(progressLogger.isSuccess())
         .mode(mode.toString())
         .progressLog(ProgressHelper.toJson(progressLogger.getEntries()))
-        .instanceName(ManagementFactory.getRuntimeMXBean().getName())
-        .compositeNodeStore(RuntimeUtils.determineCompositeNodeStore(resolver));
+        .instanceName(ManagementFactory.getRuntimeMXBean().getName());
   }
 
   @Override

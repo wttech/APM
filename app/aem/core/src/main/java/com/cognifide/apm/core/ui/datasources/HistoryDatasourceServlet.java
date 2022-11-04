@@ -35,7 +35,6 @@ import org.apache.sling.api.resource.ResourceWrapper;
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferencePolicyOption;
 
 @Component(
     service = Servlet.class,
@@ -49,7 +48,7 @@ public class HistoryDatasourceServlet extends SlingSafeMethodsServlet {
 
   private static final int DEFAULT_LIMIT = 10;
 
-  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  @Reference
   private History history;
 
   @Override

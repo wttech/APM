@@ -30,7 +30,6 @@ import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.serviceusermapping.ServiceUserMapped;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferencePolicyOption;
 
 @Component(
     service = ResourceResolverProvider.class,
@@ -41,58 +40,34 @@ import org.osgi.service.component.annotations.ReferencePolicyOption;
 )
 public class ResourceResolverProvider {
 
-  @Reference(policyOption = ReferencePolicyOption.GREEDY)
+  @Reference
   private ResourceResolverFactory resolverFactory;
 
   @Reference
   private ServiceUserMapped serviceUserMapped;
 
-  @Reference(
-      policyOption = ReferencePolicyOption.GREEDY,
-      target = "(adapters=com.cognifide.apm.core.scripts.ScriptModel)"
-  )
+  @Reference(target = "(adapters=com.cognifide.apm.core.scripts.ScriptModel)")
   private AdapterFactory scriptModelAdapterFactory;
 
-  @Reference(
-      policyOption = ReferencePolicyOption.GREEDY,
-      target = "(adapters=com.cognifide.apm.core.services.version.ScriptVersionModel)"
-  )
+  @Reference(target = "(adapters=com.cognifide.apm.core.services.version.ScriptVersionModel)")
   private AdapterFactory scriptVersionModelAdapterFactory;
 
-  @Reference(
-      policyOption = ReferencePolicyOption.GREEDY,
-      target = "(adapters=com.cognifide.apm.core.history.ScriptHistoryImpl)"
-  )
+  @Reference(target = "(adapters=com.cognifide.apm.core.history.ScriptHistoryImpl)")
   private AdapterFactory scriptHistoryImplAdapterFactory;
 
-  @Reference(
-      policyOption = ReferencePolicyOption.GREEDY,
-      target = "(adapters=com.cognifide.apm.core.history.HistoryEntryImpl)"
-  )
+  @Reference(target = "(adapters=com.cognifide.apm.core.history.HistoryEntryImpl)")
   private AdapterFactory historyEntryImplAdapterFactory;
 
-  @Reference(
-      policyOption = ReferencePolicyOption.GREEDY,
-      target = "(adapters=com.cognifide.apm.core.scripts.ScriptModel)"
-  )
+  @Reference(target = "(adapters=com.cognifide.apm.core.scripts.ScriptModel)")
   private Adaption scriptModelAdaption;
 
-  @Reference(
-      policyOption = ReferencePolicyOption.GREEDY,
-      target = "(adapters=com.cognifide.apm.core.services.version.ScriptVersionModel)"
-  )
+  @Reference(target = "(adapters=com.cognifide.apm.core.services.version.ScriptVersionModel)")
   private Adaption scriptVersionModelAdaption;
 
-  @Reference(
-      policyOption = ReferencePolicyOption.GREEDY,
-      target = "(adapters=com.cognifide.apm.core.history.ScriptHistoryImpl)"
-  )
+  @Reference(target = "(adapters=com.cognifide.apm.core.history.ScriptHistoryImpl)")
   private Adaption scriptHistoryImplAdaption;
 
-  @Reference(
-      policyOption = ReferencePolicyOption.GREEDY,
-      target = "(adapters=com.cognifide.apm.core.history.HistoryEntryImpl)"
-  )
+  @Reference(target = "(adapters=com.cognifide.apm.core.history.HistoryEntryImpl)")
   private Adaption historyEntryImplAdaption;
 
   public ResourceResolver getResourceResolver(String userId) throws LoginException {

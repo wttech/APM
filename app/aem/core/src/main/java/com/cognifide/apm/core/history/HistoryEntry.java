@@ -51,6 +51,4 @@ public interface HistoryEntry {
 
   String getScriptContentPath();
 
-  boolean isCompositeNodeStore();
-
 }
