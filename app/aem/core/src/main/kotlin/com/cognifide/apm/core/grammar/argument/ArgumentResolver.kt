@@ -89,13 +89,10 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
 
         override fun visitArray(ctx: ArrayContext): ApmType {
             val values = ctx.children
-                    ?.map { child -> child.accept(this) }
-                    ?.filter { it is ApmString || it is ApmList }
-                    ?: listOf()
-            return when (values.firstOrNull()) {
-                is ApmString -> ApmList(values.map { it.string as String })
-                else -> ApmList(listOf())
-            }
+                ?.map { child -> child.accept(this) }
+                ?.filter { it !is ApmEmpty }
+                ?: listOf()
+            return ApmList(values)
         }
 
         override fun visitExpression(ctx: ExpressionContext): ApmType {
@@ -121,7 +118,7 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
         override fun visitNumberValue(ctx: NumberValueContext): ApmType {
             val value = ctx.NUMBER_LITERAL().toString()
             val number = Ints.tryParse(value)
-                    ?: throw ArgumentResolverException("Found invalid number value $value")
+                ?: throw ArgumentResolverException("Found invalid number value $value")
             return ApmInteger(number)
         }
 
@@ -135,7 +132,7 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
         override fun visitVariable(ctx: VariableContext): ApmType {
             val name = ctx.IDENTIFIER().toString()
             return variableHolder[name]
-                    ?: throw ArgumentResolverException("Variable \"$name\" not found")
+                ?: throw ArgumentResolverException("Variable \"$name\" not found")
         }
     }
 }

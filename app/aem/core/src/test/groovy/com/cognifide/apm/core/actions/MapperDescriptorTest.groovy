@@ -147,7 +147,8 @@ class MapperDescriptorTest extends Specification {
             return new ApmString(object)
         }
         if (object instanceof List) {
-            return new ApmList(object)
+            def newObject = object.collect { toApmType(it) }
+            return new ApmList(newObject)
         }
         return null
     }

@@ -39,10 +39,11 @@ import org.antlr.v4.runtime.ParserRuleContext
 import org.apache.sling.api.resource.ResourceResolver
 
 class ScriptRunner(
-        private val scriptFinder: ScriptFinder,
-        private val resourceResolver: ResourceResolver,
-        private val validateOnly: Boolean = false,
-        private val actionInvoker: ActionInvoker) {
+    private val scriptFinder: ScriptFinder,
+    private val resourceResolver: ResourceResolver,
+    private val validateOnly: Boolean = false,
+    private val actionInvoker: ActionInvoker
+) {
 
     @JvmOverloads
     fun execute(script: Script, progress: Progress, initialDefinitions: Map<String, String> = mapOf()): Progress {
@@ -62,7 +63,8 @@ class ScriptRunner(
         return progress
     }
 
-    private inner class Executor(private val executionContext: ExecutionContext) : com.cognifide.apm.core.grammar.antlr.ApmLangBaseVisitor<Unit>() {
+    private inner class Executor(private val executionContext: ExecutionContext) :
+        com.cognifide.apm.core.grammar.antlr.ApmLangBaseVisitor<Unit>() {
 
         override fun visitDefineVariable(ctx: DefineVariableContext) {
             val variableName = ctx.IDENTIFIER().toString()
@@ -85,7 +87,7 @@ class ScriptRunner(
                 try {
                     executionContext.createLocalContext()
                     val valueStr = value.map { it.key + "=" + it.value }
-                            .joinToString()
+                        .joinToString()
                     progress(ctx, Status.SUCCESS, "for-each", "$index. Begin: $valueStr")
                     value.forEach { (k, v) -> executionContext.setVariable(k, v) }
                     visit(ctx.body())
@@ -138,7 +140,12 @@ class ScriptRunner(
                     if (status in listOf(Status.SUCCESS, Status.WARNING)) {
                         visit(ctx.body())
                     } else {
-                        progress(ctx, Status.SKIPPED, "code-block", "Skipped due to the status of previous action: $commandName")
+                        progress(
+                            ctx,
+                            Status.SKIPPED,
+                            "code-block",
+                            "Skipped due to the status of previous action: $commandName"
+                        )
                     }
                 }
             } catch (e: ArgumentResolverException) {
@@ -179,22 +186,34 @@ class ScriptRunner(
 
         private fun readValues(ctx: ForEachContext): List<Map<String, ApmType>> {
             val keys = ctx.compositeIdentifier()
-                    .children
-                    .filterIsInstance<BasicIdentifierContext>()
-                    .map { it.IDENTIFIER().toString() }
+                .children
+                .filterIsInstance<BasicIdentifierContext>()
+                .map { it.IDENTIFIER().toString() }
             val values = when (val variableValue = executionContext.resolveArgument(ctx.argument())) {
-                is ApmList -> variableValue.list.map { listOf(ApmString(it)) }
+                is ApmList -> variableValue.list.map { listOf(it) }
                 is ApmEmpty -> listOf(listOf())
                 else -> listOf(listOf(variableValue))
             }
             return values.map { keys.zip(it).toMap() }
         }
 
-        private fun progress(ctx: ParserRuleContext, status: Status = Status.SUCCESS, command: String, details: String = "", arguments: Arguments? = null) {
+        private fun progress(
+            ctx: ParserRuleContext,
+            status: Status = Status.SUCCESS,
+            command: String,
+            details: String = "",
+            arguments: Arguments? = null
+        ) {
             progress(ctx, status, command, listOf(details), arguments)
         }
 
-        private fun progress(ctx: ParserRuleContext, status: Status = Status.SUCCESS, command: String, details: List<String> = listOf(), arguments: Arguments? = null) {
+        private fun progress(
+            ctx: ParserRuleContext,
+            status: Status = Status.SUCCESS,
+            command: String,
+            details: List<String> = listOf(),
+            arguments: Arguments? = null
+        ) {
             executionContext.progress.addEntry(status, details, command, "", arguments, Position(ctx.start.line))
         }
     }

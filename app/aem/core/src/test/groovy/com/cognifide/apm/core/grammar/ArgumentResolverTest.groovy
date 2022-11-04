@@ -42,7 +42,7 @@ class ArgumentResolverTest extends Specification {
         def result = parameterResolver.resolve(parser.complexArguments())
 
         then:
-        result.required[0].getList() == ["a", "b", "c"]
+        result.required[0].getList() == [new ApmString("a"), new ApmString("b"), new ApmString("c")]
     }
 
     def "accessing not existing variable"() {
@@ -94,7 +94,7 @@ class ArgumentResolverTest extends Specification {
         def result = parameterResolver.resolve(parser.complexArguments())
 
         then:
-        result.required[0].getList() == ["a", "b", "c", "d"]
+        result.required[0].getList() == [new ApmString("a"), new ApmString("b"), new ApmString("c"), new ApmString("d")]
     }
 
     def "sum of numbers"() {
@@ -153,7 +153,7 @@ class ArgumentResolverTest extends Specification {
 
     def "resolve list parameters"() {
         given:
-        variableHolder.set("var1", new ApmList(Lists.newArrayList("val1")))
+        variableHolder.set("var1", new ApmList(Lists.newArrayList(new ApmString("val1"))))
         variableHolder.set("var2", new ApmString("val2"))
         def parameterResolver = new com.cognifide.apm.core.grammar.argument.ArgumentResolver(variableHolder)
         def parser = ApmLangParserHelper.createParserUsingScript("\$var1 [\$var2, 'FALSE']")
@@ -162,13 +162,13 @@ class ArgumentResolverTest extends Specification {
         def result = parameterResolver.resolve(parser.complexArguments())
 
         then:
-        result.required[0].getList() == ["val1"]
-        result.required[1].getList() == ["val2", "FALSE"]
+        result.required[0].getList() == [new ApmString("val1")]
+        result.required[1].getList() == [new ApmString("val2"), new ApmString("FALSE")]
     }
 
     def "resolve optional parameters"() {
         given:
-        variableHolder.set("var1", new ApmList(Lists.newArrayList("val1")))
+        variableHolder.set("var1", new ApmList(Lists.newArrayList(new ApmString("val1"))))
         variableHolder.set("var2", new ApmString("val2"))
         def parameterResolver = new com.cognifide.apm.core.grammar.argument.ArgumentResolver(variableHolder)
         def parser = ApmLangParserHelper.createParserUsingScript("\$var1 param1=[\$var2, 'FALSE'] param2='STRICT'")
@@ -177,13 +177,13 @@ class ArgumentResolverTest extends Specification {
         def result = parameterResolver.resolve(parser.complexArguments())
 
         then:
-        result.named["param1"].getList() == ["val2", "FALSE"]
+        result.named["param1"].getList() == [new ApmString("val2"), new ApmString("FALSE")]
         result.named["param2"].getString() == "STRICT"
     }
 
     def "resolve flags"() {
         given:
-        variableHolder.set("var1", new ApmList(Lists.newArrayList("val1")))
+        variableHolder.set("var1", new ApmList(Lists.newArrayList(new ApmString("val1"))))
         variableHolder.set("var2", new ApmString("val2"))
         def parameterResolver = new com.cognifide.apm.core.grammar.argument.ArgumentResolver(variableHolder)
         def parser = ApmLangParserHelper.createParserUsingScript("\$var1 param1=[\$var2, 'FALSE'] --IF-EXISTS --DEEP")

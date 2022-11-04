@@ -28,7 +28,7 @@ abstract class ApmType {
         get() = null
     open val string: String?
         get() = null
-    open val list: List<String>?
+    open val list: List<ApmType>?
         get() = null
 }
 
@@ -54,14 +54,14 @@ data class ApmString(val value: String) : ApmType() {
     }
 }
 
-data class ApmList(val value: List<String>) : ApmType() {
-    override fun getArgument(decryptionService: DecryptionService) = value.map { decryptionService.decrypt(it) }
+data class ApmList(val value: List<ApmType>) : ApmType() {
+    override fun getArgument(decryptionService: DecryptionService) = value.map { it.getArgument(decryptionService) }
 
-    override val list: List<String>
+    override val list: List<ApmType>
         get() = value
 
     override fun toString(): String {
-        return value.joinToString(prefix = "[", postfix = "]") { "\"$it\"" }
+        return value.joinToString(prefix = "[", postfix = "]") { "$it" }
     }
 }
 
