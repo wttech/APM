@@ -58,15 +58,6 @@ value
     | stringValue
     ;
 
-basicIdentifier
-    : IDENTIFIER
-    ;
-
-compositeIdentifier
-    : ARRAY_BEGIN EOL? basicIdentifier (',' EOL? basicIdentifier)* EOL? ARRAY_END
-    | basicIdentifier
-    ;
-
 plus
     : '+'
     ;
@@ -84,7 +75,7 @@ argument
 command
     : RUN_SCRIPT path namedArguments? # RunScript
     | IMPORT_SCRIPT path (AS name)? # ImportScript
-    | FOR_EACH compositeIdentifier EOL? IN argument EOL? body # ForEach
+    | FOR_EACH IDENTIFIER EOL? IN argument EOL? body # ForEach
     | DEFINE IDENTIFIER argument # DefineVariable
     | REQUIRE IDENTIFIER # RequireVariable
     | commandName complexArguments? EOL? body? # GenericCommand

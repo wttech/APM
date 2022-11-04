@@ -185,10 +185,7 @@ class ScriptRunner(
         }
 
         private fun readValues(ctx: ForEachContext): List<Map<String, ApmType>> {
-            val keys = ctx.compositeIdentifier()
-                .children
-                .filterIsInstance<BasicIdentifierContext>()
-                .map { it.IDENTIFIER().toString() }
+            val keys = listOf(ctx.IDENTIFIER().toString())
             val values = when (val variableValue = executionContext.resolveArgument(ctx.argument())) {
                 is ApmList -> variableValue.list.map { listOf(it) }
                 is ApmEmpty -> listOf(listOf())
