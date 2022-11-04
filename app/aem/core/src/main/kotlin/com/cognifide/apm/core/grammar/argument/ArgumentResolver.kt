@@ -94,18 +94,8 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
                     ?: listOf()
             return when (values.firstOrNull()) {
                 is ApmString -> ApmList(values.map { it.string as String })
-                is ApmList -> ApmNestedList(values.map { it.list as List<String> })
                 else -> ApmList(listOf())
             }
-        }
-
-        override fun visitNestedArray(ctx: NestedArrayContext): ApmType {
-            val values = ctx.children
-                    ?.map { it.accept(this) }
-                    ?.filterIsInstance<ApmList>()
-                    ?.map { it.value }
-                    ?: listOf(listOf())
-            return ApmNestedList(values)
         }
 
         override fun visitExpression(ctx: ExpressionContext): ApmType {
@@ -118,14 +108,12 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
                     left is ApmInteger && right is ApmString -> ApmString(left.integer.toString() + right.string)
                     left is ApmInteger && right is ApmInteger -> ApmInteger(left.integer + right.integer)
                     left is ApmList && right is ApmList -> ApmList(left.list + right.list)
-                    left is ApmNestedList && right is ApmNestedList -> ApmNestedList(left.nestedList + right.nestedList)
                     else -> throw ArgumentResolverException("Operation not supported for given values $left and $right")
                 }
             }
             return when {
                 ctx.value() != null -> visit(ctx.value())
                 ctx.array() != null -> visit(ctx.array())
-                ctx.nestedArray() != null -> visit(ctx.nestedArray())
                 else -> super.visitExpression(ctx)
             }
         }

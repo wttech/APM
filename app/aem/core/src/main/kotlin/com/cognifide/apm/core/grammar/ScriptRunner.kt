@@ -183,7 +183,6 @@ class ScriptRunner(
                     .filterIsInstance<BasicIdentifierContext>()
                     .map { it.IDENTIFIER().toString() }
             val values = when (val variableValue = executionContext.resolveArgument(ctx.argument())) {
-                is ApmNestedList -> variableValue.nestedList.map { list -> list.map { ApmString(it) } }
                 is ApmList -> variableValue.list.map { listOf(ApmString(it)) }
                 is ApmEmpty -> listOf(listOf())
                 else -> listOf(listOf(variableValue))

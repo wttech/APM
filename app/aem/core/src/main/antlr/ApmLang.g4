@@ -58,10 +58,6 @@ value
     | stringValue
     ;
 
-nestedArray
-    : ARRAY_BEGIN EOL? array (',' EOL? array)* EOL? ARRAY_END
-    ;
-
 basicIdentifier
     : IDENTIFIER
     ;
@@ -78,7 +74,6 @@ plus
 expression
     : expression plus expression
     | array
-    | nestedArray
     | value
     ;
 

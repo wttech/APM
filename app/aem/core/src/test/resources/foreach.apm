@@ -24,22 +24,22 @@ FOR-EACH i IN ['a', 'b'] BEGIN
   END
 END
 
-FOR-EACH [i, j] IN [['a', 'b'], ['c', 'd']] BEGIN
-  FOR-EACH [m, n] IN [['e', 'f'], ['g', 'h']] BEGIN
-    SHOW $i+'/'+$j+'/'+$m+'/'+$n
-  END
-END
+#FOR-EACH [i, j] IN [['a', 'b'], ['c', 'd']] BEGIN
+#  FOR-EACH [m, n] IN [['e', 'f'], ['g', 'h']] BEGIN
+#    SHOW $i+'/'+$j+'/'+$m+'/'+$n
+#  END
+#END
 
-DEFINE outerTab [
-  ['A', 'B'],
-  ['C', 'D']
-]
-DEFINE innerTab [
-  ['E', 'F'],
-  ['G', 'H']
-]
-FOR-EACH [a, b] IN $outerTab BEGIN
-  FOR-EACH [c, d] IN $innerTab BEGIN
-    SHOW $a+'/'+$b+'/'+$c+'/'+$d
-  END
-END
+#DEFINE outerTab [
+#  ['A', 'B'],
+#  ['C', 'D']
+#]
+#DEFINE innerTab [
+#  ['E', 'F'],
+#  ['G', 'H']
+#]
+#FOR-EACH [a, b] IN $outerTab BEGIN
+#  FOR-EACH [c, d] IN $innerTab BEGIN
+#    SHOW $a+'/'+$b+'/'+$c+'/'+$d
+#  END
+#END

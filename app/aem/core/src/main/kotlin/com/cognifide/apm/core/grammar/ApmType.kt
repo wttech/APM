@@ -30,8 +30,6 @@ abstract class ApmType {
         get() = null
     open val list: List<String>?
         get() = null
-    open val nestedList: List<List<String>>?
-        get() = null
 }
 
 data class ApmInteger(val value: Int) : ApmType() {
@@ -64,21 +62,6 @@ data class ApmList(val value: List<String>) : ApmType() {
 
     override fun toString(): String {
         return value.joinToString(prefix = "[", postfix = "]") { "\"$it\"" }
-    }
-}
-
-data class ApmNestedList(val value: List<List<String>>) : ApmType() {
-    override fun getArgument(decryptionService: DecryptionService) = value.map { item ->
-        item.map { decryptionService.decrypt(it) }
-    }
-
-    override val nestedList: List<List<String>>
-        get() = value
-
-    override fun toString(): String {
-        return value.joinToString(prefix = "[", postfix = "]") { item ->
-            item.joinToString(prefix = "[", postfix = "]") { "\"$it\"" }
-        }
     }
 }
 

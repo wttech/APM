@@ -49,14 +49,15 @@ class ScriptRunnerTest extends Specification {
                      "Executing command SHOW \"a/d\"",
                      "Executing command SHOW \"b/c\"",
                      "Executing command SHOW \"b/d\"",
-                     "Executing command SHOW \"a/b/e/f\"",
-                     "Executing command SHOW \"a/b/g/h\"",
-                     "Executing command SHOW \"c/d/e/f\"",
-                     "Executing command SHOW \"c/d/g/h\"",
-                     "Executing command SHOW \"A/B/E/F\"",
-                     "Executing command SHOW \"A/B/G/H\"",
-                     "Executing command SHOW \"C/D/E/F\"",
-                     "Executing command SHOW \"C/D/G/H\""]
+//                     "Executing command SHOW \"a/b/e/f\"",
+//                     "Executing command SHOW \"a/b/g/h\"",
+//                     "Executing command SHOW \"c/d/e/f\"",
+//                     "Executing command SHOW \"c/d/g/h\"",
+//                     "Executing command SHOW \"A/B/E/F\"",
+//                     "Executing command SHOW \"A/B/G/H\"",
+//                     "Executing command SHOW \"C/D/E/F\"",
+//                     "Executing command SHOW \"C/D/G/H\""
+        ]
     }
 
     def "run define"() {
@@ -80,7 +81,8 @@ class ScriptRunnerTest extends Specification {
                      "Executing command SHOW \"b\"",
                      "Executing command SHOW [\"a\", \"b\"]",
                      "Executing command SHOW [\"c\", \"d\"]",
-                     "Executing command SHOW [[\"a\", \"b\"], [\"c\", \"d\"]]"]
+//                     "Executing command SHOW [[\"a\", \"b\"], [\"c\", \"d\"]]"
+        ]
     }
 
     def "run import"() {
