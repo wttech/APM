@@ -89,13 +89,7 @@ class ScriptRunner(
                     val valueStr = value.map { it.key + "=" + it.value }
                         .joinToString()
                     progress(ctx, Status.SUCCESS, "for-each", "$index. Begin: $valueStr")
-                    value.forEach { (k, v) ->
-                        if (v !is ApmMap) {
-                            executionContext.setVariable(k, v)
-                        } else {
-                            v.map.forEach { (k1, v1) -> executionContext.setVariable("$k.$k1", v1) }
-                        }
-                    }
+                    value.forEach { (k, v) -> executionContext.setVariable(k, v) }
                     visit(ctx.body())
                     progress(ctx, Status.SUCCESS, "for-each", "$index. End")
                 } finally {

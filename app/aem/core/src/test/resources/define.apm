@@ -44,9 +44,12 @@ DEFINE obj {x:'a', y:1, z:['c', 1]}
 SHOW $a
 SHOW $b
 SHOW $tab1
+SHOW $tab1[0]
+SHOW $tab1[1]
 SHOW $tab2
 SHOW $tab
 SHOW $numbers
 SHOW $mixTab
 SHOW $obj
+SHOW $obj.z[1]
 SHOW $tab3
