@@ -42,6 +42,9 @@ data class ApmInteger(val value: Int) : ApmType() {
     override val integer: Int
         get() = value
 
+    override val string: String
+        get() = value.toString()
+
     override fun toString(): String {
         return value.toString()
     }

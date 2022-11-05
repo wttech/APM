@@ -25,6 +25,8 @@ import com.cognifide.apm.core.grammar.antlr.ApmLangParser.*
 import com.cognifide.apm.core.grammar.common.getIdentifier
 import com.cognifide.apm.core.grammar.executioncontext.VariableHolder
 import com.google.common.primitives.Ints
+import org.apache.commons.lang3.StringUtils
+import org.apache.commons.lang3.text.StrSubstitutor
 
 class ArgumentResolver(private val variableHolder: VariableHolder) {
 
@@ -138,7 +140,13 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
 
         override fun visitStringValue(ctx: StringValueContext): ApmType {
             if (ctx.STRING_LITERAL() != null) {
-                return ApmString(ctx.STRING_LITERAL().toPlainString())
+                val value = ctx.STRING_LITERAL().toPlainString()
+                val tokens = StringUtils.substringsBetween(value, "\${", "}")
+                    .orEmpty()
+                    .map { it to variableHolder[it]!!.string }
+                    .toMap()
+                val strSubstitutor = StrSubstitutor(tokens, "\${", "}")
+                return ApmString(if (tokens.isEmpty()) value else strSubstitutor.replace(value))
             }
             throw ArgumentResolverException("Found invalid string value $ctx")
         }

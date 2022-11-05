@@ -167,6 +167,20 @@ class ArgumentResolverTest extends Specification {
         result.required[1].getInteger() == 2
     }
 
+    def "string substitution"() {
+        given:
+        variableHolder.set("var1", new ApmString("test"))
+        variableHolder.set("var2", new ApmInteger(1))
+        def parameterResolver = new com.cognifide.apm.core.grammar.argument.ArgumentResolver(variableHolder)
+        def parser = ApmLangParserHelper.createParserUsingScript("'\${var1} \${var2}'")
+
+        when:
+        def result = parameterResolver.resolve(parser.complexArguments())
+
+        then:
+        result.required[0].getString() == "test 1"
+    }
+
     def "resolve string parameters"() {
         given:
         variableHolder.set("var1", new ApmString("val1"))

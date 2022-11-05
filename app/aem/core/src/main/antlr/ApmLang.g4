@@ -50,6 +50,7 @@ structureValue
 
 variable
     : VARIABLE_PREFIX IDENTIFIER
+    | VARIABLE_PREFIX '{' IDENTIFIER '}'
     ;
 
 numberValue

@@ -52,4 +52,5 @@ SHOW $numbers
 SHOW $mixTab
 SHOW $obj
 SHOW $obj.z[1]
+SHOW ${obj.z[1]}
 SHOW $tab3
