@@ -35,16 +35,16 @@ import javax.inject.Inject
 
 @Model(adaptables = [SlingHttpServletRequest::class])
 class ScriptUploadForm @Inject constructor(
-        @param:RequestParameter("file", optional = false) val file: InputStream,
-        @param:RequestParameter("file", optional = false) @param:FileName val fileName: String,
-        @param:RequestParameter("overwrite") val overwrite: Boolean,
-        @param:RequestParameter(ScriptNode.APM_SAVE_PATH) val savePath: String?,
-        @param:RequestParameter(ScriptNode.APM_LAUNCH_ENABLED) val launchEnabled: Boolean,
-        @param:RequestParameter(ScriptNode.APM_LAUNCH_MODE) val launchMode: LaunchMode,
-        @param:RequestParameter(ScriptNode.APM_LAUNCH_ENVIRONMENT) val launchEnvironment: LaunchEnvironment?,
-        @param:RequestParameter(ScriptNode.APM_LAUNCH_RUN_MODES) val launchRunModes: Array<String>?,
-        @param:RequestParameter(ScriptNode.APM_LAUNCH_HOOK) val launchHook: String?,
-        @param:RequestParameter(ScriptNode.APM_LAUNCH_SCHEDULE) @param:DateFormat("yyyy-MM-dd'T'HH:mm:ss") val launchSchedule: LocalDateTime?
+    @param:RequestParameter("file", optional = false) val file: InputStream,
+    @param:RequestParameter("file", optional = false) @param:FileName val fileName: String,
+    @param:RequestParameter("overwrite") val overwrite: Boolean,
+    @param:RequestParameter(ScriptNode.APM_SAVE_PATH) val savePath: String?,
+    @param:RequestParameter(ScriptNode.APM_LAUNCH_ENABLED) val launchEnabled: Boolean,
+    @param:RequestParameter(ScriptNode.APM_LAUNCH_MODE) val launchMode: LaunchMode?,
+    @param:RequestParameter(ScriptNode.APM_LAUNCH_ENVIRONMENT) val launchEnvironment: LaunchEnvironment?,
+    @param:RequestParameter(ScriptNode.APM_LAUNCH_RUN_MODES) val launchRunModes: Array<String>?,
+    @param:RequestParameter(ScriptNode.APM_LAUNCH_HOOK) val launchHook: String?,
+    @param:RequestParameter(ScriptNode.APM_LAUNCH_SCHEDULE) @param:DateFormat("yyyy-MM-dd'T'HH:mm:ss") val launchSchedule: LocalDateTime?
 ) {
     fun toLaunchMetadata(): LaunchMetadata {
         return LaunchMetadata(launchEnabled, launchMode, launchEnvironment, launchRunModes, launchHook, launchSchedule)
