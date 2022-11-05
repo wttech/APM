@@ -193,7 +193,7 @@ VARIABLE_PREFIX
     : '$'
     ;
 IDENTIFIER
-    : Letter LetterOrDigitOrDot*
+    : Letter LetterOrDigit* ('.' Letter LetterOrDigit*)*
     ;
 EXTENDED_IDENTIFIER
     : Letter LetterOrDigitOrDash*
@@ -210,10 +210,9 @@ fragment LetterOrDigitOrDash
     | '-'
     | [0-9]
     ;
-fragment LetterOrDigitOrDot
+fragment LetterOrDigit
     : Letter
     | [0-9]
-    | '.'
     ;
 fragment Letter
     : [a-zA-Z_] // these are the "java letters" below 0x7F
