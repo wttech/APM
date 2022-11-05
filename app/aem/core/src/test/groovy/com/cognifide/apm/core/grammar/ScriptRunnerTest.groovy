@@ -56,8 +56,7 @@ class ScriptRunnerTest extends Specification {
                      "Executing command SHOW \"A/B/E/F\"",
                      "Executing command SHOW \"A/B/G/H\"",
                      "Executing command SHOW \"C/D/E/F\"",
-                     "Executing command SHOW \"C/D/G/H\""
-        ]
+                     "Executing command SHOW \"C/D/G/H\""]
     }
 
     def "run define"() {
