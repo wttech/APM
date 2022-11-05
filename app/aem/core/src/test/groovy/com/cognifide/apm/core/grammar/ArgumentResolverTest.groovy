@@ -20,7 +20,7 @@
 
 package com.cognifide.apm.core.grammar
 
-
+import com.cognifide.apm.core.crypto.DecryptionService
 import com.google.common.collect.Lists
 import spock.lang.Specification
 
@@ -43,6 +43,36 @@ class ArgumentResolverTest extends Specification {
 
         then:
         result.required[0].getList() == [new ApmString("a"), new ApmString("b"), new ApmString("c")]
+    }
+
+    def "declaring multiline structure with encryption"() {
+        given:
+        def parameterResolver = new com.cognifide.apm.core.grammar.argument.ArgumentResolver(this.variableHolder)
+        def decryptionService = new DecryptionService() {
+            @Override
+            protected String unprotect(String text) {
+                return text.substring(1, text.length() - 1).reverse()
+            }
+        }
+        def parser = ApmLangParserHelper.createParserUsingScript(
+                """{
+                        x1: "{tset}",
+                        x2: "tset",
+                        y: 1,
+                        z: [
+                            "{renni}", "renni", 2
+                        ]
+                        }""")
+
+        when:
+        def result = parameterResolver.resolve(parser.complexArguments())
+        def data = result.required[0].getArgument(decryptionService)
+
+        then:
+        data.get("x1") == "test"
+        data.get("x2") == "tset"
+        data.get("y") == 1
+        data.get("z") == ["inner", "renni",  2]
     }
 
     def "accessing not existing variable"() {
