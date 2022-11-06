@@ -54,8 +54,8 @@ structureValue
     ;
 
 variable
-    : '$' variableIdentifier
-    | '${' variableIdentifier '}'
+    : VARIABLE_PREFIX variableIdentifier
+    | VARIABLE_PREFIX STRUCTURE_BEGIN variableIdentifier STRUCTURE_END
     ;
 
 variableIdentifier
