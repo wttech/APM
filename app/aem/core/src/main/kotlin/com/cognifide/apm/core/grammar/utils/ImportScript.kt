@@ -23,7 +23,7 @@ package com.cognifide.apm.core.grammar.utils
 import com.cognifide.apm.core.grammar.ApmMap
 import com.cognifide.apm.core.grammar.ScriptExecutionException
 import com.cognifide.apm.core.grammar.argument.ArgumentResolver
-import com.cognifide.apm.core.grammar.argument.toPlainString
+import com.cognifide.apm.core.grammar.common.getPath
 import com.cognifide.apm.core.grammar.executioncontext.ExecutionContext
 import com.cognifide.apm.core.grammar.executioncontext.VariableHolder
 import com.cognifide.apm.core.grammar.parsedscript.ParsedScript
@@ -33,7 +33,7 @@ class ImportScript(private val executionContext: ExecutionContext) {
     private val visitedScripts: MutableSet<ParsedScript> = mutableSetOf()
 
     fun import(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.ImportScriptContext): Result {
-        val path = getPath(ctx)
+        val path = getPath(ctx.path())
         val importScriptVisitor = ImportScriptVisitor()
         importScriptVisitor.visit(ctx)
         return Result(path, importScriptVisitor.variableHolder)
@@ -45,9 +45,6 @@ class ImportScript(private val executionContext: ExecutionContext) {
         } else {
             ""
         }
-
-    private fun getPath(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.ImportScriptContext) =
-        ctx.path().STRING_LITERAL().toPlainString()
 
     private inner class ImportScriptVisitor : com.cognifide.apm.core.grammar.antlr.ApmLangBaseVisitor<Unit>() {
         val variableHolder = VariableHolder()
@@ -61,7 +58,7 @@ class ImportScript(private val executionContext: ExecutionContext) {
         }
 
         override fun visitImportScript(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.ImportScriptContext) {
-            val path = getPath(ctx)
+            val path = getPath(ctx.path())
             val namespace = getNamespace(ctx)
             val importScriptVisitor = ImportScriptVisitor()
             val parsedScript = executionContext.loadScript(path)

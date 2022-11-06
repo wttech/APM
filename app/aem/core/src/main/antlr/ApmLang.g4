@@ -34,6 +34,7 @@ name
 
 path
     : STRING_LITERAL
+    | PATH_IDENTIFIER
     ;
 
 array
@@ -90,6 +91,7 @@ expression
 
 argument
     : expression
+    | path
     ;
 
 command
@@ -209,6 +211,9 @@ IDENTIFIER
 EXTENDED_IDENTIFIER
     : IdentifierPart ('-' IdentifierPart)*
     ;
+PATH_IDENTIFIER
+    : PathPart+
+    ;
 VARIABLE_IDENTIFIER
     : VariablePart ('.' VariablePart)*
     ;
@@ -232,6 +237,9 @@ fragment IdentifierPart
     ;
 fragment VariablePart
     : Letter LetterOrDigit* (ARRAY_BEGIN Digits ARRAY_END)?
+    ;
+fragment PathPart
+    : '/' (~[\r\n\t ])+
     ;
 WHITESPACE
     : (' ' | '\t') -> skip

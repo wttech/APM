@@ -72,7 +72,7 @@ class ArgumentResolverTest extends Specification {
         data.get("x1") == "test"
         data.get("x2") == "tset"
         data.get("y") == 1
-        data.get("z") == ["inner", "renni",  2]
+        data.get("z") == ["inner", "renni", 2]
     }
 
     def "accessing not existing variable"() {
@@ -179,6 +179,20 @@ class ArgumentResolverTest extends Specification {
 
         then:
         result.required[0].getString() == "test 1"
+    }
+
+    def "path substitution"() {
+        given:
+        variableHolder.set("var1", new ApmString("content"))
+        variableHolder.set("var2", new ApmString("test"))
+        def parameterResolver = new com.cognifide.apm.core.grammar.argument.ArgumentResolver(variableHolder)
+        def parser = ApmLangParserHelper.createParserUsingScript("/\${var1}/\${var2}")
+
+        when:
+        def result = parameterResolver.resolve(parser.complexArguments())
+
+        then:
+        result.required[0].getString() == "/content/test"
     }
 
     def "resolve string parameters"() {
