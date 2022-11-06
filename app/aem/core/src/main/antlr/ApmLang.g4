@@ -37,7 +37,12 @@ path
     ;
 
 array
-    : ARRAY_BEGIN EOL? value (',' EOL? value)* EOL? ARRAY_END
+    : ARRAY_BEGIN EOL? arrayValue (',' EOL? arrayValue)* EOL? ARRAY_END
+    ;
+
+arrayValue
+    : value
+    | name
     ;
 
 structure

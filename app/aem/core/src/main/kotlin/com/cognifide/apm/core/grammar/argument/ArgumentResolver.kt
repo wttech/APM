@@ -97,6 +97,10 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
             return ApmList(values)
         }
 
+        override fun visitName(ctx: NameContext): ApmType {
+            return ApmString(ctx.IDENTIFIER().toString())
+        }
+
         override fun visitStructure(ctx: StructureContext): ApmType {
             val values = ctx.children
                 ?.map { child -> child.accept(this) }
