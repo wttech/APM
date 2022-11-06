@@ -77,7 +77,6 @@ class VariableHolder {
         return result
     }
 
-
     fun createLocalContext() {
         contexts.push(Context())
     }
