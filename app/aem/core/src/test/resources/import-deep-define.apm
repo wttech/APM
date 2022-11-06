@@ -17,4 +17,4 @@
  # limitations under the License.
  # =========================LICENSE_END==================================
 IMPORT '/import-define.apm' AS deeperNamespace
-DEFINE deepVar 'imported val + ' + $deeperNamespace_var
+DEFINE deepVar 'imported val + ' + $deeperNamespace.var

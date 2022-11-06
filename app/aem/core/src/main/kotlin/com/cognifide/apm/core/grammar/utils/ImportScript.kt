@@ -20,6 +20,7 @@
 
 package com.cognifide.apm.core.grammar.utils
 
+import com.cognifide.apm.core.grammar.ApmMap
 import com.cognifide.apm.core.grammar.ScriptExecutionException
 import com.cognifide.apm.core.grammar.argument.ArgumentResolver
 import com.cognifide.apm.core.grammar.argument.toPlainString
@@ -39,14 +40,14 @@ class ImportScript(private val executionContext: ExecutionContext) {
     }
 
     private fun getNamespace(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.ImportScriptContext): String =
-            if (ctx.name() != null) {
-                ctx.name().IDENTIFIER().toPlainString() + "_"
-            } else {
-                ""
-            }
+        if (ctx.name() != null) {
+            ctx.name().IDENTIFIER().toString()
+        } else {
+            ""
+        }
 
     private fun getPath(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.ImportScriptContext) =
-            ctx.path().STRING_LITERAL().toPlainString()
+        ctx.path().STRING_LITERAL().toPlainString()
 
     private inner class ImportScriptVisitor : com.cognifide.apm.core.grammar.antlr.ApmLangBaseVisitor<Unit>() {
         val variableHolder = VariableHolder()
@@ -70,13 +71,17 @@ class ImportScript(private val executionContext: ExecutionContext) {
 
             importScriptVisitor.visit(parsedScript.apm)
             val scriptVariableHolder = importScriptVisitor.variableHolder
-            scriptVariableHolder.toMap().forEach { (name, value) -> variableHolder[namespace + name] = value }
+            if (namespace == "") {
+                variableHolder.setAll(scriptVariableHolder)
+            } else {
+                variableHolder[namespace] = ApmMap(scriptVariableHolder.toMap())
+            }
         }
     }
 
     class Result(val path: String, val variableHolder: VariableHolder) {
         fun toMessages(): List<String> {
-            val importedVariables = variableHolder.toMap().map { "Imported variable: ${it.key}= ${it.value}" }
+            val importedVariables = variableHolder.toMap().map { "Imported variable: ${it.key}=${it.value}" }
             return listOf("Import from script $path. Notice, only DEFINE actions were processed!") + importedVariables
         }
     }
