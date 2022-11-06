@@ -27,3 +27,9 @@ fun getIdentifier(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.Identi
     ctx.EXTENDED_IDENTIFIER() != null -> ctx.EXTENDED_IDENTIFIER().toString()
     else -> throw ScriptExecutionException("Cannot resolve identifier")
 }
+
+fun getIdentifier(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.VariableIdentifierContext) = when {
+    ctx.IDENTIFIER() != null -> ctx.IDENTIFIER().toString()
+    ctx.VARIABLE_IDENTIFIER() != null -> ctx.VARIABLE_IDENTIFIER().toString()
+    else -> throw ScriptExecutionException("Cannot resolve identifier")
+}

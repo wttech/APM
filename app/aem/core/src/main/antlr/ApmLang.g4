@@ -54,8 +54,13 @@ structureValue
     ;
 
 variable
-    : VARIABLE_PREFIX IDENTIFIER
-    | VARIABLE_PREFIX '{' IDENTIFIER '}'
+    : '$' variableIdentifier
+    | '${' variableIdentifier '}'
+    ;
+
+variableIdentifier
+    : IDENTIFIER
+    | VARIABLE_IDENTIFIER
     ;
 
 numberValue
@@ -196,24 +201,22 @@ STRING_LITERAL
     | '\'' (~['\r\n] )* '\''
     ;
 VARIABLE_PREFIX
-    : '$'
+    : '$'  
     ;
 IDENTIFIER
-    : IdentifierPart ('.' IdentifierPart)*
+    : Letter LetterOrDigit*
     ;
 EXTENDED_IDENTIFIER
-    : Letter LetterOrDigitOrDash*
+    : IdentifierPart ('-' IdentifierPart)*
+    ;
+VARIABLE_IDENTIFIER
+    : VariablePart ('.' VariablePart)*
     ;
 COMMENT
     : '#' (~[\r\n] )* -> skip
     ;
 fragment Digits
     : [0-9] ([0-9_]* [0-9])?
-    ;
-fragment LetterOrDigitOrDash
-    : Letter
-    | '-'
-    | [0-9]
     ;
 fragment LetterOrDigit
     : Letter
@@ -225,6 +228,9 @@ fragment Letter
     | [\uD800-\uDBFF] [\uDC00-\uDFFF] // covers UTF-16 surrogate pairs encodings for U+10000 to U+10FFFF
     ;
 fragment IdentifierPart
+    : Letter LetterOrDigit*
+    ;
+fragment VariablePart
     : Letter LetterOrDigit* (ARRAY_BEGIN Digits ARRAY_END)?
     ;
 WHITESPACE

@@ -156,7 +156,7 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
         }
 
         override fun visitVariable(ctx: VariableContext): ApmType {
-            val name = ctx.IDENTIFIER().toString()
+            val name = getIdentifier(ctx.variableIdentifier())
             return variableHolder[name]
                 ?: throw ArgumentResolverException("Variable \"$name\" not found")
         }
