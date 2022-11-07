@@ -35,8 +35,8 @@ FOR-USER 'john-doe' BEGIN
     ALLOW '/content' 'READ'
     ALLOW '/content/geometrixx' ['READ', 'MODIFY']
     ALLOW '/content/geometrixx-outdoors' ['READ']
-    ALLOW '/content/folders' types= ['sling:OrderedFolder'] ['READ'] # allows to read all resources with primary type 'sling:OrderedFolder'
-    ALLOW '/content/folders' properties= ['jcr:title'] ['READ'] # allows to read property 'jcr:title'
+    ALLOW '/content/folders' types=['sling:OrderedFolder'] ['READ'] # allows to read all resources with primary type 'sling:OrderedFolder'
+    ALLOW '/content/folders' properties=['jcr:title'] ['READ'] # allows to read property 'jcr:title'
     ALLOW '/content/phantom' ['READ'] --IF-EXISTS # doesn't fail if path doesn't exist
 END
 ```
@@ -49,8 +49,8 @@ FOR-USER 'john-doe' BEGIN
     DENY '/content' 'READ'
     DENY '/content/geometrixx' ['READ', 'MODIFY']
     DENY '/content/geometrixx-outdoors' ['READ']
-    DENY '/content/folders' types= ['sling:OrderedFolder'] ['READ'] # denys to read all resources with primary type 'sling:OrderedFolder'
-    DENY '/content/folders' properties= ['jcr:title'] ['READ'] # denys to read property 'jcr:title'
+    DENY '/content/folders' types=['sling:OrderedFolder'] ['READ'] # denys to read all resources with primary type 'sling:OrderedFolder'
+    DENY '/content/folders' properties=['jcr:title'] ['READ'] # denys to read property 'jcr:title'
     DENY '/content/phantom' ['READ'] --IF-EXISTS # doesn't fail if path doesn't exist
 END
 ```
@@ -60,16 +60,16 @@ The Access Control Entries (ACEs) can be either applied directly on the path sel
 
 ```
 # Will only match pages named home
-ALLOW '/content/geometrixx' glob= 'home' ['ALL']
+ALLOW '/content/geometrixx' glob='home' ['ALL']
 
 # Will only match jcr:titles properties
-ALLOW '/content' glob= '/jcr:content/jcr:title' ['ALL']
+ALLOW '/content' glob='/jcr:content/jcr:title' ['ALL']
 ```
 
 If the permission should be applied (or revoked) on the strictly selected path only, while not affecting the subtree as it is by default a glob pattern with empty regexp should be used. In order to recognize the empty pattern a `STRICT` keyword is used.
 
 ```
-ALLOW '/content/geometrixx' glob= 'STRICT' ['ALL']
+ALLOW '/content/geometrixx' glob='STRICT' ['ALL']
 ```
 
 Although it may look tempting to use this feature, the **best practice is to prefer the usual permission application over glob restriction**. Glob restriction make the permission scheme harder to read giving also some non-minimal performance overhead while calculating the effective permissions.
