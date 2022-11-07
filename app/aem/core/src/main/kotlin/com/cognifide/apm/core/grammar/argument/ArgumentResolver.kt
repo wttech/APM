@@ -37,6 +37,7 @@ import com.cognifide.apm.core.grammar.antlr.ApmLangParser.NamedArgumentContext
 import com.cognifide.apm.core.grammar.antlr.ApmLangParser.NamedArgumentsContext
 import com.cognifide.apm.core.grammar.antlr.ApmLangParser.NumberValueContext
 import com.cognifide.apm.core.grammar.antlr.ApmLangParser.PathContext
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser.PrivilegeNameContext
 import com.cognifide.apm.core.grammar.antlr.ApmLangParser.RequiredArgumentContext
 import com.cognifide.apm.core.grammar.antlr.ApmLangParser.StringValueContext
 import com.cognifide.apm.core.grammar.antlr.ApmLangParser.StructureContext
@@ -120,6 +121,10 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
 
         override fun visitName(ctx: NameContext): ApmType {
             return ApmString(ctx.IDENTIFIER().toString())
+        }
+
+        override fun visitPrivilegeName(ctx: PrivilegeNameContext): ApmType {
+            return ApmString(ctx.children.joinToString(""))
         }
 
         override fun visitStructure(ctx: StructureContext): ApmType {

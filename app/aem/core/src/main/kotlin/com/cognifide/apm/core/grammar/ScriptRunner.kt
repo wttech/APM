@@ -27,7 +27,7 @@ import com.cognifide.apm.core.grammar.antlr.ApmLangParser.*
 import com.cognifide.apm.core.grammar.argument.ArgumentResolverException
 import com.cognifide.apm.core.grammar.argument.Arguments
 import com.cognifide.apm.core.grammar.argument.toPlainString
-import com.cognifide.apm.core.grammar.common.getIdentifier
+import com.cognifide.apm.core.grammar.common.getCommandName
 import com.cognifide.apm.core.grammar.executioncontext.ExecutionContext
 import com.cognifide.apm.core.grammar.parsedscript.InvalidSyntaxException
 import com.cognifide.apm.core.grammar.parsedscript.InvalidSyntaxMessageFactory
@@ -121,24 +121,41 @@ class ScriptRunner(
         }
 
         override fun visitGenericCommand(ctx: GenericCommandContext) {
-            val commandName = getIdentifier(ctx.commandName().identifier()).toUpperCase()
+            val commandName = getCommandName(ctx.commandName()).toUpperCase()
             val arguments = executionContext.resolveArguments(ctx.complexArguments())
+            visitGenericCommand(ctx, commandName, arguments, ctx.body())
+        }
+
+        override fun visitAllowDenyCommand(ctx: AllowDenyCommandContext) {
+            val commandName = if (ctx.ALLOW() != null) "ALLOW" else "DENY"
+            val argument = executionContext.resolveArgument(ctx.argument())
+            val arguments = executionContext.resolveArguments(ctx.complexArguments())
+            val required = arguments.required + argument
+            val newArguments = Arguments(required, arguments.named, arguments.flags)
+            visitGenericCommand(ctx, commandName, newArguments)
+        }
+
+        private fun visitGenericCommand(
+            ctx: ParserRuleContext, commandName: String, arguments: Arguments, body: BodyContext? = null
+        ) {
             if (validateOnly) {
-                visitGenericCommandValidateMode(ctx, commandName, arguments)
+                visitGenericCommandValidateMode(ctx, commandName, arguments, body)
             } else {
-                visitGenericCommandRunMode(ctx, commandName, arguments)
+                visitGenericCommandRunMode(ctx, commandName, arguments, body)
             }
         }
 
-        private fun visitGenericCommandRunMode(ctx: GenericCommandContext, commandName: String, arguments: Arguments) {
+        private fun visitGenericCommandRunMode(
+            ctx: ParserRuleContext, commandName: String, arguments: Arguments, body: BodyContext?
+        ) {
             try {
-                if (ctx.body() != null) {
+                if (body != null) {
                     executionContext.createLocalContext()
                 }
                 val status = actionInvoker.runAction(executionContext, commandName, arguments)
-                if (ctx.body() != null) {
+                if (body != null) {
                     if (status in listOf(Status.SUCCESS, Status.WARNING)) {
-                        visit(ctx.body())
+                        visit(body)
                     } else {
                         progress(
                             ctx,
@@ -151,17 +168,17 @@ class ScriptRunner(
             } catch (e: ArgumentResolverException) {
                 progress(ctx, Status.ERROR, commandName, "Action failed: ${e.message}")
             } finally {
-                if (ctx.body() != null) {
+                if (body != null) {
                     executionContext.removeLocalContext()
                 }
             }
         }
 
         private fun visitGenericCommandValidateMode(
-            ctx: GenericCommandContext, commandName: String, arguments: Arguments
+            ctx: ParserRuleContext, commandName: String, arguments: Arguments, body: BodyContext?
         ) {
             try {
-                if (ctx.body() != null) {
+                if (body != null) {
                     executionContext.createLocalContext()
                 }
                 try {
@@ -169,11 +186,11 @@ class ScriptRunner(
                 } catch (e: ArgumentResolverException) {
                     progress(ctx, Status.WARNING, commandName, "Couldn't invoke action: ${e.message}")
                 }
-                if (ctx.body() != null) {
-                    visit(ctx.body())
+                if (body != null) {
+                    visit(body)
                 }
             } finally {
-                if (ctx.body() != null) {
+                if (body != null) {
                     executionContext.removeLocalContext()
                 }
             }

@@ -32,6 +32,10 @@ name
     : IDENTIFIER
     ;
 
+privilegeName
+    : IDENTIFIER ':' IDENTIFIER
+    ;
+
 path
     : STRING_LITERAL
     | PATH_IDENTIFIER
@@ -44,6 +48,7 @@ array
 arrayValue
     : value
     | name
+    | privilegeName
     ;
 
 structure
@@ -100,11 +105,14 @@ command
     | FOR_EACH IDENTIFIER EOL? IN argument EOL? body # ForEach
     | DEFINE IDENTIFIER argument # DefineVariable
     | REQUIRE IDENTIFIER # RequireVariable
+    | (ALLOW | DENY) argument ON complexArguments # AllowDenyCommand
     | commandName complexArguments? EOL? body? # GenericCommand
     ;
 
 commandName
     : identifier
+    | ALLOW
+    | DENY
     ;
 
 identifier
@@ -194,6 +202,18 @@ REQUIRE
 AS
     : 'AS'
     | 'as'
+    ;
+ON
+    : 'ON'
+    | 'on'
+    ;
+ALLOW
+    : 'ALLOW'
+    | 'allow'
+    ;
+DENY
+    : 'DENY'
+    | 'deny'
     ;
 NUMBER_LITERAL
     : [0-9]+
