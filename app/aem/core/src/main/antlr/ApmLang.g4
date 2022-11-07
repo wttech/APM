@@ -25,7 +25,7 @@ grammar ApmLang;
  */
 
 apm
-    : (command | EOL)+
+    : command+
     ;
 
 name
@@ -42,7 +42,7 @@ path
     ;
 
 array
-    : ARRAY_BEGIN EOL? arrayValue (',' EOL? arrayValue)* EOL? ARRAY_END
+    : ARRAY_BEGIN arrayValue (',' arrayValue)* ARRAY_END
     ;
 
 arrayValue
@@ -52,7 +52,7 @@ arrayValue
     ;
 
 structure
-    : STRUCTURE_BEGIN EOL? structureValue (',' EOL? structureValue)* EOL? STRUCTURE_END
+    : STRUCTURE_BEGIN structureValue (',' structureValue)* STRUCTURE_END
     ;
 
 structureValue
@@ -102,11 +102,11 @@ argument
 command
     : RUN_SCRIPT path namedArguments? # RunScript
     | IMPORT_SCRIPT path (AS name)? # ImportScript
-    | FOR_EACH IDENTIFIER EOL? IN argument EOL? body # ForEach
+    | FOR_EACH IDENTIFIER IN argument body # ForEach
     | DEFINE IDENTIFIER argument # DefineVariable
     | REQUIRE IDENTIFIER # RequireVariable
     | (ALLOW | DENY) argument ON complexArguments # AllowDenyCommand
-    | commandName complexArguments? EOL? body? # GenericCommand
+    | commandName complexArguments? body? # GenericCommand
     ;
 
 commandName
@@ -145,7 +145,7 @@ flag
     ;
 
 body
-    : BLOCK_BEGIN EOL? (command? EOL)+ BLOCK_END
+    : BLOCK_BEGIN command+ BLOCK_END
     ;
 
 /*
@@ -263,5 +263,5 @@ WHITESPACE
     : (' ' | '\t') -> skip
     ;
 EOL
-    : ('\r\n' | '\r' | '\n')
+    : ('\r' | '\n') -> skip
     ;
