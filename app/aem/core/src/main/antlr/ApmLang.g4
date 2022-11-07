@@ -239,7 +239,7 @@ COMMENT
     : '#' (~[\r\n] )* -> skip
     ;
 fragment Digits
-    : [0-9] ([0-9_]* [0-9])?
+    : [0-9]+
     ;
 fragment LetterOrDigit
     : Letter
@@ -254,7 +254,7 @@ fragment IdentifierPart
     : Letter LetterOrDigit*
     ;
 fragment VariablePart
-    : Letter LetterOrDigit* (ARRAY_BEGIN Digits ARRAY_END)?
+    : IdentifierPart (ARRAY_BEGIN Digits ARRAY_END)?
     ;
 fragment PathPart
     : '/' (~[\r\n\t ])+
