@@ -122,19 +122,19 @@ class ScriptRunner(
 
         override fun visitGenericCommand(ctx: GenericCommandContext) {
             val commandName = getIdentifier(ctx.commandName().identifier()).toUpperCase()
+            val arguments = executionContext.resolveArguments(ctx.complexArguments())
             if (validateOnly) {
-                visitGenericCommandValidateMode(ctx, commandName)
+                visitGenericCommandValidateMode(ctx, commandName, arguments)
             } else {
-                visitGenericCommandRunMode(ctx, commandName)
+                visitGenericCommandRunMode(ctx, commandName, arguments)
             }
         }
 
-        private fun visitGenericCommandRunMode(ctx: GenericCommandContext, commandName: String) {
+        private fun visitGenericCommandRunMode(ctx: GenericCommandContext, commandName: String, arguments: Arguments) {
             try {
                 if (ctx.body() != null) {
                     executionContext.createLocalContext()
                 }
-                val arguments = executionContext.resolveArguments(ctx.complexArguments())
                 val status = actionInvoker.runAction(executionContext, commandName, arguments)
                 if (ctx.body() != null) {
                     if (status in listOf(Status.SUCCESS, Status.WARNING)) {
@@ -157,13 +157,14 @@ class ScriptRunner(
             }
         }
 
-        private fun visitGenericCommandValidateMode(ctx: GenericCommandContext, commandName: String) {
+        private fun visitGenericCommandValidateMode(
+            ctx: GenericCommandContext, commandName: String, arguments: Arguments
+        ) {
             try {
                 if (ctx.body() != null) {
                     executionContext.createLocalContext()
                 }
                 try {
-                    val arguments = executionContext.resolveArguments(ctx.complexArguments())
                     actionInvoker.runAction(executionContext, commandName, arguments)
                 } catch (e: ArgumentResolverException) {
                     progress(ctx, Status.WARNING, commandName, "Couldn't invoke action: ${e.message}")
