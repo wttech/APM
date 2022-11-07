@@ -84,8 +84,8 @@ CREATE-GROUP 'authors-' + $locale
 ```
 # /apm/conf/scripts/main.apm
 
-RUN /apm/conf/scripts/author.apm locale= 'fr_fr' # you may use both relative or absolute path in run
-RUN author.apm locale= 'en_us'
+RUN /apm/conf/scripts/author.apm locale='fr_fr' # you may use both relative or absolute path in run
+RUN author.apm locale='en_us'
 ```
 ## Authorizable Actions
 Authorizable actions are used for the purpose of authorizable maintenance. They cover CRUD operations on Groups and Users as well as relationship configuration.
