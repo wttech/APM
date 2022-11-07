@@ -40,10 +40,3 @@ fun getPath(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.PathContext)
     ctx.PATH_IDENTIFIER() != null -> ctx.PATH_IDENTIFIER().toString()
     else -> throw ScriptExecutionException("Cannot resolve path")
 }
-
-fun getCommandName(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.CommandNameContext) = when {
-    ctx.identifier() != null -> getIdentifier(ctx.identifier())
-    ctx.ALLOW() != null -> ctx.ALLOW().toString()
-    ctx.DENY() != null -> ctx.DENY().toString()
-    else -> throw ScriptExecutionException("Cannot resolve command name")
-}

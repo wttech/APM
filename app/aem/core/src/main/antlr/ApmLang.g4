@@ -111,8 +111,6 @@ command
 
 commandName
     : identifier
-    | ALLOW
-    | DENY
     ;
 
 identifier
