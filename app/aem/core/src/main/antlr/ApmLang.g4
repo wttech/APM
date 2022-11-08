@@ -221,7 +221,7 @@ STRING_LITERAL
     | '\'' (~['\r\n] )* '\''
     ;
 VARIABLE_PREFIX
-    : '$'  
+    : '$'
     ;
 IDENTIFIER
     : Letter LetterOrDigit*
