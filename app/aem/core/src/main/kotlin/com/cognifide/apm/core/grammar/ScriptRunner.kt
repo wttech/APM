@@ -121,7 +121,7 @@ class ScriptRunner(
         }
 
         override fun visitGenericCommand(ctx: GenericCommandContext) {
-            val commandName = getIdentifier(ctx.commandName().identifier()).toUpperCase()
+            val commandName = getIdentifier(ctx.commandName().identifier()).uppercase()
             val arguments = executionContext.resolveArguments(ctx.complexArguments())
             visitGenericCommand(ctx, commandName, arguments, ctx.body())
         }
@@ -223,7 +223,7 @@ class ScriptRunner(
             details: String = "",
             arguments: Arguments? = null
         ) {
-            progress(ctx, status, command, listOf(details), arguments)
+            progress(ctx, status, command.uppercase(), listOf(details), arguments)
         }
 
         private fun progress(
