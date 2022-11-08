@@ -51,7 +51,7 @@
       <tr is="coral-table-row" class="${execution.status.className}">
         <td is="coral-table-cell">${executionList.index}</td>
         <td is="coral-table-cell">${execution.authorizable}</td>
-        <td is="coral-table-cell">${execution.command}</td>
+        <td is="coral-table-cell">${execution.command.toUpperCase}</td>
         <td is="coral-table-cell">
           <ul>
             <li data-sly-repeat.text="${execution.parameters}">${text}</li>
