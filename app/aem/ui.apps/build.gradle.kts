@@ -12,6 +12,7 @@ evaluationDependsOn(":app:aem:api")
 evaluationDependsOn(":app:aem:runmodes")
 evaluationDependsOn(":app:aem:core")
 evaluationDependsOn(":app:aem:actions.main")
+evaluationDependsOn(":app:aem:install")
 
 apply(from = rootProject.file("app/common.gradle.kts"))
 apply(from = rootProject.file("app/aem/common.gradle.kts"))
@@ -24,6 +25,7 @@ aem {
             installBundleProject(":app:aem:runmodes")
             installBundleProject(":app:aem:core")
             installBundleProject(":app:aem:actions.main")
+            installBundleProject(":app:aem:install")
             vaultDefinition {
                 duplicatesStrategy = DuplicatesStrategy.EXCLUDE
                 version.set(rootProject.version as String)
