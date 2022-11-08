@@ -1,0 +1,15 @@
+# Script description example
+# ==========================
+
+# Variable definitions
+DEFINE path "/content/foo/bar"
+
+# Users & groups creation
+CREATE-USER "author" password="secret"
+CREATE-GROUP "authors" --IF-NOT-EXISTS
+
+# Permissions setting
+FOR-GROUP "authors" BEGIN
+	ALLOW $path ["ALL"]
+	DENY $path + "/foo/bar" ["MODIFY", "DELETE"]
+END

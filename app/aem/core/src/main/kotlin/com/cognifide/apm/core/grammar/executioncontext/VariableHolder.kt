@@ -20,6 +20,8 @@
 
 package com.cognifide.apm.core.grammar.executioncontext
 
+import com.cognifide.apm.core.grammar.ApmList
+import com.cognifide.apm.core.grammar.ApmMap
 import com.cognifide.apm.core.grammar.ApmType
 import com.cognifide.apm.core.grammar.common.StackWithRoot
 import org.apache.jackrabbit.api.security.user.Authorizable
@@ -54,12 +56,25 @@ class VariableHolder {
     }
 
     operator fun get(name: String): ApmType? {
-        for (context in contexts) {
-            if (context.containsKey(name)) {
-                return context[name]
+        val keys = name.split('.', '[', ']')
+        val context = contexts.firstOrNull { it.containsKey(keys[0]) }
+        var result: ApmType? = null
+        if (context != null) {
+            for (key in keys) {
+                if (key.isEmpty()) {
+                    continue
+                }
+                result = when (result) {
+                    is ApmList -> result.list.getOrNull(key.toInt())
+                    is ApmMap -> result.map.get(key)
+                    else -> context.get(key)
+                }
+                if (result == null) {
+                    break
+                }
             }
         }
-        return null
+        return result
     }
 
     fun createLocalContext() {

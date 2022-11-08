@@ -37,8 +37,22 @@ DEFINE b 'b'
 DEFINE tab1 [$a, $b]
 DEFINE tab2 ['c', 'd']
 DEFINE tab [$tab1, $tab2]
+DEFINE numbers [1, 2, 3]
+DEFINE mixTab ['a', 'b', 1, 2]
+DEFINE tab3 [['a', 'b'], ['c', 'd']]
+DEFINE obj {x:'a', y:1, z:['c', 1]}
+DEFINE tabEnum [a, b, "c", "d", 1, 2]
 SHOW $a
 SHOW $b
 SHOW $tab1
+SHOW $tab1[0]
+SHOW $tab1[1]
 SHOW $tab2
 SHOW $tab
+SHOW $numbers
+SHOW $mixTab
+SHOW $obj
+SHOW $obj.z[1]
+SHOW ${obj.z[1]}
+SHOW $tabEnum
+SHOW $tab3

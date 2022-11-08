@@ -21,9 +21,22 @@
 package com.cognifide.apm.core.grammar.common
 
 import com.cognifide.apm.core.grammar.ScriptExecutionException
+import com.cognifide.apm.core.grammar.argument.toPlainString
 
 fun getIdentifier(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.IdentifierContext) = when {
     ctx.IDENTIFIER() != null -> ctx.IDENTIFIER().toString()
     ctx.EXTENDED_IDENTIFIER() != null -> ctx.EXTENDED_IDENTIFIER().toString()
     else -> throw ScriptExecutionException("Cannot resolve identifier")
+}
+
+fun getIdentifier(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.VariableIdentifierContext) = when {
+    ctx.IDENTIFIER() != null -> ctx.IDENTIFIER().toString()
+    ctx.VARIABLE_IDENTIFIER() != null -> ctx.VARIABLE_IDENTIFIER().toString()
+    else -> throw ScriptExecutionException("Cannot resolve identifier")
+}
+
+fun getPath(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.PathContext) = when {
+    ctx.STRING_LITERAL() != null -> ctx.STRING_LITERAL().toPlainString()
+    ctx.PATH_IDENTIFIER() != null -> ctx.PATH_IDENTIFIER().toString()
+    else -> throw ScriptExecutionException("Cannot resolve path")
 }

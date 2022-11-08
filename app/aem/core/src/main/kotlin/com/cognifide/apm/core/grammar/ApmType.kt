@@ -28,9 +28,11 @@ abstract class ApmType {
         get() = null
     open val string: String?
         get() = null
-    open val list: List<String>?
+    open val list: List<ApmType>?
         get() = null
-    open val nestedList: List<List<String>>?
+    open val map: Map<String, ApmType>?
+        get() = null
+    open val pair: Pair<String, ApmType>?
         get() = null
 }
 
@@ -39,6 +41,9 @@ data class ApmInteger(val value: Int) : ApmType() {
 
     override val integer: Int
         get() = value
+
+    override val string: String
+        get() = value.toString()
 
     override fun toString(): String {
         return value.toString()
@@ -56,29 +61,38 @@ data class ApmString(val value: String) : ApmType() {
     }
 }
 
-data class ApmList(val value: List<String>) : ApmType() {
-    override fun getArgument(decryptionService: DecryptionService) = value.map { decryptionService.decrypt(it) }
+data class ApmList(val value: List<ApmType>) : ApmType() {
+    override fun getArgument(decryptionService: DecryptionService) = value.map { it.getArgument(decryptionService) }
 
-    override val list: List<String>
+    override val list: List<ApmType>
         get() = value
 
     override fun toString(): String {
-        return value.joinToString(prefix = "[", postfix = "]") { "\"$it\"" }
+        return value.joinToString(prefix = "[", postfix = "]") { "$it" }
     }
 }
 
-data class ApmNestedList(val value: List<List<String>>) : ApmType() {
-    override fun getArgument(decryptionService: DecryptionService) = value.map { item ->
-        item.map { decryptionService.decrypt(it) }
-    }
+data class ApmMap(val value: Map<String, ApmType>) : ApmType() {
+    override fun getArgument(decryptionService: DecryptionService) =
+        value.mapValues { it.value.getArgument(decryptionService) }
 
-    override val nestedList: List<List<String>>
+    override val map: Map<String, ApmType>
         get() = value
 
     override fun toString(): String {
-        return value.joinToString(prefix = "[", postfix = "]") { item ->
-            item.joinToString(prefix = "[", postfix = "]") { "\"$it\"" }
-        }
+        return value.entries.joinToString(prefix = "{", postfix = "}") { "${it.key}:${it.value}" }
+    }
+}
+
+data class ApmPair(val value: Pair<String, ApmType>) : ApmType() {
+    override fun getArgument(decryptionService: DecryptionService) =
+        Pair(value.first, value.second.getArgument(decryptionService))
+
+    override val pair: Pair<String, ApmType>
+        get() = value
+
+    override fun toString(): String {
+        return "${value.first}:${value.second}"
     }
 }
 

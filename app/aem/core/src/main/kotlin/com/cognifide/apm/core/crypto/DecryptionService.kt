@@ -28,13 +28,13 @@ import org.osgi.service.component.annotations.Component
 import org.osgi.service.component.annotations.Reference
 
 @Component(
-        service = [DecryptionService::class],
-        property = [
-            Property.DESCRIPTION + "APM Service for decryption encrypted values",
-            Property.VENDOR
-        ]
+    service = [DecryptionService::class],
+    property = [
+        Property.DESCRIPTION + "APM Service for decryption encrypted values",
+        Property.VENDOR
+    ]
 )
-class DecryptionService {
+open class DecryptionService {
 
     @Reference
     @Transient
@@ -42,14 +42,14 @@ class DecryptionService {
 
     fun decrypt(text: String): String {
         val tokens = StringUtils.substringsBetween(text, "{", "}")
-                .orEmpty()
-                .map { it to unprotect("{$it}") }
-                .toMap()
+            .orEmpty()
+            .map { it to unprotect("{$it}") }
+            .toMap()
         val strSubstitutor = StrSubstitutor(tokens, "{", "}")
         return if (tokens.isEmpty()) text else strSubstitutor.replace(text)
     }
 
-    private fun unprotect(text: String): String {
+    protected open fun unprotect(text: String): String {
         return try {
             cryptoSupport.unprotect(text)
         } catch (e: CryptoException) {

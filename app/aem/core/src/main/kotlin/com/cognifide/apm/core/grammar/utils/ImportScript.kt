@@ -20,9 +20,10 @@
 
 package com.cognifide.apm.core.grammar.utils
 
+import com.cognifide.apm.core.grammar.ApmMap
 import com.cognifide.apm.core.grammar.ScriptExecutionException
 import com.cognifide.apm.core.grammar.argument.ArgumentResolver
-import com.cognifide.apm.core.grammar.argument.toPlainString
+import com.cognifide.apm.core.grammar.common.getPath
 import com.cognifide.apm.core.grammar.executioncontext.ExecutionContext
 import com.cognifide.apm.core.grammar.executioncontext.VariableHolder
 import com.cognifide.apm.core.grammar.parsedscript.ParsedScript
@@ -32,21 +33,18 @@ class ImportScript(private val executionContext: ExecutionContext) {
     private val visitedScripts: MutableSet<ParsedScript> = mutableSetOf()
 
     fun import(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.ImportScriptContext): Result {
-        val path = getPath(ctx)
+        val path = getPath(ctx.path())
         val importScriptVisitor = ImportScriptVisitor()
         importScriptVisitor.visit(ctx)
         return Result(path, importScriptVisitor.variableHolder)
     }
 
     private fun getNamespace(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.ImportScriptContext): String =
-            if (ctx.name() != null) {
-                ctx.name().IDENTIFIER().toPlainString() + "_"
-            } else {
-                ""
-            }
-
-    private fun getPath(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.ImportScriptContext) =
-            ctx.path().STRING_LITERAL().toPlainString()
+        if (ctx.name() != null) {
+            ctx.name().IDENTIFIER().toString()
+        } else {
+            ""
+        }
 
     private inner class ImportScriptVisitor : com.cognifide.apm.core.grammar.antlr.ApmLangBaseVisitor<Unit>() {
         val variableHolder = VariableHolder()
@@ -60,7 +58,7 @@ class ImportScript(private val executionContext: ExecutionContext) {
         }
 
         override fun visitImportScript(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.ImportScriptContext) {
-            val path = getPath(ctx)
+            val path = getPath(ctx.path())
             val namespace = getNamespace(ctx)
             val importScriptVisitor = ImportScriptVisitor()
             val parsedScript = executionContext.loadScript(path)
@@ -70,13 +68,17 @@ class ImportScript(private val executionContext: ExecutionContext) {
 
             importScriptVisitor.visit(parsedScript.apm)
             val scriptVariableHolder = importScriptVisitor.variableHolder
-            scriptVariableHolder.toMap().forEach { (name, value) -> variableHolder[namespace + name] = value }
+            if (namespace == "") {
+                variableHolder.setAll(scriptVariableHolder)
+            } else {
+                variableHolder[namespace] = ApmMap(scriptVariableHolder.toMap())
+            }
         }
     }
 
     class Result(val path: String, val variableHolder: VariableHolder) {
         fun toMessages(): List<String> {
-            val importedVariables = variableHolder.toMap().map { "Imported variable: ${it.key}= ${it.value}" }
+            val importedVariables = variableHolder.toMap().map { "Imported variable: ${it.key}=${it.value}" }
             return listOf("Import from script $path. Notice, only DEFINE actions were processed!") + importedVariables
         }
     }

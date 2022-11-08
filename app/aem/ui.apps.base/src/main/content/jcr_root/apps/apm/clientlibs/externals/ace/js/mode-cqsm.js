@@ -21,18 +21,10 @@ ace.define("ace/mode/cqsm_highlight_rules",["require","exports","module","ace/li
 	var CqsmReference = loadJson("/bin/apm/references");
 
 	var CqsmHighlightRules = function () {
-		// var actions = [];
-		var keywords = ["begin", "BEGIN", "end", "END", "in", "IN"];
+		var keywords = ["begin", "BEGIN", "end", "END", "in", "IN", "as", "AS", "on", "ON"];
 
 		for (var i = 0; i < CqsmReference.length; i++) {
 			var reference = CqsmReference[i];
-
-			// actions.push({
-			// 	token : "entity.name.function",
-			// 	regex : "^\\s*" + reference.name + "\\s*$",
-			// 	tooltip: CqsmReference[i].description
-			// });
-
 			keywords.push(reference.name.toUpperCase());
 			keywords.push(reference.name.toLowerCase());
 		}

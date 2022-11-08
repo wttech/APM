@@ -25,23 +25,48 @@ grammar ApmLang;
  */
 
 apm
-    : (command | EOL)+
+    : command+
     ;
 
 name
     : IDENTIFIER
     ;
 
+privilegeName
+    : IDENTIFIER ':' IDENTIFIER
+    ;
+
 path
     : STRING_LITERAL
+    | PATH_IDENTIFIER
     ;
 
 array
-    : ARRAY_BEGIN EOL? value (',' EOL? value)* EOL? ARRAY_END
+    : ARRAY_BEGIN arrayValue (',' arrayValue)* ARRAY_END
+    ;
+
+arrayValue
+    : value
+    | name
+    | privilegeName
+    ;
+
+structure
+    : STRUCTURE_BEGIN structureValue (',' structureValue)* STRUCTURE_END
+    ;
+
+structureValue
+    : IDENTIFIER ':' value
     ;
 
 variable
-    : VARIABLE_PREFIX IDENTIFIER
+    : VARIABLE_PREFIX variableIdentifier
+    | VARIABLE_PREFIX STRUCTURE_BEGIN variableIdentifier STRUCTURE_END
+    ;
+
+variableIdentifier
+    : IDENTIFIER
+    | VARIABLE_IDENTIFIER
     ;
 
 numberValue
@@ -56,19 +81,8 @@ value
     : variable
     | numberValue
     | stringValue
-    ;
-
-nestedArray
-    : ARRAY_BEGIN EOL? array (',' EOL? array)* EOL? ARRAY_END
-    ;
-
-basicIdentifier
-    : IDENTIFIER
-    ;
-
-compositeIdentifier
-    : ARRAY_BEGIN EOL? basicIdentifier (',' EOL? basicIdentifier)* EOL? ARRAY_END
-    | basicIdentifier
+    | array
+    | structure
     ;
 
 plus
@@ -77,22 +91,22 @@ plus
 
 expression
     : expression plus expression
-    | array
-    | nestedArray
     | value
     ;
 
 argument
     : expression
+    | path
     ;
 
 command
     : RUN_SCRIPT path namedArguments? # RunScript
     | IMPORT_SCRIPT path (AS name)? # ImportScript
-    | FOR_EACH compositeIdentifier EOL? IN argument EOL? body # ForEach
+    | FOR_EACH IDENTIFIER IN argument body # ForEach
     | DEFINE IDENTIFIER argument # DefineVariable
     | REQUIRE IDENTIFIER # RequireVariable
-    | commandName complexArguments? EOL? body? # GenericCommand
+    | (ALLOW | DENY) argument ON? complexArguments # AllowDenyCommand
+    | commandName complexArguments? body? # GenericCommand
     ;
 
 commandName
@@ -131,7 +145,7 @@ flag
     ;
 
 body
-    : BLOCK_BEGIN EOL? (command? EOL)+ BLOCK_END
+    : BLOCK_BEGIN command+ BLOCK_END
     ;
 
 /*
@@ -144,6 +158,12 @@ ARRAY_BEGIN
     ;
 ARRAY_END
     : ']'
+    ;
+STRUCTURE_BEGIN
+    : '{'
+    ;
+STRUCTURE_END
+    : '}'
     ;
 BLOCK_BEGIN
     : 'begin'
@@ -181,6 +201,18 @@ AS
     : 'AS'
     | 'as'
     ;
+ON
+    : 'ON'
+    | 'on'
+    ;
+ALLOW
+    : 'ALLOW'
+    | 'allow'
+    ;
+DENY
+    : 'DENY'
+    | 'deny'
+    ;
 NUMBER_LITERAL
     : [0-9]+
     ;
@@ -195,19 +227,19 @@ IDENTIFIER
     : Letter LetterOrDigit*
     ;
 EXTENDED_IDENTIFIER
-    : Letter LetterOrDigitOrDash*
+    : IdentifierPart ('-' IdentifierPart)*
+    ;
+PATH_IDENTIFIER
+    : PathPart+
+    ;
+VARIABLE_IDENTIFIER
+    : VariablePart ('.' VariablePart)*
     ;
 COMMENT
     : '#' (~[\r\n] )* -> skip
     ;
-
 fragment Digits
-    : [0-9] ([0-9_]* [0-9])?
-    ;
-fragment LetterOrDigitOrDash
-    : Letter
-    | '-'
-    | [0-9]
+    : [0-9]+
     ;
 fragment LetterOrDigit
     : Letter
@@ -218,9 +250,18 @@ fragment Letter
     | ~[\u0000-\u007F\uD800-\uDBFF] // covers all characters above 0x7F which are not a surrogate
     | [\uD800-\uDBFF] [\uDC00-\uDFFF] // covers UTF-16 surrogate pairs encodings for U+10000 to U+10FFFF
     ;
+fragment IdentifierPart
+    : Letter LetterOrDigit*
+    ;
+fragment VariablePart
+    : IdentifierPart (ARRAY_BEGIN Digits ARRAY_END)?
+    ;
+fragment PathPart
+    : '/' (~[\r\n\t ])+
+    ;
 WHITESPACE
     : (' ' | '\t') -> skip
     ;
 EOL
-    : ('\r\n' | '\r' | '\n')
+    : ('\r' | '\n') -> skip
     ;

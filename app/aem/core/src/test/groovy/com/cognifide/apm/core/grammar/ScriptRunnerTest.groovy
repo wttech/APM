@@ -79,7 +79,16 @@ class ScriptRunnerTest extends Specification {
                      "Executing command SHOW \"a\"",
                      "Executing command SHOW \"b\"",
                      "Executing command SHOW [\"a\", \"b\"]",
+                     "Executing command SHOW \"a\"",
+                     "Executing command SHOW \"b\"",
                      "Executing command SHOW [\"c\", \"d\"]",
+                     "Executing command SHOW [[\"a\", \"b\"], [\"c\", \"d\"]]",
+                     "Executing command SHOW [1, 2, 3]",
+                     "Executing command SHOW [\"a\", \"b\", 1, 2]",
+                     "Executing command SHOW {x:\"a\", y:1, z:[\"c\", 1]}",
+                     "Executing command SHOW 1",
+                     "Executing command SHOW 1",
+                     "Executing command SHOW [\"a\", \"b\", \"c\", \"d\", 1, 2]",
                      "Executing command SHOW [[\"a\", \"b\"], [\"c\", \"d\"]]"]
     }
 
@@ -96,16 +105,53 @@ class ScriptRunnerTest extends Specification {
         result.entries.size() == 3
         result.entries[0].messages ==
                 ["Import from script /import-define.apm. Notice, only DEFINE actions were processed!",
-                 "Imported variable: var= \"imported val\""]
+                 "Imported variable: var=\"imported val\""]
 
         result.entries[1].messages ==
                 ["Import from script /import-define.apm. Notice, only DEFINE actions were processed!",
-                 "Imported variable: namespace_var= \"imported val\""]
+                 "Imported variable: namespace={var:\"imported val\"}"]
 
         result.entries[2].messages ==
                 ["Import from script /import-deep-define.apm. Notice, only DEFINE actions were processed!",
-                 "Imported variable: deepNamespace_deeperNamespace_var= \"imported val\"",
-                 "Imported variable: deepNamespace_deepVar= \"imported val + imported val\""]
+                 "Imported variable: deepNamespace={deeperNamespace:{var:\"imported val\"}, deepVar:\"imported val + imported val\"}"]
+    }
+
+    def "run script filename.apm"() {
+        given:
+        Script script = createScript("/filename.apm")
+
+        when:
+        def result = scriptExecutor.execute(script, new ProgressImpl(""))
+
+        then:
+        def commands = result.entries
+                .collect { it.command }
+                .findAll { it.startsWith("Executing") }
+        commands == ["Executing command CREATE-USER \"author\"",
+                     "Executing command CREATE-GROUP \"authors\"",
+                     "Executing command FOR-GROUP \"authors\"",
+                     "Executing command ALLOW \"/content\" [\"jcr:read\"]",
+                     "Executing command ALLOW \"/content/foo/bar\" [\"ALL\"]",
+                     "Executing command DENY \"/content/foo/bar/foo\" [\"MODIFY\", \"DELETE\"]",
+                     "Executing command DENY \"/content/foo/bar/foo/bar\" [\"MODIFY\", \"DELETE\"]"]
+    }
+
+    def "run script content.apm"() {
+        given:
+        Script script = createScript("/content.apm")
+
+        when:
+        def result = scriptExecutor.execute(script, new ProgressImpl(""))
+
+        then:
+        def commands = result.entries
+                .collect { it.command }
+                .findAll { it.startsWith("Executing") }
+        commands == ["Executing command CREATE-USER \"author\"",
+                     "Executing command CREATE-GROUP \"authors\"",
+                     "Executing command FOR-GROUP \"authors\"",
+                     "Executing command ALLOW \"/content/foo/bar\" [\"ALL\"]",
+                     "Executing command DENY \"/content/foo/bar/foo/bar\" [\"MODIFY\", \"DELETE\"]"]
     }
 
     private Script createScript(String file) {

@@ -39,10 +39,11 @@ import org.antlr.v4.runtime.ParserRuleContext
 import org.apache.sling.api.resource.ResourceResolver
 
 class ScriptRunner(
-        private val scriptFinder: ScriptFinder,
-        private val resourceResolver: ResourceResolver,
-        private val validateOnly: Boolean = false,
-        private val actionInvoker: ActionInvoker) {
+    private val scriptFinder: ScriptFinder,
+    private val resourceResolver: ResourceResolver,
+    private val validateOnly: Boolean = false,
+    private val actionInvoker: ActionInvoker
+) {
 
     @JvmOverloads
     fun execute(script: Script, progress: Progress, initialDefinitions: Map<String, String> = mapOf()): Progress {
@@ -62,7 +63,8 @@ class ScriptRunner(
         return progress
     }
 
-    private inner class Executor(private val executionContext: ExecutionContext) : com.cognifide.apm.core.grammar.antlr.ApmLangBaseVisitor<Unit>() {
+    private inner class Executor(private val executionContext: ExecutionContext) :
+        com.cognifide.apm.core.grammar.antlr.ApmLangBaseVisitor<Unit>() {
 
         override fun visitDefineVariable(ctx: DefineVariableContext) {
             val variableName = ctx.IDENTIFIER().toString()
@@ -85,7 +87,7 @@ class ScriptRunner(
                 try {
                     executionContext.createLocalContext()
                     val valueStr = value.map { it.key + "=" + it.value }
-                            .joinToString()
+                        .joinToString()
                     progress(ctx, Status.SUCCESS, "for-each", "$index. Begin: $valueStr")
                     value.forEach { (k, v) -> executionContext.setVariable(k, v) }
                     visit(ctx.body())
@@ -120,52 +122,79 @@ class ScriptRunner(
 
         override fun visitGenericCommand(ctx: GenericCommandContext) {
             val commandName = getIdentifier(ctx.commandName().identifier()).toUpperCase()
-            if (validateOnly) {
-                visitGenericCommandValidateMode(ctx, commandName)
+            val arguments = executionContext.resolveArguments(ctx.complexArguments())
+            visitGenericCommand(ctx, commandName, arguments, ctx.body())
+        }
+
+        override fun visitAllowDenyCommand(ctx: AllowDenyCommandContext) {
+            val commandName = if (ctx.ALLOW() != null) "ALLOW" else "DENY"
+            val argument = executionContext.resolveArgument(ctx.argument())
+            val arguments = executionContext.resolveArguments(ctx.complexArguments())
+            val required = if (ctx.ON() == null) {
+                listOf(argument) + arguments.required
             } else {
-                visitGenericCommandRunMode(ctx, commandName)
+                arguments.required + argument
+            }
+            val newArguments = Arguments(required, arguments.named, arguments.flags)
+            visitGenericCommand(ctx, commandName, newArguments)
+        }
+
+        private fun visitGenericCommand(
+            ctx: ParserRuleContext, commandName: String, arguments: Arguments, body: BodyContext? = null
+        ) {
+            if (validateOnly) {
+                visitGenericCommandValidateMode(ctx, commandName, arguments, body)
+            } else {
+                visitGenericCommandRunMode(ctx, commandName, arguments, body)
             }
         }
 
-        private fun visitGenericCommandRunMode(ctx: GenericCommandContext, commandName: String) {
+        private fun visitGenericCommandRunMode(
+            ctx: ParserRuleContext, commandName: String, arguments: Arguments, body: BodyContext?
+        ) {
             try {
-                if (ctx.body() != null) {
+                if (body != null) {
                     executionContext.createLocalContext()
                 }
-                val arguments = executionContext.resolveArguments(ctx.complexArguments())
                 val status = actionInvoker.runAction(executionContext, commandName, arguments)
-                if (ctx.body() != null) {
+                if (body != null) {
                     if (status in listOf(Status.SUCCESS, Status.WARNING)) {
-                        visit(ctx.body())
+                        visit(body)
                     } else {
-                        progress(ctx, Status.SKIPPED, "code-block", "Skipped due to the status of previous action: $commandName")
+                        progress(
+                            ctx,
+                            Status.SKIPPED,
+                            "code-block",
+                            "Skipped due to the status of previous action: $commandName"
+                        )
                     }
                 }
             } catch (e: ArgumentResolverException) {
                 progress(ctx, Status.ERROR, commandName, "Action failed: ${e.message}")
             } finally {
-                if (ctx.body() != null) {
+                if (body != null) {
                     executionContext.removeLocalContext()
                 }
             }
         }
 
-        private fun visitGenericCommandValidateMode(ctx: GenericCommandContext, commandName: String) {
+        private fun visitGenericCommandValidateMode(
+            ctx: ParserRuleContext, commandName: String, arguments: Arguments, body: BodyContext?
+        ) {
             try {
-                if (ctx.body() != null) {
+                if (body != null) {
                     executionContext.createLocalContext()
                 }
                 try {
-                    val arguments = executionContext.resolveArguments(ctx.complexArguments())
                     actionInvoker.runAction(executionContext, commandName, arguments)
                 } catch (e: ArgumentResolverException) {
                     progress(ctx, Status.WARNING, commandName, "Couldn't invoke action: ${e.message}")
                 }
-                if (ctx.body() != null) {
-                    visit(ctx.body())
+                if (body != null) {
+                    visit(body)
                 }
             } finally {
-                if (ctx.body() != null) {
+                if (body != null) {
                     executionContext.removeLocalContext()
                 }
             }
@@ -178,24 +207,32 @@ class ScriptRunner(
         }
 
         private fun readValues(ctx: ForEachContext): List<Map<String, ApmType>> {
-            val keys = ctx.compositeIdentifier()
-                    .children
-                    .filterIsInstance<BasicIdentifierContext>()
-                    .map { it.IDENTIFIER().toString() }
+            val keys = listOf(ctx.IDENTIFIER().toString())
             val values = when (val variableValue = executionContext.resolveArgument(ctx.argument())) {
-                is ApmNestedList -> variableValue.nestedList.map { list -> list.map { ApmString(it) } }
-                is ApmList -> variableValue.list.map { listOf(ApmString(it)) }
+                is ApmList -> variableValue.list.map { listOf(it) }
                 is ApmEmpty -> listOf(listOf())
                 else -> listOf(listOf(variableValue))
             }
             return values.map { keys.zip(it).toMap() }
         }
 
-        private fun progress(ctx: ParserRuleContext, status: Status = Status.SUCCESS, command: String, details: String = "", arguments: Arguments? = null) {
+        private fun progress(
+            ctx: ParserRuleContext,
+            status: Status = Status.SUCCESS,
+            command: String,
+            details: String = "",
+            arguments: Arguments? = null
+        ) {
             progress(ctx, status, command, listOf(details), arguments)
         }
 
-        private fun progress(ctx: ParserRuleContext, status: Status = Status.SUCCESS, command: String, details: List<String> = listOf(), arguments: Arguments? = null) {
+        private fun progress(
+            ctx: ParserRuleContext,
+            status: Status = Status.SUCCESS,
+            command: String,
+            details: List<String> = listOf(),
+            arguments: Arguments? = null
+        ) {
             executionContext.progress.addEntry(status, details, command, "", arguments, Position(ctx.start.line))
         }
     }

@@ -55,4 +55,24 @@ public class DenyMapper {
       @Flag(value = IF_EXISTS, description = "script doesn't fail if path doesn't exist") boolean ifExists) {
     return new Deny(path, permissions, glob, types, items, ifExists);
   }
+
+  @Mapping(
+      examples = {
+          "DENY [READ] ON '/content/dam'",
+          "DENY [MODIFY] ON '/content/dam' glob='/*'",
+          "DENY [MODIFY] ON '/content/dam' properties=['jcr:title']",
+          "DENY [MODIFY] ON '/content/dam' types=['nt:folder']",
+          "DENY [READ, MODIFY] ON '/content/dam/domain' --IF-EXISTS"
+      },
+      reference = REFERENCE
+  )
+  public Action create(
+      @Required(value = "permissions", description = "e.g.: [READ, 'jcr:all']") List<String> permissions,
+      @Required(value = "path", description = "e.g.: '/content/dam'") String path,
+      @Named(value = "glob", description = "regular expression to narrow set of paths") String glob,
+      @Named(value = "types", description = "list of jcr types which will be affected") List<String> types,
+      @Named(value = "properties", description = "list of properties which will be affected ") List<String> items,
+      @Flag(value = IF_EXISTS, description = "script doesn't fail if path doesn't exist") boolean ifExists) {
+    return new Deny(path, permissions, glob, types, items, ifExists);
+  }
 }
