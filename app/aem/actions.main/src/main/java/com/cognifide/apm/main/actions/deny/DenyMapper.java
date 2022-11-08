@@ -39,6 +39,7 @@ public class DenyMapper {
   @Mapping(
       examples = {
           "DENY '/content/dam' [READ]",
+          "DENY '/content/dam' glob='/*' [MODIFY]",
           "DENY '/content/dam' properties=['jcr:title'] [MODIFY]",
           "DENY '/content/dam' types=['nt:folder'] [MODIFY]",
           "DENY '/content/dam/domain' [READ, MODIFY] --IF-EXISTS"

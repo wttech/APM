@@ -106,9 +106,9 @@
     <div class="code-example">
       <code>
         FOR-USER "foo" BEGIN
-        ALLOW "/content" glob= "bar" ["ALL"]
-        DENY "/content" glob= "bar" ["jcr:nodeTypeManagement"]
-        ALLOW "/content/foo" glob= "STRICT" ["ALL"]
+        ALLOW "/content" glob="bar" ["ALL"]
+        DENY "/content" glob="bar" ["jcr:nodeTypeManagement"]
+        ALLOW "/content/foo" glob="STRICT" ["ALL"]
         END
       </code>
     </div>
