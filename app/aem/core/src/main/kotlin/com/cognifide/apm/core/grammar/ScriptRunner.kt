@@ -130,7 +130,11 @@ class ScriptRunner(
             val commandName = if (ctx.ALLOW() != null) "ALLOW" else "DENY"
             val argument = executionContext.resolveArgument(ctx.argument())
             val arguments = executionContext.resolveArguments(ctx.complexArguments())
-            val required = arguments.required + argument
+            val required = if (ctx.ON() == null) {
+                listOf(argument) + arguments.required
+            } else {
+                arguments.required + argument
+            }
             val newArguments = Arguments(required, arguments.named, arguments.flags)
             visitGenericCommand(ctx, commandName, newArguments)
         }

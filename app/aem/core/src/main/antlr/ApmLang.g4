@@ -105,7 +105,7 @@ command
     | FOR_EACH IDENTIFIER IN argument body # ForEach
     | DEFINE IDENTIFIER argument # DefineVariable
     | REQUIRE IDENTIFIER # RequireVariable
-    | (ALLOW | DENY) argument ON complexArguments # AllowDenyCommand
+    | (ALLOW | DENY) argument ON? complexArguments # AllowDenyCommand
     | commandName complexArguments? body? # GenericCommand
     ;
 

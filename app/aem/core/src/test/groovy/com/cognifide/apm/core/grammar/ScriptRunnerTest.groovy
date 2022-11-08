@@ -116,7 +116,7 @@ class ScriptRunnerTest extends Specification {
                  "Imported variable: deepNamespace={deeperNamespace:{var:\"imported val\"}, deepVar:\"imported val + imported val\"}"]
     }
 
-    def "run script"() {
+    def "run script filename.apm"() {
         given:
         Script script = createScript("/filename.apm")
 
@@ -133,6 +133,24 @@ class ScriptRunnerTest extends Specification {
                      "Executing command ALLOW \"/content\" [\"jcr:read\"]",
                      "Executing command ALLOW \"/content/foo/bar\" [\"ALL\"]",
                      "Executing command DENY \"/content/foo/bar/foo\" [\"MODIFY\", \"DELETE\"]",
+                     "Executing command DENY \"/content/foo/bar/foo/bar\" [\"MODIFY\", \"DELETE\"]"]
+    }
+
+    def "run script content.apm"() {
+        given:
+        Script script = createScript("/content.apm")
+
+        when:
+        def result = scriptExecutor.execute(script, new ProgressImpl(""))
+
+        then:
+        def commands = result.entries
+                .collect { it.command }
+                .findAll { it.startsWith("Executing") }
+        commands == ["Executing command CREATE-USER \"author\"",
+                     "Executing command CREATE-GROUP \"authors\"",
+                     "Executing command FOR-GROUP \"authors\"",
+                     "Executing command ALLOW \"/content/foo/bar\" [\"ALL\"]",
                      "Executing command DENY \"/content/foo/bar/foo/bar\" [\"MODIFY\", \"DELETE\"]"]
     }
 
