@@ -48,23 +48,17 @@
     </thead>
     <tbody is="coral-table-body">
     <sly data-sly-list.execution="${item.entry.executionSummary}">
-      <tr is="coral-table-row"
-          class="${execution.status.toString == 'SUCCESS' ? 'entry-success' : (execution.status.toString == 'ERROR' ? 'entry-error' : 'entry-warning')}">
+      <tr is="coral-table-row" class="${execution.status.className}">
         <td is="coral-table-cell">${executionList.index}</td>
         <td is="coral-table-cell">${execution.authorizable}</td>
-        <td is="coral-table-cell">${execution.command.toUpperCase}</td>
+        <td is="coral-table-cell">${execution.command}</td>
         <td is="coral-table-cell">
           <ul>
             <li data-sly-repeat.text="${execution.parameters}">${text}</li>
           </ul>
         </td>
         <td is="coral-table-cell">
-          <coral-icon data-sly-test.statusSuccess="${execution.status.toString == 'SUCCESS'}" title="success"
-                      icon="check"/>
-          <coral-icon data-sly-test.statusSkipped="${execution.status.toString == 'SKIPPED'}" title="skipped"
-                      icon="chevronRight"/>
-          <coral-icon data-sly-test.statusError="${execution.status.toString == 'ERROR'}" title="error" icon="close"/>
-          <coral-icon data-sly-test="${!statusSuccess && !statusSkipped && !statusError}" title="warning" icon="alert"/>
+          <coral-icon title="${execution.status.iconTitle}" icon="${execution.status.iconName}"/>
         </td>
         <td is="coral-table-cell">
           <ul>
