@@ -22,6 +22,7 @@
   <coral-list>
     <coral-list-item icon="file">Script: <strong>${item.entry.scriptName}</strong></coral-list-item>
     <coral-list-item icon="user">User: <strong>${item.entry.executor}</strong></coral-list-item>
+    <coral-list-item icon="clock" data-sly-test="${item.entry.executionDuration}">Duration: <strong>${item.entry.executionDuration}s</strong></coral-list-item>
   </coral-list>
   <table is="coral-table">
     <thead is="coral-table-head">
@@ -48,8 +49,9 @@
     </thead>
     <tbody is="coral-table-body">
     <sly data-sly-list.execution="${item.entry.executionSummary}">
+      <sly data-sly-test.executionStatus="${execution.status.toString}"/>
       <tr is="coral-table-row"
-          class="${execution.status.toString == 'SUCCESS' ? 'entry-success' : (execution.status.toString == 'ERROR' ? 'entry-error' : 'entry-warning')}">
+          class="${executionStatus == 'SUCCESS' ? 'entry-success' : (executionStatus == 'ERROR' ? 'entry-error' : 'entry-warning')}">
         <td is="coral-table-cell">${executionList.index}</td>
         <td is="coral-table-cell">${execution.authorizable}</td>
         <td is="coral-table-cell">${execution.command.toUpperCase}</td>
@@ -59,11 +61,9 @@
           </ul>
         </td>
         <td is="coral-table-cell">
-          <coral-icon data-sly-test.statusSuccess="${execution.status.toString == 'SUCCESS'}" title="success"
-                      icon="check"/>
-          <coral-icon data-sly-test.statusSkipped="${execution.status.toString == 'SKIPPED'}" title="skipped"
-                      icon="chevronRight"/>
-          <coral-icon data-sly-test.statusError="${execution.status.toString == 'ERROR'}" title="error" icon="close"/>
+          <coral-icon data-sly-test.statusSuccess="${executionStatus == 'SUCCESS'}" title="success" icon="check"/>
+          <coral-icon data-sly-test.statusSkipped="${executionStatus == 'SKIPPED'}" title="skipped" icon="chevronRight"/>
+          <coral-icon data-sly-test.statusError="${executionStatus == 'ERROR'}" title="error" icon="close"/>
           <coral-icon data-sly-test="${!statusSuccess && !statusSkipped && !statusError}" title="warning" icon="alert"/>
         </td>
         <td is="coral-table-cell">

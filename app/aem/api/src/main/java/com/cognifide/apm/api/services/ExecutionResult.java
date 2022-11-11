@@ -32,6 +32,8 @@ public interface ExecutionResult {
 
   String getExecutor();
 
+  long determineExecutionDuration();
+
   interface Entry {
 
     String getAuthorizable();

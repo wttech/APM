@@ -102,7 +102,7 @@ class ScriptRunnerTest extends Specification {
         def result = scriptExecutor.execute(script, new ProgressImpl(""))
 
         then:
-        result.entries.size() == 4
+        result.entries.size() == 3
         result.entries[0].messages ==
                 ["Import from script /import-define.apm. Notice, only DEFINE actions were processed!",
                  "Imported variable: var=\"imported val\""]

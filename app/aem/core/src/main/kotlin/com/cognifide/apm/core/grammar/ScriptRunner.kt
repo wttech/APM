@@ -47,7 +47,6 @@ class ScriptRunner(
 
     @JvmOverloads
     fun execute(script: Script, progress: Progress, initialDefinitions: Map<String, String> = mapOf()): Progress {
-        val startTime = System.currentTimeMillis()
         try {
             val executionContext = ExecutionContext.create(scriptFinder, resourceResolver, script, progress)
             initialDefinitions.forEach { (name, value) -> executionContext.setVariable(name, ApmString(value)) }
@@ -60,9 +59,6 @@ class ScriptRunner(
             progress.addEntry(Status.ERROR, e.message)
         } catch (e: ScriptExecutionException) {
             progress.addEntry(Status.ERROR, e.message)
-        } finally {
-            val endTime = System.currentTimeMillis()
-            progress.addEntry(Status.SUCCESS, "Execution time ${(endTime - startTime) / 1000}s")
         }
         return progress
     }
