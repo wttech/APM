@@ -31,6 +31,7 @@ public class HistoryEntryWriter {
   private final String author;
   private final Calendar executionTime;
   private final String executor;
+  private final long executionDuration;
   private final String fileName;
   private final String filePath;
   private final Boolean isRunSuccessful;
@@ -47,6 +48,7 @@ public class HistoryEntryWriter {
     valueMap.put(HistoryEntryImpl.PROGRESS_LOG, progressLog);
     valueMap.put(HistoryEntryImpl.IS_RUN_SUCCESSFUL, isRunSuccessful);
     valueMap.put(HistoryEntryImpl.EXECUTION_TIME, executionTime);
+    valueMap.put(HistoryEntryImpl.EXECUTION_DURATION, executionDuration);
     valueMap.put(HistoryEntryImpl.EXECUTOR, executor);
     valueMap.put(HistoryEntryImpl.INSTANCE_NAME, instanceName);
   }

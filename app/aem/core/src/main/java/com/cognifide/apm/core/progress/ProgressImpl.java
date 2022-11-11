@@ -44,6 +44,8 @@ public class ProgressImpl implements Progress {
 
   private final String executor;
 
+  private final long startTime;
+
   public ProgressImpl(String executor) {
     this(executor, new LinkedList<>());
   }
@@ -51,6 +53,7 @@ public class ProgressImpl implements Progress {
   public ProgressImpl(String executor, List<ProgressEntry> entries) {
     this.executor = executor;
     this.entries = entries;
+    this.startTime = System.currentTimeMillis();
   }
 
   @Override
@@ -133,5 +136,10 @@ public class ProgressImpl implements Progress {
   @Override
   public String getExecutor() {
     return executor;
+  }
+
+  @Override
+  public long determineExecutionDuration() {
+    return (System.currentTimeMillis() - startTime) / 1000;
   }
 }
