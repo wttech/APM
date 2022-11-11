@@ -49,7 +49,7 @@ class ImportScript(private val executionContext: ExecutionContext) {
     private inner class ImportScriptVisitor : com.cognifide.apm.core.grammar.antlr.ApmLangBaseVisitor<Unit>() {
         val variableHolder = VariableHolder()
 
-        val argumentResolver = ArgumentResolver(variableHolder)
+        val argumentResolver = ArgumentResolver(variableHolder, null)
 
         override fun visitDefineVariable(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.DefineVariableContext) {
             val variableName = ctx.IDENTIFIER().toString()

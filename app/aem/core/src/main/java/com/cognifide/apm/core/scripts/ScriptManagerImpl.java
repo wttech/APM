@@ -37,6 +37,7 @@ import com.cognifide.apm.core.actions.ActionFactory;
 import com.cognifide.apm.core.actions.executor.ActionExecutor;
 import com.cognifide.apm.core.actions.executor.ActionExecutorFactory;
 import com.cognifide.apm.core.executors.ContextImpl;
+import com.cognifide.apm.core.grammar.MethodInvoker;
 import com.cognifide.apm.core.grammar.ScriptRunner;
 import com.cognifide.apm.core.history.History;
 import com.cognifide.apm.core.logger.Progress;
@@ -89,6 +90,9 @@ public class ScriptManagerImpl implements ScriptManager {
   @Reference
   private History history;
 
+  @Reference
+  private MethodInvoker methodInvoker;
+
   @Reference(
       cardinality = ReferenceCardinality.MULTIPLE,
       policy = ReferencePolicy.DYNAMIC,
@@ -133,7 +137,8 @@ public class ScriptManagerImpl implements ScriptManager {
             progress.addEntry(Status.ERROR, e.getMessage(), commandName);
             return Status.ERROR;
           }
-        });
+        },
+        methodInvoker);
 
     try {
       Map<String, String> definitions = new HashMap<>();

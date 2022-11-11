@@ -23,6 +23,7 @@ package com.cognifide.apm.core.grammar.executioncontext
 import com.cognifide.apm.api.scripts.Script
 import com.cognifide.apm.api.services.ScriptFinder
 import com.cognifide.apm.core.grammar.ApmType
+import com.cognifide.apm.core.grammar.MethodInvoker
 import com.cognifide.apm.core.grammar.ScriptExecutionException
 import com.cognifide.apm.core.grammar.antlr.ApmLangParser.*
 import com.cognifide.apm.core.grammar.argument.ArgumentResolver
@@ -35,10 +36,12 @@ import org.apache.jackrabbit.api.security.user.Authorizable
 import org.apache.sling.api.resource.ResourceResolver
 
 class ExecutionContext private constructor(
-        private val scriptFinder: ScriptFinder,
-        private val resourceResolver: ResourceResolver,
-        val root: ParsedScript,
-        override val progress: Progress) : ExternalExecutionContext {
+    private val scriptFinder: ScriptFinder,
+    val resourceResolver: ResourceResolver,
+    val root: ParsedScript,
+    override val progress: Progress,
+    val methodInvoker: MethodInvoker?
+) : ExternalExecutionContext {
 
     private val parsedScripts: MutableMap<String, ParsedScript> = mutableMapOf()
     private var runScripts: StackWithRoot<RunScript> = StackWithRoot(RunScript(root))
@@ -48,7 +51,7 @@ class ExecutionContext private constructor(
     val variableHolder: VariableHolder
         get() = currentRunScript.variableHolder
     val argumentResolver: ArgumentResolver
-        get() = ArgumentResolver(variableHolder)
+        get() = ArgumentResolver(variableHolder, this)
 
     init {
         registerScript(root)
@@ -56,8 +59,20 @@ class ExecutionContext private constructor(
 
     companion object {
         @JvmStatic
-        fun create(scriptFinder: ScriptFinder, resourceResolver: ResourceResolver, script: Script, progress: Progress): ExecutionContext {
-            return ExecutionContext(scriptFinder, resourceResolver, ParsedScript.create(script), progress)
+        fun create(
+            scriptFinder: ScriptFinder,
+            resourceResolver: ResourceResolver,
+            script: Script,
+            progress: Progress,
+            methodInvoker: MethodInvoker? = null
+        ): ExecutionContext {
+            return ExecutionContext(
+                scriptFinder,
+                resourceResolver,
+                ParsedScript.create(script),
+                progress,
+                methodInvoker
+            )
         }
     }
 
@@ -116,7 +131,7 @@ class ExecutionContext private constructor(
 
     private fun fetchScript(path: String): ParsedScript {
         val script = scriptFinder.find(path, resourceResolver)
-                ?: throw ScriptExecutionException("Script not found $path")
+            ?: throw ScriptExecutionException("Script not found $path")
         val parsedScript = ParsedScript.create(script)
         registerScript(parsedScript)
         return parsedScript

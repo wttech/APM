@@ -23,6 +23,7 @@ package com.cognifide.apm.core.grammar
 import com.cognifide.apm.api.scripts.Script
 import com.cognifide.apm.api.services.ScriptFinder
 import com.cognifide.apm.api.status.Status
+import com.cognifide.apm.core.grammar.argument.Arguments
 import com.cognifide.apm.core.progress.ProgressImpl
 import org.apache.commons.io.IOUtils
 import org.apache.sling.api.resource.ResourceResolver
@@ -32,7 +33,7 @@ class ScriptRunnerTest extends Specification {
 
     def scriptFinder = Mock(ScriptFinder)
     def resourceResolver = Mock(ResourceResolver)
-    def scriptExecutor = new ScriptRunner(scriptFinder, resourceResolver, false, createActionInvoker())
+    def scriptExecutor = new ScriptRunner(scriptFinder, resourceResolver, false, createActionInvoker(), createMethodInvoker())
 
     def "run for-each"() {
         given:
@@ -85,9 +86,12 @@ class ScriptRunnerTest extends Specification {
                      "Executing command SHOW [[\"a\", \"b\"], [\"c\", \"d\"]]",
                      "Executing command SHOW [1, 2, 3]",
                      "Executing command SHOW [\"a\", \"b\", 1, 2]",
-                     "Executing command SHOW {x:\"a\", y:1, z:[\"c\", 1]}",
+                     "Executing command SHOW {x: \"a\", y: 1, z: [\"c\", 1]}",
                      "Executing command SHOW 1",
                      "Executing command SHOW 1",
+                     "Executing command SHOW [\"a\", \"b\", \"c\"]",
+                     "Executing command SHOW [3, \"ab\", [\"a\", \"b\", \"c\"]]",
+                     "Executing command SHOW {tab: [\"a\", \"b\", \"c\"]}",
                      "Executing command SHOW [\"a\", \"b\", \"c\", \"d\", 1, 2]",
                      "Executing command SHOW [[\"a\", \"b\"], [\"c\", \"d\"]]"]
     }
@@ -109,11 +113,11 @@ class ScriptRunnerTest extends Specification {
 
         result.entries[1].messages ==
                 ["Import from script /import-define.apm. Notice, only DEFINE actions were processed!",
-                 "Imported variable: namespace={var:\"imported val\"}"]
+                 "Imported variable: namespace={var: \"imported val\"}"]
 
         result.entries[2].messages ==
                 ["Import from script /import-deep-define.apm. Notice, only DEFINE actions were processed!",
-                 "Imported variable: deepNamespace={deeperNamespace:{var:\"imported val\"}, deepVar:\"imported val + imported val\"}"]
+                 "Imported variable: deepNamespace={deeperNamespace: {var: \"imported val\"}, deepVar: \"imported val + imported val\"}"]
     }
 
     def "run script filename.apm"() {
@@ -173,6 +177,15 @@ class ScriptRunnerTest extends Specification {
                 }
                 context.progress.addEntry(Status.SUCCESS, "", command.toString())
                 return Status.SUCCESS
+            }
+        }
+    }
+
+    private static MethodInvoker createMethodInvoker() {
+        new MethodInvoker() {
+            @Override
+            ApmType runMethod(ResourceResolver resourceResolver, String commandName, Arguments arguments) {
+                return new ApmList([new ApmString("a"), new ApmString("b"), new ApmString("c")])
             }
         }
     }

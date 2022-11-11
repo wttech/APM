@@ -42,13 +42,15 @@ class ScriptRunner(
     private val scriptFinder: ScriptFinder,
     private val resourceResolver: ResourceResolver,
     private val validateOnly: Boolean = false,
-    private val actionInvoker: ActionInvoker
+    private val actionInvoker: ActionInvoker,
+    private val methodInvoker: MethodInvoker
 ) {
 
     @JvmOverloads
     fun execute(script: Script, progress: Progress, initialDefinitions: Map<String, String> = mapOf()): Progress {
         try {
-            val executionContext = ExecutionContext.create(scriptFinder, resourceResolver, script, progress)
+            val executionContext =
+                ExecutionContext.create(scriptFinder, resourceResolver, script, progress, methodInvoker)
             initialDefinitions.forEach { (name, value) -> executionContext.setVariable(name, ApmString(value)) }
             val executor = Executor(executionContext)
             executor.visit(executionContext.root.apm)

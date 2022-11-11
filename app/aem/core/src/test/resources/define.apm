@@ -42,6 +42,9 @@ DEFINE mixTab ['a', 'b', 1, 2]
 DEFINE tab3 [['a', 'b'], ['c', 'd']]
 DEFINE obj {x:'a', y:1, z:['c', 1]}
 DEFINE tabEnum [a, b, "c", "d", 1, 2]
+DEFINE methodTab TAB()
+DEFINE tab4 [1 + 2, "a" + "b", TAB()]
+DEFINE methodMap {tab: TAB()}
 SHOW $a
 SHOW $b
 SHOW $tab1
@@ -54,5 +57,8 @@ SHOW $mixTab
 SHOW $obj
 SHOW $obj.z[1]
 SHOW ${obj.z[1]}
+SHOW $methodTab
+SHOW $tab4
+SHOW $methodMap
 SHOW $tabEnum
 SHOW $tab3

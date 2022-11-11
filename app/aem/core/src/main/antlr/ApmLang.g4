@@ -41,6 +41,10 @@ path
     | PATH_IDENTIFIER
     ;
 
+method
+    : commandName BRACKET_START complexArguments? BRACKET_END
+    ;
+
 array
     : ARRAY_BEGIN arrayValue (',' arrayValue)* ARRAY_END
     ;
@@ -49,14 +53,20 @@ arrayValue
     : value
     | name
     | privilegeName
+    | argument
     ;
 
 structure
-    : STRUCTURE_BEGIN structureValue (',' structureValue)* STRUCTURE_END
+    : STRUCTURE_BEGIN structureEntry (',' structureEntry)* STRUCTURE_END
+    ;
+
+structureEntry
+    : IDENTIFIER ':' structureValue
     ;
 
 structureValue
-    : IDENTIFIER ':' value
+    : value
+    | argument
     ;
 
 variable
@@ -97,6 +107,7 @@ expression
 argument
     : expression
     | path
+    | method
     ;
 
 command
@@ -164,6 +175,12 @@ STRUCTURE_BEGIN
     ;
 STRUCTURE_END
     : '}'
+    ;
+BRACKET_START
+    : '('
+    ;
+BRACKET_END
+    : ')'
     ;
 BLOCK_BEGIN
     : 'begin'

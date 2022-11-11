@@ -24,12 +24,16 @@ import com.cognifide.apm.core.grammar.*
 import com.cognifide.apm.core.grammar.antlr.ApmLangParser.*
 import com.cognifide.apm.core.grammar.common.getIdentifier
 import com.cognifide.apm.core.grammar.common.getPath
+import com.cognifide.apm.core.grammar.executioncontext.ExecutionContext
 import com.cognifide.apm.core.grammar.executioncontext.VariableHolder
 import com.google.common.primitives.Ints
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.text.StrSubstitutor
 
-class ArgumentResolver(private val variableHolder: VariableHolder) {
+class ArgumentResolver(
+    private val variableHolder: VariableHolder,
+    private val executionContext: ExecutionContext? = null
+) {
 
     private val singleArgumentResolver: SingleArgumentResolver
 
@@ -115,10 +119,13 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
             return ApmMap(values)
         }
 
-        override fun visitStructureValue(ctx: StructureValueContext): ApmType {
+        override fun visitStructureEntry(ctx: StructureEntryContext): ApmType {
             val key = ctx.IDENTIFIER().toString()
-            val value = visit(ctx.value())
-            return ApmPair(Pair(key, value))
+            val value = ctx.structureValue()
+                .children
+                ?.map { child -> child.accept(this) }
+                ?.first()
+            return if (value == null) ApmEmpty() else ApmPair(Pair(key, value))
         }
 
         override fun visitExpression(ctx: ExpressionContext): ApmType {
@@ -167,6 +174,16 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
         override fun visitPath(ctx: PathContext): ApmType {
             val value = getPath(ctx)
             return determineStringValue(value)
+        }
+
+        override fun visitMethod(ctx: MethodContext): ApmType {
+            val commandName = getIdentifier(ctx.commandName().identifier())
+            val arguments = resolve(ctx.complexArguments())
+            return executionContext?.methodInvoker!!.runMethod(
+                executionContext.resourceResolver,
+                commandName,
+                arguments
+            )
         }
 
         override fun visitVariable(ctx: VariableContext): ApmType {
