@@ -101,12 +101,13 @@ class ScriptRunnerTest extends Specification {
         Script script = createScript("/import.apm")
         scriptFinder.find("/import-define.apm", resourceResolver) >> createScript("/import-define.apm")
         scriptFinder.find("/import-deep-define.apm", resourceResolver) >> createScript("/import-deep-define.apm")
+        scriptFinder.find("/import-method-define.apm", resourceResolver) >> createScript("/import-method-define.apm")
 
         when:
         def result = scriptExecutor.execute(script, new ProgressImpl(""))
 
         then:
-        result.entries.size() == 3
+        result.entries.size() == 4
         result.entries[0].messages ==
                 ["Import from script /import-define.apm. Notice, only DEFINE actions were processed!",
                  "Imported variable: var=\"imported val\""]
@@ -118,6 +119,10 @@ class ScriptRunnerTest extends Specification {
         result.entries[2].messages ==
                 ["Import from script /import-deep-define.apm. Notice, only DEFINE actions were processed!",
                  "Imported variable: deepNamespace={deeperNamespace: {var: \"imported val\"}, deepVar: \"imported val + imported val\"}"]
+
+        result.entries[3].messages ==
+                ["Import from script /import-method-define.apm. Notice, only DEFINE actions were processed!",
+                 "Imported variable: methodNamespace={tab: [\"a\", \"b\", \"c\"]}"]
     }
 
     def "run script filename.apm"() {

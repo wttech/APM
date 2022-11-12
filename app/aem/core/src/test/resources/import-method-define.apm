@@ -16,7 +16,4 @@
  # See the License for the specific language governing permissions and
  # limitations under the License.
  # =========================LICENSE_END==================================
-IMPORT /import-define.apm
-IMPORT '/import-define.apm' AS namespace
-IMPORT '/import-deep-define.apm' AS deepNamespace
-IMPORT '/import-method-define.apm' AS methodNamespace
+DEFINE tab TAB()
