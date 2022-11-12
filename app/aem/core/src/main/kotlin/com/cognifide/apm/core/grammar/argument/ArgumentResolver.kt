@@ -115,10 +115,14 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
             return ApmMap(values)
         }
 
-        override fun visitStructureValue(ctx: StructureValueContext): ApmType {
+        override fun visitStructureEntry(ctx: StructureEntryContext): ApmType {
             val key = ctx.IDENTIFIER().toString()
-            val value = visit(ctx.value())
-            return ApmPair(Pair(key, value))
+            return ctx.structureValue()
+                .children
+                ?.map { child -> child.accept(this) }
+                ?.map { ApmPair(Pair(key, it)) }
+                ?.first()
+                ?: ApmEmpty()
         }
 
         override fun visitExpression(ctx: ExpressionContext): ApmType {
