@@ -49,14 +49,20 @@ arrayValue
     : value
     | name
     | privilegeName
+    | argument
     ;
 
 structure
-    : STRUCTURE_BEGIN structureValue (',' structureValue)* STRUCTURE_END
+    : STRUCTURE_BEGIN structureEntry (',' structureEntry)* STRUCTURE_END
+    ;
+
+structureEntry
+    : IDENTIFIER ':' structureValue
     ;
 
 structureValue
-    : IDENTIFIER ':' value
+    : value
+    | argument
     ;
 
 variable

@@ -80,7 +80,7 @@ data class ApmMap(val value: Map<String, ApmType>) : ApmType() {
         get() = value
 
     override fun toString(): String {
-        return value.entries.joinToString(prefix = "{", postfix = "}") { "${it.key}:${it.value}" }
+        return value.entries.joinToString(prefix = "{", postfix = "}") { "${it.key}: ${it.value}" }
     }
 }
 
