@@ -17,7 +17,7 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.core.launchers;
+package com.cognifide.apm.install.launchers;
 
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ScriptFinder;
@@ -26,6 +26,7 @@ import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.grammar.ReferenceFinder;
 import com.cognifide.apm.core.history.History;
 import com.cognifide.apm.core.history.HistoryEntry;
+import com.cognifide.apm.core.launchers.AbstractLauncher;
 import com.cognifide.apm.core.services.ResourceResolverProvider;
 import com.cognifide.apm.core.services.version.ScriptVersion;
 import com.cognifide.apm.core.services.version.VersionService;
@@ -44,6 +45,8 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 @Component(
+    service = ApmInstallService.class,
+    immediate = true,
     property = {
         Property.DESCRIPTION + "APM Launches configured scripts",
         Property.VENDOR
