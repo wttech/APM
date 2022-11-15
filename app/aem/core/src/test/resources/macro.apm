@@ -1,0 +1,21 @@
+DEFINE str1 'a'
+DEFINE str2 'b'
+
+REGISTER-MACRO simpleMacro BEGIN
+    SHOW 'simpleMacro'
+END
+
+REGISTER-MACRO parameterizedMacro1(param) BEGIN
+    SHOW 'parameterizedMacro1 ${param}'
+END
+
+REGISTER-MACRO parameterizedMacro2(param1, param2) BEGIN
+    SHOW 'parameterizedMacro2 ${param1}'
+    SHOW 'parameterizedMacro2 ${param2}'
+END
+
+RUN-MACRO simpleMacro
+RUN-MACRO parameterizedMacro1('param')
+RUN-MACRO parameterizedMacro2('param1', 'param2')
+RUN-MACRO parameterizedMacro1($str1 + $str2)
+RUN-MACRO parameterizedMacro2($str1, $str2)

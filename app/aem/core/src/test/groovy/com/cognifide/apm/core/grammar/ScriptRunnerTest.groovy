@@ -94,6 +94,26 @@ class ScriptRunnerTest extends Specification {
                      "Executing command SHOW [[\"a\", \"b\"], [\"c\", \"d\"]]"]
     }
 
+    def "run macro"() {
+        given:
+        Script script = createScript("/macro.apm")
+
+        when:
+        def result = scriptExecutor.execute(script, new ProgressImpl(""))
+
+        then:
+        def commands = result.entries
+                .collect { it.command }
+                .findAll { it.startsWith("Executing") }
+        commands == ["Executing command SHOW \"simpleMacro\"",
+                     "Executing command SHOW \"parameterizedMacro1 param\"",
+                     "Executing command SHOW \"parameterizedMacro2 param1\"",
+                     "Executing command SHOW \"parameterizedMacro2 param2\"",
+                     "Executing command SHOW \"parameterizedMacro1 ab\"",
+                     "Executing command SHOW \"parameterizedMacro2 a\"",
+                     "Executing command SHOW \"parameterizedMacro2 b\""]
+    }
+
     def "run import"() {
         given:
         Script script = createScript("/import.apm")

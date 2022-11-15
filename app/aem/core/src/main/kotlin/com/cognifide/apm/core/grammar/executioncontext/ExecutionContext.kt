@@ -28,6 +28,7 @@ import com.cognifide.apm.core.grammar.antlr.ApmLangParser.*
 import com.cognifide.apm.core.grammar.argument.ArgumentResolver
 import com.cognifide.apm.core.grammar.argument.Arguments
 import com.cognifide.apm.core.grammar.common.StackWithRoot
+import com.cognifide.apm.core.grammar.macro.Macro
 import com.cognifide.apm.core.grammar.parsedscript.ParsedScript
 import com.cognifide.apm.core.logger.Progress
 import org.apache.commons.lang3.StringUtils
@@ -35,13 +36,15 @@ import org.apache.jackrabbit.api.security.user.Authorizable
 import org.apache.sling.api.resource.ResourceResolver
 
 class ExecutionContext private constructor(
-        private val scriptFinder: ScriptFinder,
-        private val resourceResolver: ResourceResolver,
-        val root: ParsedScript,
-        override val progress: Progress) : ExternalExecutionContext {
+    private val scriptFinder: ScriptFinder,
+    private val resourceResolver: ResourceResolver,
+    val root: ParsedScript,
+    override val progress: Progress
+) : ExternalExecutionContext {
 
     private val parsedScripts: MutableMap<String, ParsedScript> = mutableMapOf()
     private var runScripts: StackWithRoot<RunScript> = StackWithRoot(RunScript(root))
+    private val registeredMacros: MutableMap<String, Macro> = mutableMapOf()
 
     val currentRunScript: RunScript
         get() = runScripts.peek()
@@ -56,7 +59,12 @@ class ExecutionContext private constructor(
 
     companion object {
         @JvmStatic
-        fun create(scriptFinder: ScriptFinder, resourceResolver: ResourceResolver, script: Script, progress: Progress): ExecutionContext {
+        fun create(
+            scriptFinder: ScriptFinder,
+            resourceResolver: ResourceResolver,
+            script: Script,
+            progress: Progress
+        ): ExecutionContext {
             return ExecutionContext(scriptFinder, resourceResolver, ParsedScript.create(script), progress)
         }
     }
@@ -116,7 +124,7 @@ class ExecutionContext private constructor(
 
     private fun fetchScript(path: String): ParsedScript {
         val script = scriptFinder.find(path, resourceResolver)
-                ?: throw ScriptExecutionException("Script not found $path")
+            ?: throw ScriptExecutionException("Script not found $path")
         val parsedScript = ParsedScript.create(script)
         registerScript(parsedScript)
         return parsedScript
@@ -133,4 +141,10 @@ class ExecutionContext private constructor(
             StringUtils.substringBeforeLast(runScripts.peek().path, "/") + "/" + path
         }
     }
+
+    fun registerMacro(macro: Macro) {
+        registeredMacros[macro.macroName] = macro
+    }
+
+    fun fetchMacro(macroName: String): Macro? = registeredMacros[macroName]
 }
