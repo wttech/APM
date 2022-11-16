@@ -23,7 +23,6 @@ package com.cognifide.apm.core.grammar.executioncontext
 import com.cognifide.apm.api.scripts.Script
 import com.cognifide.apm.api.services.ScriptFinder
 import com.cognifide.apm.core.grammar.ApmType
-import com.cognifide.apm.core.grammar.MethodInvoker
 import com.cognifide.apm.core.grammar.ScriptExecutionException
 import com.cognifide.apm.core.grammar.antlr.ApmLangParser.*
 import com.cognifide.apm.core.grammar.argument.ArgumentResolver
@@ -31,6 +30,7 @@ import com.cognifide.apm.core.grammar.argument.Arguments
 import com.cognifide.apm.core.grammar.common.StackWithRoot
 import com.cognifide.apm.core.grammar.parsedscript.ParsedScript
 import com.cognifide.apm.core.logger.Progress
+import com.cognifide.apm.core.method.MethodInvoker
 import org.apache.commons.lang3.StringUtils
 import org.apache.jackrabbit.api.security.user.Authorizable
 import org.apache.sling.api.resource.ResourceResolver

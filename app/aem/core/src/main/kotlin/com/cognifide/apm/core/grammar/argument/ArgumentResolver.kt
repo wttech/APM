@@ -69,11 +69,22 @@ class ArgumentResolver(
         }
     }
 
+    fun resolve(context: ArgumentListContext?): List<ApmType> {
+        return if (context == null) {
+            listOf()
+        } else {
+            val multiArgumentResolver = MultiArgumentResolver()
+            multiArgumentResolver.visitArgumentList(context)
+            multiArgumentResolver.list
+        }
+    }
+
     private inner class MultiArgumentResolver : com.cognifide.apm.core.grammar.antlr.ApmLangBaseVisitor<Unit>() {
 
         val required = mutableListOf<ApmType>()
         val named = mutableMapOf<String, ApmType>()
         val flags = mutableListOf<String>()
+        val list = mutableListOf<ApmType>()
 
         override fun visitRequiredArgument(ctx: RequiredArgumentContext) {
             required.add(singleArgumentResolver.visitArgument(ctx.argument()))
@@ -85,6 +96,10 @@ class ArgumentResolver(
 
         override fun visitFlag(ctx: FlagContext) {
             flags.add(getIdentifier(ctx.identifier()))
+        }
+
+        override fun visitArgument(ctx: ArgumentContext) {
+            list.add(singleArgumentResolver.visitArgument(ctx))
         }
     }
 
@@ -158,7 +173,7 @@ class ArgumentResolver(
         private fun determineStringValue(value: String): ApmString {
             val tokens = StringUtils.substringsBetween(value, "\${", "}")
                 .orEmpty()
-                .map { it to variableHolder[it]!!.string }
+                .map { it to variableHolder[it].string }
                 .toMap()
             val strSubstitutor = StrSubstitutor(tokens, "\${", "}")
             return ApmString(if (tokens.isEmpty()) value else strSubstitutor.replace(value))
@@ -179,7 +194,7 @@ class ArgumentResolver(
 
         override fun visitMethod(ctx: MethodContext): ApmType {
             val commandName = getIdentifier(ctx.commandName().identifier())
-            val arguments = resolve(ctx.complexArguments())
+            val arguments = resolve(ctx.argumentList())
             return executionContext?.methodInvoker!!.runMethod(
                 executionContext.resourceResolver,
                 commandName,
@@ -190,7 +205,6 @@ class ArgumentResolver(
         override fun visitVariable(ctx: VariableContext): ApmType {
             val name = getIdentifier(ctx.variableIdentifier())
             return variableHolder[name]
-                ?: throw ArgumentResolverException("Variable \"$name\" not found")
         }
     }
 }

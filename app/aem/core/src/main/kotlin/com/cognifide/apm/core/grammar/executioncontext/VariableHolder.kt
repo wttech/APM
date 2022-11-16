@@ -56,7 +56,7 @@ class VariableHolder {
         contexts.peek().variables.putAll(variableHolder.contexts.peek().variables)
     }
 
-    operator fun get(name: String): ApmType? {
+    operator fun get(name: String): ApmType {
         val keys = name.split('.', '[', ']').filter { it.isNotEmpty() }
         val context = contexts.firstOrNull { it.containsKey(keys[0]) }
         var result: ApmType? = null

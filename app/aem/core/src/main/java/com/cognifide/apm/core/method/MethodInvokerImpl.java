@@ -20,9 +20,8 @@
 package com.cognifide.apm.core.method;
 
 import com.cognifide.apm.core.grammar.ApmType;
-import com.cognifide.apm.core.grammar.MethodInvoker;
-import com.cognifide.apm.core.grammar.argument.Arguments;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;
@@ -45,7 +44,7 @@ public class MethodInvokerImpl implements MethodInvoker {
   }
 
   @Override
-  public ApmType runMethod(ResourceResolver resourceResolver, String commandName, Arguments arguments) {
+  public ApmType runMethod(ResourceResolver resourceResolver, String commandName, List<ApmType> arguments) {
     return methodDefinitions.get(commandName).runMethod(resourceResolver, arguments);
   }
 }

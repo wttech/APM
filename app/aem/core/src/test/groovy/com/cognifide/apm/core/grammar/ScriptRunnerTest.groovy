@@ -24,10 +24,13 @@ import com.cognifide.apm.api.scripts.Script
 import com.cognifide.apm.api.services.ScriptFinder
 import com.cognifide.apm.api.status.Status
 import com.cognifide.apm.core.grammar.argument.Arguments
+import com.cognifide.apm.core.method.MethodInvoker
 import com.cognifide.apm.core.progress.ProgressImpl
 import org.apache.commons.io.IOUtils
 import org.apache.sling.api.resource.ResourceResolver
 import spock.lang.Specification
+
+import java.util.function.Function
 
 class ScriptRunnerTest extends Specification {
 
@@ -189,7 +192,7 @@ class ScriptRunnerTest extends Specification {
     private static MethodInvoker createMethodInvoker() {
         new MethodInvoker() {
             @Override
-            ApmType runMethod(ResourceResolver resourceResolver, String commandName, Arguments arguments) {
+            ApmType runMethod(ResourceResolver resourceResolver, String commandName, List<ApmType> arguments) {
                 return new ApmList([new ApmString("a"), new ApmString("b"), new ApmString("c")])
             }
         }

@@ -42,11 +42,11 @@ path
     ;
 
 method
-    : commandName BRACKET_START complexArguments? BRACKET_END
+    : commandName BRACKET_START argumentList? BRACKET_END
     ;
 
 array
-    : ARRAY_BEGIN arrayValue (',' arrayValue)* ARRAY_END
+    : ARRAY_BEGIN arrayValue (COMMA arrayValue)* ARRAY_END
     ;
 
 arrayValue
@@ -57,7 +57,7 @@ arrayValue
     ;
 
 structure
-    : STRUCTURE_BEGIN structureEntry (',' structureEntry)* STRUCTURE_END
+    : STRUCTURE_BEGIN structureEntry (COMMA structureEntry)* STRUCTURE_END
     ;
 
 structureEntry
@@ -159,6 +159,10 @@ body
     : BLOCK_BEGIN command+ BLOCK_END
     ;
 
+argumentList
+    : argument (COMMA argument)*
+    ;
+
 /*
  * Lexer Rules
  */
@@ -181,6 +185,9 @@ BRACKET_START
     ;
 BRACKET_END
     : ')'
+    ;
+COMMA
+    : ','
     ;
 BLOCK_BEGIN
     : 'begin'

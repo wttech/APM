@@ -35,6 +35,7 @@ import com.cognifide.apm.core.grammar.utils.ImportScript
 import com.cognifide.apm.core.grammar.utils.RequiredVariablesChecker
 import com.cognifide.apm.core.logger.Position
 import com.cognifide.apm.core.logger.Progress
+import com.cognifide.apm.core.method.MethodInvoker
 import org.antlr.v4.runtime.ParserRuleContext
 import org.apache.sling.api.resource.ResourceResolver
 

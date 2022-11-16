@@ -44,8 +44,8 @@ public class SitesMethodDefinition implements MethodDefinition {
   }
 
   @Override
-  public ApmType runMethod(ResourceResolver resourceResolver, Arguments arguments) {
-    String path = arguments.getRequired().get(0).getString();
+  public ApmType runMethod(ResourceResolver resourceResolver, List<ApmType> arguments) {
+    String path = arguments. get(0).getString();
     Resource resource = resourceResolver.getResource(path);
     List<ApmType> values = new ArrayList<>();
     for (Resource market : resource.getChildren()) {

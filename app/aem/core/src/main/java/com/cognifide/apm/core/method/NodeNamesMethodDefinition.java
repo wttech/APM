@@ -22,7 +22,6 @@ package com.cognifide.apm.core.method;
 import com.cognifide.apm.core.grammar.ApmList;
 import com.cognifide.apm.core.grammar.ApmString;
 import com.cognifide.apm.core.grammar.ApmType;
-import com.cognifide.apm.core.grammar.argument.Arguments;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -39,8 +38,8 @@ public class NodeNamesMethodDefinition implements MethodDefinition {
   }
 
   @Override
-  public ApmType runMethod(ResourceResolver resourceResolver, Arguments arguments) {
-    String path = arguments.getRequired().get(0).getString();
+  public ApmType runMethod(ResourceResolver resourceResolver, List<ApmType> arguments) {
+    String path = arguments.get(0).getString();
     Resource resource = resourceResolver.getResource(path);
     List<ApmString> values = StreamSupport.stream(resource.getChildren().spliterator(), false)
         .filter(this::isValidResource)
