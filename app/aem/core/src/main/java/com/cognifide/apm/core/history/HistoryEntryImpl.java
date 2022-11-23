@@ -43,6 +43,7 @@ public class HistoryEntryImpl implements HistoryEntry {
 
   public static final String AUTHOR = "author";
   public static final String EXECUTION_TIME = "executionTime";
+  public static final String EXECUTION_DURATION = "executionDuration";
   public static final String EXECUTOR = "executor";
   public static final String SCRIPT_PATH = "scriptPath";
   public static final String SCRIPT_NAME = "scriptName";
@@ -61,6 +62,10 @@ public class HistoryEntryImpl implements HistoryEntry {
   @Inject
   @Named(EXECUTION_TIME)
   private Date executionTime;
+
+  @Inject
+  @Named(EXECUTION_DURATION)
+  private Long executionDuration;
 
   @Inject
   @Named(EXECUTOR)

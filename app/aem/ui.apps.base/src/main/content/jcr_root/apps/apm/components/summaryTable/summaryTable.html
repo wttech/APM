@@ -22,51 +22,46 @@
   <coral-list>
     <coral-list-item icon="file">Script: <strong>${item.entry.scriptName}</strong></coral-list-item>
     <coral-list-item icon="user">User: <strong>${item.entry.executor}</strong></coral-list-item>
+    <coral-list-item icon="clock" data-sly-test="${item.entry.executionDuration}">Duration: <strong>${item.entry.executionDuration}s</strong></coral-list-item>
   </coral-list>
-  <table is="coral-table">
-    <thead is="coral-table-head">
-    <tr is="coral-table-row">
-      <th is="coral-table-headercell">
+  <table class="_coral-Table">
+    <thead class="_coral-Table-divider--row _coral-Table-head">
+    <tr class="entry-success _coral-Table-row">
+      <th class="_coral-Table-headerCell">
         No
       </th>
-      <th is="coral-table-headercell">
+      <th class="_coral-Table-headerCell">
         Authorizable
       </th>
-      <th is="coral-table-headercell">
+      <th class="_coral-Table-headerCell">
         Action
       </th>
-      <th is="coral-table-headercell">
+      <th class="_coral-Table-headerCell">
         Parameters
       </th>
-      <th is="coral-table-headercell">
+      <th class="_coral-Table-headerCell">
         Status
       </th>
-      <th is="coral-table-headercell">
+      <th class="_coral-Table-headerCell">
         Messages
       </th>
     </tr>
     </thead>
-    <tbody is="coral-table-body">
+    <tbody class="_coral-Table-divider--row _coral-Table-body">
     <sly data-sly-list.execution="${item.entry.executionSummary}">
-      <tr is="coral-table-row"
-          class="${execution.status.toString == 'SUCCESS' ? 'entry-success' : (execution.status.toString == 'ERROR' ? 'entry-error' : 'entry-warning')}">
-        <td is="coral-table-cell">${executionList.index}</td>
-        <td is="coral-table-cell">${execution.authorizable}</td>
-        <td is="coral-table-cell">${execution.command.toUpperCase}</td>
-        <td is="coral-table-cell">
+      <tr class="${execution.status.className} _coral-Table-row">
+        <td class="_coral-Table-cell">${executionList.index}</td>
+        <td class="_coral-Table-cell">${execution.authorizable}</td>
+        <td class="_coral-Table-cell">${execution.command.toUpperCase}</td>
+        <td class="_coral-Table-cell">
           <ul>
             <li data-sly-repeat.text="${execution.parameters}">${text}</li>
           </ul>
         </td>
-        <td is="coral-table-cell">
-          <coral-icon data-sly-test.statusSuccess="${execution.status.toString == 'SUCCESS'}" title="success"
-                      icon="check"/>
-          <coral-icon data-sly-test.statusSkipped="${execution.status.toString == 'SKIPPED'}" title="skipped"
-                      icon="chevronRight"/>
-          <coral-icon data-sly-test.statusError="${execution.status.toString == 'ERROR'}" title="error" icon="close"/>
-          <coral-icon data-sly-test="${!statusSuccess && !statusSkipped && !statusError}" title="warning" icon="alert"/>
+        <td class="_coral-Table-cell">
+          <coral-icon title="${execution.status.iconTitle}" icon="${execution.status.iconType}"/>
         </td>
-        <td is="coral-table-cell">
+        <td class="_coral-Table-cell">
           <ul>
             <li data-sly-repeat.text="${execution.messages}">${text}</li>
           </ul>
