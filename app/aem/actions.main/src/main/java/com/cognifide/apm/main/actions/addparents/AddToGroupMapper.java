@@ -33,7 +33,7 @@ import java.util.List;
 @Mapper(value = "ADD-TO-GROUP", group = ActionGroup.CORE)
 public final class AddToGroupMapper {
 
-  public static final String REFERENCE = "Add current authorizable to specified groups. "
+  private static final String REFERENCE = "Add current authorizable to specified groups. "
       + "Alias for ADD-PARENTS command.";
 
   @Mapping(

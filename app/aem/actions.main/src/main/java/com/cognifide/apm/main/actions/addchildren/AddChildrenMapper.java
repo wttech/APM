@@ -33,7 +33,7 @@ import java.util.List;
 @Mapper(value = "ADD-CHILDREN", group = ActionGroup.CORE)
 public final class AddChildrenMapper {
 
-  public static final String REFERENCE = "Add specified users and groups to current group.";
+  private static final String REFERENCE = "Add specified users and groups to current group.";
 
   @Mapping(
       examples = {

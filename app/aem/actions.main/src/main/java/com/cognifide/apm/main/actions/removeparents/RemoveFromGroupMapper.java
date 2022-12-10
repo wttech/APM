@@ -33,7 +33,7 @@ import java.util.List;
 @Mapper(value = "REMOVE-FROM-GROUP", group = ActionGroup.CORE)
 public final class RemoveFromGroupMapper {
 
-  public static final String REFERENCE = "Remove current authorizable from specified groups. "
+  private static final String REFERENCE = "Remove current authorizable from specified groups. "
       + "Alias for REMOVE-PARENTS command.";
 
   @Mapping(
