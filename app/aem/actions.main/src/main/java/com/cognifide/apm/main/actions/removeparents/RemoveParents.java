@@ -23,8 +23,9 @@ import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.apm.api.actions.Context;
 import com.cognifide.apm.api.exceptions.ActionExecutionException;
+import com.cognifide.apm.api.exceptions.AuthorizableNotFoundException;
+import com.cognifide.apm.api.status.Status;
 import com.cognifide.apm.main.utils.MessagingUtils;
-import java.util.ArrayList;
 import java.util.List;
 import javax.jcr.RepositoryException;
 import org.apache.jackrabbit.api.security.user.Authorizable;
@@ -38,8 +39,11 @@ public class RemoveParents implements Action {
 
   private final List<String> groupIds;
 
-  public RemoveParents(final List<String> groupIds) {
+  private final boolean ignoreNonExistingPaths;
+
+  public RemoveParents(List<String> groupIds, boolean ignoreNonExistingPaths) {
     this.groupIds = groupIds;
+    this.ignoreNonExistingPaths = ignoreNonExistingPaths;
   }
 
   @Override
@@ -48,24 +52,20 @@ public class RemoveParents implements Action {
   }
 
   @Override
-  public ActionResult execute(final Context context) {
+  public ActionResult execute(Context context) {
     return process(context, true);
   }
 
-  public ActionResult process(final Context context, boolean execute) {
+  public ActionResult process(Context context, boolean execute) {
     ActionResult actionResult = context.createActionResult();
-    List<String> errors = new ArrayList<>();
-    Authorizable authorizable = null;
+    Authorizable authorizable;
     try {
       authorizable = context.getCurrentAuthorizable();
       actionResult.setAuthorizable(authorizable.getID());
       LOGGER.info(
           String.format("Removing authorizable with id = %s from groups %s", authorizable.getID(),
               groupIds));
-    } catch (ActionExecutionException e) {
-      actionResult.logError(MessagingUtils.createMessage(e));
-      return actionResult;
-    } catch (RepositoryException e) {
+    } catch (RepositoryException | ActionExecutionException e) {
       actionResult.logError(MessagingUtils.createMessage(e));
       return actionResult;
     }
@@ -80,14 +80,17 @@ public class RemoveParents implements Action {
 
         actionResult.logMessage(MessagingUtils.removedFromGroup(authorizable.getID(), id));
       } catch (RepositoryException | ActionExecutionException e) {
-        errors.add(MessagingUtils.createMessage(e));
+        actionResult.logError(MessagingUtils.createMessage(e));
+      } catch (AuthorizableNotFoundException e) {
+        if (ignoreNonExistingPaths) {
+          actionResult.logWarning(MessagingUtils.createMessage(e));
+        } else {
+          actionResult.logError(MessagingUtils.createMessage(e));
+        }
       }
     }
 
-    if (!errors.isEmpty()) {
-      for (String error : errors) {
-        actionResult.logError(error);
-      }
+    if (actionResult.getStatus() == Status.ERROR) {
       actionResult.logError("Execution interrupted");
     }
     return actionResult;

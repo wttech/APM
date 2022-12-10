@@ -23,9 +23,10 @@ import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.apm.api.actions.Context;
 import com.cognifide.apm.api.exceptions.ActionExecutionException;
+import com.cognifide.apm.api.exceptions.AuthorizableNotFoundException;
+import com.cognifide.apm.api.status.Status;
 import com.cognifide.apm.main.utils.ActionUtils;
 import com.cognifide.apm.main.utils.MessagingUtils;
-import java.util.ArrayList;
 import java.util.List;
 import javax.jcr.RepositoryException;
 import org.apache.commons.lang3.StringUtils;
@@ -40,8 +41,11 @@ public class AddChildren implements Action {
 
   private final List<String> authorizableIds;
 
-  public AddChildren(final List<String> authorizableIds) {
+  private final boolean ignoreNonExistingPaths;
+
+  public AddChildren(List<String> authorizableIds, boolean ignoreNonExistingPaths) {
     this.authorizableIds = authorizableIds;
+    this.ignoreNonExistingPaths = ignoreNonExistingPaths;
   }
 
   @Override
@@ -50,31 +54,25 @@ public class AddChildren implements Action {
   }
 
   @Override
-  public ActionResult execute(final Context context) {
+  public ActionResult execute(Context context) {
     return process(context, true);
   }
 
   private ActionResult process(Context context, boolean execute) {
     ActionResult actionResult = context.createActionResult();
-    Group group = null;
+    Group group;
     try {
       group = context.getCurrentGroup();
       actionResult.setAuthorizable(group.getID());
       LOGGER.info(String.format("Adding authorizables %s to group with id = %s",
           StringUtils.join(authorizableIds, ", "), group.getID()));
-    } catch (ActionExecutionException e) {
-      actionResult.logError(MessagingUtils.createMessage(e));
-      return actionResult;
-    } catch (RepositoryException e) {
+    } catch (RepositoryException | ActionExecutionException e) {
       actionResult.logError(MessagingUtils.createMessage(e));
       return actionResult;
     }
 
-    List<String> errors = new ArrayList<>();
-
     for (String authorizableId : authorizableIds) {
       try {
-
         Authorizable authorizable = context.getAuthorizableManager().getAuthorizable(authorizableId);
 
         if (authorizable.isGroup()) {
@@ -87,14 +85,17 @@ public class AddChildren implements Action {
 
         actionResult.logMessage(MessagingUtils.addedToGroup(authorizableId, group.getID()));
       } catch (RepositoryException | ActionExecutionException e) {
-        errors.add(MessagingUtils.createMessage(e));
+        actionResult.logError(MessagingUtils.createMessage(e));
+      } catch (AuthorizableNotFoundException e) {
+        if (ignoreNonExistingPaths) {
+          actionResult.logWarning(MessagingUtils.createMessage(e));
+        } else {
+          actionResult.logError(MessagingUtils.createMessage(e));
+        }
       }
     }
 
-    if (!errors.isEmpty()) {
-      for (String error : errors) {
-        actionResult.logError(error);
-      }
+    if (actionResult.getStatus() == Status.ERROR) {
       actionResult.logError("Execution interrupted");
     }
     return actionResult;

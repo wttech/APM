@@ -19,7 +19,10 @@
  */
 package com.cognifide.apm.main.actions.addchildren;
 
+import static com.cognifide.apm.main.actions.CommonFlags.IF_EXISTS;
+
 import com.cognifide.apm.api.actions.Action;
+import com.cognifide.apm.api.actions.annotations.Flag;
 import com.cognifide.apm.api.actions.annotations.Mapper;
 import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.apm.api.actions.annotations.Required;
@@ -33,19 +36,27 @@ public final class AddChildrenMapper {
   public static final String REFERENCE = "Add specified users and groups to current group.";
 
   @Mapping(
-      examples = "ADD-CHILDREN 'authors'",
+      examples = {
+          "ADD-CHILDREN 'authors'",
+          "ADD-CHILDREN 'authors' --IF-EXISTS"
+      },
       reference = REFERENCE
   )
-  public Action mapAction(@Required(value = "id", description = "user's or group's id e.g.: 'author'") String id) {
-    return mapAction(Collections.singletonList(id));
+  public Action mapAction(@Required(value = "id", description = "user's or group's id e.g.: 'author'") String id,
+      @Flag(value = IF_EXISTS, description = "script doesn't fail if group doesn't exist") boolean ifExists) {
+    return mapAction(Collections.singletonList(id), ifExists);
   }
 
   @Mapping(
-      examples = "ADD-CHILDREN ['authors']",
+      examples = {
+          "ADD-CHILDREN ['authors']",
+          "ADD-CHILDREN ['authors'] --IF-EXISTS"
+      },
       reference = REFERENCE
   )
   public Action mapAction(
-      @Required(value = "ids", description = "users' or groups' ids e.g.: ['author']") List<String> ids) {
-    return new AddChildren(ids);
+      @Required(value = "ids", description = "users' or groups' ids e.g.: ['author']") List<String> ids,
+      @Flag(value = IF_EXISTS, description = "script doesn't fail if path doesn't exist") boolean ifExists) {
+    return new AddChildren(ids, ifExists);
   }
 }

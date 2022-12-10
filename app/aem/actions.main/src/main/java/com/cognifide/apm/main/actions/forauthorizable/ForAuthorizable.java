@@ -23,6 +23,7 @@ import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.apm.api.actions.Context;
 import com.cognifide.apm.api.exceptions.ActionExecutionException;
+import com.cognifide.apm.api.exceptions.AuthorizableNotFoundException;
 import com.cognifide.apm.main.utils.MessagingUtils;
 import javax.jcr.RepositoryException;
 import org.apache.jackrabbit.api.security.user.Group;
@@ -32,24 +33,27 @@ public class ForAuthorizable implements Action {
 
   private final String id;
 
-  private final Boolean shouldBeGroup;
+  private final boolean ignoreNonExistingPaths;
 
-  public ForAuthorizable(final String id, final Boolean shouldBeGroup) {
+  private final boolean shouldBeGroup;
+
+  public ForAuthorizable(String id, boolean ignoreNonExistingPaths, boolean shouldBeGroup) {
     this.id = id;
+    this.ignoreNonExistingPaths = ignoreNonExistingPaths;
     this.shouldBeGroup = shouldBeGroup;
   }
 
   @Override
-  public ActionResult simulate(final Context context) {
+  public ActionResult simulate(Context context) {
     return process(context);
   }
 
   @Override
-  public ActionResult execute(final Context context) {
+  public ActionResult execute(Context context) {
     return process(context);
   }
 
-  public ActionResult process(final Context context) {
+  public ActionResult process(Context context) {
     ActionResult actionResult = context.createActionResult();
     try {
 
@@ -65,6 +69,12 @@ public class ForAuthorizable implements Action {
 
     } catch (RepositoryException | ActionExecutionException e) {
       actionResult.logError(MessagingUtils.createMessage(e));
+    } catch (AuthorizableNotFoundException e) {
+      if (ignoreNonExistingPaths) {
+        actionResult.logWarning(MessagingUtils.createMessage(e));
+      } else {
+        actionResult.logError(MessagingUtils.createMessage(e));
+      }
     }
     return actionResult;
   }

@@ -24,6 +24,7 @@ import static java.lang.String.format;
 
 import com.cognifide.apm.api.actions.AuthorizableManager;
 import com.cognifide.apm.api.exceptions.ActionExecutionException;
+import com.cognifide.apm.api.exceptions.AuthorizableNotFoundException;
 import com.cognifide.apm.core.utils.mocks.MockGroup;
 import com.cognifide.apm.core.utils.mocks.MockPrincipal;
 import com.cognifide.apm.core.utils.mocks.MockUser;
@@ -44,6 +45,7 @@ public class AuthorizableManagerImpl implements AuthorizableManager {
   private final UserManager userManager;
 
   private final Map<String, Authorizable> existingAuthorizables = new HashMap<>();
+
   private final List<String> removedAuthorizables = new ArrayList<>();
 
   public AuthorizableManagerImpl(UserManager userManager) {
@@ -65,7 +67,7 @@ public class AuthorizableManagerImpl implements AuthorizableManager {
   }
 
   @Override
-  public Authorizable getAuthorizable(String id) throws ActionExecutionException, RepositoryException {
+  public Authorizable getAuthorizable(String id) throws ActionExecutionException, RepositoryException, AuthorizableNotFoundException {
     return getAuthorizable(Authorizable.class, id);
   }
 
@@ -81,7 +83,7 @@ public class AuthorizableManagerImpl implements AuthorizableManager {
   }
 
   @Override
-  public Group getGroup(String id) throws ActionExecutionException, RepositoryException {
+  public Group getGroup(String id) throws ActionExecutionException, RepositoryException, AuthorizableNotFoundException {
     return getAuthorizable(Group.class, id);
   }
 
@@ -113,7 +115,7 @@ public class AuthorizableManagerImpl implements AuthorizableManager {
   }
 
   @Override
-  public User getUser(String id) throws ActionExecutionException, RepositoryException {
+  public User getUser(String id) throws ActionExecutionException, RepositoryException, AuthorizableNotFoundException {
     return getAuthorizable(User.class, id);
   }
 
@@ -182,9 +184,9 @@ public class AuthorizableManagerImpl implements AuthorizableManager {
   }
 
   private <T extends Authorizable> T getAuthorizable(Class<T> authorizableClass, String id)
-      throws ActionExecutionException, RepositoryException {
+      throws ActionExecutionException, RepositoryException, AuthorizableNotFoundException {
     if (checkIfRemoved(id)) {
-      throw new ActionExecutionException(
+      throw new AuthorizableNotFoundException(
           format("%s with id %s not found", authorizableClass.getSimpleName(), id));
     }
 
@@ -195,7 +197,7 @@ public class AuthorizableManagerImpl implements AuthorizableManager {
     }
 
     if (authorizable == null) {
-      throw new ActionExecutionException(
+      throw new AuthorizableNotFoundException(
           format("%s with id %s not found", authorizableClass.getSimpleName(), id));
     }
 

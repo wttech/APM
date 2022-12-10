@@ -19,7 +19,10 @@
  */
 package com.cognifide.apm.main.actions.addparents;
 
+import static com.cognifide.apm.main.actions.CommonFlags.IF_EXISTS;
+
 import com.cognifide.apm.api.actions.Action;
+import com.cognifide.apm.api.actions.annotations.Flag;
 import com.cognifide.apm.api.actions.annotations.Mapper;
 import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.apm.api.actions.annotations.Required;
@@ -33,20 +36,28 @@ public final class AddParentsMapper {
   public static final String REFERENCE = "Add current authorizable to specified groups.";
 
   @Mapping(
-      examples = "ADD-PARENTS 'authors'",
+      examples = {
+          "ADD-PARENTS 'authors'",
+          "ADD-PARENTS 'authors' --IF-EXISTS"
+      },
       reference = REFERENCE
   )
   public Action mapAction(
-      @Required(value = "group", description = "group") String group) {
-    return mapAction(Collections.singletonList(group));
+      @Required(value = "group", description = "group") String group,
+      @Flag(value = IF_EXISTS, description = "script doesn't fail if group doesn't exist") boolean ifExists) {
+    return mapAction(Collections.singletonList(group), ifExists);
   }
 
   @Mapping(
-      examples = "ADD-PARENTS ['authors', 'publishers']",
+      examples = {
+          "ADD-PARENTS ['authors', 'publishers']",
+          "ADD-PARENTS ['authors', 'publishers'] --IF-EXISTS"
+      },
       reference = REFERENCE
   )
   public Action mapAction(
-      @Required(value = "groups", description = "list of groups") List<String> groups) {
-    return new AddParents(groups);
+      @Required(value = "groups", description = "list of groups") List<String> groups,
+      @Flag(value = IF_EXISTS, description = "script doesn't fail if group doesn't exist") boolean ifExists) {
+    return new AddParents(groups, ifExists);
   }
 }

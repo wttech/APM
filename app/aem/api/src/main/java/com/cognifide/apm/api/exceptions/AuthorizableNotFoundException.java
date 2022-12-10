@@ -17,36 +17,18 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.api.status;
+package com.cognifide.apm.api.exceptions;
 
-public enum Status {
+public class AuthorizableNotFoundException extends ActionException {
 
-  ERROR("entry-error", "error", "close"),
-  WARNING("entry-warning", "warning", "alert"),
-  SUCCESS("entry-success", "success", "check"),
-  SKIPPED("entry-warning", "skipped", "chevronRight");
+  private static final long serialVersionUID = -6238146921748829870L;
 
-  private final String className;
-
-  private final String iconTitle;
-
-  private final String iconType;
-
-  Status(String className, String iconTitle, String iconType) {
-    this.className = className;
-    this.iconTitle = iconTitle;
-    this.iconType = iconType;
+  public AuthorizableNotFoundException(String message) {
+    super(message);
   }
 
-  public String getClassName() {
-    return className;
+  public AuthorizableNotFoundException(String message,   Throwable throwable) {
+    super(message, throwable);
   }
 
-  public String getIconTitle() {
-    return iconTitle;
-  }
-
-  public String getIconType() {
-    return iconType;
-  }
 }
