@@ -43,7 +43,7 @@ public final class AddChildrenMapper {
       reference = REFERENCE
   )
   public Action mapAction(@Required(value = "id", description = "user's or group's id e.g.: 'author'") String id,
-      @Flag(value = IF_EXISTS, description = "script doesn't fail if group doesn't exist") boolean ifExists) {
+      @Flag(value = IF_EXISTS, description = "script doesn't fail if authorizable doesn't exist") boolean ifExists) {
     return mapAction(Collections.singletonList(id), ifExists);
   }
 
@@ -56,7 +56,7 @@ public final class AddChildrenMapper {
   )
   public Action mapAction(
       @Required(value = "ids", description = "users' or groups' ids e.g.: ['author']") List<String> ids,
-      @Flag(value = IF_EXISTS, description = "script doesn't fail if path doesn't exist") boolean ifExists) {
+      @Flag(value = IF_EXISTS, description = "script doesn't fail if authorizable doesn't exist") boolean ifExists) {
     return new AddChildren(ids, ifExists);
   }
 }
