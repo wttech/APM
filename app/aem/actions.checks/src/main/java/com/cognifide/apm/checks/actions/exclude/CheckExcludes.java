@@ -95,12 +95,11 @@ public class CheckExcludes implements Action {
   }
 
   private Group tryGetGroup(Context context, ActionResult actionResult) {
-    Group group = null;
     try {
-      group = context.getAuthorizableManager().getGroup(groupId);
+      return context.getAuthorizableManager().getGroup(groupId);
     } catch (RepositoryException | ActionExecutionException | AuthorizableNotFoundException e) {
       actionResult.logError(MessagingUtils.createMessage(e));
     }
-    return group;
+    return null;
   }
 }
