@@ -21,13 +21,11 @@ package com.cognifide.apm.api.exceptions;
 
 public class AuthorizableNotFoundException extends ActionException {
 
-  private static final long serialVersionUID = -6238146921748829870L;
-
   public AuthorizableNotFoundException(String message) {
     super(message);
   }
 
-  public AuthorizableNotFoundException(String message,   Throwable throwable) {
+  public AuthorizableNotFoundException(String message, Throwable throwable) {
     super(message, throwable);
   }
 
