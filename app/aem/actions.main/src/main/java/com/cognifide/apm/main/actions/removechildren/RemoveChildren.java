@@ -23,8 +23,9 @@ import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.apm.api.actions.Context;
 import com.cognifide.apm.api.exceptions.ActionExecutionException;
+import com.cognifide.apm.api.exceptions.AuthorizableNotFoundException;
+import com.cognifide.apm.api.status.Status;
 import com.cognifide.apm.main.utils.MessagingUtils;
-import java.util.ArrayList;
 import java.util.List;
 import javax.jcr.RepositoryException;
 import org.apache.commons.lang3.StringUtils;
@@ -39,7 +40,7 @@ public class RemoveChildren implements Action {
 
   private final List<String> authorizableIds;
 
-  public RemoveChildren(final List<String> authorizableIds) {
+  public RemoveChildren(List<String> authorizableIds) {
     this.authorizableIds = authorizableIds;
   }
 
@@ -49,51 +50,40 @@ public class RemoveChildren implements Action {
   }
 
   @Override
-  public ActionResult execute(final Context context) {
+  public ActionResult execute(Context context) {
     return process(context, true);
   }
 
-  private ActionResult process(final Context context, boolean execute) {
+  private ActionResult process(Context context, boolean execute) {
     ActionResult actionResult = context.createActionResult();
-    Group group = null;
+    Group group;
     try {
       group = context.getCurrentGroup();
       actionResult.setAuthorizable(group.getID());
       LOGGER.info(String.format("Removing authorizables %s from group with id = %s",
           StringUtils.join(authorizableIds, ", "), group.getID()));
-    } catch (ActionExecutionException e) {
-      actionResult.logError(MessagingUtils.createMessage(e));
-      return actionResult;
-    } catch (RepositoryException e) {
+    } catch (RepositoryException | ActionExecutionException e) {
       actionResult.logError(MessagingUtils.createMessage(e));
       return actionResult;
     }
 
-    List<String> errors = new ArrayList<>();
     for (String authorizableId : authorizableIds) {
       try {
-
-        Authorizable authorizable = context.getAuthorizableManager().getAuthorizableIfExists(authorizableId);
-
-        if (authorizable == null) {
-          actionResult.logWarning(MessagingUtils.authorizableNotExists(authorizableId));
-          continue;
-        }
+        Authorizable authorizable = context.getAuthorizableManager().getAuthorizable(authorizableId);
 
         if (execute) {
           group.removeMember(authorizable);
         }
 
         actionResult.logMessage(MessagingUtils.removedFromGroup(authorizableId, group.getID()));
-      } catch (RepositoryException e) {
-        errors.add(MessagingUtils.createMessage(e));
+      } catch (RepositoryException | ActionExecutionException e) {
+        actionResult.logError(MessagingUtils.createMessage(e));
+      } catch (AuthorizableNotFoundException e) {
+        actionResult.logWarning(MessagingUtils.createMessage(e));
       }
     }
 
-    if (!errors.isEmpty()) {
-      for (String error : errors) {
-        actionResult.logError(error);
-      }
+    if (actionResult.getStatus() == Status.ERROR) {
       actionResult.logError("Execution interrupted");
     }
     return actionResult;
