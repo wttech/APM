@@ -88,8 +88,7 @@ public class CheckPermissions implements Action {
         if (checkPermissionsForPath(authorizablesToCheck, actions, privilegesToCheck, path)) {
           logFailure(execute, actionResult, authorizable, path);
         } else {
-          actionResult.logMessage(
-              "All required privileges are set for " + authorizable.getID() + " on " + path);
+          actionResult.logMessage("All required privileges are set for " + authorizable.getID() + " on " + path);
         }
       } else {
         checkPermissionsForGlob(context.getSession(), execute, actionResult, authorizable, authorizablesToCheck,
@@ -138,8 +137,7 @@ public class CheckPermissions implements Action {
 
   private static void logFailure(boolean execute, ActionResult actionResult, Authorizable authorizable, String subpath)
       throws RepositoryException {
-    actionResult.logError(
-        "Not all required privileges are set for " + authorizable.getID() + " on " + subpath);
+    actionResult.logError("Not all required privileges are set for " + authorizable.getID() + " on " + subpath);
     if (execute) {
       actionResult.logError(ActionUtils.ASSERTION_FAILED_MSG);
     }
