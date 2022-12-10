@@ -28,5 +28,4 @@ public class AuthorizableNotFoundException extends ActionException {
   public AuthorizableNotFoundException(String message, Throwable throwable) {
     super(message, throwable);
   }
-
 }
