@@ -40,11 +40,11 @@ public class AddParents implements Action {
 
   private final List<String> groupIds;
 
-  private final boolean ignoreNonExistingPaths;
+  private final boolean ignoreNonExistingGroups;
 
-  public AddParents(List<String> groupIds, boolean ignoreNonExistingPaths) {
+  public AddParents(List<String> groupIds, boolean ignoreNonExistingGroups) {
     this.groupIds = groupIds;
-    this.ignoreNonExistingPaths = ignoreNonExistingPaths;
+    this.ignoreNonExistingGroups = ignoreNonExistingGroups;
   }
 
   @Override
@@ -85,7 +85,7 @@ public class AddParents implements Action {
       } catch (RepositoryException | ActionExecutionException e) {
         actionResult.logError(MessagingUtils.createMessage(e));
       } catch (AuthorizableNotFoundException e) {
-        if (ignoreNonExistingPaths) {
+        if (ignoreNonExistingGroups) {
           actionResult.logWarning(MessagingUtils.createMessage(e));
         } else {
           actionResult.logError(MessagingUtils.createMessage(e));

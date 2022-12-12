@@ -41,11 +41,11 @@ public class AddChildren implements Action {
 
   private final List<String> authorizableIds;
 
-  private final boolean ignoreNonExistingPaths;
+  private final boolean ignoreNonExistingAuthorizables;
 
-  public AddChildren(List<String> authorizableIds, boolean ignoreNonExistingPaths) {
+  public AddChildren(List<String> authorizableIds, boolean ignoreNonExistingAuthorizables) {
     this.authorizableIds = authorizableIds;
-    this.ignoreNonExistingPaths = ignoreNonExistingPaths;
+    this.ignoreNonExistingAuthorizables = ignoreNonExistingAuthorizables;
   }
 
   @Override
@@ -87,7 +87,7 @@ public class AddChildren implements Action {
       } catch (RepositoryException | ActionExecutionException e) {
         actionResult.logError(MessagingUtils.createMessage(e));
       } catch (AuthorizableNotFoundException e) {
-        if (ignoreNonExistingPaths) {
+        if (ignoreNonExistingAuthorizables) {
           actionResult.logWarning(MessagingUtils.createMessage(e));
         } else {
           actionResult.logError(MessagingUtils.createMessage(e));

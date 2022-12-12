@@ -39,11 +39,11 @@ public class RemoveParents implements Action {
 
   private final List<String> groupIds;
 
-  private final boolean ignoreNonExistingPaths;
+  private final boolean ignoreNonExistingGroups;
 
-  public RemoveParents(List<String> groupIds, boolean ignoreNonExistingPaths) {
+  public RemoveParents(List<String> groupIds, boolean ignoreNonExistingGroups) {
     this.groupIds = groupIds;
-    this.ignoreNonExistingPaths = ignoreNonExistingPaths;
+    this.ignoreNonExistingGroups = ignoreNonExistingGroups;
   }
 
   @Override
@@ -82,7 +82,7 @@ public class RemoveParents implements Action {
       } catch (RepositoryException | ActionExecutionException e) {
         actionResult.logError(MessagingUtils.createMessage(e));
       } catch (AuthorizableNotFoundException e) {
-        if (ignoreNonExistingPaths) {
+        if (ignoreNonExistingGroups) {
           actionResult.logWarning(MessagingUtils.createMessage(e));
         } else {
           actionResult.logError(MessagingUtils.createMessage(e));

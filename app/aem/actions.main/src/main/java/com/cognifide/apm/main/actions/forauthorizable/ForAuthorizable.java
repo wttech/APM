@@ -33,13 +33,13 @@ public class ForAuthorizable implements Action {
 
   private final String id;
 
-  private final boolean ignoreNonExistingPaths;
+  private final boolean ignoreNonExistingAuthorizable;
 
   private final boolean shouldBeGroup;
 
-  public ForAuthorizable(String id, boolean ignoreNonExistingPaths, boolean shouldBeGroup) {
+  public ForAuthorizable(String id, boolean ignoreNonExistingAuthorizable, boolean shouldBeGroup) {
     this.id = id;
-    this.ignoreNonExistingPaths = ignoreNonExistingPaths;
+    this.ignoreNonExistingAuthorizable = ignoreNonExistingAuthorizable;
     this.shouldBeGroup = shouldBeGroup;
   }
 
@@ -70,7 +70,7 @@ public class ForAuthorizable implements Action {
     } catch (RepositoryException | ActionExecutionException e) {
       actionResult.logError(MessagingUtils.createMessage(e));
     } catch (AuthorizableNotFoundException e) {
-      if (ignoreNonExistingPaths) {
+      if (ignoreNonExistingAuthorizable) {
         actionResult.logWarning(MessagingUtils.createMessage(e));
       } else {
         actionResult.logError(MessagingUtils.createMessage(e));
