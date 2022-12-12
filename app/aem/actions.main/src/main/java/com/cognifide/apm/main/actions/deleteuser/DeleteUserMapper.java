@@ -33,10 +33,11 @@ import java.util.stream.Collectors;
 @Mapper(value = "DELETE-USER", group = ActionGroup.CORE)
 public final class DeleteUserMapper {
 
-  public static final String CLEAR_PERMISSIONS = "CLEAR-PERMISSIONS";
-  public static final String CLEAR_PERMISSIONS_DESC = "additionally clears permissions related to given user";
+  private static final String CLEAR_PERMISSIONS = "CLEAR-PERMISSIONS";
 
-  public static final String REFERENCE = "Remove specified users.\n"
+  private static final String CLEAR_PERMISSIONS_DESC = "additionally clears permissions related to given user";
+
+  private static final String REFERENCE = "Remove specified users.\n"
       + "Removed user are no longer listed as any group members.\n"
       + "Note that no permissions for removed users are cleaned, so after creating a new user with the same id"
       + " - it will automatically gain those permissions.";
@@ -69,7 +70,7 @@ public final class DeleteUserMapper {
       @Required(value = "userIds", description = "users' ids e.g.: ['author']") List<String> ids,
       @Flag(value = CLEAR_PERMISSIONS, description = CLEAR_PERMISSIONS_DESC) boolean clearPermissions) {
     if (clearPermissions) {
-      List<Action> actions = ids.stream().map(id -> new DestroyUser(id)).collect(Collectors.toList());
+      List<Action> actions = ids.stream().map(DestroyUser::new).collect(Collectors.toList());
       return new CompositeAction(actions);
     } else {
       return new RemoveUser(ids);

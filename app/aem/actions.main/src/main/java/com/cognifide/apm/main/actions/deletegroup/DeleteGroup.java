@@ -23,8 +23,9 @@ import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.apm.api.actions.Context;
 import com.cognifide.apm.api.exceptions.ActionExecutionException;
+import com.cognifide.apm.api.exceptions.AuthorizableNotFoundException;
+import com.cognifide.apm.api.status.Status;
 import com.cognifide.apm.main.utils.MessagingUtils;
-import java.util.ArrayList;
 import java.util.List;
 import javax.jcr.RepositoryException;
 import org.apache.commons.lang3.StringUtils;
@@ -38,7 +39,7 @@ public class DeleteGroup implements Action {
 
   private final List<String> ids;
 
-  public DeleteGroup(final List<String> ids) {
+  public DeleteGroup(List<String> ids) {
     this.ids = ids;
   }
 
@@ -48,34 +49,30 @@ public class DeleteGroup implements Action {
   }
 
   @Override
-  public ActionResult execute(final Context context) {
+  public ActionResult execute(Context context) {
     return process(context, true);
   }
 
-  private ActionResult process(final Context context, boolean execute) {
+  private ActionResult process(Context context, boolean execute) {
     ActionResult actionResult = context.createActionResult();
 
-    List<String> errors = new ArrayList<>();
     LOGGER.info(String.format("Removing groups with ids = %s", StringUtils.join(ids, ", ")));
     for (String id : ids) {
       try {
-        Group group = context.getAuthorizableManager().getGroupIfExists(id);
-        if (group != null) {
-          context.getAuthorizableManager().markAuthorizableAsRemoved(group);
-          if (execute) {
-            context.getAuthorizableManager().removeGroup(group);
-          }
-          actionResult.logMessage("Group with id: " + id + " removed");
+        Group group = context.getAuthorizableManager().getGroup(id);
+        context.getAuthorizableManager().markAuthorizableAsRemoved(group);
+        if (execute) {
+          context.getAuthorizableManager().removeGroup(group);
         }
-
+        actionResult.logMessage("Group with id: " + id + " removed");
       } catch (RepositoryException | ActionExecutionException e) {
-        errors.add(MessagingUtils.createMessage(e));
+        actionResult.logError(MessagingUtils.createMessage(e));
+      } catch (AuthorizableNotFoundException e) {
+        actionResult.logWarning(MessagingUtils.createMessage(e));
       }
     }
-    if (!errors.isEmpty()) {
-      for (String error : errors) {
-        actionResult.logError(error);
-      }
+
+    if (actionResult.getStatus() == Status.ERROR) {
       actionResult.logError("Execution interrupted");
     }
     return actionResult;

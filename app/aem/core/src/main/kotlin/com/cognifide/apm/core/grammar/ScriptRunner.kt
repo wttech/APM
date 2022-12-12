@@ -156,8 +156,8 @@ class ScriptRunner(
                 if (body != null) {
                     executionContext.createLocalContext()
                 }
-                actionInvoker.runAction(executionContext, commandName, arguments)
-                if (body != null) {
+                val status = actionInvoker.runAction(executionContext, commandName, arguments)
+                if (status != Status.ERROR && body != null) {
                     visit(body)
                 }
             } catch (e: ArgumentResolverException) {

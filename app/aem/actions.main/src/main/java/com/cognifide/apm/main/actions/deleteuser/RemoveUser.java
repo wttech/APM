@@ -23,8 +23,9 @@ import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.apm.api.actions.Context;
 import com.cognifide.apm.api.exceptions.ActionExecutionException;
+import com.cognifide.apm.api.exceptions.AuthorizableNotFoundException;
+import com.cognifide.apm.api.status.Status;
 import com.cognifide.apm.main.utils.MessagingUtils;
-import java.util.ArrayList;
 import java.util.List;
 import javax.jcr.RepositoryException;
 import org.apache.commons.lang3.StringUtils;
@@ -38,7 +39,7 @@ public class RemoveUser implements Action {
 
   private final List<String> ids;
 
-  public RemoveUser(final List<String> ids) {
+  public RemoveUser(List<String> ids) {
     this.ids = ids;
   }
 
@@ -48,33 +49,29 @@ public class RemoveUser implements Action {
   }
 
   @Override
-  public ActionResult execute(final Context context) {
+  public ActionResult execute(Context context) {
     return process(context, true);
   }
 
-  private ActionResult process(final Context context, boolean execute) {
+  private ActionResult process(Context context, boolean execute) {
     ActionResult actionResult = context.createActionResult();
-    List<String> errors = new ArrayList<>();
     LOGGER.info(String.format("Removing users with ids = %s", StringUtils.join(ids, ", ")));
     for (String id : ids) {
       try {
-        User user = context.getAuthorizableManager().getUserIfExists(id);
-        if (user != null) {
-          context.getAuthorizableManager().markAuthorizableAsRemoved(user);
-          if (execute) {
-            context.getAuthorizableManager().removeUser(user);
-          }
-          actionResult.logMessage("User with id: " + id + " removed");
+        User user = context.getAuthorizableManager().getUser(id);
+        context.getAuthorizableManager().markAuthorizableAsRemoved(user);
+        if (execute) {
+          context.getAuthorizableManager().removeUser(user);
         }
+        actionResult.logMessage("User with id: " + id + " removed");
       } catch (RepositoryException | ActionExecutionException e) {
-        errors.add(MessagingUtils.createMessage(e));
+        actionResult.logError(MessagingUtils.createMessage(e));
+      } catch (AuthorizableNotFoundException e) {
+        actionResult.logWarning(MessagingUtils.createMessage(e));
       }
     }
 
-    if (!errors.isEmpty()) {
-      for (String error : errors) {
-        actionResult.logError(error);
-      }
+    if (actionResult.getStatus() == Status.ERROR) {
       actionResult.logError("Execution interrupted");
     }
     return actionResult;
