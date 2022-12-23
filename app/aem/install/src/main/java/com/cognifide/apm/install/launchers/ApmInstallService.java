@@ -31,10 +31,12 @@ import com.cognifide.apm.core.services.ResourceResolverProvider;
 import com.cognifide.apm.core.services.version.ScriptVersion;
 import com.cognifide.apm.core.services.version.VersionService;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
+import java.lang.management.ManagementFactory;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Activate;
@@ -55,6 +57,8 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 @Designate(ocd = ApmInstallService.Configuration.class, factory = true)
 public class ApmInstallService extends AbstractLauncher {
 
+  private static final String AEM_MUTABLE_CONTENT_INSTANCE = "aem-install-mutable-content";
+
   @Reference
   private ResourceResolverProvider resolverProvider;
 
@@ -72,7 +76,10 @@ public class ApmInstallService extends AbstractLauncher {
 
   @Activate
   public void activate(Configuration config) {
-    SlingHelper.operateTraced(resolverProvider, resolver -> processScripts(config, resolver));
+    String instanceName = ManagementFactory.getRuntimeMXBean().getName();
+    if (!StringUtils.contains(instanceName, AEM_MUTABLE_CONTENT_INSTANCE)) {
+      SlingHelper.operateTraced(resolverProvider, resolver -> processScripts(config, resolver));
+    }
   }
 
   private void processScripts(Configuration config, ResourceResolver resolver) throws PersistenceException {
