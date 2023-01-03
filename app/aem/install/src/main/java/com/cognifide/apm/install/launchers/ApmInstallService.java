@@ -30,6 +30,7 @@ import com.cognifide.apm.core.launchers.AbstractLauncher;
 import com.cognifide.apm.core.services.ResourceResolverProvider;
 import com.cognifide.apm.core.services.version.ScriptVersion;
 import com.cognifide.apm.core.services.version.VersionService;
+import com.cognifide.apm.core.utils.RuntimeUtils;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
 import java.lang.management.ManagementFactory;
 import java.util.Arrays;
@@ -76,10 +77,13 @@ public class ApmInstallService extends AbstractLauncher {
 
   @Activate
   public void activate(Configuration config) {
-    String instanceName = ManagementFactory.getRuntimeMXBean().getName();
-    if (!StringUtils.contains(instanceName, AEM_MUTABLE_CONTENT_INSTANCE)) {
-      SlingHelper.operateTraced(resolverProvider, resolver -> processScripts(config, resolver));
-    }
+    SlingHelper.operateTraced(resolverProvider, resolver -> {
+      boolean compositeNodeStore = RuntimeUtils.determineCompositeNodeStore(resolver);
+      String instanceName = ManagementFactory.getRuntimeMXBean().getName();
+      if (!compositeNodeStore || StringUtils.contains(instanceName, AEM_MUTABLE_CONTENT_INSTANCE)) {
+        processScripts(config, resolver);
+      }
+    });
   }
 
   private void processScripts(Configuration config, ResourceResolver resolver) throws PersistenceException {
