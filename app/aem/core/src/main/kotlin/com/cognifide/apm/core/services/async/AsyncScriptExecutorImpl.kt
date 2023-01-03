@@ -21,7 +21,6 @@ package com.cognifide.apm.core.services.async
 
 import com.cognifide.apm.api.scripts.Script
 import com.cognifide.apm.api.services.ExecutionMode
-import com.cognifide.apm.api.status.Status
 import com.cognifide.apm.core.Property
 import com.cognifide.apm.core.jobs.JobResultsCache
 import com.cognifide.apm.core.jobs.JobResultsCache.ExecutionSummary
@@ -74,7 +73,7 @@ class AsyncScriptExecutorImpl : AsyncScriptExecutor {
 
     private fun finishedExecution(executionSummary: ExecutionSummary): ExecutionStatus {
         val entries = executionSummary.result.entries
-        val errorEntry = entries.findLast { it.status == Status.ERROR }
+        val errorEntry = executionSummary.result.lastError
         return if (errorEntry != null) {
             FinishedFailedExecution(executionSummary.path, entries, errorEntry)
         } else {
