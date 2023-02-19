@@ -1,0 +1,73 @@
+<!--/*
+* ========================LICENSE_START=================================
+* AEM Permission Management
+* %%
+* Copyright (C) 2013 - 2018 Wunderman Thompson Technology
+* %%
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*      http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+* =========================LICENSE_END==================================
+*/-->
+<sly data-sly-use.item="com.cognifide.apm.core.ui.models.SummaryTableModel"/>
+<div>
+  <coral-list>
+    <coral-list-item icon="file">Script: <strong>${item.entry.scriptName}</strong></coral-list-item>
+    <coral-list-item icon="user">User: <strong>${item.entry.executor}</strong></coral-list-item>
+    <coral-list-item icon="clock" data-sly-test="${item.entry.executionDuration}">Duration: <strong>${item.entry.executionDuration}s</strong></coral-list-item>
+  </coral-list>
+  <table class="_coral-Table">
+    <thead class="_coral-Table-divider--row _coral-Table-head">
+    <tr class="entry-success _coral-Table-row">
+      <th class="_coral-Table-headerCell">
+        No
+      </th>
+      <th class="_coral-Table-headerCell">
+        Authorizable
+      </th>
+      <th class="_coral-Table-headerCell">
+        Action
+      </th>
+      <th class="_coral-Table-headerCell">
+        Parameters
+      </th>
+      <th class="_coral-Table-headerCell">
+        Status
+      </th>
+      <th class="_coral-Table-headerCell">
+        Messages
+      </th>
+    </tr>
+    </thead>
+    <tbody class="_coral-Table-divider--row _coral-Table-body">
+    <sly data-sly-list.execution="${item.entry.executionSummary}">
+      <tr class="${execution.status.className} _coral-Table-row">
+        <td class="_coral-Table-cell">${executionList.index}</td>
+        <td class="_coral-Table-cell">${execution.authorizable}</td>
+        <td class="_coral-Table-cell">${execution.command.toUpperCase}</td>
+        <td class="_coral-Table-cell">
+          <ul>
+            <li data-sly-repeat.text="${execution.parameters}">${text}</li>
+          </ul>
+        </td>
+        <td class="_coral-Table-cell">
+          <coral-icon title="${execution.status.iconTitle}" icon="${execution.status.iconType}"/>
+        </td>
+        <td class="_coral-Table-cell">
+          <ul>
+            <li data-sly-repeat.text="${execution.messages}">${text}</li>
+          </ul>
+        </td>
+      </tr>
+    </sly>
+    </tbody>
+  </table>
+</div>

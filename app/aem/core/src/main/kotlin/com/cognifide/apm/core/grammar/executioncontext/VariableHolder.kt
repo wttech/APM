@@ -20,7 +20,10 @@
 
 package com.cognifide.apm.core.grammar.executioncontext
 
+import com.cognifide.apm.core.grammar.ApmList
+import com.cognifide.apm.core.grammar.ApmMap
 import com.cognifide.apm.core.grammar.ApmType
+import com.cognifide.apm.core.grammar.argument.ArgumentResolverException
 import com.cognifide.apm.core.grammar.common.StackWithRoot
 import org.apache.jackrabbit.api.security.user.Authorizable
 
@@ -54,12 +57,20 @@ class VariableHolder {
     }
 
     operator fun get(name: String): ApmType? {
-        for (context in contexts) {
-            if (context.containsKey(name)) {
-                return context[name]
+        val keys = name.split('.', '[', ']').filter { it.isNotEmpty() }
+        val context = contexts.firstOrNull { it.containsKey(keys[0]) }
+        var result: ApmType? = null
+        if (context != null) {
+            for (key in keys) {
+                result = when (result) {
+                    is ApmList -> result.list.getOrNull(key.toIntOrNull() ?: -1)
+                    is ApmMap -> result.map.get(key)
+                    else -> context.get(key)
+                }
+                result ?: break
             }
         }
-        return null
+        return result ?: throw ArgumentResolverException("Variable \"$name\" not found")
     }
 
     fun createLocalContext() {

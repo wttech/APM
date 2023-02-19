@@ -10,17 +10,11 @@ description = "APM (AEM Permission Management) - Content"
 apply(from = rootProject.file("app/common.gradle.kts"))
 apply(from = rootProject.file("app/aem/common.gradle.kts"))
 
-tasks {
-    getByName("packageDeploy") {
-        mustRunAfter(":env:instanceProvision")
-    }
-}
-
 publishing {
     publications {
         register<MavenPublication>("apmCrx") {
             groupId = project.group.toString() + ".crx"
-            artifact(common.publicationArtifact("packageCompose"))
+            artifact(tasks["packageCompose"])
             afterEvaluate {
                 artifactId = "apm-" + project.name
                 version = rootProject.version

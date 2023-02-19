@@ -23,8 +23,10 @@ import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.apm.api.actions.Context;
 import com.cognifide.apm.api.exceptions.ActionExecutionException;
+import com.cognifide.apm.api.status.Status;
 import com.cognifide.apm.main.permissions.utils.JackrabbitAccessControlListUtil;
 import com.cognifide.apm.main.utils.MessagingUtils;
+import com.cognifide.apm.main.utils.PathUtils;
 import java.security.Principal;
 import javax.jcr.RepositoryException;
 import javax.jcr.security.AccessControlEntry;
@@ -59,12 +61,16 @@ public class RemoveAll implements Action {
     try {
       Authorizable authorizable = context.getCurrentAuthorizable();
       actionResult.setAuthorizable(authorizable.getID());
-      LOGGER.info(String.format("Removing all priveleges for authorizable with id = %s on path = %s",
-          authorizable.getID(), path));
-      if (execute) {
-        removeAll(context, authorizable);
+      if (context.isCompositeNodeStore() && PathUtils.isAppsOrLibsPath(path)) {
+        actionResult.changeStatus(Status.SKIPPED, "Skipped removing all privileges for " + authorizable.getID() + " on " + path);
+      } else {
+        LOGGER.info(String.format("Removing all priveleges for authorizable with id = %s on path = %s",
+            authorizable.getID(), path));
+        if (execute) {
+          removeAll(context, authorizable);
+        }
+        actionResult.logMessage("Removed all privileges for " + authorizable.getID() + " on " + path);
       }
-      actionResult.logMessage("Removed all privileges for " + authorizable.getID() + " on " + path);
     } catch (RepositoryException | ActionExecutionException e) {
       actionResult.logError(MessagingUtils.createMessage(e));
     }

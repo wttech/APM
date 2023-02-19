@@ -25,8 +25,8 @@ import com.cognifide.apm.api.services.ScriptFinder
 import com.cognifide.apm.core.Property
 import com.cognifide.apm.core.grammar.ReferenceFinder
 import com.cognifide.apm.core.grammar.ScriptExecutionException
+import com.cognifide.apm.core.history.History
 import com.cognifide.apm.core.services.version.VersionService
-import com.cognifide.apm.core.services.version.VersionServiceImpl
 import org.apache.sling.api.resource.ResourceResolver
 import org.osgi.service.component.annotations.Component
 import org.osgi.service.component.annotations.Reference
@@ -34,7 +34,6 @@ import org.slf4j.LoggerFactory
 import java.util.function.Predicate
 
 @Component(
-        immediate = true,
         service = [ModifiedScriptFinder::class],
         property = [
             Property.VENDOR
@@ -43,7 +42,6 @@ class ModifiedScriptFinder {
 
     private val logger = LoggerFactory.getLogger(ModifiedScriptFinder::class.java)
 
-
     @Reference
     @Transient
     lateinit var versionService: VersionService
@@ -51,6 +49,10 @@ class ModifiedScriptFinder {
     @Reference
     @Transient
     lateinit var scriptFinder: ScriptFinder
+
+    @Reference
+    @Transient
+    lateinit var history: History
 
     fun findAll(filter: Predicate<Script>, resolver: ResourceResolver): List<Script> {
         val all = scriptFinder.findAll(filter, resolver)
@@ -64,7 +66,10 @@ class ModifiedScriptFinder {
                         val subtree = referenceFinder.findReferences(script)
                         val checksum = versionService.countChecksum(subtree)
                         val scriptVersion = versionService.getScriptVersion(resolver, script)
-                        if (checksum != scriptVersion.lastChecksum) {
+                        var scriptHistory = history.findScriptHistory(resolver, script)
+                        if (checksum != scriptVersion.lastChecksum
+                                || scriptHistory.lastLocalRun == null
+                                || checksum != scriptHistory.lastLocalRun.checksum) {
                             modified.add(script)
                         }
                     } catch (e: ScriptExecutionException) {

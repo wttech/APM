@@ -23,8 +23,11 @@ package com.cognifide.apm.core.grammar.argument
 import com.cognifide.apm.core.grammar.*
 import com.cognifide.apm.core.grammar.antlr.ApmLangParser.*
 import com.cognifide.apm.core.grammar.common.getIdentifier
+import com.cognifide.apm.core.grammar.common.getPath
 import com.cognifide.apm.core.grammar.executioncontext.VariableHolder
 import com.google.common.primitives.Ints
+import org.apache.commons.lang3.StringUtils
+import org.apache.commons.lang3.text.StrSubstitutor
 
 class ArgumentResolver(private val variableHolder: VariableHolder) {
 
@@ -89,23 +92,37 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
 
         override fun visitArray(ctx: ArrayContext): ApmType {
             val values = ctx.children
-                    ?.map { child -> child.accept(this) }
-                    ?.filter { it is ApmString || it is ApmList }
-                    ?: listOf()
-            return when (values.firstOrNull()) {
-                is ApmString -> ApmList(values.map { it.string as String })
-                is ApmList -> ApmNestedList(values.map { it.list as List<String> })
-                else -> ApmList(listOf())
-            }
+                ?.map { child -> child.accept(this) }
+                ?.filter { it !is ApmEmpty }
+                ?: listOf()
+            return ApmList(values)
         }
 
-        override fun visitNestedArray(ctx: NestedArrayContext): ApmType {
+        override fun visitName(ctx: NameContext): ApmType {
+            return ApmString(ctx.IDENTIFIER().toString())
+        }
+
+        override fun visitPrivilegeName(ctx: PrivilegeNameContext): ApmType {
+            return ApmString(ctx.children.joinToString(""))
+        }
+
+        override fun visitStructure(ctx: StructureContext): ApmType {
             val values = ctx.children
-                    ?.map { it.accept(this) }
-                    ?.filterIsInstance<ApmList>()
-                    ?.map { it.value }
-                    ?: listOf(listOf())
-            return ApmNestedList(values)
+                ?.map { child -> child.accept(this) }
+                ?.filterIsInstance<ApmPair>()
+                ?.associate { it.pair }
+                ?: mapOf()
+            return ApmMap(values)
+        }
+
+        override fun visitStructureEntry(ctx: StructureEntryContext): ApmType {
+            val key = ctx.IDENTIFIER().toString()
+            return ctx.structureValue()
+                .children
+                ?.map { child -> child.accept(this) }
+                ?.map { ApmPair(Pair(key, it)) }
+                ?.first()
+                ?: ApmEmpty()
         }
 
         override fun visitExpression(ctx: ExpressionContext): ApmType {
@@ -118,14 +135,11 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
                     left is ApmInteger && right is ApmString -> ApmString(left.integer.toString() + right.string)
                     left is ApmInteger && right is ApmInteger -> ApmInteger(left.integer + right.integer)
                     left is ApmList && right is ApmList -> ApmList(left.list + right.list)
-                    left is ApmNestedList && right is ApmNestedList -> ApmNestedList(left.nestedList + right.nestedList)
                     else -> throw ArgumentResolverException("Operation not supported for given values $left and $right")
                 }
             }
             return when {
                 ctx.value() != null -> visit(ctx.value())
-                ctx.array() != null -> visit(ctx.array())
-                ctx.nestedArray() != null -> visit(ctx.nestedArray())
                 else -> super.visitExpression(ctx)
             }
         }
@@ -133,21 +147,36 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
         override fun visitNumberValue(ctx: NumberValueContext): ApmType {
             val value = ctx.NUMBER_LITERAL().toString()
             val number = Ints.tryParse(value)
-                    ?: throw ArgumentResolverException("Found invalid number value $value")
+                ?: throw ArgumentResolverException("Found invalid number value $value")
             return ApmInteger(number)
+        }
+
+        private fun determineStringValue(value: String): ApmString {
+            val tokens = StringUtils.substringsBetween(value, "\${", "}")
+                .orEmpty()
+                .map { it to variableHolder[it]!!.string }
+                .toMap()
+            val strSubstitutor = StrSubstitutor(tokens, "\${", "}")
+            return ApmString(if (tokens.isEmpty()) value else strSubstitutor.replace(value))
         }
 
         override fun visitStringValue(ctx: StringValueContext): ApmType {
             if (ctx.STRING_LITERAL() != null) {
-                return ApmString(ctx.STRING_LITERAL().toPlainString())
+                val value = ctx.STRING_LITERAL().toPlainString()
+                return determineStringValue(value)
             }
             throw ArgumentResolverException("Found invalid string value $ctx")
         }
 
+        override fun visitPath(ctx: PathContext): ApmType {
+            val value = getPath(ctx)
+            return determineStringValue(value)
+        }
+
         override fun visitVariable(ctx: VariableContext): ApmType {
-            val name = ctx.IDENTIFIER().toString()
+            val name = getIdentifier(ctx.variableIdentifier())
             return variableHolder[name]
-                    ?: throw ArgumentResolverException("Variable \"$name\" not found")
+                ?: throw ArgumentResolverException("Variable \"$name\" not found")
         }
     }
 }

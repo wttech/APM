@@ -20,6 +20,7 @@
 package com.cognifide.apm.api.scripts;
 
 import java.util.Date;
+import java.util.Set;
 
 public class TransientScript implements MutableScript {
 
@@ -67,6 +68,11 @@ public class TransientScript implements MutableScript {
   }
 
   @Override
+  public Set<String> getLaunchRunModes() {
+    return null;
+  }
+
+  @Override
   public String getLaunchHook() {
     return null;
   }
@@ -79,11 +85,6 @@ public class TransientScript implements MutableScript {
   @Override
   public Date getLastExecuted() {
     return null;
-  }
-
-  @Override
-  public boolean isPublishRun() {
-    return false;
   }
 
   @Override
@@ -102,27 +103,12 @@ public class TransientScript implements MutableScript {
   }
 
   @Override
-  public String getReplicatedBy() {
-    return null;
-  }
-
-  @Override
   public void setValid(boolean flag) {
 
   }
 
   @Override
   public void setLastExecuted(Date date) {
-
-  }
-
-  @Override
-  public void setPublishRun(boolean flag) {
-
-  }
-
-  @Override
-  public void setReplicatedBy(String userId) {
 
   }
 

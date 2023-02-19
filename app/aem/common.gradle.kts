@@ -31,24 +31,12 @@ plugins.withId("com.cognifide.aem.bundle") {
     }
 
     dependencies {
-        "implementation"("com.adobe.aem:uber-jar:6.3.0:apis")
+        "implementation"("com.adobe.aem:uber-jar:6.4.0:apis")
         "implementation"("org.osgi:osgi.cmpn:6.0.0")
         "implementation"("org.osgi:org.osgi.core:6.0.0")
-        "implementation"("org.osgi:org.osgi.service.component.annotations:1.3.0")
-        "implementation"("org.osgi:org.osgi.service.metatype.annotations:1.3.0")
-        "implementation"("org.osgi:org.osgi.annotation:6.0.0")
-
-        "implementation"("com.google.code.gson:gson:2.3.1")
-        "implementation"("commons-lang:commons-lang:2.5")
-        "implementation"("commons-io:commons-io:2.4")
-        "implementation"("commons-codec:commons-codec:1.5")
-        "implementation"("commons-collections:commons-collections:3.2.1")
         "implementation"("javax.jcr:jcr:2.0")
         "implementation"("javax.annotation:javax.annotation-api:1.3.2")
         "implementation"("javax.inject:javax.inject:1")
-        "implementation"("javax.servlet:jsp-api:2.0")
-        "implementation"("javax.servlet:servlet-api:2.4")
-        "implementation"("org.slf4j:slf4j-log4j12:1.7.7")
-        "implementation"("org.apache.sling:org.apache.sling.query:3.0.0")
+        "implementation"("javax.servlet:javax.servlet-api:3.1.0")
      }
 }

@@ -23,6 +23,7 @@ import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.apm.api.actions.Context;
 import com.cognifide.apm.api.exceptions.ActionExecutionException;
+import com.cognifide.apm.api.exceptions.AuthorizableNotFoundException;
 import com.cognifide.apm.checks.utils.ActionUtils;
 import com.cognifide.apm.checks.utils.MessagingUtils;
 import java.util.ArrayList;
@@ -37,7 +38,7 @@ public class CheckIncludes implements Action {
 
   private final String authorizableId;
 
-  public CheckIncludes(final String id, final List<String> groupIds) {
+  public CheckIncludes(String id, List<String> groupIds) {
     this.authorizableId = id;
     this.groupIds = groupIds;
   }
@@ -48,11 +49,11 @@ public class CheckIncludes implements Action {
   }
 
   @Override
-  public ActionResult execute(final Context context) {
+  public ActionResult execute(Context context) {
     return process(context, true);
   }
 
-  private ActionResult process(final Context context, boolean execute) {
+  private ActionResult process(Context context, boolean execute) {
     ActionResult actionResult = context.createActionResult();
     Group authorizable = tryGetGroup(context, actionResult);
     if (authorizable == null) {
@@ -71,11 +72,9 @@ public class CheckIncludes implements Action {
     ActionUtils.logErrors(errors, actionResult);
 
     return actionResult;
-
   }
 
-  private boolean checkMembers(final Context context, final ActionResult actionResult,
-      final Group authorizable, final List<String> errors) {
+  private boolean checkMembers(Context context, ActionResult actionResult, Group authorizable, List<String> errors) {
     boolean checkFailed = false;
     for (String id : groupIds) {
       try {
@@ -86,17 +85,17 @@ public class CheckIncludes implements Action {
           checkFailed = true;
         }
         actionResult.logMessage(id + " is a member of group " + authorizableId);
-      } catch (RepositoryException | ActionExecutionException e) {
+      } catch (RepositoryException | ActionExecutionException | AuthorizableNotFoundException e) {
         errors.add(MessagingUtils.createMessage(e));
       }
     }
     return checkFailed;
   }
 
-  private Group tryGetGroup(final Context context, final ActionResult actionResult) {
+  private Group tryGetGroup(Context context, ActionResult actionResult) {
     try {
       return context.getAuthorizableManager().getGroup(authorizableId);
-    } catch (RepositoryException | ActionExecutionException e) {
+    } catch (RepositoryException | ActionExecutionException | AuthorizableNotFoundException e) {
       actionResult.logError(MessagingUtils.createMessage(e));
     }
     return null;

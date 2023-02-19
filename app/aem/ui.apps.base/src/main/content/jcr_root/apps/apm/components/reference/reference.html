@@ -1,0 +1,136 @@
+<!--/*
+* ========================LICENSE_START=================================
+* AEM Permission Management
+* %%
+* Copyright (C) 2013 - 2016 Wunderman Thompson Technology
+* %%
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*      http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+* =========================LICENSE_END==================================
+*/-->
+<div class="apm-documentation" data-sly-use.model="com.cognifide.apm.core.ui.models.ReferencesModel">
+  <h3>Table of contents</h3>
+  <coral-anchorlist>
+    <a is="coral-anchorlist-item" href="#availbale-commands">Available commands</a>
+    <a is="coral-anchorlist-item" href="#permissions">Permissions</a>
+    <a is="coral-anchorlist-item" href="#predefined-definitions">Predefined definitions</a>
+  </coral-anchorlist>
+  <section>
+    <h3><a name="available-commands">Available commands</a></h3>
+    <table is="coral-table">
+      <thead is="coral-table-head">
+      <tr is="coral-table-row">
+        <th style="width: 15%" is="coral-table-headercell">Command syntax</th>
+        <th style="width: 30%" is="coral-table-headercell">Arguments</th>
+        <th is="coral-table-headercell">Description</th>
+      </tr>
+      </thead>
+      <tbody is="coral-table-body">
+      <sly data-sly-list.map="${model.references}">
+        <tr is="coral-table-row" class="${mapList.even ? 'even' : 'odd'}">
+          <td is="coral-table-cell">${map.name}</td>
+          <td is="coral-table-cell" class="argument-cell">
+            <ul>
+              <sly data-sly-list="${map.arguments}">
+                <li><span class="argument-name argument-type-${item.type}">${item.name}&nbsp;(${item.type})</span> -&nbsp;${item.description}
+                </li>
+              </sly>
+            </ul>
+          </td>
+          <td is="coral-table-cell">
+            <p>${map.description}</p>
+            <div data-sly-test="${map.examples}" class="code-example">
+              <strong>Examples</strong>
+              <code data-sly-repeat.example="${map.examples}">${example}</code>
+            </div>
+          </td>
+        </tr>
+      </sly>
+      </tbody>
+    </table>
+  </section>
+  <section>
+    <h3><a name="permissions">Permissions</a></h3>
+
+    For commands: ALLOW, DENY you should specify an argument which is a list of permissions.<br/><br/>
+    Possible values:
+
+    <ul class="permission-list">
+      <li>READ,</li>
+      <li>CREATE,</li>
+      <li>MODIFY,</li>
+      <li>MODIFY_PAGE,</li>
+      <li>DELETE,</li>
+      <li>DELETE_CHILD_NODES,</li>
+      <li>REPLICATE,</li>
+      <li>ALL.</li>
+    </ul>
+
+    You can also use jcr privileges identifiers:
+
+    <ul>
+      <li>jcr:readAccessControl,</li>
+      <li>jcr:versionManagement,</li>
+      <li>jcr:lockManagement,</li>
+      <li>jcr:nodeTypeManagement,</li>
+      <li>...</li>
+    </ul>
+
+    Wrap them into square brackets like in examples below.
+
+    <div class="code-example">
+      <code>
+        FOR-USER "foo" BEGIN
+        ALLOW "/content" ["ALL"]
+        ALLOW "/etc" ["READ"]
+        DENY "/content/bar" ["MODIFY", "DELETE"]
+        ALLOW "/content/bar" ["jcr:nodeTypeManagement"]
+        END
+      </code>
+    </div>
+
+    The default ACL effects the whole subtree of the target node, you can limit it by adding a
+    glob parameter, which defines a pattern to restrict the subtree. This affects performance so please use it
+    carefully. Apply privileges directly on target node whenever you can.<br/><br/>
+    You can use STRICT as a glob pattern to match a target node only. See examples below:
+
+    <div class="code-example">
+      <code>
+        FOR-USER "foo" BEGIN
+        ALLOW "/content" glob="bar" ["ALL"]
+        DENY "/content" glob="bar" ["jcr:nodeTypeManagement"]
+        ALLOW "/content/foo" glob="STRICT" ["ALL"]
+        END
+      </code>
+    </div>
+  </section>
+  <section>
+    <h3><a name="predefined-definitions">Predefined definitions</a></h3>
+
+    <table is="coral-table">
+      <thead is="coral-table-head">
+      <tr is="coral-table-row">
+        <th style="width: 50%;" is="coral-table-headercell">Name</th>
+        <th style="width: 50%;" is="coral-table-headercell">Value</th>
+      </tr>
+      </thead>
+      <tbody is="coral-table-body">
+      <sly data-sly-repeat="${model.definitions}">
+        <tr is="coral-table-row">
+          <td is="coral-table-cell">${item}</td>
+          <td is="coral-table-cell">${model.definitions[item]}</td>
+        </tr>
+      </sly>
+      </tbody>
+    </table>
+  </section>
+</div>

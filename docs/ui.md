@@ -29,8 +29,7 @@ The table displays scripts from the selected folder. The columns present:
 * Date at which the script was **updated**.
 * **Author** that either created or uploaded the scripts.
 * **Launcher** type.
-* Status of **last run** on author instance.
-* Status of **last run on publish** instance.
+* Status of **last run**.
 * Status of **last dry run**.
 
 ![Scripts](apm-scripts-1.png)
@@ -44,8 +43,7 @@ Button **Create** shows options, which you may perform in the current folder:
 
 When you select script, action toolbar appears:
 * **Dry run** button tests the script execution to find potential script issues.
-* **Run on author** button runs the script on the author instance.
-* **Run on publish** button  runs the script on the publish instance.
+* **Run** button runs the script.
 * The magnifier icon opens script in **view** mode.
 * The pencil icon opens script in **edit** mode.
 * The bin icon **delete**s the script from the instance.
@@ -67,6 +65,8 @@ Script validation tries to parse the content of the script to make sure proper a
 
 > There is a significant difference between validation and dry run. Successful validation is required in order to even dry run script. But simple validation won't give the certainty, that the script logic is right.
 
+Additional feature: text between '{{' and '}}' is automatically encrypted.
+
 ### References
 ![References](apm-references.png)
 
@@ -78,7 +78,7 @@ The reference window consists of three sections:
 ## History
 ![History](apm-history.png)
 
-All the script execution details are preserved, and stored within the repository. No matter whether the script has been manually or auto-executed, the GUI or API was used, if it was on author or publish instance, the History screen keeps all the audit for the scripts executed by tool. 
+All the script execution details are preserved, and stored within the repository. No matter whether the script has been manually or auto-executed, the GUI or API was used, the History screen keeps all the audit for the scripts executed by tool. 
 The table displays the latest execution history. The columns present:
 * Icon of script.  
 * Name of the **script**.

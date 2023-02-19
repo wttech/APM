@@ -1,0 +1,5 @@
+{
+  "scripts":[
+    "create service user apm-system-user with forced path system/cq:services/apm\nset principal ACL for apm-system-user\nallow jcr:all on /\nallow jcr:all on :repository \nend"
+  ]
+}

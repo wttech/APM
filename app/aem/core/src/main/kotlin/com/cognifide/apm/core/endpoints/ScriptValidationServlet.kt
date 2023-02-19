@@ -37,7 +37,6 @@ import org.osgi.service.component.annotations.Reference
 import javax.servlet.Servlet
 
 @Component(
-        immediate = true,
         service = [Servlet::class],
         property = [
             Property.PATH + "/bin/apm/scripts/validate",
@@ -93,7 +92,7 @@ class ScriptValidationServlet : AbstractFormServlet<ScriptValidationForm>(Script
     }
 
     private fun positionPrefix(entry: ExecutionResult.Entry): String {
-        val position = if(entry is ProgressEntry) entry.position else null
+        val position = if (entry is ProgressEntry) entry.position else null
         return if (position != null) "Invalid line ${position.line}: " else ""
     }
 }

@@ -49,6 +49,10 @@ class SimpleDataSourceBuilder {
     return this;
   }
 
+  public SimpleDataSourceBuilder addOption(Object name, Object value) {
+    return addOption(name.toString(), value.toString());
+  }
+
   public SimpleDataSourceBuilder addOption(String name, String value) {
     options.add(new Option(name, value));
     return this;

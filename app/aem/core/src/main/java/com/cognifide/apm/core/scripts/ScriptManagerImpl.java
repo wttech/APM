@@ -39,14 +39,13 @@ import com.cognifide.apm.core.actions.executor.ActionExecutorFactory;
 import com.cognifide.apm.core.executors.ContextImpl;
 import com.cognifide.apm.core.grammar.ScriptRunner;
 import com.cognifide.apm.core.history.History;
-import com.cognifide.apm.core.history.HistoryEntry;
 import com.cognifide.apm.core.logger.Progress;
 import com.cognifide.apm.core.progress.ProgressImpl;
 import com.cognifide.apm.core.services.event.ApmEvent.ScriptExecutedEvent;
 import com.cognifide.apm.core.services.event.ApmEvent.ScriptLaunchedEvent;
 import com.cognifide.apm.core.services.event.EventManager;
 import com.cognifide.apm.core.services.version.VersionService;
-import com.cognifide.apm.core.utils.InstanceTypeProvider;
+import com.cognifide.apm.core.utils.RuntimeUtils;
 import com.google.common.collect.Maps;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -66,8 +65,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Component(
-    immediate = true,
-    service = {ScriptManager.class},
     property = {
         Property.DESCRIPTION + "APM Script Manager Service",
         Property.VENDOR
@@ -81,13 +78,7 @@ public class ScriptManagerImpl implements ScriptManager {
   private ActionFactory actionFactory;
 
   @Reference
-  private ScriptStorage scriptStorage;
-
-  @Reference
   private ScriptFinder scriptFinder;
-
-  @Reference
-  private InstanceTypeProvider instanceTypeProvider;
 
   @Reference
   private VersionService versionService;
@@ -159,7 +150,7 @@ public class ScriptManagerImpl implements ScriptManager {
   }
 
   @Override
-  public synchronized Progress process(final Script script, final ExecutionMode mode, ResourceResolver resolver)
+  public Progress process(final Script script, final ExecutionMode mode, ResourceResolver resolver)
       throws RepositoryException, PersistenceException {
     return process(script, mode, Maps.newHashMap(), resolver);
   }
@@ -170,14 +161,15 @@ public class ScriptManagerImpl implements ScriptManager {
     Progress progress;
     try {
       progress = execute(script, mode, customDefinitions, resolver);
-
     } catch (ExecutionException e) {
       progress = new ProgressImpl(resolver.getUserID());
       progress.addEntry(Status.ERROR, e.getMessage());
     }
 
     updateScriptProperties(script, mode, progress.isSuccess());
-    versionService.updateVersionIfNeeded(resolver, script);
+    if (progress.isSuccess()) {
+      versionService.updateVersionIfNeeded(resolver, script);
+    }
     saveHistory(script, mode, progress);
     eventManager.trigger(new ScriptExecutedEvent(script, mode, progress.isSuccess()));
 
@@ -185,19 +177,8 @@ public class ScriptManagerImpl implements ScriptManager {
   }
 
   private void saveHistory(Script script, ExecutionMode mode, Progress progress) {
-    if (instanceTypeProvider.isOnAuthor()) {
-      if (mode != ExecutionMode.VALIDATION) {
-        history.logLocal(script, mode, progress);
-      }
-    } else {
-      if (mode.isRun()) {
-        try {
-          HistoryEntry entry = history.logLocal(script, mode, progress);
-          history.replicate(entry, progress.getExecutor());
-        } catch (RepositoryException e) {
-          LOG.error("Repository error occurred while replicating script execution", e);
-        }
-      }
+    if (mode != ExecutionMode.VALIDATION) {
+      history.logLocal(script, mode, progress);
     }
   }
 
@@ -223,7 +204,8 @@ public class ScriptManagerImpl implements ScriptManager {
   }
 
   private ActionExecutor createExecutor(ExecutionMode mode, ResourceResolver resolver) throws RepositoryException {
-    final Context context = new ContextImpl((JackrabbitSession) resolver.adaptTo(Session.class));
+    boolean compositeNodeStore = RuntimeUtils.determineCompositeNodeStore(resolver);
+    final Context context = new ContextImpl((JackrabbitSession) resolver.adaptTo(Session.class), compositeNodeStore);
     return ActionExecutorFactory.create(mode, context, actionFactory);
   }
 }

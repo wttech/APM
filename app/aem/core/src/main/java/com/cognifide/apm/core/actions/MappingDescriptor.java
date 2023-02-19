@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.Getter;
-import org.apache.commons.collections.ListUtils;
+import org.apache.commons.collections4.ListUtils;
 
 public class MappingDescriptor {
 
@@ -86,9 +86,9 @@ public class MappingDescriptor {
     return ListUtils.removeAll(arguments.getNamed().keySet(), expectedKeys).isEmpty();
   }
 
-  public Action handle(Object mapper, Arguments arguments) {
+  public Action handle(Object mapper, Arguments arguments, MapperContext mapperContext) {
     List<Object> args = parameterDescriptors.stream()
-        .map(parameterDescriptor -> parameterDescriptor.getArgument(arguments))
+        .map(parameterDescriptor -> parameterDescriptor.getArgument(arguments, mapperContext.getDecryptionService()))
         .collect(Collectors.toList());
     try {
       return (Action) method.invoke(mapper, args.toArray());

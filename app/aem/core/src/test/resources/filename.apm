@@ -1,0 +1,11 @@
+DEFINE path "/content/foo/bar"
+
+CREATE-USER "author" password="secret"
+CREATE-GROUP "authors" --IF-NOT-EXISTS
+
+FOR-GROUP "authors" BEGIN
+	ALLOW [jcr:read] ON /content
+	ALLOW [ALL] ON $path
+	DENY [MODIFY, DELETE] ON "${path}/foo"
+	DENY [MODIFY, DELETE] ON $path + "/foo/bar"
+END

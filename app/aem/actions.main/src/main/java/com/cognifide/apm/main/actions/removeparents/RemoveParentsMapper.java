@@ -19,7 +19,10 @@
  */
 package com.cognifide.apm.main.actions.removeparents;
 
+import static com.cognifide.apm.main.actions.CommonFlags.IF_EXISTS;
+
 import com.cognifide.apm.api.actions.Action;
+import com.cognifide.apm.api.actions.annotations.Flag;
 import com.cognifide.apm.api.actions.annotations.Mapper;
 import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.apm.api.actions.annotations.Required;
@@ -30,22 +33,30 @@ import java.util.List;
 @Mapper(value = "REMOVE-PARENTS", group = ActionGroup.CORE)
 public final class RemoveParentsMapper {
 
-  public static final String REFERENCE = "Remove current authorizable from specified groups.";
+  private static final String REFERENCE = "Remove current authorizable from specified groups.";
 
   @Mapping(
-      examples = "REMOVE-PARENTS 'authors'",
+      examples = {
+          "REMOVE-PARENTS 'authors'",
+          "REMOVE-PARENTS 'authors' --IF-EXISTS"
+      },
       reference = REFERENCE
   )
-  public Action mapAction(@Required(value = "groupId", description = "group's id e.g.: 'authors'") String id) {
-    return mapAction(Collections.singletonList(id));
+  public Action mapAction(@Required(value = "groupId", description = "group's id e.g.: 'authors'") String id,
+      @Flag(value = IF_EXISTS, description = "script doesn't fail if group doesn't exist") boolean ifExists) {
+    return mapAction(Collections.singletonList(id), ifExists);
   }
 
   @Mapping(
-      examples = "REMOVE-PARENTS ['authors']",
+      examples = {
+          "REMOVE-PARENTS ['authors']",
+          "REMOVE-PARENTS ['authors'] --IF-EXISTS"
+      },
       reference = REFERENCE
   )
   public Action mapAction(
-      @Required(value = "groupIds", description = "groups' ids e.g.: ['authors']") List<String> ids) {
-    return new RemoveParents(ids);
+      @Required(value = "groupIds", description = "groups' ids e.g.: ['authors']") List<String> ids,
+      @Flag(value = IF_EXISTS, description = "script doesn't fail if group doesn't exist") boolean ifExists) {
+    return new RemoveParents(ids, ifExists);
   }
 }

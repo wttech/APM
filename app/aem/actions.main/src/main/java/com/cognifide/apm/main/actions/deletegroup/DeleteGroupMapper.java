@@ -30,7 +30,7 @@ import java.util.List;
 @Mapper(value = "DELETE-GROUP", group = ActionGroup.CORE)
 public final class DeleteGroupMapper {
 
-  public static final String REFERENCE = "Remove specified groups.\n"
+  private static final String REFERENCE = "Remove specified groups.\n"
       + "No group's members are removed, but they no longer belong to the removed group (reference is removed).\n"
       + "Note that no permissions for removed group are cleaned, so after creating a new group with the same id"
       + " - it will automatically gain those permissions.";
@@ -51,5 +51,4 @@ public final class DeleteGroupMapper {
       @Required(value = "groupIds", description = "groups' ids e.g.: ['authors']") List<String> ids) {
     return new DeleteGroup(ids);
   }
-
 }

@@ -23,6 +23,7 @@ package com.cognifide.apm.core.actions
 import com.cognifide.apm.api.actions.Action
 import com.cognifide.apm.api.actions.annotations.Mapper
 import com.cognifide.apm.api.exceptions.InvalidActionMapperException
+import com.cognifide.apm.core.crypto.DecryptionService
 import com.cognifide.apm.core.grammar.ApmList
 import com.cognifide.apm.core.grammar.ApmString
 import com.cognifide.apm.core.grammar.ApmType
@@ -31,6 +32,13 @@ import spock.lang.Specification
 import spock.lang.Unroll
 
 class MapperDescriptorTest extends Specification {
+
+    def mapperContext = new MapperContext() {
+        @Override
+        DecryptionService getDecryptionService() {
+            return new DecryptionService()
+        }
+    }
 
     def "cannot create MapperDescriptor for class without Mapper annotation"() {
         given:
@@ -91,7 +99,7 @@ class MapperDescriptorTest extends Specification {
         expect:
         MapperDescriptorFactory mapperDescriptorFactory = new MapperDescriptorFactory()
         def mapperDescriptor = mapperDescriptorFactory.create(SampleMapper.class)
-        mapperDescriptor.handle(toArguments(required, named, flags)).name == result
+        mapperDescriptor.handle(toArguments(required, named, flags), mapperContext).name == result
 
         where:
         required                         | named         | flags         || result
@@ -105,7 +113,7 @@ class MapperDescriptorTest extends Specification {
         expect:
         MapperDescriptorFactory mapperDescriptorFactory = new MapperDescriptorFactory()
         def mapperDescriptor = mapperDescriptorFactory.create(SampleMapper.class)
-        mapperDescriptor.handle(toArguments([], [:], flags)).name == result
+        mapperDescriptor.handle(toArguments([], [:], flags), mapperContext).name == result
 
         where:
         flags                 || result
@@ -119,7 +127,7 @@ class MapperDescriptorTest extends Specification {
         expect:
         MapperDescriptorFactory mapperDescriptorFactory = new MapperDescriptorFactory()
         def mapperDescriptor = mapperDescriptorFactory.create(SampleMapper.class)
-        mapperDescriptor.handle(toArguments(["/content"], [:], flags)).name == result
+        mapperDescriptor.handle(toArguments(["/content"], [:], flags), mapperContext).name == result
 
         where:
         flags                 || result
@@ -139,7 +147,8 @@ class MapperDescriptorTest extends Specification {
             return new ApmString(object)
         }
         if (object instanceof List) {
-            return new ApmList(object)
+            def newObject = object.collect { toApmType(it) }
+            return new ApmList(newObject)
         }
         return null
     }

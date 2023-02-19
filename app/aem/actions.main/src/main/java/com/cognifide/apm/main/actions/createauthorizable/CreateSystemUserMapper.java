@@ -39,8 +39,8 @@ public class CreateSystemUserMapper {
       examples = {
           "CREATE-SYSTEM-USER 'apm-user'",
           "CREATE-SYSTEM-USER 'apm-user' --ERROR-IF-EXISTS",
-          "CREATE-SYSTEM-USER 'apm-user' path= '/home/users/client/domain'",
-          "CREATE-SYSTEM-USER 'apm-user' path= '/home/users/client/domain' BEGIN\n" +
+          "CREATE-SYSTEM-USER 'apm-user' path='/home/users/system/client/domain'",
+          "CREATE-SYSTEM-USER 'apm-user' path='/home/users/system/client/domain' BEGIN\n" +
               " SET-PROPERTY 'first-name' 'APM'\n" +
               "END"
       },
@@ -48,9 +48,9 @@ public class CreateSystemUserMapper {
   )
   public Action mapAction(
       @Required(value = "userId", description = "user's login e.g.: 'apm-user'") String userId,
-      @Named(value = "path", description = "user's home e.g.: '/home/users/domain'") String path,
+      @Named(value = "path", description = "user's home e.g.: '/home/users/system/client/domain'") String path,
       @Flag(value = ERROR_IF_EXISTS, description = "if user already exists, raise an error and stop script execution") boolean errorIfExists) {
-    return new CreateAuthorizable(userId, null, path, !errorIfExists, SYSTEM_USER);
+    return new CreateAuthorizable(userId, null, path, null, !errorIfExists, SYSTEM_USER);
   }
 
 }

@@ -19,52 +19,37 @@
  */
 package com.cognifide.apm.core.history;
 
-import static com.cognifide.apm.core.utils.sling.SlingHelper.resolveDefault;
-import static com.day.crx.JcrConstants.NT_UNSTRUCTURED;
-import static org.apache.jackrabbit.commons.JcrUtils.getOrCreateByPath;
-import static org.apache.jackrabbit.commons.JcrUtils.getOrCreateUniqueByPath;
-import static org.apache.sling.query.SlingQuery.$;
-
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ExecutionMode;
 import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.history.HistoryEntryWriter.HistoryEntryWriterBuilder;
-import com.cognifide.apm.core.history.InstanceDetails.InstanceType;
 import com.cognifide.apm.core.logger.Progress;
 import com.cognifide.apm.core.progress.ProgressHelper;
+import com.cognifide.apm.core.services.ResourceResolverProvider;
 import com.cognifide.apm.core.services.version.VersionService;
-import com.cognifide.apm.core.utils.InstanceTypeProvider;
-import com.cognifide.apm.core.utils.sling.ResolveCallback;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
 import com.day.cq.commons.jcr.JcrConstants;
-import com.day.cq.replication.ReplicationAction;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.lang.management.ManagementFactory;
 import java.util.Calendar;
-import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Spliterator;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.jackrabbit.commons.JcrUtils;
+import org.apache.sling.api.resource.AbstractResourceVisitor;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceResolverFactory;
-import org.apache.sling.query.api.SearchStrategy;
-import org.jetbrains.annotations.NotNull;
+import org.apache.sling.api.resource.ValueMap;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Component(
-    immediate = true,
-    service = History.class,
     property = {
         Property.DESCRIPTION + "APM History Service",
         Property.VENDOR
@@ -85,63 +70,51 @@ public class HistoryImpl implements History {
   private static final String SLING_ORDERED_FOLDER = "sling:OrderedFolder";
 
   @Reference
-  private RemoteScriptExecutionNotifier remoteScriptExecutionNotifier;
-
-  @Reference
-  private ResourceResolverFactory resolverFactory;
-
-  @Reference
-  private InstanceTypeProvider instanceTypeProvider;
+  private ResourceResolverProvider resolverProvider;
 
   @Reference
   private VersionService versionService;
 
   @Override
   public HistoryEntry logLocal(Script script, ExecutionMode mode, Progress progressLogger) {
-    InstanceType instanceDetails = instanceTypeProvider.isOnAuthor() ? InstanceType.AUTHOR : InstanceType.PUBLISH;
-    return resolveDefault(resolverFactory, progressLogger.getExecutor(), (ResolveCallback<HistoryEntry>) resolver -> {
-      final HistoryEntryWriter historyEntryWriter = createBuilder(resolver, script, mode, progressLogger)
+    return SlingHelper.resolveDefault(resolverProvider, resolver -> {
+      HistoryEntryWriter historyEntryWriter = createBuilder(resolver, script, mode, progressLogger)
           .executionTime(Calendar.getInstance())
-          .instanceType(instanceDetails.getInstanceName())
-          .instanceHostname(getHostname())
+          .executionDuration(progressLogger.determineExecutionDuration())
           .build();
-      return createHistoryEntry(resolver, script, mode, historyEntryWriter, false);
-    }, null);
-  }
-
-  @Override
-  public HistoryEntry logRemote(Script script, ExecutionMode mode, Progress progressLogger,
-                                InstanceDetails instanceDetails, Calendar executionTime) {
-    return resolveDefault(resolverFactory, progressLogger.getExecutor(), (ResolveCallback<HistoryEntry>) resolver -> {
-      final HistoryEntryWriter historyEntryWriter = createBuilder(resolver, script, mode, progressLogger)
-          .executionTime(executionTime)
-          .instanceType(instanceDetails.getInstanceType().getInstanceName())
-          .instanceHostname(instanceDetails.getHostname())
-          .build();
-      return createHistoryEntry(resolver, script, mode, historyEntryWriter, true);
+      return createHistoryEntry(resolver, script, mode, historyEntryWriter);
     }, null);
   }
 
   private HistoryEntryWriterBuilder createBuilder(ResourceResolver resolver, Script script, ExecutionMode mode,
-                                                  Progress progressLogger) {
+      Progress progressLogger) {
     Resource source = resolver.getResource(script.getPath());
     return HistoryEntryWriter.builder()
         .author(source.getValueMap().get(JcrConstants.JCR_CREATED_BY, StringUtils.EMPTY))
-        .executor(resolver.getUserID())
+        .executor(progressLogger.getExecutor())
         .fileName(source.getName())
         .filePath(source.getPath())
         .isRunSuccessful(progressLogger.isSuccess())
         .mode(mode.toString())
-        .progressLog(ProgressHelper.toJson(progressLogger.getEntries()));
+        .progressLog(ProgressHelper.toJson(progressLogger.getEntries()))
+        .instanceName(ManagementFactory.getRuntimeMXBean().getName());
   }
 
   @Override
   public List<Resource> findAllResources(ResourceResolver resourceResolver) {
+    List<Resource> resources = new LinkedList<>();
+    AbstractResourceVisitor visitor = new AbstractResourceVisitor() {
+      @Override
+      protected void visit(Resource resource) {
+        ValueMap valueMap = resource.getValueMap();
+        if (valueMap.containsKey("executionTime") && "entry".equals(valueMap.get("apmHistory", String.class))) {
+          resources.add(resource);
+        }
+      }
+    };
     Resource rootResource = resourceResolver.getResource(HistoryImpl.HISTORY_FOLDER);
-    Spliterator<Resource> spliterator = $(rootResource).searchStrategy(SearchStrategy.BFS)
-        .find("[executionTime][apmHistory=entry]")
-        .spliterator();
-    return StreamSupport.stream(spliterator, false)
+    visitor.accept(rootResource);
+    return resources.stream()
         .sorted(this::compareExecutionTime)
         .collect(Collectors.toList());
   }
@@ -161,19 +134,7 @@ public class HistoryImpl implements History {
   }
 
   @Override
-  public void replicate(final HistoryEntry entry, String userId) {
-    SlingHelper.operateTraced(resolverFactory, userId, resolver -> {
-      Resource resource = resolver.getResource(entry.getPath());
-      if (resource != null) {
-        Map<String, Object> properties = new HashMap<>(resource.getValueMap());
-        properties.put(ReplicationAction.PROPERTY_USER_ID, resolver.getUserID());
-        remoteScriptExecutionNotifier.notifyRemoteInstance(properties);
-      }
-    });
-  }
-
-  @Override
-  public HistoryEntry findHistoryEntry(ResourceResolver resourceResolver, final String path) {
+  public HistoryEntry findHistoryEntry(ResourceResolver resourceResolver, String path) {
     Resource resource = resourceResolver.getResource(path);
     if (resource != null) {
       return resource.adaptTo(HistoryEntryImpl.class);
@@ -191,12 +152,12 @@ public class HistoryImpl implements History {
   }
 
   private HistoryEntry createHistoryEntry(ResourceResolver resolver, Script script, ExecutionMode mode,
-                                          HistoryEntryWriter historyEntryWriter, boolean remote) {
+      HistoryEntryWriter historyEntryWriter) {
     try {
       Session session = resolver.adaptTo(Session.class);
 
       Node scriptHistoryNode = createScriptHistoryNode(script, session);
-      Node historyEntryNode = createHistoryEntryNode(scriptHistoryNode, script, mode, remote);
+      Node historyEntryNode = createHistoryEntryNode(scriptHistoryNode, script, mode);
       historyEntryNode.setProperty(HistoryEntryImpl.SCRIPT_CONTENT_PATH, versionService.getVersionPath(script));
       writeProperties(resolver, historyEntryNode, historyEntryWriter);
 
@@ -209,7 +170,6 @@ public class HistoryImpl implements History {
     }
   }
 
-  @NotNull
   private Resource writeProperties(ResourceResolver resolver, Node historyEntry, HistoryEntryWriter
       historyEntryWriter)
       throws RepositoryException {
@@ -218,10 +178,10 @@ public class HistoryImpl implements History {
     return entryResource;
   }
 
-  private Node createHistoryEntryNode(Node scriptHistoryNode, Script script, ExecutionMode mode, boolean remote)
+  private Node createHistoryEntryNode(Node scriptHistoryNode, Script script, ExecutionMode mode)
       throws RepositoryException {
-    String modeName = getModeName(mode, remote);
-    Node historyEntry = getOrCreateUniqueByPath(scriptHistoryNode, modeName, NT_UNSTRUCTURED);
+    String modeName = getModeName(mode);
+    Node historyEntry = JcrUtils.getOrCreateUniqueByPath(scriptHistoryNode, modeName, JcrConstants.NT_UNSTRUCTURED);
     historyEntry.setProperty(APM_HISTORY, APM_HISTORY_ENTRY);
     historyEntry.setProperty(HistoryEntryImpl.CHECKSUM, script.getChecksum());
     scriptHistoryNode.setProperty(ScriptHistoryImpl.LAST_CHECKSUM, script.getChecksum());
@@ -229,37 +189,20 @@ public class HistoryImpl implements History {
     return historyEntry;
   }
 
-  @NotNull
   private Node createScriptHistoryNode(Script script, Session session) throws RepositoryException {
     String path = getScriptHistoryPath(script);
-    Node scriptHistory = getOrCreateByPath(path, SLING_ORDERED_FOLDER, NT_UNSTRUCTURED, session, true);
+    Node scriptHistory = JcrUtils.getOrCreateByPath(path, SLING_ORDERED_FOLDER, JcrConstants.NT_UNSTRUCTURED, session, true);
     scriptHistory.setProperty(APM_HISTORY, APM_HISTORY_SCRIPT);
     scriptHistory.setProperty(ScriptHistoryImpl.SCRIPT_PATH, script.getPath());
     return scriptHistory;
   }
 
-  @NotNull
-  private String getModeName(ExecutionMode mode, boolean remote) {
-    String modeName = (remote ? "Remote" : "Local");
-    if (mode == ExecutionMode.AUTOMATIC_RUN || mode == ExecutionMode.RUN) {
-      modeName += "Run";
-    } else {
-      modeName += "DryRun";
-    }
-    modeName = modeName.replace("_", "");
-    return modeName;
+  private String getModeName(ExecutionMode mode) {
+    return (mode == ExecutionMode.AUTOMATIC_RUN || mode == ExecutionMode.RUN) ? "LocalRun" : "LocalDryRun";
   }
 
-  @NotNull
   private String getScriptHistoryPath(Script script) {
     return HISTORY_FOLDER + "/" + script.getPath().replace("/", "_").substring(1);
   }
 
-  private String getHostname() {
-    try {
-      return InetAddress.getLocalHost().getHostName();
-    } catch (UnknownHostException e) {
-      return null;
-    }
-  }
 }

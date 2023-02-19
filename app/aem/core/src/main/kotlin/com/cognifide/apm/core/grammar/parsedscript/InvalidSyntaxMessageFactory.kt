@@ -24,7 +24,7 @@ import org.antlr.v4.runtime.CommonTokenStream
 import org.antlr.v4.runtime.IntStream
 import org.antlr.v4.runtime.Recognizer
 import org.antlr.v4.runtime.Token
-import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang3.StringUtils
 
 object InvalidSyntaxMessageFactory {
 

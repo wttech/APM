@@ -41,8 +41,8 @@ public class AllowMapper {
   @Mapping(
       examples = {
           "ALLOW '/content/dam' [READ]",
-          "ALLOW '/content/dam' properties= ['jcr:title'] [MODIFY]",
-          "ALLOW '/content/dam' types= ['nt:folder'] [MODIFY]",
+          "ALLOW '/content/dam' properties=['jcr:title'] [MODIFY]",
+          "ALLOW '/content/dam' types=['nt:folder'] [MODIFY]",
           "ALLOW '/content/dam/domain' [READ, MODIFY] --IF-EXISTS"
       },
       reference = REFERENCE
@@ -63,12 +63,12 @@ The `examples` and `reference` properties are used for the on-the-fly documentat
 
 Let's take script fragment:
 ```
-ALLOW '/content' types= ['nt:folder'] --IF-EXISTS ['ALL']
+ALLOW '/content' types=['nt:folder'] --IF-EXISTS ['ALL']
 ```
 
 Command from above will map to action like this: 
 * `'/content'` - first required parameter, it is mapped to first argument with annotation `@Required`. 
-* `types= ['nt:folder']` - named parameter with name `types`, it is mapped to argument with annotation `@Named("types")`  
+* `types=['nt:folder']` - named parameter with name `types`, it is mapped to argument with annotation `@Named("types")`  
 * `--IF-EXISTS` - is a flag (all flags uses prefix `--`), and it is mapped to argument wit annotation `@Flags`. 
 * `['ALL']` - second required parameter, it is mapped to second argument with annotation `@Required`.
 

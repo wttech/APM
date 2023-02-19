@@ -22,7 +22,6 @@ package com.cognifide.apm.core.grammar.parsedscript
 
 import com.cognifide.apm.api.scripts.Script
 import com.cognifide.apm.core.grammar.antlr.ApmLangParser.ApmContext
-import com.cognifide.apm.core.tools.ApmInstallHook
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 

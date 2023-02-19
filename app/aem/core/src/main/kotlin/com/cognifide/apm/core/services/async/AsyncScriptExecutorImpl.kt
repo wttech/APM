@@ -21,19 +21,17 @@ package com.cognifide.apm.core.services.async
 
 import com.cognifide.apm.api.scripts.Script
 import com.cognifide.apm.api.services.ExecutionMode
-import com.cognifide.apm.api.status.Status
 import com.cognifide.apm.core.Property
 import com.cognifide.apm.core.jobs.JobResultsCache
 import com.cognifide.apm.core.jobs.JobResultsCache.ExecutionSummary
+import com.cognifide.apm.core.jobs.ScriptRunnerJobConsumer
 import org.apache.sling.api.resource.ResourceResolver
-import org.apache.sling.event.jobs.Job
-import org.apache.sling.event.jobs.JobManager
 import org.osgi.service.component.annotations.Component
 import org.osgi.service.component.annotations.Reference
+import java.util.*
+import kotlin.concurrent.thread
 
 @Component(
-        immediate = true,
-        service = [AsyncScriptExecutor::class],
         property = [
             Property.DESCRIPTION + "APM Service for executing scripts in background and checking theirs status",
             Property.VENDOR
@@ -43,28 +41,30 @@ class AsyncScriptExecutorImpl : AsyncScriptExecutor {
 
     @Reference
     @Transient
-    private lateinit var jobManager: JobManager
+    private lateinit var scriptRunnerJobConsumer: ScriptRunnerJobConsumer
 
     @Reference
     @Transient
     private lateinit var jobResultsCache: JobResultsCache
 
     override fun process(script: Script, executionMode: ExecutionMode, customDefinitions: Map<String, String>, resourceResolver: ResourceResolver): String {
+        val id = UUID.randomUUID().toString()
         val properties = mutableMapOf<String, Any>()
+        properties[ID] = id
         properties[SCRIPT_PATH] = script.path
         properties[EXECUTION_MODE] = executionMode.toString()
         properties[USER_ID] = resourceResolver.userID!!
         properties[DEFINITIONS] = customDefinitions
-        val job = jobManager.addJob(TOPIC, properties)
-        jobResultsCache.put(job.id, ExecutionSummary.running())
-        return job.id
+        jobResultsCache.put(id, ExecutionSummary.running())
+        thread(start = true) {
+            scriptRunnerJobConsumer.process(properties)
+        }
+        return id
     }
 
     override fun checkStatus(id: String): ExecutionStatus {
         val executionSummary = jobResultsCache[id]
-        val job = findJob(id)
         return when {
-            isJobRunning(job) -> RunningExecution()
             executionSummary == null -> UnknownExecution()
             executionSummary.isFinished -> finishedExecution(executionSummary)
             else -> RunningExecution()
@@ -73,7 +73,7 @@ class AsyncScriptExecutorImpl : AsyncScriptExecutor {
 
     private fun finishedExecution(executionSummary: ExecutionSummary): ExecutionStatus {
         val entries = executionSummary.result.entries
-        val errorEntry = entries.findLast { it.status == Status.ERROR }
+        val errorEntry = executionSummary.result.lastError
         return if (errorEntry != null) {
             FinishedFailedExecution(executionSummary.path, entries, errorEntry)
         } else {
@@ -81,19 +81,12 @@ class AsyncScriptExecutorImpl : AsyncScriptExecutor {
         }
     }
 
-    private fun isJobRunning(job: Job?): Boolean {
-        return job != null && (job.jobState == Job.JobState.ACTIVE || job.jobState == Job.JobState.QUEUED)
-    }
-
-    private fun findJob(id: String): Job? {
-        return jobManager.getJobById(id)
-    }
-
     companion object {
-        const val TOPIC = "script/job/run"
         const val SCRIPT_PATH = "searchPath"
         const val EXECUTION_MODE = "modeName"
         const val USER_ID = "userName"
         const val DEFINITIONS = "definitions"
+        const val ID = "id"
     }
+
 }

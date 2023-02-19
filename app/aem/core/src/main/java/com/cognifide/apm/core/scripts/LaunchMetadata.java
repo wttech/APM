@@ -23,44 +23,26 @@ package com.cognifide.apm.core.scripts;
 import com.cognifide.apm.api.scripts.LaunchEnvironment;
 import com.cognifide.apm.api.scripts.LaunchMode;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.stream.Stream;
+import org.apache.commons.lang3.StringUtils;
 
 public class LaunchMetadata {
 
   private final boolean executionEnabled;
   private final LaunchMode launchMode;
   private final LaunchEnvironment launchEnvironment;
+  private final String[] launchRunModes;
   private final String executionHook;
   private final LocalDateTime executionSchedule;
 
-  public static LaunchMetadata disabled() {
-    return new LaunchMetadata(false, LaunchMode.ON_DEMAND, null, null, null);
-  }
-
-  public static LaunchMetadata onDemand() {
-    return new LaunchMetadata(true, LaunchMode.ON_DEMAND, null, null, null);
-  }
-
-  public static LaunchMetadata onModify() {
-    return new LaunchMetadata(true, LaunchMode.ON_STARTUP_IF_MODIFIED, null, null, null);
-  }
-
-  public static LaunchMetadata onStart() {
-    return new LaunchMetadata(true, LaunchMode.ON_STARTUP, null, null, null);
-  }
-
-  public static LaunchMetadata onHook(LaunchEnvironment launchEnvironment, String executionHook) {
-    return new LaunchMetadata(true, LaunchMode.ON_DEMAND, launchEnvironment, executionHook, null);
-  }
-
-  public static LaunchMetadata onSchedule(LocalDateTime executionSchedule) {
-    return new LaunchMetadata(true, LaunchMode.ON_DEMAND, null, null, executionSchedule);
-  }
-
-  public LaunchMetadata(boolean executionEnabled, LaunchMode launchMode,
-      LaunchEnvironment launchEnvironment, String executionHook, LocalDateTime executionSchedule) {
+  public LaunchMetadata(boolean executionEnabled, LaunchMode launchMode, LaunchEnvironment launchEnvironment,
+      String[] launchRunModes, String executionHook, LocalDateTime executionSchedule) {
     this.executionEnabled = executionEnabled;
     this.launchMode = launchMode;
     this.launchEnvironment = launchEnvironment;
+    this.launchRunModes = launchRunModes;
     this.executionHook = executionHook;
     this.executionSchedule = executionSchedule;
   }
@@ -75,6 +57,15 @@ public class LaunchMetadata {
 
   public LaunchEnvironment getLaunchEnvironment() {
     return launchEnvironment;
+  }
+
+  public String[] getLaunchRunModes() {
+    return Optional.ofNullable(launchRunModes)
+        .map(Arrays::stream)
+        .orElse(Stream.empty())
+        .filter(StringUtils::isNotBlank)
+        .distinct()
+        .toArray(String[]::new);
   }
 
   public String getExecutionHook() {

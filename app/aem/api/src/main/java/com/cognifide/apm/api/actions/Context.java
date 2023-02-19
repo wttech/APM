@@ -55,4 +55,7 @@ public interface Context {
   ActionResult createActionResult();
 
   Context newContext();
+
+  boolean isCompositeNodeStore();
+
 }

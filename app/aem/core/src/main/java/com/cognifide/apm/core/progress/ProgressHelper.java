@@ -28,20 +28,20 @@ import java.util.List;
 
 public final class ProgressHelper {
 
-	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+  private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-	private ProgressHelper() {
-	}
+  private ProgressHelper() {
+  }
 
-	public static List<ProgressEntry> fromJson(String executionSummaryJson) {
-		return Arrays.asList(GSON.fromJson(executionSummaryJson, ProgressEntry[].class));
-	}
+  public static List<ProgressEntry> fromJson(String executionSummaryJson) {
+    return Arrays.asList(GSON.fromJson(executionSummaryJson, ProgressEntry[].class));
+  }
 
-	public static String toJson(List<Entry> entries) {
-		return GSON.toJson(entries.toArray());
-	}
+  public static String toJson(List<Entry> entries) {
+    return GSON.toJson(entries.toArray());
+  }
 
-	public static String toJson(Entry entry) {
-		return GSON.toJson(entry);
-	}
+  public static String toJson(Entry entry) {
+    return GSON.toJson(entry);
+  }
 }

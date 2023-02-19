@@ -20,13 +20,13 @@
 
 package com.cognifide.apm.core.history;
 
+import com.cognifide.apm.core.services.ResourceResolverProvider;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
 import java.util.Calendar;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -37,17 +37,14 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 @Slf4j
-@Component(
-    immediate = true,
-    service = Runnable.class
-)
+@Component
 @Designate(ocd = HistoryAutocleanService.Config.class)
 public class HistoryAutocleanService implements Runnable {
 
   private Config config;
 
   @Reference
-  private ResourceResolverFactory resolverFactory;
+  private ResourceResolverProvider resolverProvider;
 
   @Reference
   private History history;
@@ -60,8 +57,8 @@ public class HistoryAutocleanService implements Runnable {
 
   @Override
   public void run() {
-    SlingHelper.operateTraced(resolverFactory, this::deleteHistoryByEntries);
-    SlingHelper.operateTraced(resolverFactory, this::deleteHistoryByDays);
+    SlingHelper.operateTraced(resolverProvider, this::deleteHistoryByEntries);
+    SlingHelper.operateTraced(resolverProvider, this::deleteHistoryByDays);
   }
 
   private void deleteHistoryByEntries(ResourceResolver resolver) {

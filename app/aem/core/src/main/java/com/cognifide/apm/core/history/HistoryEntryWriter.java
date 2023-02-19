@@ -31,13 +31,13 @@ public class HistoryEntryWriter {
   private final String author;
   private final Calendar executionTime;
   private final String executor;
+  private final long executionDuration;
   private final String fileName;
   private final String filePath;
-  private final String instanceType;
-  private final String instanceHostname;
   private final Boolean isRunSuccessful;
   private final String mode;
   private final String progressLog;
+  private final String instanceName;
 
   public void writeTo(Resource historyLogResource) {
     ModifiableValueMap valueMap = historyLogResource.adaptTo(ModifiableValueMap.class);
@@ -46,10 +46,10 @@ public class HistoryEntryWriter {
     valueMap.put(HistoryEntryImpl.AUTHOR, author);
     valueMap.put(HistoryEntryImpl.MODE, mode);
     valueMap.put(HistoryEntryImpl.PROGRESS_LOG, progressLog);
-    valueMap.put(HistoryEntryImpl.INSTANCE_TYPE, instanceType);
-    valueMap.put(HistoryEntryImpl.INSTANCE_HOSTNAME, instanceHostname);
     valueMap.put(HistoryEntryImpl.IS_RUN_SUCCESSFUL, isRunSuccessful);
     valueMap.put(HistoryEntryImpl.EXECUTION_TIME, executionTime);
+    valueMap.put(HistoryEntryImpl.EXECUTION_DURATION, executionDuration);
     valueMap.put(HistoryEntryImpl.EXECUTOR, executor);
+    valueMap.put(HistoryEntryImpl.INSTANCE_NAME, instanceName);
   }
 }

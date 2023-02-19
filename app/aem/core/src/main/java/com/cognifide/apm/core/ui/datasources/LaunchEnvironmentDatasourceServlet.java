@@ -25,11 +25,10 @@ import javax.servlet.Servlet;
 import org.osgi.service.component.annotations.Component;
 
 @Component(
-    immediate = true,
     service = Servlet.class,
     property = {
         Property.RESOURCE_TYPE + "apm/datasource/launchEnvironments",
-        Property.DESCRIPTION + "Provides launch environments",
+        Property.DESCRIPTION + "APM Provides launch environments",
         Property.VENDOR
     }
 )

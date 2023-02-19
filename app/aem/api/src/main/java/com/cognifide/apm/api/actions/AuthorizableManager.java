@@ -21,6 +21,7 @@
 package com.cognifide.apm.api.actions;
 
 import com.cognifide.apm.api.exceptions.ActionExecutionException;
+import com.cognifide.apm.api.exceptions.AuthorizableNotFoundException;
 import java.security.Principal;
 import javax.jcr.RepositoryException;
 import org.apache.jackrabbit.api.security.user.Authorizable;
@@ -31,13 +32,13 @@ public interface AuthorizableManager {
 
   Authorizable getAuthorizableIfExists(String id) throws RepositoryException;
 
-  Authorizable getAuthorizable(String id) throws ActionExecutionException, RepositoryException;
+  Authorizable getAuthorizable(String id) throws ActionExecutionException, RepositoryException, AuthorizableNotFoundException;
 
   void markAuthorizableAsRemoved(Authorizable authorizable) throws RepositoryException;
 
   Group getGroupIfExists(String id) throws RepositoryException, ActionExecutionException;
 
-  Group getGroup(String id) throws ActionExecutionException, RepositoryException;
+  Group getGroup(String id) throws ActionExecutionException, RepositoryException, AuthorizableNotFoundException;
 
   Group createGroup(String id, Principal namePrincipal, String path) throws RepositoryException;
 
@@ -47,7 +48,7 @@ public interface AuthorizableManager {
 
   User getUserIfExists(String id) throws ActionExecutionException, RepositoryException;
 
-  User getUser(String id) throws ActionExecutionException, RepositoryException;
+  User getUser(String id) throws ActionExecutionException, RepositoryException, AuthorizableNotFoundException;
 
   User createUser(String id, String password, Principal namePrincipal, String path) throws RepositoryException;
 

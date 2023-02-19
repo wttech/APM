@@ -148,13 +148,13 @@ class ReferenceFinder(
 
         override fun getLaunchEnvironment(): LaunchEnvironment? = null
 
+        override fun getLaunchRunModes(): Set<String>? = null
+
         override fun getLaunchHook(): String? = null
 
         override fun getLaunchSchedule(): Date? = null
 
         override fun getLastExecuted(): Date? = null
-
-        override fun isPublishRun(): Boolean = false
 
         override fun getChecksum(): String? = null
 
@@ -163,8 +163,6 @@ class ReferenceFinder(
         override fun getLastModified(): Date? = null
 
         override fun getData(): String? = null
-
-        override fun getReplicatedBy(): String? = null
     }
 
 }

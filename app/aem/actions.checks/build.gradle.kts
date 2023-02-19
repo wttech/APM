@@ -27,7 +27,6 @@ aem {
         }
         jar {
             bundle {
-                exportPackage("com.cognifide.apm.checks.actions.*")
                 attribute("APM-Actions", "com.cognifide.apm.checks.actions")
             }
         }
@@ -72,7 +71,7 @@ publishing {
         }
         register<MavenPublication>("apmCrx") {
             groupId = project.group.toString() + ".crx"
-            artifact(common.publicationArtifact("packageCompose"))
+            artifact(tasks["packageCompose"])
             afterEvaluate {
                 artifactId = "apm-" + project.name
                 version = rootProject.version

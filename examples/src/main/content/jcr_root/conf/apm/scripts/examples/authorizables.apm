@@ -9,7 +9,7 @@ CREATE-GROUP "test_group_1"
 CREATE-GROUP "test_group_2"
 
 # We can specify path where group will be created.
-CREATE-GROUP "test_group_3" path= "/home/groups/company/cognifide"
+CREATE-GROUP "test_group_3" path="/home/groups/company/cognifide"
 
 # This action will create user. If user already exists, action and following block of code are skipped.
 CREATE-USER "test_user_1" BEGIN
@@ -23,10 +23,10 @@ CREATE-USER "test_user_2" BEGIN
 END
 
 # We can also set password while creating user.
-CREATE-USER "test_user_3" password= "password3"
+CREATE-USER "test_user_3" password="password3"
 
 # We can specify path where user will be created.
-CREATE-USER "test_user_4" path= "/home/users/company/cognifide"
+CREATE-USER "test_user_4" path="/home/users/company/cognifide"
 
 # For these actions we need context. To set context use "FOR-USER" or "FOR-GROUP" action.
 FOR-USER "test_user_1" BEGIN

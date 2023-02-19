@@ -20,19 +20,18 @@
 
 package com.cognifide.apm.core.utils;
 
-import static java.lang.String.format;
-
 import com.cognifide.apm.api.actions.AuthorizableManager;
 import com.cognifide.apm.api.exceptions.ActionExecutionException;
+import com.cognifide.apm.api.exceptions.AuthorizableNotFoundException;
 import com.cognifide.apm.core.utils.mocks.MockGroup;
 import com.cognifide.apm.core.utils.mocks.MockPrincipal;
 import com.cognifide.apm.core.utils.mocks.MockUser;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.jcr.RepositoryException;
 import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.apache.jackrabbit.api.security.user.Group;
@@ -44,7 +43,8 @@ public class AuthorizableManagerImpl implements AuthorizableManager {
   private final UserManager userManager;
 
   private final Map<String, Authorizable> existingAuthorizables = new HashMap<>();
-  private final List<String> removedAuthorizables = new ArrayList<>();
+
+  private final Set<String> removedAuthorizables = new HashSet<>();
 
   public AuthorizableManagerImpl(UserManager userManager) {
     this.userManager = userManager;
@@ -65,7 +65,7 @@ public class AuthorizableManagerImpl implements AuthorizableManager {
   }
 
   @Override
-  public Authorizable getAuthorizable(String id) throws ActionExecutionException, RepositoryException {
+  public Authorizable getAuthorizable(String id) throws ActionExecutionException, RepositoryException, AuthorizableNotFoundException {
     return getAuthorizable(Authorizable.class, id);
   }
 
@@ -81,7 +81,7 @@ public class AuthorizableManagerImpl implements AuthorizableManager {
   }
 
   @Override
-  public Group getGroup(String id) throws ActionExecutionException, RepositoryException {
+  public Group getGroup(String id) throws ActionExecutionException, RepositoryException, AuthorizableNotFoundException {
     return getAuthorizable(Group.class, id);
   }
 
@@ -113,7 +113,7 @@ public class AuthorizableManagerImpl implements AuthorizableManager {
   }
 
   @Override
-  public User getUser(String id) throws ActionExecutionException, RepositoryException {
+  public User getUser(String id) throws ActionExecutionException, RepositoryException, AuthorizableNotFoundException {
     return getAuthorizable(User.class, id);
   }
 
@@ -174,7 +174,7 @@ public class AuthorizableManagerImpl implements AuthorizableManager {
 
     if (!authorizableClass.isInstance(authorizable)) {
       throw new ActionExecutionException(
-          format("Authorizable with id %s exists but is a ", authorizableClass.getSimpleName()));
+          String.format("Authorizable with id %s exists but is a %s", id, authorizableClass.getSimpleName()));
     }
 
     existingAuthorizables.put(id, authorizable);
@@ -182,10 +182,10 @@ public class AuthorizableManagerImpl implements AuthorizableManager {
   }
 
   private <T extends Authorizable> T getAuthorizable(Class<T> authorizableClass, String id)
-      throws ActionExecutionException, RepositoryException {
+      throws ActionExecutionException, RepositoryException, AuthorizableNotFoundException {
     if (checkIfRemoved(id)) {
-      throw new ActionExecutionException(
-          format("%s with id %s not found", authorizableClass.getSimpleName(), id));
+      throw new AuthorizableNotFoundException(
+          String.format("%s with id %s not found", authorizableClass.getSimpleName(), id));
     }
 
     Authorizable authorizable = existingAuthorizables.get(id);
@@ -195,13 +195,13 @@ public class AuthorizableManagerImpl implements AuthorizableManager {
     }
 
     if (authorizable == null) {
-      throw new ActionExecutionException(
-          format("%s with id %s not found", authorizableClass.getSimpleName(), id));
+      throw new AuthorizableNotFoundException(
+          String.format("%s with id %s not found", authorizableClass.getSimpleName(), id));
     }
 
     if (!authorizableClass.isInstance(authorizable)) {
       throw new ActionExecutionException(
-          format("Authorizable with id %s exists but is a ", authorizableClass.getSimpleName()));
+          String.format("Authorizable with id %s exists but is a %s", id, authorizableClass.getSimpleName()));
     }
 
     existingAuthorizables.put(id, authorizable);

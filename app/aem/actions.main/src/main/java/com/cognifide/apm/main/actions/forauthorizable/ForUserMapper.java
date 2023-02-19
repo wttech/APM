@@ -19,7 +19,10 @@
  */
 package com.cognifide.apm.main.actions.forauthorizable;
 
+import static com.cognifide.apm.main.actions.CommonFlags.IF_EXISTS;
+
 import com.cognifide.apm.api.actions.Action;
+import com.cognifide.apm.api.actions.annotations.Flag;
 import com.cognifide.apm.api.actions.annotations.Mapper;
 import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.apm.api.actions.annotations.Required;
@@ -29,10 +32,14 @@ import com.cognifide.apm.main.actions.ActionGroup;
 public final class ForUserMapper {
 
   @Mapping(
-      examples = {"FOR-USER 'author' BEGIN ... END"},
+      examples = {
+          "FOR-USER 'author' BEGIN ... END",
+          "FOR-USER 'author' --IF-EXISTS BEGIN ... END"
+      },
       reference = "Set specified user as a current authorizable for execution context."
   )
-  public Action mapAction(@Required(value = "userId", description = "user's id e.g.: 'author'") String userId) {
-    return new ForAuthorizable(userId, false);
+  public Action mapAction(@Required(value = "userId", description = "user's id e.g.: 'author'") String userId,
+      @Flag(value = IF_EXISTS, description = "script doesn't fail if user doesn't exist") boolean ifExists) {
+    return new ForAuthorizable(userId, ifExists, false);
   }
 }

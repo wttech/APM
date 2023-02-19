@@ -19,31 +19,28 @@
  */
 package com.cognifide.apm.api.services;
 
+import com.cognifide.apm.api.scripts.Script;
 import java.util.Map;
-
 import javax.jcr.RepositoryException;
-
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 
-import com.cognifide.apm.api.scripts.Script;
-
 public interface ScriptManager {
 
-	/**
-	 * Fail-safe execution of script in concrete mode (dry run, automatic execution, validation)
-	 */
-	ExecutionResult process(Script script, ExecutionMode mode, ResourceResolver resolver)
-			throws RepositoryException, PersistenceException;
+  /**
+   * Fail-safe execution of script in concrete mode (dry run, automatic execution, validation)
+   */
+  ExecutionResult process(Script script, ExecutionMode mode, ResourceResolver resolver)
+      throws RepositoryException, PersistenceException;
 
-	/**
-	 * Fail-safe execution of script in concrete mode (dry run, automatic execution, validation)
-	 */
-	ExecutionResult process(Script script, ExecutionMode mode, Map<String, String> customDefinitions, ResourceResolver resolver)
-			throws RepositoryException, PersistenceException;
+  /**
+   * Fail-safe execution of script in concrete mode (dry run, automatic execution, validation)
+   */
+  ExecutionResult process(Script script, ExecutionMode mode, Map<String, String> customDefinitions, ResourceResolver resolver)
+      throws RepositoryException, PersistenceException;
 
-	/**
-	 * Get predefined variables accessible in script via syntax: ${definitionName}
-	 */
-	Map<String, String> getPredefinedDefinitions();
+  /**
+   * Get predefined variables accessible in script via syntax: ${definitionName}
+   */
+  Map<String, String> getPredefinedDefinitions();
 }

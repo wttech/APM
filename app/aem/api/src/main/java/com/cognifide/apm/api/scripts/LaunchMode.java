@@ -21,7 +21,7 @@ package com.cognifide.apm.api.scripts;
 
 import java.util.Arrays;
 import java.util.Optional;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public enum LaunchMode {
 

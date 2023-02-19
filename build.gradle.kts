@@ -27,10 +27,10 @@ allprojects {
 
 tasks {
     register("deployApp") {
-        dependsOn(":env:instanceProvision", ":app:aem:ui.apps:packageDeploy")
+        dependsOn(":app:aem:ui.apps:packageDeploy")
     }
     register("deployAll") {
-        dependsOn(":env:instanceProvision", ":app:aem:all:packageDeploy")
+        dependsOn(":app:aem:all:packageDeploy")
     }
     withType<RatTask>().configureEach {
         // Files that don't require a license header
@@ -54,6 +54,7 @@ tasks {
         excludes.add("**/*.svg")
         excludes.add("**/*.png")
         excludes.add("**/*.cnd")
+        excludes.add("**/*.config")
 
         // Module
         excludes.add("**/docs/*")

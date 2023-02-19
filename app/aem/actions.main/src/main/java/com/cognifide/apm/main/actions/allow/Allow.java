@@ -23,15 +23,17 @@ import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.apm.api.actions.Context;
 import com.cognifide.apm.api.exceptions.ActionExecutionException;
+import com.cognifide.apm.api.status.Status;
 import com.cognifide.apm.main.permissions.PermissionActionHelper;
 import com.cognifide.apm.main.permissions.Restrictions;
 import com.cognifide.apm.main.permissions.exceptions.PermissionException;
 import com.cognifide.apm.main.utils.MessagingUtils;
+import com.cognifide.apm.main.utils.PathUtils;
 import java.util.Collections;
 import java.util.List;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,23 +74,27 @@ public class Allow implements Action {
     try {
       Authorizable authorizable = context.getCurrentAuthorizable();
       actionResult.setAuthorizable(authorizable.getID());
-      context.getSession().getNode(path);
-      final PermissionActionHelper permissionActionHelper = new PermissionActionHelper(
-          context.getValueFactory(), path, permissions, restrictions);
-      LOGGER.info(String.format("Adding permissions %s for authorizable with id = %s for path = %s %s",
-          permissions.toString(), context.getCurrentAuthorizable().getID(), path, restrictions));
-      if (simulate) {
-        permissionActionHelper.checkPermissions(context.getAccessControlManager());
+      if (context.isCompositeNodeStore() && PathUtils.isAppsOrLibsPath(path)) {
+        actionResult.changeStatus(Status.SKIPPED, "Skipped adding allow privilege for " + authorizable.getID() + " on " + path);
       } else {
-        permissionActionHelper.applyPermissions(context.getAccessControlManager(), authorizable.getPrincipal(), true);
-      }
-      actionResult.logMessage("Added allow privilege for " + authorizable.getID() + " on " + path);
-      if (permissions.contains("MODIFY")) {
-        String preparedGlob = recalculateGlob(restrictions.getGlob());
-        new Allow(path, Collections.singletonList("MODIFY_PAGE"),
-            preparedGlob + "*/jcr:content*", restrictions.getNtNames(), restrictions.getItemNames(),
-            ignoreNonExistingPaths
-        ).process(context, simulate);
+        context.getSession().getNode(path);
+        final PermissionActionHelper permissionActionHelper = new PermissionActionHelper(
+            context.getValueFactory(), path, permissions, restrictions);
+        LOGGER.info(String.format("Adding permissions %s for authorizable with id = %s for path = %s %s",
+            permissions.toString(), context.getCurrentAuthorizable().getID(), path, restrictions));
+        if (simulate) {
+          permissionActionHelper.checkPermissions(context.getAccessControlManager());
+        } else {
+          permissionActionHelper.applyPermissions(context.getAccessControlManager(), authorizable.getPrincipal(), true);
+        }
+        actionResult.logMessage("Added allow privilege for " + authorizable.getID() + " on " + path);
+        if (permissions.contains("MODIFY")) {
+          String preparedGlob = recalculateGlob(restrictions.getGlob());
+          new Allow(path, Collections.singletonList("MODIFY_PAGE"),
+              preparedGlob + "*/jcr:content*", restrictions.getNtNames(), restrictions.getItemNames(),
+              ignoreNonExistingPaths
+          ).process(context, simulate);
+        }
       }
     } catch (final PathNotFoundException e) {
       if (ignoreNonExistingPaths) {

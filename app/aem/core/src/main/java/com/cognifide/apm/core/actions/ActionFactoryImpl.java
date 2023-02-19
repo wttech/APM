@@ -32,8 +32,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 @Component(
-    immediate = true,
-    service = ActionFactory.class,
     property = {
         Property.DESCRIPTION + "Action factory service",
         Property.VENDOR
@@ -42,8 +40,12 @@ import org.osgi.service.component.annotations.Reference;
 public class ActionFactoryImpl implements ActionFactory {
 
   public static final String CORE_GROUP = "core";
+
   @Reference
   private ActionMapperRegistry registry;
+
+  @Reference
+  private MapperContext mapperContext;
 
   public ActionDescriptor evaluate(String command, Arguments arguments) throws ActionCreationException {
     Optional<MapperDescriptor> mapper = registry.getMapper(command);
@@ -56,7 +58,7 @@ public class ActionFactoryImpl implements ActionFactory {
   private Action tryToEvaluateCommand(MapperDescriptor mapper, Arguments arguments)
       throws ActionCreationException {
     if (mapper.handles(arguments)) {
-      return mapper.handle(arguments);
+      return mapper.handle(arguments, mapperContext);
     }
     throw new ActionCreationException("Mapper cannot handle given arguments: " + arguments);
   }

@@ -20,29 +20,39 @@
 
 package com.cognifide.apm.core.grammar
 
-abstract class ApmType(val argument: Any? = null) {
+import com.cognifide.apm.core.crypto.DecryptionService
+
+abstract class ApmType {
+    abstract fun getArgument(decryptionService: DecryptionService): Any?
     open val integer: Int?
         get() = null
     open val string: String?
         get() = null
-    open val list: List<String>?
+    open val list: List<ApmType>?
         get() = null
-    open val nestedList: List<List<String>>?
+    open val map: Map<String, ApmType>?
+        get() = null
+    open val pair: Pair<String, ApmType>?
         get() = null
 }
 
-abstract class ApmValue(arg: Any? = null) : ApmType(arg)
+data class ApmInteger(val value: Int) : ApmType() {
+    override fun getArgument(decryptionService: DecryptionService): Int = value
 
-data class ApmInteger(val value: Int) : ApmValue(value) {
     override val integer: Int
         get() = value
+
+    override val string: String
+        get() = value.toString()
 
     override fun toString(): String {
         return value.toString()
     }
 }
 
-data class ApmString(val value: String) : ApmValue(value) {
+data class ApmString(val value: String) : ApmType() {
+    override fun getArgument(decryptionService: DecryptionService) = decryptionService.decrypt(value)
+
     override val string: String
         get() = value
 
@@ -51,24 +61,41 @@ data class ApmString(val value: String) : ApmValue(value) {
     }
 }
 
-data class ApmList(val value: List<String>) : ApmType(value) {
-    override val list: List<String>
+data class ApmList(val value: List<ApmType>) : ApmType() {
+    override fun getArgument(decryptionService: DecryptionService) = value.map { it.getArgument(decryptionService) }
+
+    override val list: List<ApmType>
         get() = value
 
     override fun toString(): String {
-        return value.joinToString(prefix = "[", postfix = "]") { "\"$it\"" }
+        return value.joinToString(prefix = "[", postfix = "]") { "$it" }
     }
 }
 
-data class ApmNestedList(val value: List<List<String>>) : ApmType(value) {
-    override val nestedList: List<List<String>>
+data class ApmMap(val value: Map<String, ApmType>) : ApmType() {
+    override fun getArgument(decryptionService: DecryptionService) =
+        value.mapValues { it.value.getArgument(decryptionService) }
+
+    override val map: Map<String, ApmType>
         get() = value
 
     override fun toString(): String {
-        return value.joinToString(prefix = "[", postfix = "]") { item ->
-            item.joinToString(prefix = "[", postfix = "]") { "\"$it\"" }
-        }
+        return value.entries.joinToString(prefix = "{", postfix = "}") { "${it.key}: ${it.value}" }
     }
 }
 
-class ApmEmpty : ApmType()
+data class ApmPair(val value: Pair<String, ApmType>) : ApmType() {
+    override fun getArgument(decryptionService: DecryptionService) =
+        Pair(value.first, value.second.getArgument(decryptionService))
+
+    override val pair: Pair<String, ApmType>
+        get() = value
+
+    override fun toString(): String {
+        return "${value.first}:${value.second}"
+    }
+}
+
+class ApmEmpty : ApmType() {
+    override fun getArgument(decryptionService: DecryptionService): Any? = null
+}

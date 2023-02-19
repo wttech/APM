@@ -23,7 +23,7 @@ import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.annotations.Mapper;
 import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.apm.main.actions.ActionGroup;
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 
 @Mapper(value = "FOR-EACH", group = ActionGroup.CORE)
 public final class ForEachMapper {
@@ -31,7 +31,7 @@ public final class ForEachMapper {
   @Mapping(
       examples = {
           "FOR-EACH i IN ['a', 'b'] BEGIN ... END",
-          "FOR-EACH [i, j] IN [['a', 'b'], ['c', 'd']] BEGIN ... END"
+          "FOR-EACH i IN [{x: 'a', y: 'b'}, {x: 'c', y: 'd'}] BEGIN ... END"
       },
       reference = "Executes commands in block of code for each item in given array."
   )

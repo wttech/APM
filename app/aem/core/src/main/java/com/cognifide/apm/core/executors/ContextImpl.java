@@ -54,20 +54,25 @@ public final class ContextImpl implements Context {
   @Setter
   private Authorizable currentAuthorizable;
 
-  public ContextImpl(final JackrabbitSession session) throws RepositoryException {
+  @Getter
+  private boolean compositeNodeStore;
+
+  public ContextImpl(JackrabbitSession session, boolean compositeNodeStore) throws RepositoryException {
     this.session = session;
     this.accessControlManager = session.getAccessControlManager();
     this.authorizableManager = new AuthorizableManagerImpl(session.getUserManager());
     this.savingPolicy = new SessionSavingPolicyImpl();
+    this.compositeNodeStore = compositeNodeStore;
   }
 
   private ContextImpl(AccessControlManager accessControlManager,
       AuthorizableManager authorizableManager, SessionSavingPolicy savingPolicy,
-      JackrabbitSession session) {
+      JackrabbitSession session, boolean compositeNodeStore) {
     this.accessControlManager = accessControlManager;
     this.authorizableManager = authorizableManager;
     this.savingPolicy = savingPolicy;
     this.session = session;
+    this.compositeNodeStore = compositeNodeStore;
   }
 
   @Override
@@ -116,6 +121,7 @@ public final class ContextImpl implements Context {
 
   @Override
   public Context newContext() {
-    return new ContextImpl(accessControlManager, authorizableManager, savingPolicy, session);
+    return new ContextImpl(accessControlManager, authorizableManager, savingPolicy, session, compositeNodeStore);
   }
+
 }

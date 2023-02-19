@@ -15,9 +15,11 @@ Thanks to ANTLR, APM has new layer of abstraction, which solves these and other 
 ### Definitions
 ```
 DEFINE baseGroup 'group-base'
+DEFINE encryptedBaseGroup '{284f457a09a3d7f31fbc078343bb93179647297075237025786edd28ece8b919}' # encrypted string
 
 CREATE-GROUP $baseGroup # usage of definition baseGroup
 CREATE-GROUP $baseGroup + '-2' # simple concatenation of string
+CREATE-GROUP $encryptedBaseGroup # usage of definition encryptedBaseGroup
 ```
 
 ### For Loop
@@ -28,16 +30,16 @@ END # end of block
 ```
 
 ```
-FOR-EACH [name, password] 
+FOR-EACH user
 IN [
-    ['a', 'b'],
-    ['c', 'd']
+    {name: 'a', password: 'b'},
+    {name: 'c', password: 'd'}
 ] 
 BEGIN # starts block of code executed for each iteration of loop
-    CREATE-USER $name
-    FOR-USER $name 
+    CREATE-USER $user.name
+    FOR-USER $user.name 
     BEGIN
-        SET-PASSWORD $password
+        SET-PASSWORD $user.password
     END
 END # end of block
 ```
@@ -82,8 +84,8 @@ CREATE-GROUP 'authors-' + $locale
 ```
 # /apm/conf/scripts/main.apm
 
-RUN /apm/conf/scripts/author.apm locale= 'fr_fr' # you may use both relative or absolute path in run
-RUN author.apm locale= 'en_us'
+RUN /apm/conf/scripts/author.apm locale='fr_fr' # you may use both relative or absolute path in run
+RUN author.apm locale='en_us'
 ```
 ## Authorizable Actions
 Authorizable actions are used for the purpose of authorizable maintenance. They cover CRUD operations on Groups and Users as well as relationship configuration.

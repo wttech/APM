@@ -25,6 +25,7 @@ import static java.util.Collections.singletonList;
 import com.cognifide.apm.api.actions.annotations.Flag;
 import com.cognifide.apm.api.actions.annotations.Named;
 import com.cognifide.apm.api.actions.annotations.Required;
+import com.cognifide.apm.core.crypto.DecryptionService;
 import com.cognifide.apm.core.grammar.ApmType;
 import com.cognifide.apm.core.grammar.argument.Arguments;
 import java.util.Arrays;
@@ -39,7 +40,7 @@ public abstract class ParameterDescriptor {
 
   private final Class<? extends ApmType> type;
 
-  abstract Object getArgument(Arguments arguments);
+  abstract Object getArgument(Arguments arguments, DecryptionService decryptionService);
 
   abstract boolean handles(Arguments arguments);
 
@@ -66,8 +67,8 @@ public abstract class ParameterDescriptor {
     }
 
     @Override
-    Object getArgument(Arguments arguments) {
-      return arguments.getRequired().get(index).getArgument();
+    Object getArgument(Arguments arguments, DecryptionService decryptionService) {
+      return arguments.getRequired().get(index).getArgument(decryptionService);
     }
 
     @Override
@@ -96,8 +97,8 @@ public abstract class ParameterDescriptor {
     }
 
     @Override
-    Object getArgument(Arguments arguments) {
-      return arguments.getNamed().containsKey(name) ? arguments.getNamed().get(name).getArgument() : null;
+    Object getArgument(Arguments arguments, DecryptionService decryptionService) {
+      return arguments.getNamed().containsKey(name) ? arguments.getNamed().get(name).getArgument(decryptionService) : null;
     }
 
     @Override
@@ -124,7 +125,7 @@ public abstract class ParameterDescriptor {
     }
 
     @Override
-    Object getArgument(Arguments arguments) {
+    Object getArgument(Arguments arguments, DecryptionService decryptionService) {
       return arguments.getFlags();
     }
 
@@ -152,7 +153,7 @@ public abstract class ParameterDescriptor {
     }
 
     @Override
-    Object getArgument(Arguments arguments) {
+    Object getArgument(Arguments arguments, DecryptionService decryptionService) {
       return arguments.getFlags().contains(flag);
     }
 

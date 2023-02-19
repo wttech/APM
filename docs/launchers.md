@@ -15,6 +15,8 @@ To launch script automatically, the script needs to be placed under `/conf/apm/s
 * `ON_INSTALL` - to launch the script after package installation (additional configuration required, see [Install hook](#install-hook)),
 * `ON_INSTALL_IF_MODIFIED` - to launch the script after package installation if the file's changed (additional configuration required, see [Install hook](#install-hook)).
 
+An additional way to automatically launch scripts is to use `AEM Permission Management - Install Launcher Configuration` (PID `com.cognifide.apm.install.launchers.ApmInstallService`) service.
+
 ## Install hook
 ### One package
 If you want to use `ON_INSTALL` or `ON_INSATLL_IF_MODIFIED` options, you need to configure install hook in your package. Just add entry to the `properties.xml` file:
@@ -39,3 +41,5 @@ Then add properties to your scripts:
   apm:launchHook="orange"
 ```
 First script will be launched after installation of first package, and the other one, after installation of second package.        
+
+Packages with install hook can only be deployed after deployed package *apm-ui.apps*.

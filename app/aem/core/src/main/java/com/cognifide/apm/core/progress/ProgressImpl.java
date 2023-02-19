@@ -26,7 +26,6 @@ import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.apm.api.actions.Message;
 import com.cognifide.apm.api.status.Status;
 import com.cognifide.apm.core.actions.ActionDescriptor;
-import com.cognifide.apm.core.actions.ActionResultImpl;
 import com.cognifide.apm.core.grammar.argument.Arguments;
 import com.cognifide.apm.core.logger.Position;
 import com.cognifide.apm.core.logger.Progress;
@@ -44,6 +43,8 @@ public class ProgressImpl implements Progress {
 
   private final String executor;
 
+  private final long startTime;
+
   public ProgressImpl(String executor) {
     this(executor, new LinkedList<>());
   }
@@ -51,6 +52,7 @@ public class ProgressImpl implements Progress {
   public ProgressImpl(String executor, List<ProgressEntry> entries) {
     this.executor = executor;
     this.entries = entries;
+    this.startTime = System.currentTimeMillis();
   }
 
   @Override
@@ -67,14 +69,16 @@ public class ProgressImpl implements Progress {
   @Override
   public void addEntry(ActionDescriptor descriptor, ActionResult result) {
     this.entries.add(
-        new ProgressEntry(result.getStatus(), toMessages(((ActionResultImpl)result).getMessages()), descriptor.getCommand(),
+        new ProgressEntry(result.getStatus(), toMessages(result.getMessages()), descriptor.getCommand(),
             result.getAuthorizable(), toParameters(descriptor.getArguments()), null
         )
     );
   }
 
-  private List<String> toMessages(List<Message> messages) {
-    return messages.stream().map(it -> it.getText()).collect(Collectors.toList());
+  private static List<String> toMessages(List<Message> messages) {
+    return messages.stream()
+        .map(Message::getText)
+        .collect(Collectors.toList());
   }
 
   private List<String> toParameters(Arguments arguments) {
@@ -83,7 +87,7 @@ public class ProgressImpl implements Progress {
     }
     final List<String> parameters = new ArrayList<>();
     arguments.getRequired().forEach(it -> parameters.add(it.toString()));
-    arguments.getNamed().forEach((key, value) -> parameters.add(format("%s= %s", key, value)));
+    arguments.getNamed().forEach((key, value) -> parameters.add(format("%s=%s", key, value)));
     arguments.getFlags().forEach(it -> parameters.add(format("--%s", it)));
     return parameters;
   }
@@ -108,7 +112,7 @@ public class ProgressImpl implements Progress {
     this.entries.add(shortEntry(command, messages, status));
   }
 
-  private ProgressEntry shortEntry(String command, List<String> messages, Status status) {
+  private static ProgressEntry shortEntry(String command, List<String> messages, Status status) {
     return new ProgressEntry(status, messages, command, "", Collections.emptyList(), null);
   }
 
@@ -119,19 +123,19 @@ public class ProgressImpl implements Progress {
 
   @Override
   public ProgressEntry getLastError() {
-    for (int i = entries.size() - 1; i >= 0; i--) {
-      final ProgressEntry entry = entries.get(i);
-
-      if (entry.getStatus().equals(Status.ERROR)) {
-        return entry;
-      }
-    }
-
-    return null;
+    return entries.stream()
+        .filter(entry -> entry.getStatus() == Status.ERROR)
+        .reduce((first, second) -> second)
+        .orElse(null);
   }
 
   @Override
   public String getExecutor() {
     return executor;
+  }
+
+  @Override
+  public long determineExecutionDuration() {
+    return (System.currentTimeMillis() - startTime) / 1000;
   }
 }

@@ -24,19 +24,21 @@ import com.cognifide.apm.api.scripts.LaunchEnvironment
 import com.cognifide.apm.api.scripts.Script
 import com.cognifide.apm.api.services.ExecutionMode
 import com.cognifide.apm.api.services.ExecutionResult
+import com.cognifide.apm.api.services.RunModesProvider
 import com.cognifide.apm.api.services.ScriptFinder
 import com.cognifide.apm.api.services.ScriptManager
-import com.cognifide.apm.core.scripts.ScriptFilters.*
+import com.cognifide.apm.api.status.Status
+import com.cognifide.apm.core.scripts.ScriptFilters.onInstall
+import com.cognifide.apm.core.scripts.ScriptFilters.onInstallIfModified
 import com.cognifide.apm.core.services.ModifiedScriptFinder
+import com.cognifide.apm.core.services.ResourceResolverProvider
 import com.cognifide.apm.core.services.event.ApmEvent
 import com.cognifide.apm.core.services.event.EventManager
-import com.cognifide.apm.core.services.version.VersionService
-import com.cognifide.apm.core.utils.InstanceTypeProvider
-import com.cognifide.apm.core.utils.sling.SlingHelper.getResourceResolverForService
+import com.cognifide.apm.core.utils.sling.SlingHelper
+import org.apache.jackrabbit.vault.fs.api.ProgressTrackerListener
 import org.apache.jackrabbit.vault.packaging.InstallContext
 import org.apache.jackrabbit.vault.packaging.PackageException
 import org.apache.sling.api.resource.ResourceResolver
-import org.apache.sling.api.resource.ResourceResolverFactory
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.*
@@ -50,18 +52,18 @@ class ApmInstallHook : OsgiAwareInstallHook() {
             val currentEnvironment = getCurrentEnvironment()
             val currentHook = getCurrentHook(context)
 
-            handleScripts(currentEnvironment, currentHook)
+            handleScripts(context, currentEnvironment, currentHook)
         }
     }
 
-    private fun handleScripts(currentEnvironment: LaunchEnvironment, currentHook: String) {
-        val resolverFactory = getService(ResourceResolverFactory::class.java)
-        val scriptFinder = getService(ScriptFinder::class.java)
+    private fun handleScripts(context: InstallContext, currentEnvironment: LaunchEnvironment, currentHook: String) {
+        val resolverProvider = getService(ResourceResolverProvider::class.java)
 
         try {
-            getResourceResolverForService(resolverFactory).use { resolver ->
-                executeScripts(currentEnvironment, currentHook, resolver)
-                applyChecksum(scriptFinder, resolver)
+            context.options.listener?.onMessage(ProgressTrackerListener.Mode.TEXT, "Installing APM scripts...", "")
+            logger.info("Installing APM scripts...")
+            SlingHelper.operateTraced(resolverProvider) { resolver ->
+                executeScripts(context, currentEnvironment, currentHook, resolver)
             }
             val eventManager = getService(EventManager::class.java)
             eventManager.trigger(ApmEvent.InstallHookExecuted(currentHook))
@@ -70,26 +72,21 @@ class ApmInstallHook : OsgiAwareInstallHook() {
         }
     }
 
-    private fun executeScripts(currentEnvironment: LaunchEnvironment, currentHook: String, resolver: ResourceResolver) {
+    private fun executeScripts(context: InstallContext, currentEnvironment: LaunchEnvironment, currentHook: String, resolver: ResourceResolver) {
         val scriptManager = getService(ScriptManager::class.java)
         val scriptFinder = getService(ScriptFinder::class.java)
         val modifiedScriptFinder = getService(ModifiedScriptFinder::class.java)
+        val runModesProvider = getService(RunModesProvider::class.java)
 
         val scripts = mutableListOf<Script>()
-        scripts.addAll(scriptFinder.findAll(onInstall(currentEnvironment, currentHook), resolver))
-        scripts.addAll(modifiedScriptFinder.findAll(onInstallIfModified(currentEnvironment, currentHook), resolver))
+        scripts.addAll(scriptFinder.findAll(onInstall(currentEnvironment, runModesProvider, currentHook), resolver))
+        scripts.addAll(modifiedScriptFinder.findAll(onInstallIfModified(currentEnvironment, runModesProvider, currentHook), resolver))
         scripts.forEach { script ->
             val result: ExecutionResult = scriptManager.process(script, ExecutionMode.AUTOMATIC_RUN, resolver)
-            logStatus(script.path, result.isSuccess)
+            logStatus(context, script.path, result)
         }
-    }
-
-    private fun applyChecksum(scriptFinder: ScriptFinder, resolver: ResourceResolver) {
-        val scripts = scriptFinder.findAll(noChecksum(), resolver)
-        if (scripts.isNotEmpty()) {
-            val versionService = getService(VersionService::class.java)
-            versionService.updateVersionIfNeeded(resolver, *scripts.toTypedArray())
-        }
+        context.options.listener?.onMessage(ProgressTrackerListener.Mode.TEXT, "APM scripts installed.", "")
+        logger.info("APM scripts installed.")
     }
 
     private fun getCurrentHook(context: InstallContext): String {
@@ -104,15 +101,26 @@ class ApmInstallHook : OsgiAwareInstallHook() {
     }
 
     private fun getCurrentEnvironment(): LaunchEnvironment {
-        val instanceTypeProvider = getService(InstanceTypeProvider::class.java)
-        return if (instanceTypeProvider.isOnAuthor) LaunchEnvironment.AUTHOR else LaunchEnvironment.PUBLISH
+        val runModesProvider = getService(RunModesProvider::class.java)
+        return LaunchEnvironment.of(runModesProvider)
     }
 
-    private fun logStatus(scriptPath: String, success: Boolean) {
-        if (success) {
+    private fun logStatus(context: InstallContext, scriptPath: String, result: ExecutionResult) {
+        context.options.listener?.onMessage(ProgressTrackerListener.Mode.TEXT, "", scriptPath)
+        if (result.isSuccess) {
             logger.info("Script successfully executed: $scriptPath")
         } else {
-            throw PackageException("Script cannot be executed properly: $scriptPath")
+            val packageException = PackageException("Script cannot be executed properly: $scriptPath")
+            context.options.listener?.onError(ProgressTrackerListener.Mode.TEXT, "", packageException)
+            logger.error("", packageException)
+            result.entries
+                    .stream()
+                    .filter { it.status == Status.ERROR }
+                    .map { it.messages }
+                    .flatMap { it.stream() }
+                    .forEach { context.options.listener?.onMessage(ProgressTrackerListener.Mode.TEXT, "E", it) }
+            context.options.listener?.onMessage(ProgressTrackerListener.Mode.TEXT, "APM scripts installed (with errors, check logs!)", "")
+            throw packageException
         }
     }
 }

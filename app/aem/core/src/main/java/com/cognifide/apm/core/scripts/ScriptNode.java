@@ -31,6 +31,8 @@ public final class ScriptNode {
 
   public static final String APM_LAUNCH_ENVIRONMENT = "apm:launchEnvironment";
 
+  public static final String APM_LAUNCH_RUN_MODES = "apm:launchRunModes";
+
   public static final String APM_LAUNCH_HOOK = "apm:launchHook";
 
   public static final String APM_LAUNCH_SCHEDULE = "apm:launchSchedule";
@@ -38,10 +40,6 @@ public final class ScriptNode {
   public static final String APM_LAST_EXECUTED = "apm:lastExecuted";
 
   public static final String APM_CHECKSUM = "apm:checksum";
-
-  public static final String APM_PUBLISH_RUN = "apm:publishRun";
-
-  public static final String APM_REPLICATED_BY = "apm:replicatedBy";
 
   public static final String APM_VERIFIED = "apm:verified";
 

@@ -22,26 +22,31 @@ package com.cognifide.apm.core.scripts;
 import com.cognifide.apm.api.scripts.LaunchEnvironment;
 import com.cognifide.apm.api.scripts.LaunchMode;
 import com.cognifide.apm.api.scripts.MutableScript;
+import com.cognifide.apm.core.Apm;
+import com.cognifide.apm.core.utils.PathUtils;
 import com.cognifide.apm.core.utils.ResourceMixinUtil;
 import com.day.cq.commons.jcr.JcrConstants;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Model;
-import org.apache.sling.models.annotations.Optional;
 import org.apache.sling.models.annotations.injectorspecific.Self;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Model(adaptables = Resource.class)
+@Model(adaptables = Resource.class, defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
 public class ScriptModel implements MutableScript {
 
   private static Logger LOGGER = LoggerFactory.getLogger(ScriptModel.class);
@@ -53,62 +58,46 @@ public class ScriptModel implements MutableScript {
 
   @Inject
   @Named(ScriptNode.APM_LAUNCH_ENABLED)
-  @Optional
   private Boolean launchEnabled;
 
   @Inject
   @Named(ScriptNode.APM_LAUNCH_MODE)
-  @Optional
   private String launchMode;
 
   @Inject
   @Named(ScriptNode.APM_LAUNCH_ENVIRONMENT)
-  @Optional
   private String launchEnvironment;
 
   @Inject
+  @Named(ScriptNode.APM_LAUNCH_RUN_MODES)
+  private String[] launchRunModes;
+
+  @Inject
   @Named(ScriptNode.APM_LAUNCH_HOOK)
-  @Optional
   private String launchHook;
 
   @Inject
   @Named(ScriptNode.APM_LAUNCH_SCHEDULE)
-  @Optional
   private Date launchSchedule;
 
   @Inject
   @Named(ScriptNode.APM_LAST_EXECUTED)
-  @Optional
   private Date lastExecuted;
 
   @Inject
   @Named(ScriptNode.APM_CHECKSUM)
-  @Optional
   private String checksum;
 
   @Inject
-  @Named(ScriptNode.APM_PUBLISH_RUN)
-  @Optional
-  private Boolean publishRun;
-
-  @Inject
-  @Named(ScriptNode.APM_REPLICATED_BY)
-  @Optional
-  private String replicatedBy;
-
-  @Inject
   @Named(ScriptNode.APM_VERIFIED)
-  @Optional
   private Boolean verified;
 
   @Inject
   @Named(JcrConstants.JCR_CONTENT + "/" + JcrConstants.JCR_LASTMODIFIED)
-  @Optional
   private Date lastModified;
 
   @Inject
   @Named(JcrConstants.JCR_CREATED_BY)
-  @Optional
   private String author;
 
   private String data;
@@ -146,6 +135,11 @@ public class ScriptModel implements MutableScript {
   }
 
   @Override
+  public Set<String> getLaunchRunModes() {
+    return launchRunModes == null ? null : Sets.newHashSet(launchRunModes);
+  }
+
+  @Override
   public Date getLaunchSchedule() {
     return launchSchedule;
   }
@@ -158,11 +152,6 @@ public class ScriptModel implements MutableScript {
   @Override
   public Date getLastExecuted() {
     return lastExecuted;
-  }
-
-  @Override
-  public boolean isPublishRun() {
-    return BooleanUtils.toBoolean(publishRun);
   }
 
   @Override
@@ -199,11 +188,6 @@ public class ScriptModel implements MutableScript {
   }
 
   @Override
-  public String getReplicatedBy() {
-    return replicatedBy;
-  }
-
-  @Override
   public void setChecksum(String checksum) throws PersistenceException {
     this.checksum = checksum;
     setProperty(ScriptNode.APM_CHECKSUM, checksum);
@@ -221,24 +205,14 @@ public class ScriptModel implements MutableScript {
     setProperty(ScriptNode.APM_LAST_EXECUTED, date);
   }
 
-  @Override
-  public void setPublishRun(boolean flag) throws PersistenceException {
-    this.publishRun = flag;
-    setProperty(ScriptNode.APM_PUBLISH_RUN, flag);
-  }
-
-  @Override
-  public void setReplicatedBy(String userId) throws PersistenceException {
-    this.replicatedBy = userId;
-    setProperty(ScriptNode.APM_REPLICATED_BY, userId);
-  }
-
   private void setProperty(String name, Object value) throws PersistenceException {
-    ModifiableValueMap vm = resource.adaptTo(ModifiableValueMap.class);
-    ResourceMixinUtil.addMixin(vm, ScriptNode.APM_SCRIPT);
-    vm.put(name, convertValue(value));
+    if (!PathUtils.isAppsOrLibsPath(path)) {
+      ModifiableValueMap vm = resource.adaptTo(ModifiableValueMap.class);
+      ResourceMixinUtil.addMixin(vm, ScriptNode.APM_SCRIPT);
+      vm.put(name, convertValue(value));
 
-    resource.getResourceResolver().commit();
+      resource.getResourceResolver().commit();
+    }
   }
 
   private Object convertValue(Object obj) {
@@ -253,7 +227,8 @@ public class ScriptModel implements MutableScript {
   }
 
   public static boolean isScript(Resource resource) {
-    return java.util.Optional.ofNullable(resource)
+    return resource.getPath().endsWith(Apm.FILE_EXT)
+        || Optional.ofNullable(resource)
         .map(child -> getArrayProperty(child, JcrConstants.JCR_MIXINTYPES).contains(ScriptNode.APM_SCRIPT))
         .orElse(false);
   }

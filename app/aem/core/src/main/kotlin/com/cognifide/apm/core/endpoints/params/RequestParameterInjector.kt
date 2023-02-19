@@ -20,10 +20,9 @@
 
 package com.cognifide.apm.core.endpoints.params
 
-
 import com.cognifide.apm.core.Property
 import com.google.common.primitives.Ints
-import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang3.StringUtils
 import org.apache.sling.api.SlingHttpServletRequest
 import org.apache.sling.models.spi.DisposalCallbackRegistry
 import org.apache.sling.models.spi.Injector
@@ -40,8 +39,6 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Component(
-        immediate = true,
-        service = [Injector::class, StaticInjectAnnotationProcessorFactory::class],
         property = [
             Constants.SERVICE_RANKING + "=" + Int.MIN_VALUE,
             Property.VENDOR
@@ -77,6 +74,7 @@ class RequestParameterInjector : Injector, StaticInjectAnnotationProcessorFactor
             fieldClass == InputStream::class.java -> parameterValue.inputStream
             fieldClass == LocalDateTime::class.java -> toLocalDateTime(annotatedElement, parameterValue)
             Enum::class.java.isAssignableFrom(fieldClass) -> toEnum(fieldClass, parameterValue)
+            fieldClass.canonicalName == "java.lang.String[]" -> parameterValue.string.split(",").toTypedArray()
             else -> parameterValue.string
         }
     }

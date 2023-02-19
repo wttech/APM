@@ -52,10 +52,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Component(
-    immediate = true,
-    service = ScriptStorage.class,
     property = {
-        Property.DESCRIPTION + "Storage accessor for scripts",
+        Property.DESCRIPTION + "APM Storage accessor for scripts",
         Property.VENDOR
     }
 )
@@ -90,7 +88,7 @@ public class ScriptStorageImpl implements ScriptStorage {
   }
 
   private Script saveScript(FileDescriptor descriptor, LaunchMetadata launchMetadata, boolean overwrite,
-                            ResourceResolver resolver) {
+      ResourceResolver resolver) {
     Script result = null;
     try {
       final Session session = resolver.adaptTo(Session.class);
@@ -113,6 +111,7 @@ public class ScriptStorageImpl implements ScriptStorage {
       fileNode.setProperty(ScriptNode.APM_LAUNCH_ENABLED, launchMetadata.isExecutionEnabled());
       setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_MODE, launchMetadata.getLaunchMode());
       setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_ENVIRONMENT, launchMetadata.getLaunchEnvironment());
+      setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_RUN_MODES, launchMetadata.getLaunchRunModes());
       setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_HOOK, launchMetadata.getExecutionHook());
       setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_SCHEDULE, launchMetadata.getExecutionSchedule());
       removeProperty(fileNode, ScriptNode.APM_LAST_EXECUTED);
@@ -135,6 +134,8 @@ public class ScriptStorageImpl implements ScriptStorage {
       calendar.set(localDateTime.getYear(), localDateTime.getMonthValue() - 1, localDateTime.getDayOfMonth(),
           localDateTime.getHour(), localDateTime.getMinute(), localDateTime.getSecond());
       node.setProperty(name, calendar);
+    } else if (value instanceof String[]) {
+      node.setProperty(name, (String[]) value);
     } else {
       node.setProperty(name, value.toString());
     }
@@ -174,7 +175,7 @@ public class ScriptStorageImpl implements ScriptStorage {
   }
 
   private static void ensurePropertyMatchesPattern(List<String> errors, String property, String value,
-                                                   Pattern pattern) {
+      Pattern pattern) {
     if (!pattern.matcher(value).matches()) {
       errors.add(format("Invalid %s: \"%s\"", property, value));
     }

@@ -25,6 +25,7 @@ import com.cognifide.apm.api.exceptions.InvalidActionMapperException;
 import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.actions.scanner.AnnotatedClassRegistry;
 import com.cognifide.apm.core.actions.scanner.RegistryChangedListener;
+import com.cognifide.apm.main.services.ApmActionsMainService;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import java.util.Collection;
@@ -38,12 +39,12 @@ import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.scribe.utils.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Component(
-    immediate = true,
     service = ActionMapperRegistry.class,
     property = {
         Property.DESCRIPTION + "Action mapper registry service",
@@ -55,6 +56,9 @@ public class ActionMapperRegistryImpl implements RegistryChangedListener, Action
   private static final Logger LOG = LoggerFactory.getLogger(ActionMapperRegistryImpl.class);
 
   private static final String BUNDLE_HEADER = "APM-Actions";
+
+  @Reference
+  private ApmActionsMainService apmActionsMainService;
 
   private AnnotatedClassRegistry registry;
 

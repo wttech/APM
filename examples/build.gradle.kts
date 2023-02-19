@@ -40,7 +40,7 @@ aem {
                 version.set(currentVersion)
                 description.set(project.description)
                 property("installhook.apm.class", "com.cognifide.apm.core.tools.ApmInstallHook")
-                property("dependencies", "com.cognifide.apm:apm-ui.apps:" + currentVersion.substringBefore("-SNAPSHOT"))
+                property("dependencies", "com.cognifide.apm:apm-ui.apps:$currentVersion")
             }
         }
     }
@@ -50,7 +50,7 @@ publishing {
     publications {
         create<MavenPublication>("apmCrx") {
             groupId = project.group.toString() + ".crx"
-            artifact(common.publicationArtifact("packageCompose"))
+            artifact(tasks["packageCompose"])
             afterEvaluate {
                 artifactId = "apm-examples"
                 version = rootProject.version

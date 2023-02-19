@@ -19,7 +19,7 @@
  */
 package com.cognifide.apm.core.ui.models;
 
-import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.core.history.History;
@@ -27,6 +27,7 @@ import com.cognifide.apm.core.history.HistoryEntry;
 import com.cognifide.apm.core.history.ScriptHistory;
 import com.cognifide.apm.core.scripts.ScriptModel;
 import com.cognifide.apm.core.utils.CalendarUtils;
+import com.cognifide.apm.core.utils.LabelUtils;
 import com.day.cq.commons.jcr.JcrConstants;
 import com.google.common.collect.ImmutableSet;
 import java.util.ArrayList;
@@ -34,15 +35,16 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import lombok.Getter;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.WordUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
-import org.jetbrains.annotations.NotNull;
 
 @Model(adaptables = Resource.class)
 public final class ScriptsRowModel {
@@ -97,21 +99,19 @@ public final class ScriptsRowModel {
         this.lastModified = CalendarUtils.asCalendar(script.getLastModified());
         this.runs.add(createScriptRun("dryRun", script, scriptHistory.getLastLocalDryRun()));
         this.runs.add(createScriptRun("runOnAuthor", script, scriptHistory.getLastLocalRun()));
-        this.runs.add(createScriptRun("runOnPublish", script, scriptHistory.getLastRemoteRun()));
-        this.launchMode = label(script.getLaunchMode());
-        this.launchEnvironment = label(script.getLaunchEnvironment());
+        this.launchMode = LabelUtils.capitalize(script.getLaunchMode());
+        this.launchEnvironment = Stream.concat(
+            Stream.of(script.getLaunchEnvironment().getRunMode()),
+            CollectionUtils.emptyIfNull(script.getLaunchRunModes()).stream()
+        )
+            .filter(StringUtils::isNotBlank)
+            .distinct()
+            .collect(Collectors.joining(", "));
         this.isLaunchEnabled = script.isLaunchEnabled();
       });
     }
   }
 
-  public String label(Object object) {
-    String words = object.toString().replace('_', ' ');
-    words = WordUtils.capitalizeFully(words.toLowerCase());
-    return words;
-  }
-
-  @NotNull
   private ScriptRun createScriptRun(String name, Script script, HistoryEntry historyEntry) {
     if (historyEntry != null && StringUtils.equals(historyEntry.getChecksum(), script.getChecksum())) {
       return new ScriptRun(name, historyEntry);

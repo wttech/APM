@@ -40,10 +40,10 @@ public class MapperDescriptor {
     return mappingDescriptors.stream().anyMatch(it -> it.handles(arguments));
   }
 
-  public Action handle(Arguments arguments) {
+  public Action handle(Arguments arguments, MapperContext mapperContext) {
     return mappingDescriptors.stream()
         .filter(it -> it.handles(arguments)).findFirst()
         .orElseThrow(() -> new RuntimeException("Cannot find matching mapping method"))
-        .handle(mapper, arguments);
+        .handle(mapper, arguments, mapperContext);
   }
 }

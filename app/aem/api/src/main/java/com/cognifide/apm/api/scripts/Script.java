@@ -20,71 +20,64 @@
 package com.cognifide.apm.api.scripts;
 
 import java.util.Date;
+import java.util.Set;
 
 public interface Script {
 
-	/**
-	 * Get validation status
-	 */
-	boolean isValid();
+  /**
+   * Get validation status
+   */
+  boolean isValid();
 
-	/**
-	 * Check whether is ready for automatic execution
-	 */
-	boolean isLaunchEnabled();
+  /**
+   * Check whether is ready for automatic execution
+   */
+  boolean isLaunchEnabled();
 
-	/**
-	 * Get launch mode
-	 */
-	LaunchMode getLaunchMode();
+  /**
+   * Get launch mode
+   */
+  LaunchMode getLaunchMode();
 
-	LaunchEnvironment getLaunchEnvironment();
+  LaunchEnvironment getLaunchEnvironment();
 
-	String getLaunchHook();
+  Set<String> getLaunchRunModes();
 
-	/**
-	 * Get date after which script will be executed by schedule executor
-	 */
-	Date getLaunchSchedule();
+  String getLaunchHook();
 
-	/**
-	 * Get last execution date
-	 */
-	Date getLastExecuted();
+  /**
+   * Get date after which script will be executed by schedule executor
+   */
+  Date getLaunchSchedule();
 
-	/**
-	 * Check run on publish
-	 */
-	boolean isPublishRun();
+  /**
+   * Get last execution date
+   */
+  Date getLastExecuted();
 
-	/**
-	 * Returns the path for the script file
-	 */
-	String getPath();
+  /**
+   * Returns the path for the script file
+   */
+  String getPath();
 
   /**
    * Returns checksum of the current script content.
    */
   String getChecksum();
 
-	/**
-	 * Return author of the file
-	 */
-	String getAuthor();
+  /**
+   * Return author of the file
+   */
+  String getAuthor();
 
-	/**
-	 * Return last modified date
-	 */
-	Date getLastModified();
+  /**
+   * Return last modified date
+   */
+  Date getLastModified();
 
-	/**
-	 * Return copy of the file
-	 */
-	String getData();
-
-	/**
-	 * Return user that replicated script
-	 */
-	String getReplicatedBy();
+  /**
+   * Return copy of the file
+   */
+  String getData();
 
 }
