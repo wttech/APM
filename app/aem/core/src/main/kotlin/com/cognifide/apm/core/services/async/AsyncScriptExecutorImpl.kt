@@ -47,13 +47,13 @@ class AsyncScriptExecutorImpl : AsyncScriptExecutor {
     @Transient
     private lateinit var jobResultsCache: JobResultsCache
 
-    override fun process(script: Script, executionMode: ExecutionMode, customDefinitions: Map<String, String>, resourceResolver: ResourceResolver): String {
+    override fun process(script: Script, executionMode: ExecutionMode, customDefinitions: Map<String, String>, executor: String): String {
         val id = UUID.randomUUID().toString()
         val properties = mutableMapOf<String, Any>()
         properties[ID] = id
         properties[SCRIPT_PATH] = script.path
         properties[EXECUTION_MODE] = executionMode.toString()
-        properties[USER_ID] = resourceResolver.userID!!
+        properties[USER_ID] = executor
         properties[DEFINITIONS] = customDefinitions
         jobResultsCache.put(id, ExecutionSummary.running())
         thread(start = true) {

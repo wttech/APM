@@ -28,9 +28,11 @@ import com.cognifide.apm.core.endpoints.response.internalServerError
 import com.cognifide.apm.core.endpoints.response.notFound
 import com.cognifide.apm.core.endpoints.response.ok
 import com.cognifide.apm.core.endpoints.utils.RequestProcessor
+import com.cognifide.apm.core.services.ResourceResolverProvider
 import com.cognifide.apm.core.services.async.AsyncScriptExecutor
 import com.cognifide.apm.core.services.async.FinishedFailedExecution
 import com.cognifide.apm.core.services.async.FinishedSuccessfulExecution
+import com.cognifide.apm.core.utils.sling.SlingHelper
 import org.apache.sling.api.SlingHttpServletRequest
 import org.apache.sling.api.SlingHttpServletResponse
 import org.apache.sling.api.resource.ResourceResolver
@@ -67,6 +69,10 @@ class ScriptExecutionServlet : SlingAllMethodsServlet() {
     @Transient
     private lateinit var modelFactory: ModelFactory
 
+    @Reference
+    @Transient
+    private lateinit var resolverProvider: ResourceResolverProvider
+
     override fun doGet(request: SlingHttpServletRequest, response: SlingHttpServletResponse) {
         RequestProcessor(modelFactory, ScriptExecutionStatusForm::class.java).process(request, response) { form, _ ->
             when (val status = asyncScriptExecutor.checkStatus(form.id)) {
@@ -92,12 +98,13 @@ class ScriptExecutionServlet : SlingAllMethodsServlet() {
     }
 
     override fun doPost(request: SlingHttpServletRequest, response: SlingHttpServletResponse) {
-        RequestProcessor(modelFactory, ScriptExecutionForm::class.java).process(request, response) { form, resourceResolver ->
-            executeScript(form, resourceResolver)
+        val executor = request.resourceResolver.userID!!
+        RequestProcessor(modelFactory, ScriptExecutionForm::class.java).process(request, response) { form, _ ->
+            SlingHelper.resolve(resolverProvider) { executeScript(form, it, executor) }
         }
     }
 
-    private fun executeScript(form: ScriptExecutionForm, resourceResolver: ResourceResolver): ResponseEntity<Any> {
+    private fun executeScript(form: ScriptExecutionForm, resourceResolver: ResourceResolver, executor: String): ResponseEntity<Any> {
         try {
             val script: Script = scriptFinder.find(form.script, resourceResolver)
                     ?: return notFound { message = "Script not found: ${form.script}" }
@@ -105,25 +112,25 @@ class ScriptExecutionServlet : SlingAllMethodsServlet() {
             if (!script.isValid) return internalServerError { message = "Script cannot be executed because it is invalid" }
 
             return if (form.async) {
-                asyncExecute(script, form, resourceResolver)
+                asyncExecute(script, form, executor)
             } else {
-                syncExecute(script, form, resourceResolver)
+                syncExecute(script, form, resourceResolver, executor)
             }
         } catch (e: RepositoryException) {
             return internalServerError { message = "Script cannot be executed because of repository error: ${e.message}" }
         }
     }
 
-    private fun asyncExecute(script: Script, form: ScriptExecutionForm, resourceResolver: ResourceResolver): ResponseEntity<Any> {
-        val id = asyncScriptExecutor.process(script, form.executionMode, form.customDefinitions, resourceResolver)
+    private fun asyncExecute(script: Script, form: ScriptExecutionForm, executor: String): ResponseEntity<Any> {
+        val id = asyncScriptExecutor.process(script, form.executionMode, form.customDefinitions, executor)
         return ok {
             message = "Script successfully queued for async execution"
             "id" set id
         }
     }
 
-    private fun syncExecute(script: Script, form: ScriptExecutionForm, resourceResolver: ResourceResolver): ResponseEntity<Any> {
-        val result = scriptManager.process(script, form.executionMode, form.customDefinitions, resourceResolver)
+    private fun syncExecute(script: Script, form: ScriptExecutionForm, resourceResolver: ResourceResolver, executor: String): ResponseEntity<Any> {
+        val result = scriptManager.process(script, form.executionMode, form.customDefinitions, resourceResolver, executor)
         return if (result.isSuccess) {
             ok {
                 message = "Script successfully executed"

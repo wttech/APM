@@ -21,11 +21,10 @@ package com.cognifide.apm.core.services.async
 
 import com.cognifide.apm.api.scripts.Script
 import com.cognifide.apm.api.services.ExecutionMode
-import org.apache.sling.api.resource.ResourceResolver
 
 interface AsyncScriptExecutor {
 
-    fun process(script: Script, executionMode: ExecutionMode, customDefinitions: Map<String, String>, resourceResolver: ResourceResolver): String
+    fun process(script: Script, executionMode: ExecutionMode, customDefinitions: Map<String, String>, executor: String): String
 
     fun checkStatus(id: String): ExecutionStatus
 }
