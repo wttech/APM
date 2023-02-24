@@ -20,8 +20,6 @@
 package com.cognifide.apm.core.services;
 
 import com.cognifide.apm.core.Property;
-import com.google.common.collect.Maps;
-import java.util.Map;
 import org.apache.sling.adapter.Adaption;
 import org.apache.sling.api.adapter.AdapterFactory;
 import org.apache.sling.api.resource.LoginException;
@@ -70,16 +68,8 @@ public class ResourceResolverProvider {
   @Reference(target = "(adapters=com.cognifide.apm.core.history.HistoryEntryImpl)")
   private Adaption historyEntryImplAdaption;
 
-  public ResourceResolver getResourceResolver(String userId) throws LoginException {
-    ResourceResolver resolver;
-    if (userId != null) {
-      Map<String, Object> authenticationInfo = Maps.newHashMap();
-      authenticationInfo.put(ResourceResolverFactory.USER_IMPERSONATION, userId);
-      resolver = resolverFactory.getAdministrativeResourceResolver(authenticationInfo);
-    } else {
-      resolver = resolverFactory.getServiceResourceResolver(null);
-    }
-    return resolver;
+  public ResourceResolver getResourceResolver() throws LoginException {
+    return resolverFactory.getServiceResourceResolver(null);
   }
 
 }
