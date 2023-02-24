@@ -46,7 +46,6 @@ import com.cognifide.apm.core.services.event.ApmEvent.ScriptLaunchedEvent;
 import com.cognifide.apm.core.services.event.EventManager;
 import com.cognifide.apm.core.services.version.VersionService;
 import com.cognifide.apm.core.utils.RuntimeUtils;
-import com.google.common.collect.Maps;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -96,8 +95,8 @@ public class ScriptManagerImpl implements ScriptManager {
   )
   private final Set<DefinitionsProvider> definitionsProviders = new CopyOnWriteArraySet<>();
 
-  private Progress execute(Script script, final ExecutionMode mode, Map<String, String> customDefinitions,
-      ResourceResolver resolver) throws ExecutionException, RepositoryException {
+  private Progress execute(Script script, ExecutionMode mode, Map<String, String> customDefinitions,
+      ResourceResolver resolver, String executor) throws ExecutionException, RepositoryException {
     if (script == null) {
       throw new ExecutionException("Script is not specified");
     }
@@ -106,13 +105,13 @@ public class ScriptManagerImpl implements ScriptManager {
       throw new ExecutionException("Execution mode is not specified");
     }
 
-    final String path = script.getPath();
+    String path = script.getPath();
 
     LOG.info(String.format("Script execution started: %s [%s]", path, mode));
-    final Progress progress = new ProgressImpl(resolver.getUserID());
-    final ActionExecutor actionExecutor = createExecutor(mode, resolver);
-    final Context context = actionExecutor.getContext();
-    final SessionSavingPolicy savingPolicy = context.getSavingPolicy();
+    Progress progress = new ProgressImpl(executor);
+    ActionExecutor actionExecutor = createExecutor(mode, resolver);
+    Context context = actionExecutor.getContext();
+    SessionSavingPolicy savingPolicy = context.getSavingPolicy();
 
     eventManager.trigger(new ScriptLaunchedEvent(script, mode));
     ScriptRunner scriptRunner = new ScriptRunner(scriptFinder, resolver, mode == ExecutionMode.VALIDATION,
@@ -150,19 +149,13 @@ public class ScriptManagerImpl implements ScriptManager {
   }
 
   @Override
-  public Progress process(final Script script, final ExecutionMode mode, ResourceResolver resolver)
-      throws RepositoryException, PersistenceException {
-    return process(script, mode, Maps.newHashMap(), resolver);
-  }
-
-  @Override
-  public Progress process(Script script, final ExecutionMode mode, final Map<String, String> customDefinitions,
-      ResourceResolver resolver) throws RepositoryException, PersistenceException {
+  public Progress process(Script script, ExecutionMode mode, Map<String, String> customDefinitions,
+      ResourceResolver resolver, String executor) throws RepositoryException, PersistenceException {
     Progress progress;
     try {
-      progress = execute(script, mode, customDefinitions, resolver);
+      progress = execute(script, mode, customDefinitions, resolver, executor);
     } catch (ExecutionException e) {
-      progress = new ProgressImpl(resolver.getUserID());
+      progress = new ProgressImpl(executor);
       progress.addEntry(Status.ERROR, e.getMessage());
     }
 
@@ -182,10 +175,10 @@ public class ScriptManagerImpl implements ScriptManager {
     }
   }
 
-  private void updateScriptProperties(final Script script, final ExecutionMode mode, final boolean success)
+  private void updateScriptProperties(Script script, ExecutionMode mode, boolean success)
       throws PersistenceException {
 
-    final MutableScriptWrapper mutableScriptWrapper = new MutableScriptWrapper(script);
+    MutableScriptWrapper mutableScriptWrapper = new MutableScriptWrapper(script);
 
     if (Arrays.asList(ExecutionMode.RUN, ExecutionMode.AUTOMATIC_RUN).contains(mode)) {
       mutableScriptWrapper.setExecuted(true);
@@ -205,7 +198,7 @@ public class ScriptManagerImpl implements ScriptManager {
 
   private ActionExecutor createExecutor(ExecutionMode mode, ResourceResolver resolver) throws RepositoryException {
     boolean compositeNodeStore = RuntimeUtils.determineCompositeNodeStore(resolver);
-    final Context context = new ContextImpl((JackrabbitSession) resolver.adaptTo(Session.class), compositeNodeStore);
+    Context context = new ContextImpl((JackrabbitSession) resolver.adaptTo(Session.class), compositeNodeStore);
     return ActionExecutorFactory.create(mode, context, actionFactory);
   }
 }

@@ -65,14 +65,14 @@ public class ScriptRunnerJobConsumer {
 
   public void process(Map<String, Object> properties) {
     LOG.info("Script runner properties consumer started");
-    final String id = (String) properties.get(AsyncScriptExecutorImpl.ID);
-    final ExecutionMode mode = getMode(properties);
-    final String userId = getUserId(properties);
-    SlingHelper.operateTraced(resolverProvider, userId, resolver -> {
-      final Script script = getScript(properties, resolver);
+    String id = (String) properties.get(AsyncScriptExecutorImpl.ID);
+    ExecutionMode mode = getMode(properties);
+    String userId = getUserId(properties);
+    SlingHelper.operateTraced(resolverProvider, resolver -> {
+      Script script = getScript(properties, resolver);
       if (script != null && mode != null) {
         try {
-          ExecutionResult executionResult = scriptManager.process(script, mode, getDefinitions(properties), resolver);
+          ExecutionResult executionResult = scriptManager.process(script, mode, getDefinitions(properties), resolver, userId);
           String summaryPath = getSummaryPath(resolver, script, mode);
           jobResultsCache.put(id, ExecutionSummary.finished(executionResult, summaryPath));
         } catch (RepositoryException | PersistenceException e) {
@@ -113,9 +113,9 @@ public class ScriptRunnerJobConsumer {
   private Script getScript(Map<String, Object> properties, ResourceResolver resolver) {
     String scriptSearchPath = (String) properties.get(AsyncScriptExecutorImpl.SCRIPT_PATH);
     if (StringUtils.isNotBlank(scriptSearchPath)) {
-      final Script script = scriptFinder.find(scriptSearchPath, resolver);
+      Script script = scriptFinder.find(scriptSearchPath, resolver);
       if (script == null) {
-        LOG.error("Script not found: %s", scriptSearchPath);
+        LOG.error("Script not found: {}", scriptSearchPath);
         return null;
       }
       return script;
