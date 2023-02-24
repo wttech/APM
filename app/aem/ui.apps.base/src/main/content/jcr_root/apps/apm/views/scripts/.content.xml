@@ -248,8 +248,10 @@
           action="foundation.link"
           activeSelectionCount="single"
           icon="move"
+          pageheading="Move Item"
           target=".cq-experience-fragments-admin-childpages"
           text="Move"
+          title="Move"
           variant="actionBar">
           <data
             jcr:primaryType="nt:unstructured"
