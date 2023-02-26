@@ -22,6 +22,8 @@ package com.cognifide.apm.core.scripts;
 import com.cognifide.apm.api.scripts.LaunchEnvironment;
 import com.cognifide.apm.api.scripts.LaunchMode;
 import com.cognifide.apm.api.scripts.MutableScript;
+import com.cognifide.apm.api.services.ExecutionMode;
+import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.apm.core.Apm;
 import com.cognifide.apm.core.utils.PathUtils;
 import com.cognifide.apm.core.utils.ResourceMixinUtil;
@@ -35,8 +37,10 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.jcr.RepositoryException;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
@@ -44,6 +48,7 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Model;
+import org.apache.sling.models.annotations.injectorspecific.OSGiService;
 import org.apache.sling.models.annotations.injectorspecific.Self;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,6 +62,10 @@ public class ScriptModel implements MutableScript {
 
   @Self
   private Resource resource;
+
+  @Inject
+  @OSGiService
+  private ScriptManager scriptManager;
 
   @Inject
   @Named(ScriptNode.APM_LAUNCH_ENABLED)
@@ -106,6 +115,17 @@ public class ScriptModel implements MutableScript {
 
   public ScriptModel(Resource resource) {
     this.path = resource.getPath();
+  }
+
+  @PostConstruct
+  private void afterCreated() {
+    if (verified == null) {
+      try {
+        scriptManager.process(this, ExecutionMode.VALIDATION, resource.getResourceResolver());
+      } catch (RepositoryException | PersistenceException e) {
+        LOGGER.error("", e);
+      }
+    }
   }
 
   @Override
