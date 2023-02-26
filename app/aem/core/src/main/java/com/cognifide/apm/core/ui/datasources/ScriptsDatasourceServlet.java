@@ -26,6 +26,7 @@ import com.adobe.granite.ui.components.ds.DataSource;
 import com.adobe.granite.ui.components.ds.SimpleDataSource;
 import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.scripts.ScriptModel;
+import com.cognifide.apm.core.services.ScriptRootPathsProvider;
 import com.cognifide.apm.core.ui.models.ScriptsRowModel;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,7 @@ import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceWrapper;
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 @Component(
     service = Servlet.class,
@@ -48,13 +50,17 @@ import org.osgi.service.component.annotations.Component;
 )
 public class ScriptsDatasourceServlet extends SlingSafeMethodsServlet {
 
+  @Reference
+  private ScriptRootPathsProvider scriptRootPathsProvider;
+
   @Override
   protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) {
     String path = request.getRequestPathInfo().getSuffix();
     List<Resource> scripts = new ArrayList<>();
     Resource resource = request.getResourceResolver().getResource(path);
     for (Resource child : resource.getChildren()) {
-      if (ScriptsRowModel.isFolder(child) || ScriptModel.isScript(child)) {
+      if ((ScriptsRowModel.isFolder(child) || ScriptModel.isScript(child))
+          && scriptRootPathsProvider.isValidPath(child.getPath())) {
         scripts.add(new ResourceTypeWrapper(child));
       }
     }

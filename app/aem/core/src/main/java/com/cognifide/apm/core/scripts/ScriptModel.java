@@ -25,6 +25,7 @@ import com.cognifide.apm.api.scripts.MutableScript;
 import com.cognifide.apm.core.Apm;
 import com.cognifide.apm.core.utils.PathUtils;
 import com.cognifide.apm.core.utils.ResourceMixinUtil;
+import com.cognifide.apm.core.utils.RuntimeUtils;
 import com.day.cq.commons.jcr.JcrConstants;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -40,6 +41,7 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.Self;
@@ -206,12 +208,14 @@ public class ScriptModel implements MutableScript {
   }
 
   private void setProperty(String name, Object value) throws PersistenceException {
-    if (!PathUtils.isAppsOrLibsPath(path)) {
+    ResourceResolver resolver = resource.getResourceResolver();
+    boolean compositeNodeStore = RuntimeUtils.determineCompositeNodeStore(resolver);
+    if (!compositeNodeStore || !PathUtils.isAppsOrLibsPath(path)) {
       ModifiableValueMap vm = resource.adaptTo(ModifiableValueMap.class);
       ResourceMixinUtil.addMixin(vm, ScriptNode.APM_SCRIPT);
       vm.put(name, convertValue(value));
 
-      resource.getResourceResolver().commit();
+      resolver.commit();
     }
   }
 
