@@ -31,6 +31,7 @@ import com.cognifide.apm.main.utils.MessagingUtils;
 import com.cognifide.apm.main.utils.PathUtils;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import org.apache.commons.lang3.StringUtils;
@@ -51,25 +52,25 @@ public class Allow implements Action {
   private final boolean ignoreNonExistingPaths;
 
   public Allow(String path, List<String> permissions,
-      String glob, List<String> ntNames,
-      List<String> itemNames, boolean ignoreNonExistingPaths) {
+      String glob, List<String> ntNames, List<String> itemNames, Map<String, Object> customRestrictions,
+      boolean ignoreNonExistingPaths) {
     this.path = path;
     this.permissions = permissions;
-    this.restrictions = new Restrictions(glob, ntNames, itemNames);
+    this.restrictions = new Restrictions(glob, ntNames, itemNames, customRestrictions);
     this.ignoreNonExistingPaths = ignoreNonExistingPaths;
   }
 
   @Override
-  public ActionResult simulate(final Context context) {
+  public ActionResult simulate(Context context) {
     return process(context, true);
   }
 
   @Override
-  public ActionResult execute(final Context context) {
+  public ActionResult execute(Context context) {
     return process(context, false);
   }
 
-  private ActionResult process(final Context context, boolean simulate) {
+  private ActionResult process(Context context, boolean simulate) {
     ActionResult actionResult = context.createActionResult();
     try {
       Authorizable authorizable = context.getCurrentAuthorizable();
@@ -78,7 +79,7 @@ public class Allow implements Action {
         actionResult.changeStatus(Status.SKIPPED, "Skipped adding allow privilege for " + authorizable.getID() + " on " + path);
       } else {
         context.getSession().getNode(path);
-        final PermissionActionHelper permissionActionHelper = new PermissionActionHelper(
+        PermissionActionHelper permissionActionHelper = new PermissionActionHelper(
             context.getValueFactory(), path, permissions, restrictions);
         LOGGER.info(String.format("Adding permissions %s for authorizable with id = %s for path = %s %s",
             permissions.toString(), context.getCurrentAuthorizable().getID(), path, restrictions));
@@ -92,11 +93,12 @@ public class Allow implements Action {
           String preparedGlob = recalculateGlob(restrictions.getGlob());
           new Allow(path, Collections.singletonList("MODIFY_PAGE"),
               preparedGlob + "*/jcr:content*", restrictions.getNtNames(), restrictions.getItemNames(),
+              restrictions.getCustomRestrictions(),
               ignoreNonExistingPaths
           ).process(context, simulate);
         }
       }
-    } catch (final PathNotFoundException e) {
+    } catch (PathNotFoundException e) {
       if (ignoreNonExistingPaths) {
         actionResult.logWarning("Path " + path + " not found");
       } else {
