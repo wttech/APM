@@ -20,38 +20,22 @@
 package com.cognifide.apm.core.utils;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import org.apache.sling.api.SlingHttpServletResponse;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 public class ServletUtils {
 
-  private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+  private static final Gson GSON = new Gson();
 
   public static void writeJson(SlingHttpServletResponse response, Object obj) throws IOException {
     writeJson(response, GSON.toJson(obj));
   }
 
   public static void writeJson(SlingHttpServletResponse response, String json) throws IOException {
-    response.setCharacterEncoding("UTF-8");
+    response.setCharacterEncoding(StandardCharsets.UTF_8.name());
     response.setContentType("application/json");
-    response.getWriter().print(json);
-    response.getWriter().flush();
-  }
-
-  public static void writeMessage(SlingHttpServletResponse response, String type, String text) throws IOException {
-    writeMessage(response, type, text, new HashMap<>());
-  }
-
-  public static void writeMessage(SlingHttpServletResponse response, String type, String text,
-      Map<String, Object> context) throws IOException {
-    Map<String, Object> map = new HashMap<>();
-    map.put("type", type);
-    map.put("message", text);
-    map.putAll(context);
-
-    writeJson(response, GSON.toJson(map));
+    response.getWriter().append(json);
   }
 }

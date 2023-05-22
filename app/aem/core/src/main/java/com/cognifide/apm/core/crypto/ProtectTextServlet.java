@@ -17,51 +17,57 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.core.crypto
+package com.cognifide.apm.core.crypto;
 
-import com.adobe.granite.crypto.CryptoException
-import com.adobe.granite.crypto.CryptoSupport
-import com.cognifide.apm.core.Property
-import com.cognifide.apm.core.endpoints.AbstractFormServlet
-import com.cognifide.apm.core.endpoints.response.ResponseEntity
-import com.cognifide.apm.core.endpoints.response.badRequest
-import com.cognifide.apm.core.endpoints.response.ok
-import org.apache.sling.api.resource.ResourceResolver
-import org.apache.sling.models.factory.ModelFactory
-import org.osgi.service.component.annotations.Component
-import org.osgi.service.component.annotations.Reference
-import javax.servlet.Servlet
+import com.adobe.granite.crypto.CryptoException;
+import com.adobe.granite.crypto.CryptoSupport;
+import com.cognifide.apm.core.Property;
+import com.cognifide.apm.core.endpoints.AbstractFormServlet;
+import com.cognifide.apm.core.endpoints.response.ResponseEntity;
+import com.cognifide.apm.core.endpoints.response.ResponseEntity1;
+import com.google.common.collect.ImmutableMap;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.models.factory.ModelFactory;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
+import javax.servlet.Servlet;
+import java.util.Collections;
 
 @Component(
-        service = [Servlet::class],
-        property = [
-            Property.PATH + "/bin/apm/scripts/protect",
-            Property.METHOD + "POST",
-            Property.DESCRIPTION + "APM Encrypt Text Servlet",
-            Property.VENDOR
-        ])
-class ProtectTextServlet : AbstractFormServlet<ProtectTextForm>(ProtectTextForm::class.java) {
-
-    @Reference
-    @Transient
-    private lateinit var cryptoSupport: CryptoSupport
-
-    @Reference
-    override fun setup(modelFactory: ModelFactory) {
-        this.modelFactory = modelFactory
+    service = Servlet.class,
+    property = {
+        Property.PATH + "/bin/apm/scripts/protect",
+        Property.METHOD + "POST",
+        Property.DESCRIPTION + "APM Encrypt Text Servlet",
+        Property.VENDOR
     }
+)
+public class ProtectTextServlet extends AbstractFormServlet<ProtectTextForm> {
 
-    override fun doPost(form: ProtectTextForm, resourceResolver: ResourceResolver): ResponseEntity<Any> {
-        return try {
-            ok {
-                message = "Text successfully encrypted"
-                "text" set cryptoSupport.protect(form.text)
-            }
-        } catch (e: CryptoException) {
-            badRequest {
-                message = e.message ?: "Errors while encrypting text"
-            }
-        }
+  @Reference
+  private transient CryptoSupport cryptoSupport;
+
+  public ProtectTextServlet(Class<ProtectTextForm> formClass) {
+    super(formClass);
+  }
+
+  @Override
+  public void setup(ModelFactory modelFactory) {
+    this.modelFactory = modelFactory;
+  }
+
+  @Override
+  public ResponseEntity<Object> doPost(ProtectTextForm form, ResourceResolver resourceResolver) {
+    ResponseEntity responseEntity = null;
+    try {
+      ResponseEntity1.ok("Text successfully encrypted", ImmutableMap.of(
+          "text", cryptoSupport.protect(form.getText())
+      ));
+    } catch (CryptoException e) {
+      ResponseEntity1.badRequest(StringUtils.defaultString(e.getMessage(), "Errors while encrypting text"), Collections.emptyMap());
     }
-
+    return responseEntity;
+  }
 }

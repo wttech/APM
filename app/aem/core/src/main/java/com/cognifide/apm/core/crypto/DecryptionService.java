@@ -27,36 +27,39 @@ import org.apache.commons.lang3.text.StrSubstitutor;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 @Component(
-        service = DecryptionService.class,
-        property = {
-                Property.DESCRIPTION + "APM Service for decryption encrypted values",
-                Property.VENDOR
-        }
+    service = DecryptionService.class,
+    property = {
+        Property.DESCRIPTION + "APM Service for decryption encrypted values",
+        Property.VENDOR
+    }
 )
 public class DecryptionService {
 
-    @Reference
-    private transient CryptoSupport cryptoSupport;
+  @Reference
+  private transient CryptoSupport cryptoSupport;
 
-    public String decrypt(String text) {
-        val tokens = StringUtils.substringsBetween(text, "{", "}")
-                .orEmpty()
-                .map {
-            it to unprotect("{$it}")
-        }
-            .toMap()
-        val strSubstitutor = StrSubstitutor(tokens, "{", "}")
-        return if (tokens.isEmpty()) text
-        else strSubstitutor.replace(text)
+  public String decrypt(String text) {
+    Map<String, String> tokens = Optional.ofNullable(StringUtils.substringsBetween(text, "{", "}"))
+        .map(Arrays::stream)
+        .orElse(Stream.empty())
+        .distinct()
+        .collect(Collectors.toMap(x -> x, x -> unprotect(String.format("{%s}", x))));
+    StrSubstitutor strSubstitutor = new StrSubstitutor(tokens, "{", "}");
+    return tokens.isEmpty() ? text : strSubstitutor.replace(text);
+  }
+
+  protected String unprotect(String text) {
+    try {
+      return cryptoSupport.unprotect(text);
+    } catch (CryptoException e) {
+      throw new IllegalArgumentException(String.format("Unable to decrypt '%s', wrong hmac or master key", text), e);
     }
-
-    protected String unprotect(String text) {
-        return try {
-            return cryptoSupport.unprotect(text);
-        } catch (e:CryptoException){
-            throw new IllegalArgumentException(String.format("Unable to decrypt '%s', wrong hmac or master key", text), e)
-        }
-    }
-
+  }
 }
