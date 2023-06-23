@@ -17,16 +17,30 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
+package com.cognifide.apm.core.endpoints;
 
-package com.cognifide.apm.core.endpoints
+import com.cognifide.apm.core.endpoints.params.RequestParameter;
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.models.annotations.Model;
 
-import com.cognifide.apm.core.endpoints.params.RequestParameter
-import org.apache.sling.api.SlingHttpServletRequest
-import org.apache.sling.models.annotations.Model
-import javax.inject.Inject
+import javax.inject.Inject;
 
-@Model(adaptables = [SlingHttpServletRequest::class])
-class ScriptValidationForm @Inject constructor(
-        @param:RequestParameter("path", optional = false) val path: String,
-        @param:RequestParameter("content", optional = false) val content: String
-)
+@Model(adaptables = SlingHttpServletRequest.class)
+public class ScriptValidationForm {
+
+  @Inject
+  @RequestParameter(value = "path", optional = false)
+  private String path;
+
+  @Inject
+  @RequestParameter(value = "content", optional = false)
+  private String content;
+
+  public String getPath() {
+    return path;
+  }
+
+  public String getContent() {
+    return content;
+  }
+}

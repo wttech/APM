@@ -25,41 +25,41 @@ import org.apache.http.HttpStatus;
 
 import java.util.Map;
 
-public class ResponseEntity1 {
+public class ResponseEntity {
 
-    private int statusCode;
+  private int statusCode;
 
-    private Map<String, Object> body;
+  private Map<String, Object> body;
 
-    private ResponseEntity1(int statusCode, String message, Map<String, Object> params) {
-        this.statusCode = statusCode;
-        this.body = ImmutableMap.<String, Object>builder()
-                .put("message", message)
-                .putAll(params)
-                .build();
-    }
+  private ResponseEntity(int statusCode, String message, Map<String, Object> params) {
+    this.statusCode = statusCode;
+    this.body = ImmutableMap.<String, Object>builder()
+        .put("message", message)
+        .putAll(params)
+        .build();
+  }
 
-    public int getStatusCode() {
-        return statusCode;
-    }
+  public int getStatusCode() {
+    return statusCode;
+  }
 
-    public Map<String, Object> getBody() {
-        return body;
-    }
+  public Map<String, Object> getBody() {
+    return body;
+  }
 
-    public static ResponseEntity1 badRequest(String message, Map<String, Object> params) {
-        return new ResponseEntity1(HttpStatus.SC_BAD_REQUEST, message, params);
-    }
+  public static ResponseEntity badRequest(String message, Map<String, Object> params) {
+    return new ResponseEntity(HttpStatus.SC_BAD_REQUEST, message, params);
+  }
 
-    public static ResponseEntity1 notFound(String message, Map<String, Object> params) {
-        return new ResponseEntity1(HttpStatus.SC_NOT_FOUND, message, params);
-    }
+  public static ResponseEntity notFound(String message, Map<String, Object> params) {
+    return new ResponseEntity(HttpStatus.SC_NOT_FOUND, message, params);
+  }
 
-    public static ResponseEntity1 internalServerError(String message, Map<String, Object> params) {
-        return new ResponseEntity1(HttpStatus.SC_INTERNAL_SERVER_ERROR, message, params);
-    }
+  public static ResponseEntity internalServerError(String message, Map<String, Object> params) {
+    return new ResponseEntity(HttpStatus.SC_INTERNAL_SERVER_ERROR, message, params);
+  }
 
-    public static ResponseEntity1 ok(String message, Map<String, Object> params) {
-        return new ResponseEntity1(HttpStatus.SC_OK, message, params);
-    }
+  public static ResponseEntity ok(String message, Map<String, Object> params) {
+    return new ResponseEntity(HttpStatus.SC_OK, message, params);
+  }
 }

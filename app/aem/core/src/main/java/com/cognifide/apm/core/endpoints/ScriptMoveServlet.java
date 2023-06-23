@@ -17,79 +17,81 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.core.endpoints
+package com.cognifide.apm.core.endpoints;
 
-import com.cognifide.apm.core.Apm
-import com.cognifide.apm.core.Property
-import com.cognifide.apm.core.endpoints.response.ResponseEntity
-import com.cognifide.apm.core.endpoints.response.badRequest
-import com.cognifide.apm.core.endpoints.response.ok
-import com.day.cq.commons.jcr.JcrConstants
-import com.day.cq.commons.jcr.JcrUtil
-import org.apache.commons.lang3.StringUtils
-import org.apache.sling.api.resource.ModifiableValueMap
-import org.apache.sling.api.resource.ResourceResolver
-import org.apache.sling.models.factory.ModelFactory
-import org.osgi.service.component.annotations.Component
-import org.osgi.service.component.annotations.Reference
-import javax.jcr.Session
-import javax.servlet.Servlet
+import com.cognifide.apm.core.Apm;
+import com.cognifide.apm.core.Property;
+import com.cognifide.apm.core.endpoints.response.ResponseEntity;
+import com.day.cq.commons.jcr.JcrConstants;
+import com.day.cq.commons.jcr.JcrUtil;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.sling.api.resource.ModifiableValueMap;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.models.factory.ModelFactory;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
+import javax.jcr.Session;
+import javax.servlet.Servlet;
+
+import java.util.Collections;
 
 @Component(
-        service = [Servlet::class],
-        property = [
-            Property.PATH + "/bin/apm/scripts/move",
-            Property.METHOD + "POST",
-            Property.DESCRIPTION + "APM Script Move Servlet",
-            Property.VENDOR
-        ])
-class ScriptMoveServlet : AbstractFormServlet<ScriptMoveForm>(ScriptMoveForm::class.java) {
-
-    @Reference
-    override fun setup(modelFactory: ModelFactory) {
-        this.modelFactory = modelFactory
+    service = Servlet.class,
+    property = {
+        Property.PATH + "/bin/apm/scripts/move",
+        Property.METHOD + "POST",
+        Property.DESCRIPTION + "APM Script Move Servlet",
+        Property.VENDOR
     }
+)
+public class ScriptMoveServlet extends AbstractFormServlet<ScriptMoveForm> {
 
-    override fun doPost(form: ScriptMoveForm, resolver: ResourceResolver): ResponseEntity<Any> {
-        return try {
-            val session = resolver.adaptTo(Session::class.java)!!
-            val dest = StringUtils.defaultIfEmpty(form.dest, StringUtils.substringBeforeLast(form.path, "/"))
-            val rename = if (containsExtension(form.path)) {
-                form.rename + if (containsExtension(form.rename)) "" else Apm.FILE_EXT
-            } else {
-                JcrUtil.createValidName(form.rename)
-            }
-            var destPath = "$dest/$rename"
-            if (form.path != destPath) {
-                destPath = createUniquePath(destPath, resolver)
-                session.move(form.path, destPath)
-                session.save()
-            }
-            if (!containsExtension(form.path)) {
-                val valueMap = resolver.getResource(destPath)?.adaptTo(ModifiableValueMap::class.java)
-                valueMap?.put(JcrConstants.JCR_TITLE, form.rename)
-            }
-            resolver.commit()
-            ok {
-                message = "Item successfully moved"
-            }
-        } catch (e: Exception) {
-            badRequest {
-                message = e.message ?: "Errors while moving item"
-            }
-        }
+  @Override
+  protected Class<ScriptMoveForm> getFormClass() {
+    return ScriptMoveForm.class;
+  }
+
+  @Override
+  protected ResponseEntity doPost(ScriptMoveForm form, ResourceResolver resolver) throws Exception {
+    ResponseEntity responseEntity;
+    try {
+      Session session = resolver.adaptTo(Session.class);
+      String dest = StringUtils.defaultIfEmpty(form.getDest(), StringUtils.substringBeforeLast(form.getPath(), "/"));
+      String rename = containsExtension(form.getPath())
+          ? (form.getRename() + (containsExtension(form.getRename()) ? "" : Apm.FILE_EXT))
+          : JcrUtil.createValidName(form.getRename());
+
+      String destPath = dest + "/" + rename;
+      if (form.getPath() != destPath) {
+        destPath = createUniquePath(destPath, resolver);
+        session.move(form.getPath(), destPath);
+        session.save();
+      }
+      if (!containsExtension(form.getPath())) {
+        ModifiableValueMap valueMap = resolver.getResource(destPath).adaptTo(ModifiableValueMap.class);
+        valueMap.put(JcrConstants.JCR_TITLE, form.getRename());
+      }
+      resolver.commit();
+      responseEntity = ResponseEntity.ok("Item successfully moved", Collections.emptyMap());
+
+    } catch (Exception e) {
+      responseEntity = ResponseEntity.badRequest(StringUtils.defaultString(e.getMessage(), "Errors while moving item"), Collections.emptyMap());
     }
+    return responseEntity;
+  }
 
-    private fun containsExtension(path: String) = path.endsWith(Apm.FILE_EXT)
+  private boolean containsExtension(String path) {
+    return path.endsWith(Apm.FILE_EXT);
+  }
 
-    private fun createUniquePath(pathWithExtension: String, resolver: ResourceResolver): String {
-        val path = StringUtils.substringBeforeLast(pathWithExtension, Apm.FILE_EXT)
-        val extension = if (containsExtension(pathWithExtension)) Apm.FILE_EXT else ""
-        var counter = 0
-        while (resolver.getResource(path + (if (counter > 0) counter else "") + extension) != null) {
-            counter++
-        }
-        return path + (if (counter > 0) counter else "") + extension
+  private String createUniquePath(String pathWithExtension, ResourceResolver resolver) {
+    String path = StringUtils.substringBeforeLast(pathWithExtension, Apm.FILE_EXT);
+    String extension = containsExtension(pathWithExtension) ? Apm.FILE_EXT : "";
+    int counter = 0;
+    while (resolver.getResource(path + (counter > 0 ? counter : "") + extension) != null) {
+      counter++;
     }
-
+    return path + (counter > 0 ? counter : "") + extension;
+  }
 }

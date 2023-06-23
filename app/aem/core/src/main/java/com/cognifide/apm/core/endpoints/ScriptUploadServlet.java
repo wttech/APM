@@ -17,59 +17,61 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.core.endpoints
+package com.cognifide.apm.core.endpoints;
 
-import com.cognifide.apm.api.services.ExecutionMode
-import com.cognifide.apm.api.services.ScriptManager
-import com.cognifide.apm.core.Property
-import com.cognifide.apm.core.endpoints.dto.ScriptDto
-import com.cognifide.apm.core.endpoints.response.ResponseEntity
-import com.cognifide.apm.core.endpoints.response.badRequest
-import com.cognifide.apm.core.endpoints.response.ok
-import com.cognifide.apm.core.scripts.ScriptStorage
-import com.cognifide.apm.core.scripts.ScriptStorageException
-import org.apache.sling.api.resource.ResourceResolver
-import org.apache.sling.models.factory.ModelFactory
-import org.osgi.service.component.annotations.Component
-import org.osgi.service.component.annotations.Reference
+import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.ExecutionMode;
+import com.cognifide.apm.api.services.ScriptManager;
+import com.cognifide.apm.core.Property;
+import com.cognifide.apm.core.endpoints.dto.ScriptDto;
+import com.cognifide.apm.core.endpoints.response.ResponseEntity;
+import com.cognifide.apm.core.scripts.ScriptStorage;
+import com.cognifide.apm.core.scripts.ScriptStorageException;
+import com.google.common.collect.ImmutableMap;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.models.factory.ModelFactory;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
 import javax.servlet.Servlet
 
 @Component(
-        service = [Servlet::class],
-        property = [
-            Property.PATH + "/bin/apm/scripts/upload",
-            Property.METHOD + "POST",
-            Property.DESCRIPTION + "APM Script Upload Servlet",
-            Property.VENDOR
-        ])
-class ScriptUploadServlet : AbstractFormServlet<ScriptUploadForm>(ScriptUploadForm::class.java) {
-
-    @Reference
-    @Transient
-    private lateinit var scriptStorage: ScriptStorage
-
-    @Reference
-    @Transient
-    private lateinit var scriptManager: ScriptManager
-
-    @Reference
-    override fun setup(modelFactory: ModelFactory) {
-        this.modelFactory = modelFactory
+    service = Servlet.class,
+    property = {
+        Property.PATH + "/bin/apm/scripts/upload",
+        Property.METHOD + "POST",
+        Property.DESCRIPTION + "APM Script Upload Servlet",
+        Property.VENDOR
     }
+)
+public class ScriptUploadServlet extends AbstractFormServlet<ScriptUploadForm> {
 
-    override fun doPost(form: ScriptUploadForm, resourceResolver: ResourceResolver): ResponseEntity<Any> {
-        return try {
-            val script = scriptStorage.save(form, resourceResolver)
-            scriptManager.process(script, ExecutionMode.VALIDATION, resourceResolver)
-            ok {
-                message = "File successfully saved"
-                "uploadedScript" set ScriptDto(script)
-            }
-        } catch (e: ScriptStorageException) {
-            badRequest {
-                message = e.message ?: "Errors while saving script"
-                errors = e.errors
-            }
-        }
+  @Reference
+  private transient ScriptStorage scriptStorage;
+
+  @Reference
+  private transient ScriptManager scriptManager;
+
+  @Override
+  protected Class<ScriptUploadForm> getFormClass() {
+    return ScriptUploadForm.class;
+  }
+
+  @Override
+  protected ResponseEntity doPost(ScriptUploadForm form, ResourceResolver resolver) throws Exception {
+    ResponseEntity responseEntity;
+    try {
+      Script script = scriptStorage.save(form, resolver);
+      scriptManager.process(script, ExecutionMode.VALIDATION, resolver);
+      responseEntity = ResponseEntity.ok("File successfully saved", ImmutableMap.of(
+          "uploadedScript", new ScriptDto(script)
+      ));
+    } catch (ScriptStorageException e) {
+      responseEntity = ResponseEntity.badRequest(StringUtils.defaultString(e.getMessage(), "Errors while saving script"), ImmutableMap.of(
+          "errors", e.getErrors()
+      ));
     }
+    return responseEntity;
+  }
 }

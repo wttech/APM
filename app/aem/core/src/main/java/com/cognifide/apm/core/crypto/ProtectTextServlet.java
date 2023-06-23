@@ -24,7 +24,6 @@ import com.adobe.granite.crypto.CryptoSupport;
 import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.endpoints.AbstractFormServlet;
 import com.cognifide.apm.core.endpoints.response.ResponseEntity;
-import com.cognifide.apm.core.endpoints.response.ResponseEntity1;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -49,24 +48,20 @@ public class ProtectTextServlet extends AbstractFormServlet<ProtectTextForm> {
   @Reference
   private transient CryptoSupport cryptoSupport;
 
-  public ProtectTextServlet(Class<ProtectTextForm> formClass) {
-    super(formClass);
+  @Override
+  protected Class<ProtectTextForm> getFormClass() {
+    return ProtectTextForm.class;
   }
 
   @Override
-  public void setup(ModelFactory modelFactory) {
-    this.modelFactory = modelFactory;
-  }
-
-  @Override
-  public ResponseEntity<Object> doPost(ProtectTextForm form, ResourceResolver resourceResolver) {
+  public ResponseEntity doPost(ProtectTextForm form, ResourceResolver resourceResolver) {
     ResponseEntity responseEntity = null;
     try {
-      ResponseEntity1.ok("Text successfully encrypted", ImmutableMap.of(
+      responseEntity = ResponseEntity.ok("Text successfully encrypted", ImmutableMap.of(
           "text", cryptoSupport.protect(form.getText())
       ));
     } catch (CryptoException e) {
-      ResponseEntity1.badRequest(StringUtils.defaultString(e.getMessage(), "Errors while encrypting text"), Collections.emptyMap());
+      responseEntity = ResponseEntity.badRequest(StringUtils.defaultString(e.getMessage(), "Errors while encrypting text"), Collections.emptyMap());
     }
     return responseEntity;
   }

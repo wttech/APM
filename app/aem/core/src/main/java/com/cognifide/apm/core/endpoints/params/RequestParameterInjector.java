@@ -17,44 +17,50 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
+package com.cognifide.apm.core.endpoints.params;
 
-package com.cognifide.apm.core.endpoints.params
+import com.cognifide.apm.core.Property;
+import com.google.common.primitives.Ints;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.models.spi.DisposalCallbackRegistry;
+import org.apache.sling.models.spi.Injector;
+import org.apache.sling.models.spi.injectorspecific.AbstractInjectAnnotationProcessor2;
+import org.apache.sling.models.spi.injectorspecific.InjectAnnotationProcessor2;
+import org.apache.sling.models.spi.injectorspecific.StaticInjectAnnotationProcessorFactory;
+import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Component;
+import java.io.InputStream;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Map;
 
-import com.cognifide.apm.core.Property
-import com.google.common.primitives.Ints
-import org.apache.commons.lang3.StringUtils
-import org.apache.sling.api.SlingHttpServletRequest
-import org.apache.sling.models.spi.DisposalCallbackRegistry
-import org.apache.sling.models.spi.Injector
-import org.apache.sling.models.spi.injectorspecific.AbstractInjectAnnotationProcessor2
-import org.apache.sling.models.spi.injectorspecific.InjectAnnotationProcessor2
-import org.apache.sling.models.spi.injectorspecific.StaticInjectAnnotationProcessorFactory
-import org.osgi.framework.Constants
-import org.osgi.service.component.annotations.Component
-import java.io.InputStream
-import java.lang.reflect.AnnotatedElement
-import java.lang.reflect.ParameterizedType
-import java.lang.reflect.Type
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import static kotlin.reflect.jvm.internal.impl.builtins.StandardNames.FqNames.annotation;
 
 @Component(
-        property = [
-            Constants.SERVICE_RANKING + "=" + Int.MIN_VALUE,
+        property = {
+            Constants.SERVICE_RANKING + "=" + Integer.MIN_VALUE,
             Property.VENDOR
-        ])
-class RequestParameterInjector : Injector, StaticInjectAnnotationProcessorFactory {
+        })
+public class RequestParameterInjector extends Injector, StaticInjectAnnotationProcessorFactory {
 
-    override fun getName(): String {
-        return "apm-request-parameter"
+    @Override
+    public String getName() {
+        return "apm-request-parameter";
     }
 
-    override fun getValue(adaptable: Any, fieldName: String, type: Type, annotatedElement: AnnotatedElement,
-                          disposalCallbackRegistry: DisposalCallbackRegistry): Any? {
-        if (adaptable is SlingHttpServletRequest) {
-            val annotation = annotatedElement.getAnnotation(RequestParameter::class.java)
+    @Override
+    public Object getValue(Object adaptable, String fileName, Type type, AnnotatedElement annotatedElement, DisposalCallbackRegistry disposalCallbackRegistry) {
+        if (adaptable instanceof SlingHttpServletRequest) {
+            RequestParameter annotation  = annotatedElement.getAnnotation(RequestParameter.class);
             if (annotation != null) {
-                val parameterName = annotation.value
+              String parameterName = annotation.value();
+              if (type instanceof ParameterizedType && ((ParameterizedType) type).getRawType() instanceof
+                  && Map.class.isAssignableFrom(type.getClass())
+
                 return when {
                     type is ParameterizedType && type.rawType is Class<*> && Map::class.java.isAssignableFrom(type.rawType as Class<*>) -> extractParams(adaptable, fieldName)
                     type is Class<*> -> getValue(adaptable, type, StringUtils.defaultString(parameterName, fieldName), annotatedElement)

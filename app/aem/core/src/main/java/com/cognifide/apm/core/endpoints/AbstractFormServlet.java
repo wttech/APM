@@ -17,30 +17,32 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.core.endpoints
+package com.cognifide.apm.core.endpoints;
 
-import com.cognifide.apm.core.endpoints.response.ResponseEntity
-import com.cognifide.apm.core.endpoints.utils.RequestProcessor
-import org.apache.sling.api.SlingHttpServletRequest
-import org.apache.sling.api.SlingHttpServletResponse
-import org.apache.sling.api.resource.ResourceResolver
-import org.apache.sling.api.servlets.SlingAllMethodsServlet
-import org.apache.sling.models.factory.ModelFactory
-import org.osgi.service.component.annotations.Reference
-import java.io.IOException
+import com.cognifide.apm.core.endpoints.response.ResponseEntity;
+import com.cognifide.apm.core.endpoints.utils.RequestProcessor;
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.SlingHttpServletResponse;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.servlets.SlingAllMethodsServlet;
+import org.apache.sling.models.factory.ModelFactory;
+import org.osgi.service.component.annotations.Reference;
 
-abstract class AbstractFormServlet<F>(private val formClass: Class<F>) : SlingAllMethodsServlet() {
+import javax.servlet.ServletException;
+import java.io.IOException;
 
-    @Reference
-    @Transient
-    protected lateinit var modelFactory: ModelFactory
+public abstract class AbstractFormServlet<F> extends SlingAllMethodsServlet {
 
-    @Throws(IOException::class)
-    override fun doPost(request: SlingHttpServletRequest, response: SlingHttpServletResponse) {
-        RequestProcessor(modelFactory, formClass).process(request, response) { form, resourceResolver -> doPost(form, resourceResolver) }
-    }
+  @Reference
+  protected transient ModelFactory modelFactory;
 
-    abstract fun setup(modelFactory: ModelFactory)
+  @Override
+  protected void doPost(SlingHttpServletRequest request, SlingHttpServletResponse response) throws ServletException, IOException {
+    new RequestProcessor<>(modelFactory, getFormClass())
+        .process(request, response, this::doPost);
+  }
 
-    abstract fun doPost(form: F, resourceResolver: ResourceResolver): ResponseEntity<Any>
+  protected abstract Class<F> getFormClass();
+
+  protected abstract ResponseEntity doPost(F form, ResourceResolver resolver) throws Exception;
 }
