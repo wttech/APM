@@ -22,7 +22,7 @@ package com.cognifide.apm.core.endpoints.utils;
 import com.cognifide.apm.core.endpoints.response.ResponseEntity;
 import org.apache.sling.api.resource.ResourceResolver;
 
-public interface ProcessCallback<F> {
+public interface ProcessCallback<T> {
 
-  ResponseEntity resolve(F form, ResourceResolver resolver) throws Exception;
+  ResponseEntity process(T form, ResourceResolver resolver) throws Exception;
 }

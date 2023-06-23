@@ -21,6 +21,8 @@ package com.cognifide.apm.core.endpoints;
 
 import com.cognifide.apm.core.endpoints.response.ResponseEntity;
 import com.cognifide.apm.core.endpoints.utils.RequestProcessor;
+import java.io.IOException;
+import javax.servlet.ServletException;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -28,21 +30,15 @@ import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Reference;
 
-import javax.servlet.ServletException;
-import java.io.IOException;
-
-public abstract class AbstractFormServlet<F> extends SlingAllMethodsServlet {
+public abstract class AbstractFormServlet<T> extends SlingAllMethodsServlet {
 
   @Reference
-  protected transient ModelFactory modelFactory;
+  protected ModelFactory modelFactory;
 
   @Override
   protected void doPost(SlingHttpServletRequest request, SlingHttpServletResponse response) throws ServletException, IOException {
-    new RequestProcessor<>(modelFactory, getFormClass())
-        .process(request, response, this::doPost);
+    new RequestProcessor<T>().process(request, response, modelFactory, this::process);
   }
 
-  protected abstract Class<F> getFormClass();
-
-  protected abstract ResponseEntity doPost(F form, ResourceResolver resolver) throws Exception;
+  protected abstract ResponseEntity process(T form, ResourceResolver resolver) throws Exception;
 }

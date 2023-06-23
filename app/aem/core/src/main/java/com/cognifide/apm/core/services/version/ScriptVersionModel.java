@@ -17,15 +17,33 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.core.services.version
+package com.cognifide.apm.core.services.version;
 
-import org.apache.sling.api.resource.Resource
-import org.apache.sling.models.annotations.Model
-import javax.inject.Inject
-import javax.inject.Named
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.models.annotations.Model;
 
-@Model(adaptables = [Resource::class])
-class ScriptVersionModel @Inject constructor(
-        @param:Named("scriptPath") override val scriptPath: String,
-        @param:Named("lastChecksum") override val lastChecksum: String? = null
-) : ScriptVersion
+import javax.inject.Inject;
+
+@Model(adaptables = Resource.class)
+public class ScriptVersionModel implements ScriptVersion {
+
+  private final String scriptPath;
+
+  @Inject
+  private String lastChecksum;
+
+  @Inject
+  public ScriptVersionModel(String scriptPath) {
+    this.scriptPath = scriptPath;
+  }
+
+  @Override
+  public String getScriptPath() {
+    return scriptPath;
+  }
+
+  @Override
+  public String getLastChecksum() {
+    return lastChecksum;
+  }
+}

@@ -27,7 +27,6 @@ import com.cognifide.apm.core.endpoints.response.ResponseEntity;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -46,15 +45,10 @@ import java.util.Collections;
 public class ProtectTextServlet extends AbstractFormServlet<ProtectTextForm> {
 
   @Reference
-  private transient CryptoSupport cryptoSupport;
+  private CryptoSupport cryptoSupport;
 
   @Override
-  protected Class<ProtectTextForm> getFormClass() {
-    return ProtectTextForm.class;
-  }
-
-  @Override
-  public ResponseEntity doPost(ProtectTextForm form, ResourceResolver resourceResolver) {
+  protected ResponseEntity process(ProtectTextForm form, ResourceResolver resolver) throws Exception {
     ResponseEntity responseEntity = null;
     try {
       responseEntity = ResponseEntity.ok("Text successfully encrypted", ImmutableMap.of(

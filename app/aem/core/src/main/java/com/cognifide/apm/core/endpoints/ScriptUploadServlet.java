@@ -30,11 +30,10 @@ import com.cognifide.apm.core.scripts.ScriptStorageException;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
-import javax.servlet.Servlet
+import javax.servlet.Servlet;
 
 @Component(
     service = Servlet.class,
@@ -48,18 +47,13 @@ import javax.servlet.Servlet
 public class ScriptUploadServlet extends AbstractFormServlet<ScriptUploadForm> {
 
   @Reference
-  private transient ScriptStorage scriptStorage;
+  private ScriptStorage scriptStorage;
 
   @Reference
-  private transient ScriptManager scriptManager;
+  private ScriptManager scriptManager;
 
   @Override
-  protected Class<ScriptUploadForm> getFormClass() {
-    return ScriptUploadForm.class;
-  }
-
-  @Override
-  protected ResponseEntity doPost(ScriptUploadForm form, ResourceResolver resolver) throws Exception {
+  protected ResponseEntity process(ScriptUploadForm form, ResourceResolver resolver) throws Exception {
     ResponseEntity responseEntity;
     try {
       Script script = scriptStorage.save(form, resolver);

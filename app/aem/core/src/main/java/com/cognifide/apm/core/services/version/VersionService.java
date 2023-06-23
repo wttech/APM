@@ -17,19 +17,18 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.core.services.version
+package com.cognifide.apm.core.services.version;
 
-import com.cognifide.apm.api.scripts.Script
-import org.apache.sling.api.resource.ResourceResolver
+import com.cognifide.apm.api.scripts.Script;
+import org.apache.sling.api.resource.ResourceResolver;
 
-interface VersionService {
+public interface VersionService {
 
-    fun getScriptVersion(resolver: ResourceResolver, script: Script): ScriptVersion
+  ScriptVersion getScriptVersion(ResourceResolver resolver, Script script);
 
-    fun getVersionPath(script: Script): String
+  String getVersionPath(Script script);
 
-    fun updateVersionIfNeeded(resolver: ResourceResolver, vararg script: Script)
+  void updateVersionIfNeeded(ResourceResolver resolver, Script script);
 
-    fun countChecksum(root: Iterable<Script>): String
-
+  String countChecksum(Iterable<Script> root);
 }

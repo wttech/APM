@@ -23,18 +23,17 @@ import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.endpoints.dto.ScriptDto;
 import com.cognifide.apm.core.utils.ServletUtils;
+import java.io.IOException;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-
-import javax.servlet.Servlet;
-import javax.servlet.ServletException;
-import java.io.IOException;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Component(
     service = Servlet.class,
@@ -48,7 +47,7 @@ import java.util.stream.Collectors;
 public class ScriptListServlet extends SlingAllMethodsServlet {
 
   @Reference
-  private transient ScriptFinder scriptFinder;
+  private ScriptFinder scriptFinder;
 
   @Override
   protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) throws ServletException, IOException {

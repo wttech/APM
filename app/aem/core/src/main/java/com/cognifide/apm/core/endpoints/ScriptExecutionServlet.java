@@ -26,12 +26,10 @@ import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.endpoints.response.ResponseEntity;
 import com.cognifide.apm.core.endpoints.utils.RequestProcessor;
-import com.cognifide.apm.core.services.ResourceResolverProvider;
 import com.cognifide.apm.core.services.async.AsyncScriptExecutor;
 import com.cognifide.apm.core.services.async.ExecutionStatus;
-import com.cognifide.apm.core.services.async.FinishedFailedExecution;
-import com.cognifide.apm.core.services.async.FinishedSuccessfulExecution;
-import com.cognifide.apm.core.utils.sling.SlingHelper;
+import com.cognifide.apm.core.services.async.ExecutionStatus.FinishedFailedExecution;
+import com.cognifide.apm.core.services.async.ExecutionStatus.FinishedSuccessfulExecution;
 import com.google.common.collect.ImmutableMap;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
@@ -60,23 +58,20 @@ import java.util.Collections;
 public class ScriptExecutionServlet extends SlingAllMethodsServlet {
 
   @Reference
-  private transient ScriptFinder scriptFinder;
+  private ScriptFinder scriptFinder;
 
   @Reference
-  private transient ScriptManager scriptManager;
+  private ScriptManager scriptManager;
 
   @Reference
-  private transient AsyncScriptExecutor asyncScriptExecutor;
+  private AsyncScriptExecutor asyncScriptExecutor;
 
   @Reference
-  private transient ModelFactory modelFactory;
-
-  @Reference
-  private transient ResourceResolverProvider resolverProvider;
+  private ModelFactory modelFactory;
 
   @Override
   protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) throws ServletException, IOException {
-    new RequestProcessor<>(modelFactory, ScriptExecutionStatusForm.class).process(request, response, (form, resolver) -> {
+    new RequestProcessor<ScriptExecutionStatusForm>().process(request, response, modelFactory, (form, resolver) -> {
       ResponseEntity responseEntity;
       ExecutionStatus status = asyncScriptExecutor.checkStatus(form.getId());
       if (status instanceof FinishedSuccessfulExecution) {
@@ -96,7 +91,6 @@ public class ScriptExecutionServlet extends SlingAllMethodsServlet {
         responseEntity = ResponseEntity.ok("Script is still being processed", ImmutableMap.of(
             "status", status.getStatus()
         ));
-
       }
       return responseEntity;
     });
@@ -104,44 +98,40 @@ public class ScriptExecutionServlet extends SlingAllMethodsServlet {
 
   @Override
   protected void doPost(SlingHttpServletRequest request, SlingHttpServletResponse response) throws ServletException, IOException {
-    String executor = request.getResourceResolver().getUserID();
-    new RequestProcessor<>(modelFactory, ScriptExecutionForm.class).process(request, response, (form, resolver) ->
-        SlingHelper.resolve(resolverProvider, resolver1 -> executeScript(form, resolver1, executor))
-    );
+    new RequestProcessor<ScriptExecutionForm>().process(request, response, modelFactory, this::executeScript);
   }
 
-  private ResponseEntity executeScript(ScriptExecutionForm form, ResourceResolver resourceResolver, String executor) {
+  private ResponseEntity executeScript(ScriptExecutionForm form, ResourceResolver resolver) throws PersistenceException {
     ResponseEntity responseEntity;
     try {
-      Script script = scriptFinder.find(form.getScript(), resourceResolver);
+      Script script = scriptFinder.find(form.getScript(), resolver);
       if (script == null) {
         responseEntity = ResponseEntity.notFound(String.format("Script not found: %s", form.getScript()), Collections.emptyMap());
       } else if (!script.isLaunchEnabled()) {
-
         responseEntity = ResponseEntity.internalServerError("Script cannot be executed because it is disabled", Collections.emptyMap());
       } else if (!script.isValid()) {
-
         responseEntity = ResponseEntity.internalServerError("Script cannot be executed because it is invalid", Collections.emptyMap());
+      } else if (form.isAsync()) {
+        responseEntity = asyncExecute(script, form, resolver);
       } else {
-        responseEntity = form.isAsync() ? asyncExecute(script, form, executor) : syncExecute(script, form, resourceResolver, executor);
+        responseEntity = syncExecute(script, form, resolver);
       }
-    } catch (PersistenceException | RepositoryException e) {
+    } catch (RepositoryException e) {
       responseEntity = ResponseEntity.internalServerError(String.format("Script cannot be executed because of repository error: %s", e.getMessage()), Collections.emptyMap());
     }
     return responseEntity;
-
   }
 
-  private ResponseEntity asyncExecute(Script script, ScriptExecutionForm form, String executor) {
-    String id = asyncScriptExecutor.process(script, form.getExecutionMode(), form.getCustomDefinitions(), executor);
+  private ResponseEntity asyncExecute(Script script, ScriptExecutionForm form, ResourceResolver resolver) {
+    String id = asyncScriptExecutor.process(script, form.getExecutionMode(), form.getCustomDefinitions(), resolver);
     return ResponseEntity.ok("Script successfully queued for async execution", ImmutableMap.of(
         "id", id
     ));
   }
 
-  private ResponseEntity syncExecute(Script script, ScriptExecutionForm form, ResourceResolver resourceResolver, String executor) throws PersistenceException, RepositoryException {
+  private ResponseEntity syncExecute(Script script, ScriptExecutionForm form, ResourceResolver resolver) throws PersistenceException, RepositoryException {
+    ExecutionResult result = scriptManager.process(script, form.getExecutionMode(), form.getCustomDefinitions(), resolver);
     ResponseEntity responseEntity;
-    ExecutionResult result = scriptManager.process(script, form.getExecutionMode(), form.getCustomDefinitions(), resourceResolver, executor);
     if (result.isSuccess()) {
       responseEntity = ResponseEntity.ok("Script successfully executed", ImmutableMap.of(
           "output", result.getEntries()

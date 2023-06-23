@@ -22,7 +22,7 @@ package com.cognifide.apm.core.endpoints;
 import com.cognifide.apm.api.scripts.LaunchEnvironment;
 import com.cognifide.apm.api.scripts.LaunchMode;
 import com.cognifide.apm.core.endpoints.params.DateFormat;
-import com.cognifide.apm.core.endpoints.params.FileName;;
+import com.cognifide.apm.core.endpoints.params.FileName;
 import com.cognifide.apm.core.endpoints.params.RequestParameter;
 import com.cognifide.apm.core.scripts.LaunchMetadata;
 import com.cognifide.apm.core.scripts.ScriptNode;

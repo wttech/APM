@@ -30,6 +30,7 @@ import org.osgi.service.component.annotations.Reference;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -43,14 +44,14 @@ import java.util.stream.Stream;
 public class DecryptionService {
 
   @Reference
-  private transient CryptoSupport cryptoSupport;
+  private CryptoSupport cryptoSupport;
 
   public String decrypt(String text) {
     Map<String, String> tokens = Optional.ofNullable(StringUtils.substringsBetween(text, "{", "}"))
         .map(Arrays::stream)
         .orElse(Stream.empty())
         .distinct()
-        .collect(Collectors.toMap(x -> x, x -> unprotect(String.format("{%s}", x))));
+        .collect(Collectors.toMap(Function.identity(), token -> unprotect(String.format("{%s}", token))));
     StrSubstitutor strSubstitutor = new StrSubstitutor(tokens, "{", "}");
     return tokens.isEmpty() ? text : strSubstitutor.replace(text);
   }

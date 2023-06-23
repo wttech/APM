@@ -39,47 +39,65 @@ import org.osgi.service.component.annotations.Reference;
 import javax.servlet.Servlet;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-@Component(service = Servlet.class, property = {Property.PATH + "/bin/apm/scripts/validate", Property.METHOD + "POST", Property.DESCRIPTION + "APM Script Validation Servlet", Property.VENDOR})
+@Component(
+    service = Servlet.class,
+    property = {
+        Property.PATH + "/bin/apm/scripts/validate",
+        Property.METHOD + "POST",
+        Property.DESCRIPTION + "APM Script Validation Servlet",
+        Property.VENDOR
+    }
+)
 public class ScriptValidationServlet extends AbstractFormServlet<ScriptValidationForm> {
 
   @Reference
-  private transient ScriptManager scriptManager;
+  private ScriptManager scriptManager;
 
   @Override
-  protected Class<ScriptValidationForm> getFormClass() {
-    return ScriptValidationForm.class;
-  }
-
-  @Override
-  protected ResponseEntity doPost(ScriptValidationForm form, ResourceResolver resolver) throws Exception {
+  protected ResponseEntity process(ScriptValidationForm form, ResourceResolver resolver) throws Exception {
     ResponseEntity responseEntity;
     try {
       Script script = TransientScript.create(form.getPath(), form.getContent());
       ExecutionResult result = scriptManager.process(script, ExecutionMode.VALIDATION, resolver);
       if (result.isSuccess()) {
-        responseEntity = ResponseEntity.ok("Script passes validation", ImmutableMap.of("valid", true));
+        responseEntity = ResponseEntity.ok("Script passes validation", ImmutableMap.of(
+            "valid", true
+        ));
       } else {
         List<String> validationErrors = transformToValidationErrors(result);
-        responseEntity = ResponseEntity.ok("Script does not pass validation", ImmutableMap.of("valid", false, "errors", validationErrors));
+        responseEntity = ResponseEntity.ok("Script does not pass validation", ImmutableMap.of(
+            "valid", false,
+            "errors", validationErrors
+        ));
       }
     } catch (ScriptStorageException e) {
-      responseEntity = ResponseEntity.badRequest(StringUtils.defaultString(e.getMessage(), "Errors while saving script"), ImmutableMap.of("errors", e.getErrors()));
+      responseEntity = ResponseEntity.ok(StringUtils.defaultString(e.getMessage(), "Errors while saving script"), ImmutableMap.of(
+          "errors", e.getErrors()
+      ));
     }
     return responseEntity;
   }
 
   private List<String> transformToValidationErrors(ExecutionResult result) {
-    return result.getEntries().stream().filter(x -> x.getStatus() == Status.ERROR).filter(x -> !x.getMessages().isEmpty()).map(x -> transformToErrors(x)).flatMap(x -> x.stream()).collect(Collectors.toList());
+    return result.getEntries()
+        .stream()
+        .filter(entry -> entry.getStatus() == Status.ERROR)
+        .filter(entry -> !entry.getMessages().isEmpty())
+        .flatMap(this::transformToErrors)
+        .collect(Collectors.toList());
   }
 
-  private List<String> transformToErrors(ExecutionResult.Entry entry) {
+  private Stream<String> transformToErrors(ExecutionResult.Entry entry) {
     String positionPrefix = positionPrefix(entry);
-    return entry.getMessages().stream().map(message -> positionPrefix + message).collect(Collectors.toList());
+    return entry.getMessages()
+        .stream()
+        .map(message -> positionPrefix + message);
   }
 
   private String positionPrefix(ExecutionResult.Entry entry) {
     Position position = entry instanceof ProgressEntry ? ((ProgressEntry) entry).getPosition() : null;
-    return position != null ? String.format("Invalid line %s", position.getLine()) : "";
+    return position != null ? String.format("Invalid line %s: ", position.getLine()) : "";
   }
 }

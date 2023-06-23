@@ -30,29 +30,21 @@ import org.apache.sling.models.factory.MissingElementException;
 import org.apache.sling.models.factory.MissingElementsException;
 import org.apache.sling.models.factory.ModelFactory;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public final class RequestProcessor<F> {
+public class RequestProcessor<T> {
 
-  private final ModelFactory modelFactory;
-
-  private final Class<F> formClass;
-
-  public RequestProcessor(ModelFactory modelFactory, Class<F> formClass) {
-    this.modelFactory = modelFactory;
-    this.formClass = formClass;
-  }
-
-  public void  process (SlingHttpServletRequest request, SlingHttpServletResponse response, ProcessCallback<F> processCallback) throws IOException {
+  public void process(SlingHttpServletRequest request, SlingHttpServletResponse response, ModelFactory modelFactory, ProcessCallback<T> processCallback) throws IOException {
     ResponseEntity responseEntity;
     try {
-      F form = modelFactory.createModel(request, formClass);
-      responseEntity = processCallback.resolve(form, request.getResourceResolver());
+      ParameterizedType type = (ParameterizedType) getClass().getGenericSuperclass();
+      T form = modelFactory.createModel(request, (Class<T>) type.getActualTypeArguments()[0]);
+      responseEntity = processCallback.process(form, request.getResourceResolver());
     } catch (MissingElementsException e) {
       responseEntity = ResponseEntity.badRequest("Bad request", ImmutableMap.of(
           "errors", toErrors(e)
@@ -71,7 +63,7 @@ public final class RequestProcessor<F> {
         .filter(Objects::nonNull)
         .map(x -> x.getAnnotation(RequestParameter.class))
         .filter(Objects::nonNull)
-        .map(x -> String.format("Missing required parameter: %s", x.value()))
+        .map(annotation -> String.format("Missing required parameter: %s", annotation.value()))
         .collect(Collectors.toList());
   }
 }

@@ -24,16 +24,15 @@ import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.endpoints.response.ResponseEntity;
 import com.day.cq.commons.jcr.JcrConstants;
 import com.day.cq.commons.jcr.JcrUtil;
+import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.ResourceResolver;
-import org.apache.sling.models.factory.ModelFactory;
+import org.apache.sling.api.resource.ValueMap;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
 import javax.jcr.Session;
 import javax.servlet.Servlet;
-
 import java.util.Collections;
 
 @Component(
@@ -48,12 +47,7 @@ import java.util.Collections;
 public class ScriptMoveServlet extends AbstractFormServlet<ScriptMoveForm> {
 
   @Override
-  protected Class<ScriptMoveForm> getFormClass() {
-    return ScriptMoveForm.class;
-  }
-
-  @Override
-  protected ResponseEntity doPost(ScriptMoveForm form, ResourceResolver resolver) throws Exception {
+  protected ResponseEntity process(ScriptMoveForm form, ResourceResolver resolver) throws Exception {
     ResponseEntity responseEntity;
     try {
       Session session = resolver.adaptTo(Session.class);
@@ -61,20 +55,18 @@ public class ScriptMoveServlet extends AbstractFormServlet<ScriptMoveForm> {
       String rename = containsExtension(form.getPath())
           ? (form.getRename() + (containsExtension(form.getRename()) ? "" : Apm.FILE_EXT))
           : JcrUtil.createValidName(form.getRename());
-
-      String destPath = dest + "/" + rename;
-      if (form.getPath() != destPath) {
+      String destPath = String.join("/", ImmutableList.of(dest, rename));
+      if (!StringUtils.equals(form.getPath(), destPath)) {
         destPath = createUniquePath(destPath, resolver);
         session.move(form.getPath(), destPath);
         session.save();
       }
       if (!containsExtension(form.getPath())) {
-        ModifiableValueMap valueMap = resolver.getResource(destPath).adaptTo(ModifiableValueMap.class);
+        ValueMap valueMap = resolver.getResource(destPath).adaptTo(ModifiableValueMap.class);
         valueMap.put(JcrConstants.JCR_TITLE, form.getRename());
       }
       resolver.commit();
       responseEntity = ResponseEntity.ok("Item successfully moved", Collections.emptyMap());
-
     } catch (Exception e) {
       responseEntity = ResponseEntity.badRequest(StringUtils.defaultString(e.getMessage(), "Errors while moving item"), Collections.emptyMap());
     }
