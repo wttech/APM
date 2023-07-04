@@ -47,5 +47,10 @@ class ParsedScriptTest extends Specification {
         file            | output
         "/invalid1.apm" | ["Invalid line [20:7]: DEFINE \$ nana", "Invalid sequence: \$"]
         "/invalid2.apm" | ["Invalid line [20:7]: DEFINE / nana"]
+        "/invalid3.apm" | ["Invalid line [20:0]: // define variable", "Invalid sequence: //"]
+        "/invalid4.apm" | ["Invalid line [20:0]: / define variable"]
+        "/invalid5.apm" | ["Invalid line [20:0]: /x define variable", "Invalid sequence: /x"]
+        "/invalid6.apm" | ["Invalid line [20:0]: /* define variable", "Invalid sequence: /*"]
+        "/invalid7.apm" | ["Invalid line [20:0]: <!-- define variable"]
     }
 }
