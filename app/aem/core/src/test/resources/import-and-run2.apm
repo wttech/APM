@@ -18,4 +18,4 @@
  # =========================LICENSE_END==================================
 RUN '/includes/cycle-a.apm'
 
-RUN '/includes/run-a.apm' AS namespace
+RUN '/includes/run-a.apm'

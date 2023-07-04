@@ -44,13 +44,20 @@ class ParsedScriptTest extends Specification {
         error == output
 
         where:
-        file            | output
-        "/invalid1.apm" | ["Invalid line [20:7]: DEFINE \$ nana", "Invalid sequence: \$"]
-        "/invalid2.apm" | ["Invalid line [20:7]: DEFINE / nana"]
-        "/invalid3.apm" | ["Invalid line [20:0]: // define variable", "Invalid sequence: //"]
-        "/invalid4.apm" | ["Invalid line [20:0]: / define variable"]
-        "/invalid5.apm" | ["Invalid line [20:0]: /x define variable", "Invalid sequence: /x"]
-        "/invalid6.apm" | ["Invalid line [20:0]: /* define variable", "Invalid sequence: /*"]
-        "/invalid7.apm" | ["Invalid line [20:0]: <!-- define variable"]
+        file                     | output
+        "/invalid/invalid1.apm"  | ["Invalid line [20:7]: DEFINE \$ nana", "Invalid sequence: \$"]
+        "/invalid/invalid2.apm"  | ["Invalid line [20:7]: DEFINE / nana"]
+        "/invalid/invalid3.apm"  | ["Invalid line [20:0]: // define variable", "Invalid sequence: //"]
+        "/invalid/invalid4.apm"  | ["Invalid line [20:0]: / define variable"]
+        "/invalid/invalid5.apm"  | ["Invalid line [20:0]: /x define variable", "Invalid sequence: /x"]
+        "/invalid/invalid6.apm"  | ["Invalid line [20:0]: /* define variable", "Invalid sequence: /*"]
+        "/invalid/invalid7.apm"  | ["Invalid line [20:0]: <!-- define variable"]
+        "/invalid/invalid8.apm"  | ["Invalid line [21:0]: // define variable", "Invalid sequence: //"]
+        "/invalid/invalid9.apm"  | ["Invalid line [21:0]: / define variable"]
+        "/invalid/invalid10.apm" | ["Invalid line [21:0]: /x define variable", "Invalid sequence: /x"]
+        "/invalid/invalid11.apm" | ["Invalid line [21:0]: /* define variable", "Invalid sequence: /*"]
+        "/invalid/invalid12.apm" | ["Invalid line [21:0]: <!-- define variable"]
+        "/invalid/invalid13.apm" | ["Invalid line [20:0]: \"define variable\"", "Invalid sequence: \"define variable\""]
+        "/invalid/invalid14.apm" | ["Invalid line [21:0]: \"define variable\"", "Invalid sequence: \"define variable\""]
     }
 }
