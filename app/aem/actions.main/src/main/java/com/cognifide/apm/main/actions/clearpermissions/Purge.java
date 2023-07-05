@@ -84,7 +84,7 @@ public class Purge implements Action {
         }
         actionResult.logMessage("Purged privileges for " + authorizable.getID() + " on " + path);
       }
-    } catch (RepositoryException | ActionExecutionException | IllegalAccessException e) {
+    } catch (RepositoryException | ActionExecutionException e) {
       actionResult.logError(MessagingUtils.createMessage(e));
     }
 
@@ -92,7 +92,7 @@ public class Purge implements Action {
   }
 
   private void purge(Context context, ActionResult actionResult)
-      throws RepositoryException, ActionExecutionException, IllegalAccessException {
+      throws RepositoryException, ActionExecutionException {
     Set<String> accessControlledPaths = getAccessControlledPaths(context);
     String normalizedPath = normalizePath(path);
     for (String parentPath : accessControlledPaths) {
@@ -117,7 +117,7 @@ public class Purge implements Action {
   }
 
   private Set<String> getAccessControlledPaths(Context context)
-      throws ActionExecutionException, RepositoryException, IllegalAccessException {
+      throws ActionExecutionException, RepositoryException {
     Set<String> result = new HashSet<>();
     JackrabbitSession session = context.getSession();
     String path = PERMISSION_STORE_PATH + context.getCurrentAuthorizable().getID();
