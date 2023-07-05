@@ -27,6 +27,13 @@ import com.cognifide.apm.api.exceptions.ActionExecutionException;
 import com.cognifide.apm.api.status.Status;
 import com.cognifide.apm.main.utils.MessagingUtils;
 import com.cognifide.apm.main.utils.PathUtils;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.RepositoryException;
+import javax.jcr.security.AccessControlPolicy;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.jackrabbit.api.JackrabbitSession;
@@ -40,14 +47,6 @@ import org.apache.jackrabbit.oak.spi.security.authorization.permission.Permissio
 import org.apache.jackrabbit.oak.spi.security.authorization.restriction.Restriction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.RepositoryException;
-import javax.jcr.security.AccessControlPolicy;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 public class Purge implements Action {
 
