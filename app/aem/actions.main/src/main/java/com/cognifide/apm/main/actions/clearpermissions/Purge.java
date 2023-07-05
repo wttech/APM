@@ -27,7 +27,7 @@ import com.cognifide.apm.api.exceptions.ActionExecutionException;
 import com.cognifide.apm.api.status.Status;
 import com.cognifide.apm.main.utils.MessagingUtils;
 import com.cognifide.apm.main.utils.PathUtils;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.jcr.Node;
@@ -35,14 +35,13 @@ import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.security.AccessControlPolicy;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.jackrabbit.api.JackrabbitSession;
 import org.apache.jackrabbit.api.security.JackrabbitAccessControlEntry;
 import org.apache.jackrabbit.api.security.JackrabbitAccessControlManager;
-import org.apache.jackrabbit.api.security.JackrabbitAccessControlPolicy;
 import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.apache.jackrabbit.oak.api.Type;
 import org.apache.jackrabbit.oak.spi.security.authorization.accesscontrol.ACE;
+import org.apache.jackrabbit.oak.spi.security.authorization.accesscontrol.AbstractAccessControlList;
 import org.apache.jackrabbit.oak.spi.security.authorization.permission.PermissionConstants;
 import org.apache.jackrabbit.oak.spi.security.authorization.restriction.Restriction;
 import org.slf4j.Logger;
@@ -94,13 +93,13 @@ public class Purge implements Action {
 
   private void purge(Context context, ActionResult actionResult)
       throws RepositoryException, ActionExecutionException, IllegalAccessException {
-    List<String> accessControlledPaths = getAccessControlledPaths(context);
+    Set<String> accessControlledPaths = getAccessControlledPaths(context);
     String normalizedPath = normalizePath(path);
-    for (String accessControlledPath : accessControlledPaths) {
-      String normalizedParentPath = normalizePath(accessControlledPath);
-      boolean isUsersPermission = accessControlledPath.startsWith(context.getCurrentAuthorizable().getPath());
+    for (String parentPath : accessControlledPaths) {
+      String normalizedParentPath = normalizePath(parentPath);
+      boolean isUsersPermission = parentPath.startsWith(context.getCurrentAuthorizable().getPath());
       if (StringUtils.startsWith(normalizedParentPath, normalizedPath) && !isUsersPermission) {
-        RemoveAll removeAll = new RemoveAll(accessControlledPath);
+        RemoveAll removeAll = new RemoveAll(parentPath);
         ActionResult removeAllResult = removeAll.execute(context);
         if (Status.ERROR.equals(removeAllResult.getStatus())) {
           copyErrorMessages(removeAllResult, actionResult);
@@ -117,9 +116,9 @@ public class Purge implements Action {
     }
   }
 
-  private List<String> getAccessControlledPaths(Context context)
+  private Set<String> getAccessControlledPaths(Context context)
       throws ActionExecutionException, RepositoryException, IllegalAccessException {
-    List<String> result = new ArrayList<>();
+    Set<String> result = new HashSet<>();
     JackrabbitSession session = context.getSession();
     String path = PERMISSION_STORE_PATH + context.getCurrentAuthorizable().getID();
     if (session.nodeExists(path)) {
@@ -134,9 +133,9 @@ public class Purge implements Action {
     } else {
       JackrabbitAccessControlManager accessControlManager = (JackrabbitAccessControlManager) session.getAccessControlManager();
       AccessControlPolicy[] accessControlPolicies = accessControlManager.getPolicies(context.getCurrentAuthorizable().getPrincipal());
-      JackrabbitAccessControlPolicy[] jackrabbitAccessControlPolicies = (JackrabbitAccessControlPolicy[]) accessControlPolicies;
-      for (JackrabbitAccessControlPolicy jackrabbitAccessControlPolicy : jackrabbitAccessControlPolicies) {
-        List<JackrabbitAccessControlEntry> jackrabbitAccessControlEntries = (List<JackrabbitAccessControlEntry>) FieldUtils.readField(jackrabbitAccessControlPolicy, "entries", true);
+      for (AccessControlPolicy accessControlPolicy : accessControlPolicies) {
+        AbstractAccessControlList abstractAccessControlList = (AbstractAccessControlList) accessControlPolicy;
+        List<? extends JackrabbitAccessControlEntry> jackrabbitAccessControlEntries = abstractAccessControlList.getEntries();
         for (JackrabbitAccessControlEntry jackrabbitAccessControlEntry : jackrabbitAccessControlEntries) {
           Set<Restriction> restrictions = ((ACE) jackrabbitAccessControlEntry).getRestrictions();
           for (Restriction restriction : restrictions) {
