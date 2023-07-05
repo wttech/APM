@@ -48,6 +48,10 @@ object ApmLangParserFactory {
             throw InvalidSyntaxException(InputMismatchException(recognizer))
         }
 
+        override fun reportError(recognizer: Parser?, e: RecognitionException?) {
+            throw InvalidSyntaxException(e!!)
+        }
+
         override fun sync(recognizer: Parser) {}
     }
 

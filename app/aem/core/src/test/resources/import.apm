@@ -19,3 +19,8 @@
 IMPORT /import-define.apm
 IMPORT '/import-define.apm' AS namespace
 IMPORT '/import-deep-define.apm' AS deepNamespace
+
+SHOW $var
+SHOW $namespace.var
+SHOW $deepNamespace.deeperNamespace.var
+SHOW $deepNamespace.deepVar
