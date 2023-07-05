@@ -51,105 +51,105 @@ import java.util.Set;
 
 public class Purge implements Action {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Purge.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(Purge.class);
 
-    private static final String PERMISSION_STORE_PATH = "/jcr:system/rep:permissionStore/crx.default/";
+  private static final String PERMISSION_STORE_PATH = "/jcr:system/rep:permissionStore/crx.default/";
 
-    private final String path;
+  private final String path;
 
-    public Purge(String path) {
-        this.path = path;
-    }
+  public Purge(String path) {
+    this.path = path;
+  }
 
-    @Override
-    public ActionResult simulate(Context context) {
-        return process(context, false);
-    }
+  @Override
+  public ActionResult simulate(Context context) {
+    return process(context, false);
+  }
 
-    @Override
-    public ActionResult execute(Context context) {
-        return process(context, true);
-    }
+  @Override
+  public ActionResult execute(Context context) {
+    return process(context, true);
+  }
 
-    private ActionResult process(Context context, boolean execute) {
-        ActionResult actionResult = context.createActionResult();
-        try {
-            Authorizable authorizable = context.getCurrentAuthorizable();
-            actionResult.setAuthorizable(authorizable.getID());
-            if (context.isCompositeNodeStore() && PathUtils.isAppsOrLibsPath(path)) {
-                actionResult.changeStatus(Status.SKIPPED, "Skipped purging privileges for " + authorizable.getID() + " on " + path);
-            } else {
-                LOGGER.info(String.format("Purging privileges for authorizable with id=%s under path=%s",
-                        authorizable.getID(), path));
-                if (execute) {
-                    purge(context, actionResult);
-                }
-                actionResult.logMessage("Purged privileges for " + authorizable.getID() + " on " + path);
-            }
-        } catch (RepositoryException | ActionExecutionException | IllegalAccessException e) {
-            actionResult.logError(MessagingUtils.createMessage(e));
+  private ActionResult process(Context context, boolean execute) {
+    ActionResult actionResult = context.createActionResult();
+    try {
+      Authorizable authorizable = context.getCurrentAuthorizable();
+      actionResult.setAuthorizable(authorizable.getID());
+      if (context.isCompositeNodeStore() && PathUtils.isAppsOrLibsPath(path)) {
+        actionResult.changeStatus(Status.SKIPPED, "Skipped purging privileges for " + authorizable.getID() + " on " + path);
+      } else {
+        LOGGER.info(String.format("Purging privileges for authorizable with id=%s under path=%s",
+            authorizable.getID(), path));
+        if (execute) {
+          purge(context, actionResult);
         }
-
-        return actionResult;
+        actionResult.logMessage("Purged privileges for " + authorizable.getID() + " on " + path);
+      }
+    } catch (RepositoryException | ActionExecutionException | IllegalAccessException e) {
+      actionResult.logError(MessagingUtils.createMessage(e));
     }
 
-    private void purge(Context context, ActionResult actionResult)
-            throws RepositoryException, ActionExecutionException, IllegalAccessException {
-        List<String> accessControlledPaths = getAccessControlledPaths(context);
-        String normalizedPath = normalizePath(path);
-        for (String accessControlledPath : accessControlledPaths) {
-            String normalizedParentPath = normalizePath(accessControlledPath);
-            boolean isUsersPermission = accessControlledPath.startsWith(context.getCurrentAuthorizable().getPath());
-            if (StringUtils.startsWith(normalizedParentPath, normalizedPath) && !isUsersPermission) {
-                RemoveAll removeAll = new RemoveAll(accessControlledPath);
-                ActionResult removeAllResult = removeAll.execute(context);
-                if (Status.ERROR.equals(removeAllResult.getStatus())) {
-                    copyErrorMessages(removeAllResult, actionResult);
-                }
-            }
+    return actionResult;
+  }
+
+  private void purge(Context context, ActionResult actionResult)
+      throws RepositoryException, ActionExecutionException, IllegalAccessException {
+    List<String> accessControlledPaths = getAccessControlledPaths(context);
+    String normalizedPath = normalizePath(path);
+    for (String accessControlledPath : accessControlledPaths) {
+      String normalizedParentPath = normalizePath(accessControlledPath);
+      boolean isUsersPermission = accessControlledPath.startsWith(context.getCurrentAuthorizable().getPath());
+      if (StringUtils.startsWith(normalizedParentPath, normalizedPath) && !isUsersPermission) {
+        RemoveAll removeAll = new RemoveAll(accessControlledPath);
+        ActionResult removeAllResult = removeAll.execute(context);
+        if (Status.ERROR.equals(removeAllResult.getStatus())) {
+          copyErrorMessages(removeAllResult, actionResult);
         }
+      }
     }
+  }
 
-    private void copyErrorMessages(ActionResult from, ActionResult to) {
-        for (Message msg : from.getMessages()) {
-            if (Message.ERROR.equals(msg.getType())) {
-                to.logWarning(msg.getText() + ", continuing");
-            }
+  private void copyErrorMessages(ActionResult from, ActionResult to) {
+    for (Message msg : from.getMessages()) {
+      if (Message.ERROR.equals(msg.getType())) {
+        to.logWarning(msg.getText() + ", continuing");
+      }
+    }
+  }
+
+  private List<String> getAccessControlledPaths(Context context)
+      throws ActionExecutionException, RepositoryException, IllegalAccessException {
+    List<String> result = new ArrayList<>();
+    JackrabbitSession session = context.getSession();
+    String path = PERMISSION_STORE_PATH + context.getCurrentAuthorizable().getID();
+    if (session.nodeExists(path)) {
+      Node node = session.getNode(path);
+      NodeIterator nodes = node.getNodes();
+      while (nodes.hasNext()) {
+        node = nodes.nextNode();
+        if (node.hasProperty(PermissionConstants.REP_ACCESS_CONTROLLED_PATH)) {
+          result.add(node.getProperty(PermissionConstants.REP_ACCESS_CONTROLLED_PATH).getString());
         }
-    }
-
-    private List<String> getAccessControlledPaths(Context context)
-            throws ActionExecutionException, RepositoryException, IllegalAccessException {
-        List<String> result = new ArrayList<>();
-        JackrabbitSession session = context.getSession();
-        String path = PERMISSION_STORE_PATH + context.getCurrentAuthorizable().getID();
-        if (session.nodeExists(path)) {
-            Node node = session.getNode(path);
-            NodeIterator nodes = node.getNodes();
-            while (nodes.hasNext()) {
-                node = nodes.nextNode();
-                if (node.hasProperty(PermissionConstants.REP_ACCESS_CONTROLLED_PATH)) {
-                    result.add(node.getProperty(PermissionConstants.REP_ACCESS_CONTROLLED_PATH).getString());
-                }
-            }
-        } else {
-            JackrabbitAccessControlManager accessControlManager = (JackrabbitAccessControlManager) session.getAccessControlManager();
-            AccessControlPolicy[] accessControlPolicies = accessControlManager.getPolicies(context.getCurrentAuthorizable().getPrincipal());
-            JackrabbitAccessControlPolicy[] jackrabbitAccessControlPolicies = (JackrabbitAccessControlPolicy[]) accessControlPolicies;
-            for (JackrabbitAccessControlPolicy jackrabbitAccessControlPolicy : jackrabbitAccessControlPolicies) {
-                List<JackrabbitAccessControlEntry> jackrabbitAccessControlEntries = (List<JackrabbitAccessControlEntry>) FieldUtils.readField(jackrabbitAccessControlPolicy, "entries", true);
-                for (JackrabbitAccessControlEntry jackrabbitAccessControlEntry : jackrabbitAccessControlEntries) {
-                    Set<Restriction> restrictions = ((ACE) jackrabbitAccessControlEntry).getRestrictions();
-                    for (Restriction restriction : restrictions) {
-                        result.add(restriction.getProperty().getValue(Type.STRING));
-                    }
-                }
-            }
+      }
+    } else {
+      JackrabbitAccessControlManager accessControlManager = (JackrabbitAccessControlManager) session.getAccessControlManager();
+      AccessControlPolicy[] accessControlPolicies = accessControlManager.getPolicies(context.getCurrentAuthorizable().getPrincipal());
+      JackrabbitAccessControlPolicy[] jackrabbitAccessControlPolicies = (JackrabbitAccessControlPolicy[]) accessControlPolicies;
+      for (JackrabbitAccessControlPolicy jackrabbitAccessControlPolicy : jackrabbitAccessControlPolicies) {
+        List<JackrabbitAccessControlEntry> jackrabbitAccessControlEntries = (List<JackrabbitAccessControlEntry>) FieldUtils.readField(jackrabbitAccessControlPolicy, "entries", true);
+        for (JackrabbitAccessControlEntry jackrabbitAccessControlEntry : jackrabbitAccessControlEntries) {
+          Set<Restriction> restrictions = ((ACE) jackrabbitAccessControlEntry).getRestrictions();
+          for (Restriction restriction : restrictions) {
+            result.add(restriction.getProperty().getValue(Type.STRING));
+          }
         }
-        return result;
+      }
     }
+    return result;
+  }
 
-    private String normalizePath(String path) {
-        return path + (path.endsWith("/") ? "" : "/");
-    }
+  private String normalizePath(String path) {
+    return path + (path.endsWith("/") ? "" : "/");
+  }
 }
