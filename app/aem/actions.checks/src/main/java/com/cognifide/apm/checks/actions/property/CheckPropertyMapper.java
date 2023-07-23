@@ -22,6 +22,7 @@ package com.cognifide.apm.checks.actions.property;
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.annotations.Mapper;
 import com.cognifide.apm.api.actions.annotations.Mapping;
+import com.cognifide.apm.api.actions.annotations.Required;
 import com.cognifide.apm.checks.actions.ActionGroup;
 
 @Mapper(value = "CHECK-PROPERTY", group = ActionGroup.CHECKS)
@@ -30,9 +31,13 @@ public final class CheckPropertyMapper {
   public static final String REFERENCE = "Verify that a property is set to specific value for given authorizable.";
 
   @Mapping(
+      examples = "CHECK-PROPERTY 'author' 'title' 'John Doe'",
       reference = REFERENCE
   )
-  public Action mapAction(String id, String name, String value) {
+  public Action mapAction(
+      @Required(value = "id", description = "users' or groups' id e.g.: 'author'") String id,
+      @Required(value = "name", description = "property name") String name,
+      @Required(value = "value", description = "property value") String value) {
     return new CheckProperty(id, name, value);
   }
 }

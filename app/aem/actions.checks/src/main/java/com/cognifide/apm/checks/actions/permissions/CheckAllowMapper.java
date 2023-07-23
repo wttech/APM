@@ -23,7 +23,9 @@ import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.annotations.Mapper;
 import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.apm.api.actions.annotations.Named;
+import com.cognifide.apm.api.actions.annotations.Required;
 import com.cognifide.apm.checks.actions.ActionGroup;
+import java.util.Collections;
 import java.util.List;
 
 @Mapper(value = "CHECK-ALLOW", group = ActionGroup.CHECKS)
@@ -33,9 +35,14 @@ public final class CheckAllowMapper {
       + " on specified path.";
 
   @Mapping(
+      examples = "CHECK-ALLOW author '/content/dam' [READ, 'jcr:all']",
       reference = REFERENCE
   )
-  public Action mapAction(String id, String path, List<String> permissions, @Named("glob") String glob) {
+  public Action mapAction(
+      @Required(value = "id", description = "users' or groups' id e.g.: 'author'") String id,
+      @Required(value = "path", description = "e.g.: '/content/dam'") String path,
+      @Required(value = "permissions", description = "e.g.: [READ, 'jcr:all']") List<String> permissions,
+      @Named(value = "glob", description = "regular expression to narrow set of paths") String glob) {
     return new CheckPermissions(id, path, glob, permissions, true);
   }
 }

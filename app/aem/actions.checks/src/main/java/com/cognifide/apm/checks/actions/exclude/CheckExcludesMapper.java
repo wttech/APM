@@ -22,6 +22,7 @@ package com.cognifide.apm.checks.actions.exclude;
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.annotations.Mapper;
 import com.cognifide.apm.api.actions.annotations.Mapping;
+import com.cognifide.apm.api.actions.annotations.Required;
 import com.cognifide.apm.checks.actions.ActionGroup;
 import java.util.Collections;
 import java.util.List;
@@ -32,16 +33,22 @@ public final class CheckExcludesMapper {
   public static final String REFERENCE = "Verify that provided group DOES NOT contain any of listed authorizables.";
 
   @Mapping(
+      examples = "CHECK-EXCLUDES 'authors' 'author'",
       reference = REFERENCE
   )
-  public Action mapAction(String group, String id) {
+  public Action mapAction(
+      @Required(value = "group", description = "group's id e.g.: 'authors'") String group,
+      @Required(value = "id", description = "users' or groups' id e.g.: 'author'") String id) {
     return mapAction(group, Collections.singletonList(id));
   }
 
   @Mapping(
+      examples = "CHECK-EXCLUDES 'authors' ['author']",
       reference = REFERENCE
   )
-  public Action mapAction(String group, List<String> ids) {
+  public Action mapAction(
+      @Required(value = "group", description = "group's id e.g.: 'authors'") String group,
+      @Required(value = "ids", description = "users' or groups' ids e.g.: ['author']") List<String> ids) {
     return new CheckExcludes(group, ids);
   }
 }
