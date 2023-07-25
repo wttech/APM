@@ -22,7 +22,7 @@ package com.cognifide.apm.checks.actions.exists;
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.annotations.Mapper;
 import com.cognifide.apm.api.actions.annotations.Mapping;
-import com.cognifide.apm.api.actions.annotations.Named;
+import com.cognifide.apm.api.actions.annotations.Required;
 import com.cognifide.apm.checks.actions.ActionGroup;
 
 @Mapper(value = "CHECK-GROUP-EXISTS", group = ActionGroup.CHECKS)
@@ -32,9 +32,21 @@ public final class CheckGroupExistsMapper {
       + " Optionally it can be used to verify that given group resides in specific path.";
 
   @Mapping(
+      examples = "CHECK-GROUP-EXISTS 'authors'",
       reference = REFERENCE
   )
-  public Action mapAction(String id, @Named("path") String path) {
+  public Action mapAction(
+      @Required(value = "id", description = "group's id e.g.: 'authors'") String id) {
+    return mapAction(id, null);
+  }
+
+  @Mapping(
+      examples = "CHECK-GROUP-EXISTS 'authors' '/home/groups/client/domain'",
+      reference = REFERENCE
+  )
+  public Action mapAction(
+      @Required(value = "id", description = "group's id e.g.: 'authors'") String id,
+      @Required(value = "path", description = "group's home e.g.: '/home/groups/client/domain'") String path) {
     return new CheckAuthorizableExists(id, path, true);
   }
 

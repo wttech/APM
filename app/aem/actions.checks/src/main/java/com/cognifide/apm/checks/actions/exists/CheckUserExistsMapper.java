@@ -22,7 +22,7 @@ package com.cognifide.apm.checks.actions.exists;
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.annotations.Mapper;
 import com.cognifide.apm.api.actions.annotations.Mapping;
-import com.cognifide.apm.api.actions.annotations.Named;
+import com.cognifide.apm.api.actions.annotations.Required;
 import com.cognifide.apm.checks.actions.ActionGroup;
 
 @Mapper(value = "CHECK-USER-EXISTS", group = ActionGroup.CHECKS)
@@ -32,9 +32,21 @@ public final class CheckUserExistsMapper {
       + " Optionally it can be used to verify that given user resides in specific path.";
 
   @Mapping(
+      examples = "CHECK-USER-EXISTS 'author'",
       reference = REFERENCE
   )
-  public Action mapAction(String id, @Named("path") String path) {
+  public Action mapAction(
+      @Required(value = "id", description = "user's login e.g.: 'author'") String id) {
+    return mapAction(id, null);
+  }
+
+  @Mapping(
+      examples = "CHECK-USER-EXISTS 'author' '/home/users/client/domain'",
+      reference = REFERENCE
+  )
+  public Action mapAction(
+      @Required(value = "id", description = "user's login e.g.: 'author'") String id,
+      @Required(value = "path", description = "user's home e.g.: '/home/users/client/domain'") String path) {
     return new CheckAuthorizableExists(id, path, false);
   }
 }

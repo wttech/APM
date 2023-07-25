@@ -108,6 +108,20 @@
           variant="quiet"/>
       </primary>
       <secondary jcr:primaryType="nt:unstructured">
+        <pastepage
+          granite:class="cq-wcm-paste-activator foundation-collection-action"
+          granite:hidden="{Boolean}true"
+          granite:rel="cq-siteadmin-admin-pastepage"
+          jcr:primaryType="nt:unstructured"
+          sling:resourceType="granite/ui/components/coral/foundation/button"
+          actionConfigName="granite/ui/shell/actions/paste"
+          trackingFeature="apm:scripts:copypaste"
+          variant="actionBar">
+          <granite:data
+            jcr:primaryType="nt:unstructured"
+            cq-wcm-paste-activator-target=".cq-experience-fragments-admin-childpages"
+            foundation-collection-action="\{&quot;target&quot;: &quot;.cq-experience-fragments-admin-childpages&quot;, &quot;activeSelectionCount&quot;: &quot;none&quot;, &quot;relScope&quot;: &quot;collection&quot;}"/>
+        </pastepage>
         <create
           granite:id="xf-create-pulldown"
           jcr:primaryType="nt:unstructured"
@@ -211,6 +225,22 @@
             jcr:primaryType="nt:unstructured"
             href.uritemplate="/apm/editor.html{+item}"/>
         </edit>
+        <copypage
+          granite:rel="cq-siteadmin-admin-actions-copy-activator"
+          jcr:primaryType="nt:unstructured"
+          sling:resourceType="granite/ui/components/coral/foundation/collection/action"
+          action="cq.wcm.copy"
+          icon="copy"
+          text="Copy"
+          activeSelectionCount="multiple"
+          target=".cq-experience-fragments-admin-childpages"
+          trackingFeature="apm:scripts:copypaste"
+          variant="actionBar">
+          <granite:data
+            jcr:primaryType="nt:unstructured"
+            foundation-mode-group="cq-experience-fragments-admin-childpages"
+            foundation-mode-value="default"/>
+        </copypage>
         <move
           granite:class="foundation-collection-action"
           jcr:primaryType="nt:unstructured"

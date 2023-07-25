@@ -54,7 +54,7 @@ class FileDescriptor {
         path = savePath + (subPath.startsWith("/") ? "" : "/") + subPath;
       }
     }
-    if (!path.startsWith(SCRIPT_PATH)) {
+    if (!path.startsWith("/")) {
       path = SCRIPT_PATH + (path.startsWith("/") ? "" : "/") + path;
     }
     return path;

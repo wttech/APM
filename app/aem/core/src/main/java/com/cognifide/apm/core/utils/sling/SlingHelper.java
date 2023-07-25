@@ -37,13 +37,12 @@ public final class SlingHelper {
   }
 
   /**
-   * Retrieve values from repository with wrapped impersonated session (automatically opened and closed).
+   * Retrieve values from repository with wrapped session (automatically opened and closed).
    */
-  @SuppressWarnings("unchecked")
-  public static <T> T resolve(ResourceResolverProvider provider, String userId, ResolveCallback callback)
+  public static <T> T resolve(ResourceResolverProvider provider, ResolveCallback<T> callback)
       throws ResolveException {
-    try (ResourceResolver resolver = provider.getResourceResolver(userId)) {
-      return (T) callback.resolve(resolver);
+    try (ResourceResolver resolver = provider.getResourceResolver()) {
+      return callback.resolve(resolver);
     } catch (Exception e) {
       throw new ResolveException(RESOLVE_ERROR_MESSAGE, e);
     }
@@ -52,18 +51,9 @@ public final class SlingHelper {
   /**
    * Retrieve values from repository with wrapped session (automatically opened and closed).
    */
-  public static <T> T resolveDefault(ResourceResolverProvider provider, ResolveCallback callback,
-      T defaultValue) {
-    return resolveDefault(provider, null, callback, defaultValue);
-  }
-
-  /**
-   * Retrieve values from repository with wrapped session (automatically opened and closed).
-   */
-  public static <T> T resolveDefault(ResourceResolverProvider provider, String userId, ResolveCallback callback,
-      T defaultValue) {
+  public static <T> T resolveDefault(ResourceResolverProvider provider, ResolveCallback<T> callback, T defaultValue) {
     try {
-      return resolve(provider, userId, callback);
+      return resolve(provider, callback);
     } catch (ResolveException e) {
       LOG.error(RESOLVE_ERROR_MESSAGE, e);
     }
@@ -71,12 +61,12 @@ public final class SlingHelper {
   }
 
   /**
-   * Do some operation on repository (delete or update resource etc) with wrapped impersonated session
-   * (automatically opened and closed).
+   * Do some operation on repository (delete or update resource etc) with wrapped session (automatically
+   * opened and closed).
    */
-  public static void operate(ResourceResolverProvider provider, String userId, OperateCallback callback)
+  public static void operate(ResourceResolverProvider provider, OperateCallback callback)
       throws OperateException {
-    try (ResourceResolver resolver = provider.getResourceResolver(userId)) {
+    try (ResourceResolver resolver = provider.getResourceResolver()) {
       callback.operate(resolver);
       resolver.commit();
     } catch (Exception e) {
@@ -89,16 +79,8 @@ public final class SlingHelper {
    * opened and closed).
    */
   public static void operateTraced(ResourceResolverProvider provider, OperateCallback callback) {
-    operateTraced(provider, null, callback);
-  }
-
-  /**
-   * Do some operation on repository (delete or update resource etc) with wrapped session (automatically
-   * opened and closed).
-   */
-  public static void operateTraced(ResourceResolverProvider provider, String userId, OperateCallback callback) {
     try {
-      operate(provider, userId, callback);
+      operate(provider, callback);
     } catch (OperateException e) {
       LOG.error(OPERATE_ERROR_MESSAGE, e);
     }

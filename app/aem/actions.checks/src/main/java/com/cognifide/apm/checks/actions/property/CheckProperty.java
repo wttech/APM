@@ -23,6 +23,7 @@ import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.apm.api.actions.Context;
 import com.cognifide.apm.api.exceptions.ActionExecutionException;
+import com.cognifide.apm.api.exceptions.AuthorizableNotFoundException;
 import com.cognifide.apm.checks.utils.ActionUtils;
 import com.cognifide.apm.checks.utils.MessagingUtils;
 import javax.jcr.PropertyType;
@@ -39,7 +40,7 @@ public class CheckProperty implements Action {
 
   private final String authorizableId;
 
-  public CheckProperty(final String authorizableId, final String name, final String value) {
+  public CheckProperty(String authorizableId, String name, String value) {
     this.authorizableId = authorizableId;
     this.propertyName = name;
     this.propertyValue = value;
@@ -51,11 +52,11 @@ public class CheckProperty implements Action {
   }
 
   @Override
-  public ActionResult execute(final Context context) {
+  public ActionResult execute(Context context) {
     return process(context, true);
   }
 
-  private ActionResult process(final Context context, boolean execute) {
+  private ActionResult process(Context context, boolean execute) {
     ActionResult actionResult = context.createActionResult();
     try {
       Authorizable authorizable = context.getAuthorizableManager().getAuthorizable(authorizableId);
@@ -68,30 +69,28 @@ public class CheckProperty implements Action {
         return actionResult;
       }
 
-      actionResult.logError(
-          "Authorizable " + authorizableId + ": unexpected value of property: " + propertyName);
+      actionResult.logError("Authorizable " + authorizableId + ": unexpected value of property: " + propertyName);
       if (execute) {
         actionResult.logError(ActionUtils.ASSERTION_FAILED_MSG);
       }
-    } catch (final RepositoryException | ActionExecutionException e) {
+    } catch (RepositoryException | ActionExecutionException | AuthorizableNotFoundException e) {
       actionResult.logError(MessagingUtils.createMessage(e));
     }
     return actionResult;
   }
 
-  private boolean checkPropertyExists(final Authorizable authorizable) throws RepositoryException {
+  private boolean checkPropertyExists(Authorizable authorizable) throws RepositoryException {
     Value[] values = authorizable.getProperty(propertyName);
     for (Value val : values) {
-      if ((val.getType() == PropertyType.STRING) && StringUtils
-          .equals(val.getString(), propertyValue)) {
+      if ((val.getType() == PropertyType.STRING) && StringUtils.equals(val.getString(), propertyValue)) {
         return true;
       }
     }
     return false;
   }
 
-  private boolean checkIfAuthHasProperty(boolean execute, ActionResult actionResult,
-      Authorizable authorizable) throws RepositoryException {
+  private boolean checkIfAuthHasProperty(boolean execute, ActionResult actionResult, Authorizable authorizable)
+      throws RepositoryException {
     if (!authorizable.hasProperty(propertyName)) {
       actionResult.logError("Authorizable " + authorizableId + ": no such property: " + propertyName);
       if (execute) {

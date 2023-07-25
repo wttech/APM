@@ -1,4 +1,4 @@
-rootProject.name = "apm"
+rootProject.name = "APM"
 
 include(":app:aem:api")
 include(":app:aem:runmodes")

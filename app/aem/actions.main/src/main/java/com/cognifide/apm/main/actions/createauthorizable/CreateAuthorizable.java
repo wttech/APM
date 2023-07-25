@@ -23,6 +23,7 @@ import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.apm.api.actions.Context;
 import com.cognifide.apm.api.status.Status;
+import com.cognifide.apm.main.actions.forauthorizable.ForAuthorizable;
 import com.cognifide.apm.main.utils.MessagingUtils;
 import javax.jcr.RepositoryException;
 import org.apache.jackrabbit.api.security.user.Authorizable;
@@ -42,12 +43,12 @@ public class CreateAuthorizable implements Action {
 
   private final String externalId;
 
-  private final Boolean ignoreIfExists;
+  private final boolean ignoreIfExists;
 
   private final CreateAuthorizableStrategy createStrategy;
 
   public CreateAuthorizable(String id, String password, String path, String externalId,
-      Boolean ignoreIfExists, CreateAuthorizableStrategy createStrategy) {
+      boolean ignoreIfExists, CreateAuthorizableStrategy createStrategy) {
     this.id = id;
     this.password = password;
     this.path = path;
@@ -70,15 +71,18 @@ public class CreateAuthorizable implements Action {
     ActionResult actionResult = context.createActionResult();
     try {
       Authorizable authorizable = context.getAuthorizableManager().getAuthorizableIfExists(id);
-      LOGGER.info("Creating authorizable with id = " + id);
+      LOGGER.info("Creating authorizable with id = {}", id);
       if (authorizable != null) {
         logMessage(actionResult, authorizable);
       } else {
-        authorizable = createStrategy.create(id, password, path, externalId, context, actionResult, simulate);
+        createStrategy.create(id, password, path, externalId, context, actionResult, simulate);
       }
-      context.setCurrentAuthorizable(authorizable);
     } catch (RepositoryException e) {
       actionResult.logError(MessagingUtils.createMessage(e));
+    }
+    if (actionResult.getStatus() != Status.ERROR) {
+      ActionResult forAuthorizableActionResult = new ForAuthorizable(id, false, createStrategy == CreateAuthorizableStrategy.GROUP).process(context);
+      actionResult.changeStatus(forAuthorizableActionResult.getStatus(), forAuthorizableActionResult.getMessages().get(0).getText());
     }
     return actionResult;
   }

@@ -21,10 +21,10 @@ package com.cognifide.apm.api.status;
 
 public enum Status {
 
-  ERROR("entry-error", "skipped", "chevronRight"),
+  ERROR("entry-error", "error", "close"),
   WARNING("entry-warning", "warning", "alert"),
   SUCCESS("entry-success", "success", "check"),
-  SKIPPED("entry-warning", "error", "close");
+  SKIPPED("entry-warning", "skipped", "chevronRight");
 
   private final String className;
 
