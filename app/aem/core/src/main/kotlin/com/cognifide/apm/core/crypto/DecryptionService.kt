@@ -22,8 +22,8 @@ package com.cognifide.apm.core.crypto
 import com.adobe.granite.crypto.CryptoException
 import com.adobe.granite.crypto.CryptoSupport
 import com.cognifide.apm.core.Property
+import org.apache.commons.lang.text.StrSubstitutor
 import org.apache.commons.lang3.StringUtils
-import org.apache.commons.lang3.text.StrSubstitutor
 import org.osgi.service.component.annotations.Component
 import org.osgi.service.component.annotations.Reference
 

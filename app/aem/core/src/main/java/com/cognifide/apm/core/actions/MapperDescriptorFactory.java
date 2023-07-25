@@ -65,6 +65,7 @@ public class MapperDescriptorFactory {
     return new MapperDescriptor(mapper, name, group, ImmutableList.copyOf(mappingDescriptors));
   }
 
+  @SuppressWarnings("deprecation")
   private Object createInstance(Class<?> mapperClass) {
     try {
       return mapperClass.newInstance();

@@ -74,6 +74,7 @@ public class ScriptRootPathsProvider implements ResourceDecorator {
   }
 
   @Override
+  @SuppressWarnings("deprecation")
   public Resource decorate(Resource resource, HttpServletRequest request) {
     return decorate(resource);
   }
