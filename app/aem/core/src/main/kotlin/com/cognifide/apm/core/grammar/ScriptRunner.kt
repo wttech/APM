@@ -26,8 +26,8 @@ import com.cognifide.apm.api.status.Status
 import com.cognifide.apm.core.grammar.antlr.ApmLangParser.*
 import com.cognifide.apm.core.grammar.argument.ArgumentResolverException
 import com.cognifide.apm.core.grammar.argument.Arguments
-import com.cognifide.apm.core.grammar.argument.toPlainString
 import com.cognifide.apm.core.grammar.common.getIdentifier
+import com.cognifide.apm.core.grammar.common.getPath
 import com.cognifide.apm.core.grammar.executioncontext.ExecutionContext
 import com.cognifide.apm.core.grammar.parsedscript.InvalidSyntaxException
 import com.cognifide.apm.core.grammar.parsedscript.InvalidSyntaxMessageFactory
@@ -120,7 +120,7 @@ class ScriptRunner(
         }
 
         override fun visitRunScript(ctx: RunScriptContext): Status {
-            val path = ctx.path().STRING_LITERAL().toPlainString()
+            val path = getPath(ctx.path())
             val arguments = executionContext.resolveArguments(ctx.namedArguments())
             val loadScript = executionContext.loadScript(path)
             if (executionContext.scriptIsOnStack(loadScript))
