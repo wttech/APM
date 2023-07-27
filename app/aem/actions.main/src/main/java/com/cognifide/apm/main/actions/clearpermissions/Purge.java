@@ -139,7 +139,9 @@ public class Purge implements Action {
         for (JackrabbitAccessControlEntry jackrabbitAccessControlEntry : jackrabbitAccessControlEntries) {
           Set<Restriction> restrictions = ((ACE) jackrabbitAccessControlEntry).getRestrictions();
           for (Restriction restriction : restrictions) {
-            result.add(restriction.getProperty().getValue(Type.STRING));
+            if (Type.PATH.equals(restriction.getProperty().getType())) {
+              result.add(restriction.getProperty().getValue(Type.PATH));
+            }
           }
         }
       }

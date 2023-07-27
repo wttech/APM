@@ -29,7 +29,7 @@ class ScriptDto(script: Script) {
     val path: String = script.path
     val author: String? = script.author
     val launchEnabled: Boolean = script.isLaunchEnabled
-    val launchMode: String = script.launchMode.name.toLowerCase()
+    val launchMode: String = script.launchMode.name.lowercase()
     val lastModified: Date? = script.lastModified
     val valid: Boolean = script.isValid
 
