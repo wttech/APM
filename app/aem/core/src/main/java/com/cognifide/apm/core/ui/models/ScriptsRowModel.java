@@ -88,7 +88,7 @@ public final class ScriptsRowModel {
   private boolean isLaunchEnabled;
 
   @PostConstruct
-  protected void afterCreated() {
+  private void afterCreated() {
     this.isFolder = isFolder(resource);
     this.scriptName = defaultIfEmpty(getProperty(resource, JcrConstants.JCR_TITLE), resource.getName());
     if (!isFolder) {

@@ -34,7 +34,7 @@ class ParsedScript(val script: Script, val apm: ApmContext) {
     companion object Factory {
         fun create(script: Script): ParsedScript {
             val logger: Logger = LoggerFactory.getLogger(ParsedScript::class.java)
-            logger.warn("Script parsing {}", script.path);
+            logger.warn("Script parsing {}", script.path)
             val apmLangParser = ApmLangParserFactory.createParserForScriptContent(script.data)
             return ParsedScript(script, apmLangParser.apm())
         }

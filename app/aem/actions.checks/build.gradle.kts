@@ -19,8 +19,8 @@ aem {
         packageCompose {
             installBundleProject(":app:aem:actions.checks")
             vaultDefinition {
-                val currentVersion = rootProject.version as String
-                version.set(currentVersion)
+                duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+                version.set(rootProject.version as String)
                 description.set(project.description)
             }
         }

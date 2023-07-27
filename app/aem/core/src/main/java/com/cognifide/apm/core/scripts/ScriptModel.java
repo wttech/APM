@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
 @Model(adaptables = Resource.class, defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
 public class ScriptModel implements MutableScript {
 
-  private static Logger LOGGER = LoggerFactory.getLogger(ScriptModel.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ScriptModel.class);
 
   private final String path;
 

@@ -39,13 +39,13 @@ class RequestProcessor<F>(private val modelFactory: ModelFactory, private val fo
             val form = modelFactory.createModel(httpRequest, formClass)
             val response = process(form, httpRequest.resourceResolver)
 
-            httpResponse.setStatus(response.statusCode)
+            httpResponse.status = response.statusCode
             ServletUtils.writeJson(httpResponse, body(response.body))
         } catch (e: MissingElementsException) {
-            httpResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST)
+            httpResponse.status = HttpServletResponse.SC_BAD_REQUEST
             ServletUtils.writeJson(httpResponse, body(ErrorBody("Bad request", toErrors(e))))
         } catch (e: Exception) {
-            httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR)
+            httpResponse.status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR
             ServletUtils.writeJson(httpResponse, body(ErrorBody(e.message ?: "")))
         }
     }

@@ -126,7 +126,7 @@ public class HistoryEntryImpl implements HistoryEntry {
   }
 
   @PostConstruct
-  protected void init() {
+  private void init() {
     executionTimeCalendar = CalendarUtils.asCalendar(executionTime);
   }
 

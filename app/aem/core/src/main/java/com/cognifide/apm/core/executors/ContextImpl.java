@@ -55,7 +55,7 @@ public final class ContextImpl implements Context {
   private Authorizable currentAuthorizable;
 
   @Getter
-  private boolean compositeNodeStore;
+  private final boolean compositeNodeStore;
 
   public ContextImpl(JackrabbitSession session, boolean compositeNodeStore) throws RepositoryException {
     this.session = session;

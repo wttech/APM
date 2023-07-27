@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 
 public class ClearFromGroupDetacher {
 
-  static final Logger LOGGER = LoggerFactory.getLogger(ClearFromGroupDetacher.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ClearFromGroupDetacher.class);
 
   private final Context context;
 
