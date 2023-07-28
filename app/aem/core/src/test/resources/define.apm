@@ -40,7 +40,7 @@ DEFINE tab [$tab1, $tab2]
 DEFINE numbers [1, 2, 3]
 DEFINE mixTab ['a', 'b', 1, 2]
 DEFINE tab3 [['a', 'b'], ['c', 'd']]
-DEFINE obj {x:'a', y:1, z:['c', 1]}
+DEFINE obj {x:'a', y:1, z:['c', 1], 't':'t'}
 DEFINE tabEnum [a, b, "c", "d", 1, 2]
 DEFINE tab4 [1 + 2, "a" + "b"]
 SHOW $a
@@ -55,6 +55,8 @@ SHOW $mixTab
 SHOW $obj
 SHOW $obj.z[1]
 SHOW ${obj.z[1]}
+SHOW ${obj.t}
+SHOW ${obj[t]}
 SHOW $tab4
 SHOW $tabEnum
 SHOW $tab3
