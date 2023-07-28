@@ -27,16 +27,8 @@ open class JsonObject {
     protected val properties: MutableMap<String, Any> = mutableMapOf()
     private val children: MutableMap<String, JsonObject> = mutableMapOf()
 
-    fun properties(vararg pairs: Pair<String, String>) {
-        properties.putAll(pairs)
-    }
-
     infix fun String.set(value: Any) {
         properties[this] = value
-    }
-
-    fun addChild(name: String, child: JsonObject) {
-        children[name] = child
     }
 
     operator fun String.invoke(child: JsonObject.() -> Unit) {
@@ -71,9 +63,9 @@ class ErrorBody(initMessage: String = "", initErrors: List<String> = listOf()) :
 }
 
 private class PropertyDelegate<T>(
-        private val properties: MutableMap<String, Any>,
-        private val name: String,
-        private val default: T
+    private val properties: MutableMap<String, Any>,
+    private val name: String,
+    private val default: T
 ) {
 
     @Suppress("UNCHECKED_CAST")

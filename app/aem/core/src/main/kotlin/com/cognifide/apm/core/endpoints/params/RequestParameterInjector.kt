@@ -21,7 +21,6 @@
 package com.cognifide.apm.core.endpoints.params
 
 import com.cognifide.apm.core.Property
-import com.google.common.primitives.Ints
 import org.apache.commons.lang3.StringUtils
 import org.apache.sling.api.SlingHttpServletRequest
 import org.apache.sling.models.spi.DisposalCallbackRegistry
@@ -39,10 +38,11 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Component(
-        property = [
-            Constants.SERVICE_RANKING + "=" + Int.MIN_VALUE,
-            Property.VENDOR
-        ])
+    property = [
+        Constants.SERVICE_RANKING + "=" + Int.MIN_VALUE,
+        Property.VENDOR
+    ]
+)
 class RequestParameterInjector : Injector, StaticInjectAnnotationProcessorFactory {
 
     override fun getName(): String {
@@ -69,7 +69,7 @@ class RequestParameterInjector : Injector, StaticInjectAnnotationProcessorFactor
         val parameterValue = request.getRequestParameter(fieldName) ?: return null
         return when {
             annotatedElement.isAnnotationPresent(FileName::class.java) -> parameterValue.fileName
-            fieldClass.name in listOf("java.lang.Integer", "int") -> Ints.tryParse(parameterValue.string)
+            fieldClass.name in listOf("java.lang.Integer", "int") -> parameterValue.string.toIntOrNull()
             fieldClass.name in listOf("java.lang.Boolean", "boolean") -> "true" == parameterValue.string
             fieldClass == InputStream::class.java -> parameterValue.inputStream
             fieldClass == LocalDateTime::class.java -> toLocalDateTime(annotatedElement, parameterValue)
@@ -80,19 +80,19 @@ class RequestParameterInjector : Injector, StaticInjectAnnotationProcessorFactor
     }
 
     private fun toEnum(type: Class<*>, parameterValue: org.apache.sling.api.request.RequestParameter) =
-            type.enumConstants.firstOrNull { it.toString() == parameterValue.string }
+        type.enumConstants.firstOrNull { it.toString() == parameterValue.string }
 
     private fun extractParams(request: SlingHttpServletRequest, prefix: String) =
-            request.parameterMap.mapValues { (it.value as Array<*>)[0] }
-                    .mapValues { it.value as String }
-                    .mapKeys { it.key as String }
-                    .filterKeys { it.startsWith(prefix) }
-                    .mapKeys { it.key.removePrefix(prefix) }
-                    .mapKeys { entry -> entry.key.replaceFirstChar { it.lowercase() } }
+        request.parameterMap.mapValues { (it.value as Array<*>)[0] }
+            .mapValues { it.value as String }
+            .mapKeys { it.key as String }
+            .filterKeys { it.startsWith(prefix) }
+            .mapKeys { it.key.removePrefix(prefix) }
+            .mapKeys { entry -> entry.key.replaceFirstChar { it.lowercase() } }
 
     private fun toLocalDateTime(annotatedElement: AnnotatedElement, parameterValue: org.apache.sling.api.request.RequestParameter): LocalDateTime {
         val dateFormat = annotatedElement.getAnnotation(DateFormat::class.java)?.value
-                ?: DateTimeFormatter.ISO_LOCAL_DATE_TIME.toString()
+            ?: DateTimeFormatter.ISO_LOCAL_DATE_TIME.toString()
         return LocalDateTime.parse(parameterValue.string, DateTimeFormatter.ofPattern(dateFormat))
     }
 

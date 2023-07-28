@@ -25,7 +25,6 @@ import com.cognifide.apm.core.grammar.antlr.ApmLangParser.*
 import com.cognifide.apm.core.grammar.common.getIdentifier
 import com.cognifide.apm.core.grammar.common.getPath
 import com.cognifide.apm.core.grammar.executioncontext.VariableHolder
-import com.google.common.primitives.Ints
 import org.apache.commons.lang.text.StrSubstitutor
 import org.apache.commons.lang3.StringUtils
 
@@ -146,7 +145,7 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
 
         override fun visitNumberValue(ctx: NumberValueContext): ApmType {
             val value = ctx.NUMBER_LITERAL().toString()
-            val number = Ints.tryParse(value)
+            val number = value.toIntOrNull()
                 ?: throw ArgumentResolverException("Found invalid number value $value")
             return ApmInteger(number)
         }
@@ -154,8 +153,8 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
         private fun determineStringValue(value: String): ApmString {
             val tokens = StringUtils.substringsBetween(value, "\${", "}")
                 .orEmpty()
-                .map { it to variableHolder[it]!!.string }
-                .toMap()
+                .distinct()
+                .associateWith { variableHolder[it].string }
             val strSubstitutor = StrSubstitutor(tokens, "\${", "}")
             return ApmString(if (tokens.isEmpty()) value else strSubstitutor.replace(value))
         }
@@ -176,7 +175,6 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
         override fun visitVariable(ctx: VariableContext): ApmType {
             val name = getIdentifier(ctx.variableIdentifier())
             return variableHolder[name]
-                ?: throw ArgumentResolverException("Variable \"$name\" not found")
         }
     }
 }

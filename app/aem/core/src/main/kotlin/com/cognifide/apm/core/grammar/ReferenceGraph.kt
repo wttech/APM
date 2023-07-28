@@ -23,8 +23,8 @@ import com.cognifide.apm.api.scripts.Script
 import java.util.*
 
 class ReferenceGraph(
-        val nodes: MutableList<TreeNode> = mutableListOf(),
-        val transitions: MutableList<Transition> = mutableListOf()
+    val nodes: MutableList<TreeNode> = mutableListOf(),
+    val transitions: MutableList<Transition> = mutableListOf()
 ) {
 
     fun addNode(script: Script): TreeNode {
@@ -86,7 +86,7 @@ class ReferenceGraph(
     }
 
     open class TreeNode(
-            val script: Script
+        val script: Script
     ) {
         var visited = false
         var id: String = Base64.getEncoder().encodeToString(script.path.toByteArray())

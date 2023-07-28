@@ -30,13 +30,14 @@ import org.osgi.service.component.annotations.Reference
 import javax.servlet.Servlet
 
 @Component(
-        service = [Servlet::class],
-        property = [
-            Property.PATH + "/bin/apm/references",
-            Property.METHOD + "GET",
-            Property.DESCRIPTION + "APM References Servlet",
-            Property.VENDOR
-        ])
+    service = [Servlet::class],
+    property = [
+        Property.PATH + "/bin/apm/references",
+        Property.METHOD + "GET",
+        Property.DESCRIPTION + "APM References Servlet",
+        Property.VENDOR
+    ]
+)
 class ReferencesServlet : SlingAllMethodsServlet() {
 
     @Reference

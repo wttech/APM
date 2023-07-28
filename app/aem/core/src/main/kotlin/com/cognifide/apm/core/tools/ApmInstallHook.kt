@@ -22,11 +22,7 @@ package com.cognifide.apm.core.tools
 
 import com.cognifide.apm.api.scripts.LaunchEnvironment
 import com.cognifide.apm.api.scripts.Script
-import com.cognifide.apm.api.services.ExecutionMode
-import com.cognifide.apm.api.services.ExecutionResult
-import com.cognifide.apm.api.services.RunModesProvider
-import com.cognifide.apm.api.services.ScriptFinder
-import com.cognifide.apm.api.services.ScriptManager
+import com.cognifide.apm.api.services.*
 import com.cognifide.apm.api.status.Status
 import com.cognifide.apm.core.scripts.ScriptFilters.onInstall
 import com.cognifide.apm.core.scripts.ScriptFilters.onInstallIfModified
@@ -92,9 +88,9 @@ class ApmInstallHook : OsgiAwareInstallHook() {
     private fun getCurrentHook(context: InstallContext): String {
         val properties = context.`package`?.metaInf?.properties ?: Properties()
         val hookPropertyKey = properties.entries.asSequence()
-                .filter { entry -> entry.value == this::class.java.name }
-                .map { entry -> entry.key as String }
-                .firstOrNull() ?: ""
+            .filter { entry -> entry.value == this::class.java.name }
+            .map { entry -> entry.key as String }
+            .firstOrNull() ?: ""
         val hookRegex = Regex("installhook\\.(\\w+)\\.class")
         val result = hookRegex.matchEntire(hookPropertyKey)
         return result?.groups?.get(1)?.value ?: ""
@@ -114,11 +110,11 @@ class ApmInstallHook : OsgiAwareInstallHook() {
             context.options.listener?.onError(ProgressTrackerListener.Mode.TEXT, "", packageException)
             logger.error("", packageException)
             result.entries
-                    .stream()
-                    .filter { it.status == Status.ERROR }
-                    .map { it.messages }
-                    .flatMap { it.stream() }
-                    .forEach { context.options.listener?.onMessage(ProgressTrackerListener.Mode.TEXT, "E", it) }
+                .stream()
+                .filter { it.status == Status.ERROR }
+                .map { it.messages }
+                .flatMap { it.stream() }
+                .forEach { context.options.listener?.onMessage(ProgressTrackerListener.Mode.TEXT, "E", it) }
             context.options.listener?.onMessage(ProgressTrackerListener.Mode.TEXT, "APM scripts installed (with errors, check logs!)", "")
             throw packageException
         }

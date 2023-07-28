@@ -51,8 +51,8 @@ class RequestProcessor<F>(private val modelFactory: ModelFactory, private val fo
     }
 
     private fun toErrors(e: MissingElementsException) = e.missingElements.mapNotNull { it.element }
-            .mapNotNull { it.getAnnotation(RequestParameter::class.java) }
-            .map { "Missing required parameter: ${it.value}" }
+        .mapNotNull { it.getAnnotation(RequestParameter::class.java) }
+        .map { "Missing required parameter: ${it.value}" }
 
     private fun body(body: Any) = if (body is JsonObject) body.toMap() else body
 

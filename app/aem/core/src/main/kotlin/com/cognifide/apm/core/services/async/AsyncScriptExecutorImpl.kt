@@ -25,17 +25,16 @@ import com.cognifide.apm.core.Property
 import com.cognifide.apm.core.jobs.JobResultsCache
 import com.cognifide.apm.core.jobs.JobResultsCache.ExecutionSummary
 import com.cognifide.apm.core.jobs.ScriptRunnerJobConsumer
-import org.apache.sling.api.resource.ResourceResolver
 import org.osgi.service.component.annotations.Component
 import org.osgi.service.component.annotations.Reference
 import java.util.*
 import kotlin.concurrent.thread
 
 @Component(
-        property = [
-            Property.DESCRIPTION + "APM Service for executing scripts in background and checking theirs status",
-            Property.VENDOR
-        ]
+    property = [
+        Property.DESCRIPTION + "APM Service for executing scripts in background and checking theirs status",
+        Property.VENDOR
+    ]
 )
 class AsyncScriptExecutorImpl : AsyncScriptExecutor {
 

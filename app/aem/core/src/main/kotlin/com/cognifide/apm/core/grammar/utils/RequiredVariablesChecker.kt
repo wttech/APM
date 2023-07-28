@@ -41,7 +41,7 @@ class RequiredVariablesChecker {
         }
     }
 
-    class Result(val missingNamedArguments: List<String>) {
+    class Result(private val missingNamedArguments: List<String>) {
         val isValid: Boolean get() = missingNamedArguments.isEmpty()
         fun toMessages(): List<String> = missingNamedArguments.map { "Parameter \"$it\" is required" }
     }

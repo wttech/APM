@@ -35,13 +35,14 @@ import org.osgi.service.component.annotations.Reference
 import javax.servlet.Servlet
 
 @Component(
-        service = [Servlet::class],
-        property = [
-            Property.PATH + "/bin/apm/scripts/upload",
-            Property.METHOD + "POST",
-            Property.DESCRIPTION + "APM Script Upload Servlet",
-            Property.VENDOR
-        ])
+    service = [Servlet::class],
+    property = [
+        Property.PATH + "/bin/apm/scripts/upload",
+        Property.METHOD + "POST",
+        Property.DESCRIPTION + "APM Script Upload Servlet",
+        Property.VENDOR
+    ]
+)
 class ScriptUploadServlet : AbstractFormServlet<ScriptUploadForm>(ScriptUploadForm::class.java) {
 
     @Reference

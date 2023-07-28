@@ -35,19 +35,19 @@ import org.apache.jackrabbit.api.security.user.Authorizable
 import org.apache.sling.api.resource.ResourceResolver
 
 class ExecutionContext private constructor(
-        private val scriptFinder: ScriptFinder,
-        private val resourceResolver: ResourceResolver,
-        val root: ParsedScript,
-        override val progress: Progress) : ExternalExecutionContext {
+    private val scriptFinder: ScriptFinder,
+    private val resourceResolver: ResourceResolver,
+    val root: ParsedScript,
+    override val progress: Progress) : ExternalExecutionContext {
 
     private val parsedScripts: MutableMap<String, ParsedScript> = mutableMapOf()
     private var runScripts: StackWithRoot<RunScript> = StackWithRoot(RunScript(root))
 
-    val currentRunScript: RunScript
+    private val currentRunScript: RunScript
         get() = runScripts.peek()
     val variableHolder: VariableHolder
         get() = currentRunScript.variableHolder
-    val argumentResolver: ArgumentResolver
+    private val argumentResolver: ArgumentResolver
         get() = ArgumentResolver(variableHolder)
 
     init {
@@ -90,7 +90,7 @@ class ExecutionContext private constructor(
         variableHolder[key] = value
     }
 
-    override fun getVariable(key: String): ApmType? {
+    override fun getVariable(key: String): ApmType {
         return variableHolder[key]
     }
 
@@ -116,7 +116,7 @@ class ExecutionContext private constructor(
 
     private fun fetchScript(path: String): ParsedScript {
         val script = scriptFinder.find(path, resourceResolver)
-                ?: throw ScriptExecutionException("Script not found $path")
+            ?: throw ScriptExecutionException("Script not found $path")
         val parsedScript = ParsedScript.create(script)
         registerScript(parsedScript)
         return parsedScript

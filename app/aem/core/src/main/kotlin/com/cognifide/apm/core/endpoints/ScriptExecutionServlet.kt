@@ -44,13 +44,14 @@ import javax.jcr.RepositoryException
 import javax.servlet.Servlet
 
 @Component(
-        service = [Servlet::class],
-        property = [
-            Property.PATH + "/bin/apm/scripts/exec",
-            Property.METHOD + "POST",
-            Property.DESCRIPTION + "APM Script Execution Servlet",
-            Property.VENDOR
-        ])
+    service = [Servlet::class],
+    property = [
+        Property.PATH + "/bin/apm/scripts/exec",
+        Property.METHOD + "POST",
+        Property.DESCRIPTION + "APM Script Execution Servlet",
+        Property.VENDOR
+    ]
+)
 class ScriptExecutionServlet : SlingAllMethodsServlet() {
 
     @Reference
@@ -82,6 +83,7 @@ class ScriptExecutionServlet : SlingAllMethodsServlet() {
                     "output" set status.entries
                     "path" set status.path
                 }
+
                 is FinishedFailedExecution -> internalServerError {
                     message = "Errors while executing script"
                     "status" set status.status
@@ -89,6 +91,7 @@ class ScriptExecutionServlet : SlingAllMethodsServlet() {
                     "path" set status.path
                     errors = status.error.messages ?: listOf()
                 }
+
                 else -> ok {
                     message = "Script is still being processed"
                     "status" set status.status
@@ -107,7 +110,7 @@ class ScriptExecutionServlet : SlingAllMethodsServlet() {
     private fun executeScript(form: ScriptExecutionForm, resourceResolver: ResourceResolver, executor: String): ResponseEntity<Any> {
         try {
             val script: Script = scriptFinder.find(form.script, resourceResolver)
-                    ?: return notFound { message = "Script not found: ${form.script}" }
+                ?: return notFound { message = "Script not found: ${form.script}" }
             if (!script.isLaunchEnabled) return internalServerError { message = "Script cannot be executed because it is disabled" }
             if (!script.isValid) return internalServerError { message = "Script cannot be executed because it is invalid" }
 

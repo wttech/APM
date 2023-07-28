@@ -27,4 +27,4 @@ import org.apache.sling.models.spi.injectorspecific.InjectAnnotation
 @Retention(AnnotationRetention.RUNTIME)
 @InjectAnnotation
 @Source("apm-request-parameter")
-annotation class RequestParameter(val value: String, val optional: Boolean = true, val fileName: Boolean = false)
+annotation class RequestParameter(val value: String, val optional: Boolean = true)

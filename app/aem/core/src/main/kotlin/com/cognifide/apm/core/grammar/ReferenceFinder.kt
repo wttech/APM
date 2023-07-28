@@ -32,8 +32,8 @@ import org.apache.sling.api.resource.ResourceResolver
 import java.util.*
 
 class ReferenceFinder(
-        private val scriptFinder: ScriptFinder,
-        private val resourceResolver: ResourceResolver) {
+    private val scriptFinder: ScriptFinder,
+    private val resourceResolver: ResourceResolver) {
 
     fun findReferences(script: Script): List<Script> {
         val result = mutableSetOf<Script>()
@@ -75,12 +75,6 @@ class ReferenceFinder(
         return mutable.toList()
     }
 
-    fun <T> List<T>.remove(value: T): List<T> {
-        val mutable = this.toMutableList()
-        mutable.remove(value)
-        return mutable.toList()
-    }
-
     private fun findReferences(refGraph: ReferenceGraph, currentNode: ReferenceGraph.TreeNode, ancestors: List<Script>,
                                executionContext: ExecutionContext,
                                ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.ApmContext) {
@@ -101,7 +95,7 @@ class ReferenceFinder(
         }
     }
 
-    inner class InternalVisitor(private val executionContext: ExecutionContext, val refGraph: ReferenceGraph, val currentNode: ReferenceGraph.TreeNode) : com.cognifide.apm.core.grammar.antlr.ApmLangBaseVisitor<Unit>() {
+    inner class InternalVisitor(private val executionContext: ExecutionContext, private val refGraph: ReferenceGraph, private val currentNode: ReferenceGraph.TreeNode) : com.cognifide.apm.core.grammar.antlr.ApmLangBaseVisitor<Unit>() {
         val scripts = mutableSetOf<Script>()
 
         override fun visitImportScript(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.ImportScriptContext) {

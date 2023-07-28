@@ -30,16 +30,8 @@ public final class MessagingUtils {
     return StringUtils.isBlank(e.getMessage()) ? "Internal error: " + e.getClass() : e.getMessage();
   }
 
-  public static String addingGroupToItself(String groupId) {
-    return "You can not add group " + groupId + " to itself";
-  }
-
   public static String authorizableNotExists(String authorizableId) {
     return "Authorizable with id: " + authorizableId + " does not exists";
   }
 
-  public static String cyclicRelationsForbidden(String currentGroup, String groupToBeAdded) {
-    return "Cannot add group " + groupToBeAdded + " to group " + currentGroup
-        + " due to resulting cyclic relation";
-  }
 }

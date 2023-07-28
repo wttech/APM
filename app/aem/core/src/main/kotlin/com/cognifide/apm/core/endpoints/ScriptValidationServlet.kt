@@ -37,13 +37,14 @@ import org.osgi.service.component.annotations.Reference
 import javax.servlet.Servlet
 
 @Component(
-        service = [Servlet::class],
-        property = [
-            Property.PATH + "/bin/apm/scripts/validate",
-            Property.METHOD + "POST",
-            Property.DESCRIPTION + "APM Script Validation Servlet",
-            Property.VENDOR
-        ])
+    service = [Servlet::class],
+    property = [
+        Property.PATH + "/bin/apm/scripts/validate",
+        Property.METHOD + "POST",
+        Property.DESCRIPTION + "APM Script Validation Servlet",
+        Property.VENDOR
+    ]
+)
 class ScriptValidationServlet : AbstractFormServlet<ScriptValidationForm>(ScriptValidationForm::class.java) {
 
     @Reference
@@ -82,8 +83,8 @@ class ScriptValidationServlet : AbstractFormServlet<ScriptValidationForm>(Script
 
     private fun transformToValidationErrors(result: ExecutionResult): List<String> {
         return result.entries.filter { it.status == Status.ERROR }
-                .filter { it.messages.isNotEmpty() }
-                .flatMap { transformToErrors(it) }
+            .filter { it.messages.isNotEmpty() }
+            .flatMap { transformToErrors(it) }
     }
 
     private fun transformToErrors(entry: ExecutionResult.Entry): List<String> {

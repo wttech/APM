@@ -34,10 +34,11 @@ import org.slf4j.LoggerFactory
 import java.util.function.Predicate
 
 @Component(
-        service = [ModifiedScriptFinder::class],
-        property = [
-            Property.VENDOR
-        ])
+    service = [ModifiedScriptFinder::class],
+    property = [
+        Property.VENDOR
+    ]
+)
 class ModifiedScriptFinder {
 
     private val logger = LoggerFactory.getLogger(ModifiedScriptFinder::class.java)
@@ -60,22 +61,22 @@ class ModifiedScriptFinder {
         val modified = mutableListOf<Script>()
 
         all
-                .filter { it.isValid }
-                .forEach { script ->
-                    try {
-                        val subtree = referenceFinder.findReferences(script)
-                        val checksum = versionService.countChecksum(subtree)
-                        val scriptVersion = versionService.getScriptVersion(resolver, script)
-                        var scriptHistory = history.findScriptHistory(resolver, script)
-                        if (checksum != scriptVersion.lastChecksum
-                                || scriptHistory.lastLocalRun == null
-                                || checksum != scriptHistory.lastLocalRun.checksum) {
-                            modified.add(script)
-                        }
-                    } catch (e: ScriptExecutionException) {
-                        logger.error(e.message)
+            .filter { it.isValid }
+            .forEach { script ->
+                try {
+                    val subtree = referenceFinder.findReferences(script)
+                    val checksum = versionService.countChecksum(subtree)
+                    val scriptVersion = versionService.getScriptVersion(resolver, script)
+                    val scriptHistory = history.findScriptHistory(resolver, script)
+                    if (checksum != scriptVersion.lastChecksum
+                        || scriptHistory.lastLocalRun == null
+                        || checksum != scriptHistory.lastLocalRun.checksum) {
+                        modified.add(script)
                     }
+                } catch (e: ScriptExecutionException) {
+                    logger.error(e.message)
                 }
+            }
         return modified
     }
 }

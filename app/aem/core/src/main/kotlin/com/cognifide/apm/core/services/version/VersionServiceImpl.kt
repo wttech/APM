@@ -39,10 +39,11 @@ import javax.jcr.RepositoryException
 import javax.jcr.Session
 
 @Component(
-        property = [
-            Property.DESCRIPTION + "APM Version Service",
-            Property.VENDOR
-        ])
+    property = [
+        Property.DESCRIPTION + "APM Version Service",
+        Property.VENDOR
+    ]
+)
 class VersionServiceImpl : VersionService {
 
     private val logger = LoggerFactory.getLogger(VersionServiceImpl::class.java)
@@ -54,7 +55,7 @@ class VersionServiceImpl : VersionService {
     override fun getScriptVersion(resolver: ResourceResolver, script: Script): ScriptVersion {
         val scriptVersionPath = getScriptVersionPath(script)
         return resolver.getResource(scriptVersionPath)?.adaptTo(ScriptVersionModel::class.java)
-                ?: ScriptVersionModel(script.path)
+            ?: ScriptVersionModel(script.path)
     }
 
     override fun getVersionPath(script: Script): String {
@@ -63,10 +64,10 @@ class VersionServiceImpl : VersionService {
 
     override fun countChecksum(root: Iterable<Script>): String {
         val checksums = root
-                .asSequence()
-                .map { it.data }
-                .map { DigestUtils.md5Hex(it) }
-                .reduce { previous, current -> previous + current }
+            .asSequence()
+            .map { it.data }
+            .map { DigestUtils.md5Hex(it) }
+            .reduce { previous, current -> previous + current }
         return DigestUtils.md5Hex(checksums)
     }
 
