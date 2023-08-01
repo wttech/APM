@@ -42,6 +42,10 @@ public final class MessagingUtils {
     return "Authorizable " + authorizableId + " added to group " + groupId;
   }
 
+  public static String failedToAddToGroup(String authorizableId, String groupId) {
+    return String.format("Failed to add authorizable %s to group %s (some specific constraint)", authorizableId, groupId);
+  }
+
   public static String newPasswordSet(String userId) {
     return "New password for user " + userId + " was set";
   }

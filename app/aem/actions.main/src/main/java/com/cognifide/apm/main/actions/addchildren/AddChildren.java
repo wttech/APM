@@ -79,11 +79,18 @@ public class AddChildren implements Action {
           ActionUtils.checkCyclicRelations(group, (Group) authorizable);
         }
 
+        boolean flag = true;
         if (execute) {
-          group.addMember(authorizable);
+          flag = group.addMember(authorizable);
+          if (!flag) {
+            flag = group.isMember(authorizable);
+          }
         }
-
-        actionResult.logMessage(MessagingUtils.addedToGroup(authorizableId, group.getID()));
+        if (flag) {
+          actionResult.logMessage(MessagingUtils.addedToGroup(authorizableId, group.getID()));
+        } else {
+          actionResult.logError(MessagingUtils.failedToAddToGroup(authorizableId, group.getID()));
+        }
       } catch (RepositoryException | ActionExecutionException e) {
         actionResult.logError(MessagingUtils.createMessage(e));
       } catch (AuthorizableNotFoundException e) {
