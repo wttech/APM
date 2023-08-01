@@ -38,9 +38,12 @@ public class CheckIncludes implements Action {
 
   private final String authorizableId;
 
-  public CheckIncludes(String id, List<String> groupIds) {
+  private final boolean ifExists;
+
+  public CheckIncludes(String id, List<String> groupIds, boolean ifExists) {
     this.authorizableId = id;
     this.groupIds = groupIds;
+    this.ifExists = ifExists;
   }
 
   @Override
@@ -62,7 +65,7 @@ public class CheckIncludes implements Action {
 
     List<String> errors = new ArrayList<>();
 
-    boolean checkFailed = checkMembers(context, actionResult, authorizable, errors);
+    boolean checkFailed = checkMembers(context, actionResult, authorizable, errors, ifExists);
 
     if (execute && checkFailed) {
       actionResult.logError(ActionUtils.ASSERTION_FAILED_MSG);
@@ -74,17 +77,19 @@ public class CheckIncludes implements Action {
     return actionResult;
   }
 
-  private boolean checkMembers(Context context, ActionResult actionResult, Group authorizable, List<String> errors) {
+  private boolean checkMembers(Context context, ActionResult actionResult, Group authorizable, List<String> errors, boolean ifExists) {
     boolean checkFailed = false;
     for (String id : groupIds) {
       try {
         Authorizable group = context.getAuthorizableManager().getAuthorizable(id);
-
-        if (!authorizable.isMember(group)) {
+        if (group == null && ifExists) {
+          actionResult.logWarning(MessagingUtils.authorizableNotExists(id));
+        } else if (!authorizable.isMember(group)) {
           actionResult.logError(id + " is excluded from group " + authorizableId);
           checkFailed = true;
+        } else {
+          actionResult.logMessage(id + " is a member of group " + authorizableId);
         }
-        actionResult.logMessage(id + " is a member of group " + authorizableId);
       } catch (RepositoryException | ActionExecutionException | AuthorizableNotFoundException e) {
         errors.add(MessagingUtils.createMessage(e));
       }

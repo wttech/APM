@@ -20,6 +20,7 @@
 package com.cognifide.apm.checks.actions.include;
 
 import com.cognifide.apm.api.actions.Action;
+import com.cognifide.apm.api.actions.annotations.Flag;
 import com.cognifide.apm.api.actions.annotations.Mapper;
 import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.apm.api.actions.annotations.Required;
@@ -32,23 +33,33 @@ public final class CheckIncludesMapper {
 
   public static final String REFERENCE = "Verify that provided group contains all listed authorizables.";
 
+  public static final String IF_EXISTS = "IF-EXISTS";
+
   @Mapping(
-      examples = "CHECK-INCLUDES 'authors' 'author'",
+      examples = {
+          "CHECK-INCLUDES 'authors' 'author'",
+          "CHECK-INCLUDES 'authors' 'author' --IF-EXISTS"
+      },
       reference = REFERENCE
   )
   public Action mapAction(
       @Required(value = "group", description = "group's id e.g.: 'authors'") String group,
-      @Required(value = "id", description = "users' or groups' id e.g.: 'author'") String id) {
-    return mapAction(group, Collections.singletonList(id));
+      @Required(value = "id", description = "users' or groups' id e.g.: 'author'") String id,
+      @Flag(value = IF_EXISTS, description = "script doesn't fail if listed authorizable doesn't exist") boolean ifExists) {
+    return mapAction(group, Collections.singletonList(id), ifExists);
   }
 
   @Mapping(
-      examples = "CHECK-INCLUDES 'authors' ['author']",
+      examples = {
+          "CHECK-INCLUDES 'authors' ['author']",
+          "CHECK-INCLUDES 'authors' ['author'] --IF-EXISTS"
+      },
       reference = REFERENCE
   )
   public Action mapAction(
       @Required(value = "group", description = "group's id e.g.: 'authors'") String group,
-      @Required(value = "ids", description = "users' or groups' ids e.g.: ['author']") List<String> ids) {
-    return new CheckIncludes(group, ids);
+      @Required(value = "ids", description = "users' or groups' ids e.g.: ['author']") List<String> ids,
+      @Flag(value = IF_EXISTS, description = "script doesn't fail if some of listed authorizables doesn't exist") boolean ifExists) {
+    return new CheckIncludes(group, ids, ifExists);
   }
 }
