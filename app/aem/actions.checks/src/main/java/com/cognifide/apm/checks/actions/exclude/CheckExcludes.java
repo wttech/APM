@@ -82,10 +82,10 @@ public class CheckExcludes implements Action {
         if (authorizable == null) {
           actionResult.logWarning(MessagingUtils.authorizableNotExists(authorizableId));
         } else if (group.isMember(authorizable)) {
-          actionResult.logError(authorizable.getID() + " belongs to group " + groupId);
+          actionResult.logError(authorizableId + " belongs to group " + groupId);
           checkFailed = true;
         } else {
-          actionResult.logError(authorizable.getID() + " does not belong to group " + groupId);
+          actionResult.logError(authorizableId + " does not belong to group " + groupId);
         }
       } catch (RepositoryException e) {
         errors.add(MessagingUtils.createMessage(e));
