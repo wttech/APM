@@ -35,6 +35,12 @@ fun getIdentifier(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.Variab
     else -> throw ScriptExecutionException("Cannot resolve identifier")
 }
 
+fun getKey(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.StructureKeyContext) = when {
+    ctx.IDENTIFIER() != null -> ctx.IDENTIFIER().toString()
+    ctx.STRING_LITERAL() != null -> ctx.STRING_LITERAL().toPlainString()
+    else -> throw ScriptExecutionException("Cannot resolve key")
+}
+
 fun getPath(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.PathContext) = when {
     ctx.STRING_LITERAL() != null -> ctx.STRING_LITERAL().toPlainString()
     ctx.PATH_IDENTIFIER() != null -> ctx.PATH_IDENTIFIER().toString()

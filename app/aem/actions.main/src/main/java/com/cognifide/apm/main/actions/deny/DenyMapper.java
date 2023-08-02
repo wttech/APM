@@ -40,9 +40,10 @@ public class DenyMapper {
   @Mapping(
       examples = {
           "DENY '/content/dam' [READ]",
-          "DENY '/content/dam' glob='/*' [MODIFY]",
-          "DENY '/content/dam' properties=['jcr:title'] [MODIFY]",
-          "DENY '/content/dam' types=['nt:folder'] [MODIFY]",
+          "DENY '/content/dam' [MODIFY] glob='/*'",
+          "DENY '/content/dam' [MODIFY] properties=['jcr:title']",
+          "DENY '/content/dam' [MODIFY] types=['nt:folder']",
+          "DENY '/content/dam' [MODIFY] restrictions={'restriction1': 'value', 'restriction2': ['value1', 'value2']}",
           "DENY '/content/dam/domain' [READ, MODIFY] --IF-EXISTS"
       },
       reference = REFERENCE
@@ -64,6 +65,7 @@ public class DenyMapper {
           "DENY [MODIFY] ON '/content/dam' glob='/*'",
           "DENY [MODIFY] ON '/content/dam' properties=['jcr:title']",
           "DENY [MODIFY] ON '/content/dam' types=['nt:folder']",
+          "DENY [MODIFY] ON '/content/dam' restrictions={'restriction1': 'value', 'restriction2': ['value1', 'value2']}",
           "DENY [READ, MODIFY] ON '/content/dam/domain' --IF-EXISTS"
       },
       reference = REFERENCE

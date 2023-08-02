@@ -40,9 +40,10 @@ public class AllowMapper {
   @Mapping(
       examples = {
           "ALLOW '/content/dam' [READ]",
-          "ALLOW '/content/dam' glob='/*' [MODIFY] ",
-          "ALLOW '/content/dam' properties=['jcr:title'] [MODIFY]",
-          "ALLOW '/content/dam' types=['nt:folder'] [MODIFY]",
+          "ALLOW '/content/dam' [MODIFY] glob='/*'",
+          "ALLOW '/content/dam' [MODIFY] properties=['jcr:title']",
+          "ALLOW '/content/dam' [MODIFY] types=['nt:folder']",
+          "ALLOW '/content/dam' [MODIFY] restrictions={'restriction1': 'value', 'restriction2': ['value1', 'value2']}",
           "ALLOW '/content/dam/domain' [READ, MODIFY] --IF-EXISTS"
       },
       reference = REFERENCE
@@ -64,6 +65,7 @@ public class AllowMapper {
           "ALLOW [MODIFY] ON '/content/dam' glob='/*'",
           "ALLOW [MODIFY] ON '/content/dam' properties=['jcr:title']",
           "ALLOW [MODIFY] ON '/content/dam' types=['nt:folder']",
+          "ALLOW [MODIFY] ON '/content/dam' restrictions={'restriction1': 'value', 'restriction2': ['value1', 'value2']}",
           "ALLOW [READ, MODIFY] ON '/content/dam/domain' --IF-EXISTS"
       },
       reference = REFERENCE

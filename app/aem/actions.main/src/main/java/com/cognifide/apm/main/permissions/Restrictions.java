@@ -22,10 +22,12 @@ package com.cognifide.apm.main.permissions;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.jcr.PropertyType;
 import javax.jcr.Value;
 import javax.jcr.ValueFactory;
@@ -39,6 +41,17 @@ import org.apache.commons.lang3.StringUtils;
 public class Restrictions {
 
   private static final String STRICT = "STRICT";
+
+  private static final String REP_GLOB_PROPERTY = "rep:glob";
+
+  private static final String REP_NTNAMES_PROPERTY = "rep:ntNames";
+
+  private static final String REP_ITEMNAMES_PROPERTY = "rep:itemNames";
+
+  private static final Set<String> MULTIVALUE_REP_PROPERTIES = ImmutableSet.of(
+      REP_NTNAMES_PROPERTY, REP_ITEMNAMES_PROPERTY, "rep:prefixes", "rep:current", "rep:globs",
+      "rep:subtrees", "sling:resourceTypes", "sling:resourceTypesWithDescendants"
+  );
 
   private final String glob;
 
@@ -65,10 +78,17 @@ public class Restrictions {
 
   public Map<String, Value> getSingleValueRestrictions(ValueFactory valueFactory) throws ValueFormatException {
     Map<String, Value> result = new HashMap<>();
-    addRestriction(valueFactory, result, "rep:glob", glob);
+    addRestriction(valueFactory, result, REP_GLOB_PROPERTY, glob);
     for (Map.Entry<String, Object> entry : customRestrictions.entrySet()) {
-      if (entry.getValue() instanceof String) {
-        addRestriction(valueFactory, result, entry.getKey(), (String) entry.getValue());
+      if (!isMultivalue(entry)) {
+        String value;
+
+        if (entry.getValue() instanceof String) {
+          value = (String) entry.getValue();
+        } else {
+          value = ((List<String>) entry.getValue()).get(0);
+        }
+        addRestriction(valueFactory, result, entry.getKey(), value);
       }
     }
     return result;
@@ -76,7 +96,7 @@ public class Restrictions {
 
   private void addRestriction(ValueFactory valueFactory, Map<String, Value> result, String key, String value) throws ValueFormatException {
     if (StringUtils.isNotBlank(value)) {
-      if (key.equals("rep:glob")) {
+      if (REP_GLOB_PROPERTY.equals(key)) {
         result.put(key, normalizeGlob(valueFactory));
       } else {
         result.put(key, valueFactory.createValue(value, PropertyType.NAME));
@@ -93,11 +113,17 @@ public class Restrictions {
 
   public Map<String, Value[]> getMultiValueRestrictions(ValueFactory valueFactory) throws ValueFormatException {
     Map<String, Value[]> result = new HashMap<>();
-    addRestrictions(valueFactory, result, "rep:ntNames", ntNames);
-    addRestrictions(valueFactory, result, "rep:itemNames", itemNames);
+    addRestrictions(valueFactory, result, REP_NTNAMES_PROPERTY, ntNames);
+    addRestrictions(valueFactory, result, REP_ITEMNAMES_PROPERTY, itemNames);
     for (Map.Entry<String, Object> entry : customRestrictions.entrySet()) {
-      if (entry.getValue() instanceof List) {
-        addRestrictions(valueFactory, result, entry.getKey(), (List<String>) entry.getValue());
+      if (isMultivalue(entry)) {
+        List<String> values;
+        if (entry.getValue() instanceof String) {
+          values = Collections.singletonList((String) entry.getValue());
+        } else {
+          values = (List<String>) entry.getValue();
+        }
+        addRestrictions(valueFactory, result, entry.getKey(), values);
       }
     }
     return result;
@@ -115,5 +141,17 @@ public class Restrictions {
       values[index] = valueFactory.createValue(names.get(index), PropertyType.NAME);
     }
     return values;
+  }
+
+  private boolean isMultivalue(Map.Entry<String, Object> entry) {
+    boolean result;
+    if (REP_GLOB_PROPERTY.equals(entry.getKey())) {
+      result = false;
+    } else if (MULTIVALUE_REP_PROPERTIES.contains(entry.getKey())) {
+      result = true;
+    } else {
+      result = entry.getValue() instanceof List;
+    }
+    return result;
   }
 }
