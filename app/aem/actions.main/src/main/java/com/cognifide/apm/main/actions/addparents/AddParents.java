@@ -78,10 +78,18 @@ public class AddParents implements Action {
         LOGGER.info(String.format("Adding Authorizable with id = %s to group with id = %s",
             authorizable.getID(), group.getID()));
 
+        boolean flag = true;
         if (execute) {
-          group.addMember(authorizable);
+          flag = group.addMember(authorizable);
+          if (!flag) {
+            flag = group.isMember(authorizable);
+          }
         }
-        actionResult.logMessage(MessagingUtils.addedToGroup(authorizable.getID(), id));
+        if (flag) {
+          actionResult.logMessage(MessagingUtils.addedToGroup(authorizable.getID(), id));
+        } else {
+          actionResult.logError(MessagingUtils.failedToAddToGroup(authorizable.getID(), id));
+        }
       } catch (RepositoryException | ActionExecutionException e) {
         actionResult.logError(MessagingUtils.createMessage(e));
       } catch (AuthorizableNotFoundException e) {
