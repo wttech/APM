@@ -82,15 +82,19 @@ public class CheckIncludes implements Action {
     for (String id : groupIds) {
       try {
         Authorizable group = context.getAuthorizableManager().getAuthorizable(id);
-        if (group == null && ifExists) {
-          actionResult.logWarning(MessagingUtils.authorizableNotExists(id));
-        } else if (!authorizable.isMember(group)) {
+        if (!authorizable.isMember(group)) {
           actionResult.logError(id + " is excluded from group " + authorizableId);
           checkFailed = true;
         } else {
           actionResult.logMessage(id + " is a member of group " + authorizableId);
         }
-      } catch (RepositoryException | ActionExecutionException | AuthorizableNotFoundException e) {
+      } catch (AuthorizableNotFoundException e) {
+        if (ifExists) {
+          actionResult.logWarning(MessagingUtils.authorizableNotExists(id));
+        } else {
+          errors.add(MessagingUtils.createMessage(e));
+        }
+      } catch (RepositoryException | ActionExecutionException e) {
         errors.add(MessagingUtils.createMessage(e));
       }
     }
