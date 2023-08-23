@@ -27,7 +27,7 @@ import org.apache.jackrabbit.api.security.user.Authorizable
 interface ExternalExecutionContext {
     val progress: Progress
     fun setVariable(key: String, value: ApmType)
-    fun getVariable(key: String): ApmType?
+    fun getVariable(key: String): ApmType
     fun setAuthorizable(authorizable: Authorizable?)
     fun getAuthorizable(): Authorizable?
 }

@@ -20,7 +20,6 @@
 package com.cognifide.apm.core.utils;
 
 import com.cognifide.apm.api.scripts.Script;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
@@ -28,65 +27,6 @@ import org.apache.commons.lang3.StringUtils;
 public final class MessagingUtils {
 
   private MessagingUtils() {
-  }
-
-  public static String createMessage(Exception e) {
-    return StringUtils.isBlank(e.getMessage()) ? "Internal error: " + e.getClass() : e.getMessage();
-  }
-
-  public static String removedFromGroup(String authorizableId, String groupId) {
-    return "Authorizable " + authorizableId + " removed from group " + groupId;
-  }
-
-  public static String addedToGroup(String authorizableId, String groupId) {
-    return "Authorizable " + authorizableId + " added to group " + groupId;
-  }
-
-  public static String newPasswordSet(String userId) {
-    return "New password for user " + userId + " was set";
-  }
-
-  public static String authorizableExists(String authorizableId, String type) {
-    return "Authorizable with id: " + authorizableId + " already exists, and is a " + type;
-  }
-
-  public static String addingGroupToItself(String groupId) {
-    return "You can not add group " + groupId + " to itself";
-  }
-
-  public static String authorizableNotExists(String authorizableId) {
-    return "Authorizable with id: " + authorizableId + " does not exists";
-  }
-
-  public static String groupHasNoMembers(String groupId) {
-    return "Group with id: " + groupId + " has no members.";
-  }
-
-  public static String groupIsMemberOfNoGroups(String groupId) {
-    return "Group with id: " + groupId + " is a member of no groups.";
-  }
-
-  public static String cyclicRelationsForbidden(String currentGroup, String groupToBeAdded) {
-    return "Cannot add group " + groupToBeAdded + " to group " + currentGroup
-        + " due to resulting cyclic relation";
-  }
-
-  public static String unknownPermissions(List<String> permissions) {
-    if (permissions.size() == 1) {
-      return "Unknown permission: " + permissions.get(0);
-    }
-    StringBuilder result = new StringBuilder();
-    result.append("Unknown permissions: ");
-    Iterator<String> it = permissions.iterator();
-
-    while (it.hasNext()) {
-      result.append(it.next());
-      if (it.hasNext()) {
-        result.append(", ");
-      }
-    }
-
-    return result.toString();
   }
 
   public static String describeScripts(List<Script> scripts) {

@@ -58,7 +58,7 @@ public class CheckNotExists implements Action {
       return actionResult;
     }
 
-    logErrors(actionResult, errors);
+    ActionUtils.logErrors(errors, actionResult);
 
     return actionResult;
   }
@@ -78,11 +78,5 @@ public class CheckNotExists implements Action {
       }
     }
     return checkFailed;
-  }
-
-  private void logErrors(ActionResult actionResult, List<String> errors) {
-    for (String error : errors) {
-      actionResult.logError(error);
-    }
   }
 }

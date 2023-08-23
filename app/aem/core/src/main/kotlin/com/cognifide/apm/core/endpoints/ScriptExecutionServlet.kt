@@ -83,7 +83,6 @@ class ScriptExecutionServlet : SlingAllMethodsServlet() {
                     "output" set status.entries
                     "path" set status.path
                 }
-
                 is FinishedFailedExecution -> internalServerError {
                     message = "Errors while executing script"
                     "status" set status.status
@@ -91,7 +90,6 @@ class ScriptExecutionServlet : SlingAllMethodsServlet() {
                     "path" set status.path
                     errors = status.error.messages ?: listOf()
                 }
-
                 else -> ok {
                     message = "Script is still being processed"
                     "status" set status.status

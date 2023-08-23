@@ -19,9 +19,7 @@
  */
 package com.cognifide.apm.main.utils;
 
-import com.cognifide.apm.api.scripts.Script;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
@@ -48,10 +46,6 @@ public final class MessagingUtils {
 
   public static String addingGroupToItself(String groupId) {
     return "You can not add group " + groupId + " to itself";
-  }
-
-  public static String authorizableNotExists(String authorizableId) {
-    return "Authorizable with id: " + authorizableId + " does not exists";
   }
 
   public static String groupHasNoMembers(String groupId) {
@@ -84,15 +78,4 @@ public final class MessagingUtils {
 
     return result.toString();
   }
-
-  public static String describeScripts(List<Script> scripts) {
-    List<String> paths = new LinkedList<>();
-
-    for (Script script : scripts) {
-      paths.add(script.getPath());
-    }
-
-    return StringUtils.join(paths, "\n");
-  }
-
 }
