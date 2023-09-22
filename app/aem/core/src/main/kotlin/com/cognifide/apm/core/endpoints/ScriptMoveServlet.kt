@@ -50,9 +50,9 @@ class ScriptMoveServlet : AbstractFormServlet<ScriptMoveForm>(ScriptMoveForm::cl
         this.modelFactory = modelFactory
     }
 
-    override fun doPost(form: ScriptMoveForm, resolver: ResourceResolver): ResponseEntity<Any> {
+    override fun doPost(form: ScriptMoveForm, resourceResolver: ResourceResolver): ResponseEntity<Any> {
         return try {
-            val session = resolver.adaptTo(Session::class.java)!!
+            val session = resourceResolver.adaptTo(Session::class.java)!!
             val dest = StringUtils.defaultIfEmpty(form.dest, StringUtils.substringBeforeLast(form.path, "/"))
             val rename = if (containsExtension(form.path)) {
                 form.rename + if (containsExtension(form.rename)) "" else Apm.FILE_EXT
@@ -61,15 +61,15 @@ class ScriptMoveServlet : AbstractFormServlet<ScriptMoveForm>(ScriptMoveForm::cl
             }
             var destPath = "$dest/$rename"
             if (form.path != destPath) {
-                destPath = createUniquePath(destPath, resolver)
+                destPath = createUniquePath(destPath, resourceResolver)
                 session.move(form.path, destPath)
                 session.save()
             }
             if (!containsExtension(form.path)) {
-                val valueMap = resolver.getResource(destPath)?.adaptTo(ModifiableValueMap::class.java)
+                val valueMap = resourceResolver.getResource(destPath)?.adaptTo(ModifiableValueMap::class.java)
                 valueMap?.put(JcrConstants.JCR_TITLE, form.rename)
             }
-            resolver.commit()
+            resourceResolver.commit()
             ok {
                 message = "Item successfully moved"
             }

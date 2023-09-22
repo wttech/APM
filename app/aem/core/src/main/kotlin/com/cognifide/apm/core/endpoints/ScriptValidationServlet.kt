@@ -57,7 +57,7 @@ class ScriptValidationServlet : AbstractFormServlet<ScriptValidationForm>(Script
 
     override fun doPost(form: ScriptValidationForm, resourceResolver: ResourceResolver): ResponseEntity<Any> {
         return try {
-            val script = TransientScript.create(form.path, form.content);
+            val script = TransientScript.create(form.path, form.content)
             val result = scriptManager.process(script, ExecutionMode.VALIDATION, resourceResolver)
             if (result.isSuccess) {
                 ok {

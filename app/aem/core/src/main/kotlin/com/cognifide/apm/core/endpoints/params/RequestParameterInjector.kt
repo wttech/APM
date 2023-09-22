@@ -88,7 +88,7 @@ class RequestParameterInjector : Injector, StaticInjectAnnotationProcessorFactor
                     .mapKeys { it.key as String }
                     .filterKeys { it.startsWith(prefix) }
                     .mapKeys { it.key.removePrefix(prefix) }
-                    .mapKeys { it.key.decapitalize() }
+                    .mapKeys { entry -> entry.key.replaceFirstChar { it.lowercase() } }
 
     private fun toLocalDateTime(annotatedElement: AnnotatedElement, parameterValue: org.apache.sling.api.request.RequestParameter): LocalDateTime {
         val dateFormat = annotatedElement.getAnnotation(DateFormat::class.java)?.value

@@ -31,7 +31,7 @@ public final class ForEachMapper {
   @Mapping(
       examples = {
           "FOR-EACH i IN ['a', 'b'] BEGIN ... END",
-          "FOR-EACH [i, j] IN [['a', 'b'], ['c', 'd']] BEGIN ... END"
+          "FOR-EACH i IN [{x: 'a', y: 'b'}, {x: 'c', y: 'd'}] BEGIN ... END"
       },
       reference = "Executes commands in block of code for each item in given array."
   )

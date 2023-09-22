@@ -36,11 +36,9 @@ aem {
     tasks {
         packageCompose {
             vaultDefinition {
-                val currentVersion = rootProject.version as String
-                version.set(currentVersion)
+                version.set(rootProject.version as String)
                 description.set(project.description)
                 property("installhook.apm.class", "com.cognifide.apm.core.tools.ApmInstallHook")
-                property("dependencies", "com.cognifide.apm:apm-ui.apps:$currentVersion")
             }
         }
     }

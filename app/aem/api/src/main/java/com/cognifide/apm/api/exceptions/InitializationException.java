@@ -21,8 +21,6 @@ package com.cognifide.apm.api.exceptions;
 
 public class InitializationException extends ExecutionException {
 
-  private static final long serialVersionUID = -6238146921748809870L;
-
   public InitializationException(final String message) {
     super(message);
   }

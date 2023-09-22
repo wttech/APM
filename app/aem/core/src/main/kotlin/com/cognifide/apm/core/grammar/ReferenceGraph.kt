@@ -73,9 +73,7 @@ class ReferenceGraph(
 
             other as Transition
 
-            if (other.id != this.id) return false
-
-            return true
+            return other.id == this.id
         }
 
         override fun hashCode(): Int {
@@ -100,9 +98,7 @@ class ReferenceGraph(
 
             other as TreeNode
 
-            if (script.path != other.script.path) return false
-
-            return true
+            return script.path == other.script.path
         }
 
         override fun hashCode(): Int {

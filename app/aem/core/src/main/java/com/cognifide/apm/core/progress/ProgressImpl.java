@@ -26,7 +26,6 @@ import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.apm.api.actions.Message;
 import com.cognifide.apm.api.status.Status;
 import com.cognifide.apm.core.actions.ActionDescriptor;
-import com.cognifide.apm.core.actions.ActionResultImpl;
 import com.cognifide.apm.core.grammar.argument.Arguments;
 import com.cognifide.apm.core.logger.Position;
 import com.cognifide.apm.core.logger.Progress;
@@ -70,14 +69,16 @@ public class ProgressImpl implements Progress {
   @Override
   public void addEntry(ActionDescriptor descriptor, ActionResult result) {
     this.entries.add(
-        new ProgressEntry(result.getStatus(), toMessages(((ActionResultImpl) result).getMessages()), descriptor.getCommand(),
+        new ProgressEntry(result.getStatus(), toMessages(result.getMessages()), descriptor.getCommand(),
             result.getAuthorizable(), toParameters(descriptor.getArguments()), null
         )
     );
   }
 
-  private List<String> toMessages(List<Message> messages) {
-    return messages.stream().map(it -> it.getText()).collect(Collectors.toList());
+  private static List<String> toMessages(List<Message> messages) {
+    return messages.stream()
+        .map(Message::getText)
+        .collect(Collectors.toList());
   }
 
   private List<String> toParameters(Arguments arguments) {
@@ -111,7 +112,7 @@ public class ProgressImpl implements Progress {
     this.entries.add(shortEntry(command, messages, status));
   }
 
-  private ProgressEntry shortEntry(String command, List<String> messages, Status status) {
+  private static ProgressEntry shortEntry(String command, List<String> messages, Status status) {
     return new ProgressEntry(status, messages, command, "", Collections.emptyList(), null);
   }
 
@@ -122,15 +123,10 @@ public class ProgressImpl implements Progress {
 
   @Override
   public ProgressEntry getLastError() {
-    for (int i = entries.size() - 1; i >= 0; i--) {
-      final ProgressEntry entry = entries.get(i);
-
-      if (entry.getStatus().equals(Status.ERROR)) {
-        return entry;
-      }
-    }
-
-    return null;
+    return entries.stream()
+        .filter(entry -> entry.getStatus() == Status.ERROR)
+        .reduce((first, second) -> second)
+        .orElse(null);
   }
 
   @Override

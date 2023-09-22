@@ -23,6 +23,7 @@ import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.apm.api.actions.Context;
 import com.cognifide.apm.api.exceptions.ActionExecutionException;
+import com.cognifide.apm.api.exceptions.AuthorizableNotFoundException;
 import com.cognifide.apm.main.actions.clearpermissions.Purge;
 import com.cognifide.apm.main.actions.removeparents.RemoveParents;
 import com.cognifide.apm.main.utils.MessagingUtils;
@@ -49,12 +50,12 @@ public class DestroyUser implements Action {
   }
 
   @Override
-  public ActionResult simulate(Context context) throws ActionExecutionException {
+  public ActionResult simulate(Context context) {
     ActionResult actionResult;
     try {
       User user = context.getAuthorizableManager().getUser(userId);
       context.setCurrentAuthorizable(user);
-      Action removeFromGroups = new RemoveParents(getGroups(user));
+      Action removeFromGroups = new RemoveParents(getGroups(user), true);
       ActionResult purgeResult = purge.simulate(context);
       ActionResult removeFromGroupsResult = removeFromGroups.execute(context);
       ActionResult removeResult = remove.simulate(context);
@@ -62,19 +63,22 @@ public class DestroyUser implements Action {
     } catch (RepositoryException | ActionExecutionException e) {
       actionResult = context.createActionResult();
       actionResult.logError(MessagingUtils.createMessage(e));
+    } catch (AuthorizableNotFoundException e) {
+      actionResult = context.createActionResult();
+      actionResult.logWarning(MessagingUtils.createMessage(e));
     }
     return actionResult;
   }
 
   @Override
-  public ActionResult execute(Context context) throws ActionExecutionException {
+  public ActionResult execute(Context context) {
     ActionResult actionResult;
     try {
       User user = context.getAuthorizableManager().getUser(userId);
       // local context is used here to not override current authorizable in given context
       Context localContext = context.newContext();
       localContext.setCurrentAuthorizable(user);
-      Action removeFromGroups = new RemoveParents(getGroups(user));
+      Action removeFromGroups = new RemoveParents(getGroups(user), true);
       ActionResult purgeResult = purge.execute(localContext);
       ActionResult removeFromGroupsResult = removeFromGroups.execute(localContext);
       ActionResult removeResult = remove.execute(localContext);
@@ -83,11 +87,14 @@ public class DestroyUser implements Action {
     } catch (RepositoryException | ActionExecutionException e) {
       actionResult = context.createActionResult();
       actionResult.logError(MessagingUtils.createMessage(e));
+    } catch (AuthorizableNotFoundException e) {
+      actionResult = context.createActionResult();
+      actionResult.logWarning(MessagingUtils.createMessage(e));
     }
     return actionResult;
   }
 
-  private List<String> getGroups(User user) throws RepositoryException {
+  private static List<String> getGroups(User user) throws RepositoryException {
     List<String> groups = new ArrayList<>();
     Iterator<Group> groupIterator = user.declaredMemberOf();
     while (groupIterator.hasNext()) {

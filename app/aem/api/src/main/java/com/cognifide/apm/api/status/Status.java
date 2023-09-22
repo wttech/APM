@@ -21,5 +21,32 @@ package com.cognifide.apm.api.status;
 
 public enum Status {
 
-  ERROR, WARNING, SUCCESS, SKIPPED
+  ERROR("entry-error", "error", "close"),
+  WARNING("entry-warning", "warning", "alert"),
+  SUCCESS("entry-success", "success", "check"),
+  SKIPPED("entry-warning", "skipped", "chevronRight");
+
+  private final String className;
+
+  private final String iconTitle;
+
+  private final String iconType;
+
+  Status(String className, String iconTitle, String iconType) {
+    this.className = className;
+    this.iconTitle = iconTitle;
+    this.iconType = iconType;
+  }
+
+  public String getClassName() {
+    return className;
+  }
+
+  public String getIconTitle() {
+    return iconTitle;
+  }
+
+  public String getIconType() {
+    return iconType;
+  }
 }

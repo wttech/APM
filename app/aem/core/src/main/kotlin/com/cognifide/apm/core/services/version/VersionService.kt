@@ -28,7 +28,7 @@ interface VersionService {
 
     fun getVersionPath(script: Script): String
 
-    fun updateVersionIfNeeded(resolver: ResourceResolver, vararg script: Script)
+    fun updateVersionIfNeeded(resolver: ResourceResolver, vararg scripts: Script)
 
     fun countChecksum(root: Iterable<Script>): String
 

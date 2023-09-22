@@ -23,6 +23,7 @@ import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.apm.api.actions.Context;
 import com.cognifide.apm.api.exceptions.ActionExecutionException;
+import com.cognifide.apm.api.exceptions.AuthorizableNotFoundException;
 import com.cognifide.apm.checks.utils.ActionUtils;
 import com.cognifide.apm.checks.utils.MessagingUtils;
 import java.util.ArrayList;
@@ -37,7 +38,7 @@ public class CheckExcludes implements Action {
 
   private final String groupId;
 
-  public CheckExcludes(final String groupId, final List<String> authorizableIds) {
+  public CheckExcludes(String groupId, List<String> authorizableIds) {
     this.groupId = groupId;
     this.authorizableIds = authorizableIds;
   }
@@ -48,12 +49,11 @@ public class CheckExcludes implements Action {
   }
 
   @Override
-  public ActionResult execute(final Context context) {
+  public ActionResult execute(Context context) {
     return process(context, true);
   }
 
-  private ActionResult process(final Context context, boolean execute) {
-
+  private ActionResult process(Context context, boolean execute) {
     ActionResult actionResult = context.createActionResult();
     Group group = tryGetGroup(context, actionResult);
     if (group == null) {
@@ -74,19 +74,18 @@ public class CheckExcludes implements Action {
     return actionResult;
   }
 
-  private boolean checkMembers(final Context context, final ActionResult actionResult, final Group group,
-      final List<String> errors) {
+  private boolean checkMembers(Context context, ActionResult actionResult, Group group, List<String> errors) {
     boolean checkFailed = false;
     for (String authorizableId : authorizableIds) {
       try {
         Authorizable authorizable = context.getAuthorizableManager().getAuthorizableIfExists(authorizableId);
         if (authorizable == null) {
           actionResult.logWarning(MessagingUtils.authorizableNotExists(authorizableId));
-          continue;
-        }
-        if (group.isMember(authorizable)) {
-          actionResult.logError(authorizable.getID() + " belongs to group " + groupId);
+        } else if (group.isMember(authorizable)) {
+          actionResult.logError(authorizableId + " belongs to group " + groupId);
           checkFailed = true;
+        } else {
+          actionResult.logError(authorizableId + " does not belong to group " + groupId);
         }
       } catch (RepositoryException e) {
         errors.add(MessagingUtils.createMessage(e));
@@ -95,19 +94,12 @@ public class CheckExcludes implements Action {
     return checkFailed;
   }
 
-  private Group tryGetGroup(final Context context, final ActionResult actionResult) {
-    Group group;
-
+  private Group tryGetGroup(Context context, ActionResult actionResult) {
     try {
-      group = context.getAuthorizableManager().getGroup(groupId);
-    } catch (RepositoryException e) {
+      return context.getAuthorizableManager().getGroup(groupId);
+    } catch (RepositoryException | ActionExecutionException | AuthorizableNotFoundException e) {
       actionResult.logError(MessagingUtils.createMessage(e));
-      return null;
-    } catch (ActionExecutionException e) {
-      actionResult.logError(MessagingUtils.createMessage(e));
-      return null;
     }
-    return group;
+    return null;
   }
-
 }

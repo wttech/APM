@@ -30,16 +30,16 @@ END # end of block
 ```
 
 ```
-FOR-EACH [name, password] 
+FOR-EACH user
 IN [
-    ['a', 'b'],
-    ['c', 'd']
+    {name: 'a', password: 'b'},
+    {name: 'c', password: 'd'}
 ] 
 BEGIN # starts block of code executed for each iteration of loop
-    CREATE-USER $name
-    FOR-USER $name 
+    CREATE-USER $user.name
+    FOR-USER $user.name 
     BEGIN
-        SET-PASSWORD $password
+        SET-PASSWORD $user.password
     END
 END # end of block
 ```

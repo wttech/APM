@@ -27,13 +27,23 @@ import com.cognifide.apm.api.exceptions.ActionExecutionException;
 import com.cognifide.apm.api.status.Status;
 import com.cognifide.apm.main.utils.MessagingUtils;
 import com.cognifide.apm.main.utils.PathUtils;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
+import javax.jcr.security.AccessControlPolicy;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.api.JackrabbitSession;
+import org.apache.jackrabbit.api.security.JackrabbitAccessControlEntry;
+import org.apache.jackrabbit.api.security.JackrabbitAccessControlManager;
 import org.apache.jackrabbit.api.security.user.Authorizable;
+import org.apache.jackrabbit.oak.api.Type;
+import org.apache.jackrabbit.oak.spi.security.authorization.accesscontrol.ACE;
+import org.apache.jackrabbit.oak.spi.security.authorization.accesscontrol.AbstractAccessControlList;
 import org.apache.jackrabbit.oak.spi.security.authorization.permission.PermissionConstants;
+import org.apache.jackrabbit.oak.spi.security.authorization.restriction.Restriction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +55,7 @@ public class Purge implements Action {
 
   private final String path;
 
-  public Purge(final String path) {
+  public Purge(String path) {
     this.path = path;
   }
 
@@ -55,11 +65,11 @@ public class Purge implements Action {
   }
 
   @Override
-  public ActionResult execute(final Context context) {
+  public ActionResult execute(Context context) {
     return process(context, true);
   }
 
-  private ActionResult process(final Context context, boolean execute) {
+  private ActionResult process(Context context, boolean execute) {
     ActionResult actionResult = context.createActionResult();
     try {
       Authorizable authorizable = context.getCurrentAuthorizable();
@@ -67,7 +77,7 @@ public class Purge implements Action {
       if (context.isCompositeNodeStore() && PathUtils.isAppsOrLibsPath(path)) {
         actionResult.changeStatus(Status.SKIPPED, "Skipped purging privileges for " + authorizable.getID() + " on " + path);
       } else {
-        LOGGER.info(String.format("Purging privileges for authorizable with id = %s under path = %s",
+        LOGGER.info(String.format("Purging privileges for authorizable with id=%s under path=%s",
             authorizable.getID(), path));
         if (execute) {
           purge(context, actionResult);
@@ -81,23 +91,18 @@ public class Purge implements Action {
     return actionResult;
   }
 
-  private void purge(final Context context, final ActionResult actionResult)
+  private void purge(Context context, ActionResult actionResult)
       throws RepositoryException, ActionExecutionException {
-    NodeIterator iterator = getPermissions(context);
+    Set<String> accessControlledPaths = getAccessControlledPaths(context);
     String normalizedPath = normalizePath(path);
-    while (iterator != null && iterator.hasNext()) {
-      Node node = iterator.nextNode();
-      if (node.hasProperty(PermissionConstants.REP_ACCESS_CONTROLLED_PATH)) {
-        String parentPath = node.getProperty(PermissionConstants.REP_ACCESS_CONTROLLED_PATH)
-            .getString();
-        String normalizedParentPath = normalizePath(parentPath);
-        boolean isUsersPermission = parentPath.startsWith(context.getCurrentAuthorizable().getPath());
-        if (StringUtils.startsWith(normalizedParentPath, normalizedPath) && !isUsersPermission) {
-          RemoveAll removeAll = new RemoveAll(parentPath);
-          ActionResult removeAllResult = removeAll.execute(context);
-          if (Status.ERROR.equals(removeAllResult.getStatus())) {
-            copyErrorMessages(removeAllResult, actionResult);
-          }
+    for (String parentPath : accessControlledPaths) {
+      String normalizedParentPath = normalizePath(parentPath);
+      boolean isUsersPermission = parentPath.startsWith(context.getCurrentAuthorizable().getPath());
+      if (StringUtils.startsWith(normalizedParentPath, normalizedPath) && !isUsersPermission) {
+        RemoveAll removeAll = new RemoveAll(parentPath);
+        ActionResult removeAllResult = removeAll.execute(context);
+        if (Status.ERROR.equals(removeAllResult.getStatus())) {
+          copyErrorMessages(removeAllResult, actionResult);
         }
       }
     }
@@ -111,14 +116,35 @@ public class Purge implements Action {
     }
   }
 
-  private NodeIterator getPermissions(Context context)
+  private Set<String> getAccessControlledPaths(Context context)
       throws ActionExecutionException, RepositoryException {
+    Set<String> result = new HashSet<>();
     JackrabbitSession session = context.getSession();
     String path = PERMISSION_STORE_PATH + context.getCurrentAuthorizable().getID();
-    NodeIterator result = null;
     if (session.nodeExists(path)) {
       Node node = session.getNode(path);
-      result = node.getNodes();
+      NodeIterator nodes = node.getNodes();
+      while (nodes.hasNext()) {
+        node = nodes.nextNode();
+        if (node.hasProperty(PermissionConstants.REP_ACCESS_CONTROLLED_PATH)) {
+          result.add(node.getProperty(PermissionConstants.REP_ACCESS_CONTROLLED_PATH).getString());
+        }
+      }
+    } else {
+      JackrabbitAccessControlManager accessControlManager = (JackrabbitAccessControlManager) session.getAccessControlManager();
+      AccessControlPolicy[] accessControlPolicies = accessControlManager.getPolicies(context.getCurrentAuthorizable().getPrincipal());
+      for (AccessControlPolicy accessControlPolicy : accessControlPolicies) {
+        AbstractAccessControlList abstractAccessControlList = (AbstractAccessControlList) accessControlPolicy;
+        List<? extends JackrabbitAccessControlEntry> jackrabbitAccessControlEntries = abstractAccessControlList.getEntries();
+        for (JackrabbitAccessControlEntry jackrabbitAccessControlEntry : jackrabbitAccessControlEntries) {
+          Set<Restriction> restrictions = ((ACE) jackrabbitAccessControlEntry).getRestrictions();
+          for (Restriction restriction : restrictions) {
+            if (Type.PATH.equals(restriction.getProperty().getType())) {
+              result.add(restriction.getProperty().getValue(Type.PATH));
+            }
+          }
+        }
+      }
     }
     return result;
   }

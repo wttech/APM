@@ -34,6 +34,7 @@ import com.cognifide.apm.core.actions.ParameterDescriptor.NamedParameterDescript
 import com.cognifide.apm.core.actions.ParameterDescriptor.RequiredParameterDescriptor;
 import com.cognifide.apm.core.grammar.ApmInteger;
 import com.cognifide.apm.core.grammar.ApmList;
+import com.cognifide.apm.core.grammar.ApmMap;
 import com.cognifide.apm.core.grammar.ApmString;
 import com.cognifide.apm.core.grammar.ApmType;
 import com.google.common.collect.ImmutableList;
@@ -43,6 +44,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class MapperDescriptorFactory {
@@ -53,16 +55,17 @@ public class MapperDescriptorFactory {
       throw new InvalidActionMapperException("Mapper must be annotated with " + Mapper.class.getName());
     }
 
-    final Object mapper = createInstance(mapperClass);
-    final String name = mapperAnnotation.value();
-    final String group = mapperAnnotation.group();
-    final List<MappingDescriptor> mappingDescriptors = Lists.newArrayList();
+    Object mapper = createInstance(mapperClass);
+    String name = mapperAnnotation.value();
+    String group = mapperAnnotation.group();
+    List<MappingDescriptor> mappingDescriptors = Lists.newArrayList();
     for (Method method : mapperClass.getDeclaredMethods()) {
       create(mapperAnnotation, method).ifPresent(mappingDescriptors::add);
     }
     return new MapperDescriptor(mapper, name, group, ImmutableList.copyOf(mappingDescriptors));
   }
 
+  @SuppressWarnings("deprecation")
   private Object createInstance(Class<?> mapperClass) {
     try {
       return mapperClass.newInstance();
@@ -138,6 +141,8 @@ public class MapperDescriptorFactory {
       Class rawType = (Class) parameterizedType.getRawType();
       if (List.class.equals(rawType)) {
         return ApmList.class;
+      } else if (Map.class.equals(rawType)) {
+        return ApmMap.class;
       }
     }
     return null;

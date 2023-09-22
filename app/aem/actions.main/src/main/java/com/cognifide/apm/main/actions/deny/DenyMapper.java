@@ -29,6 +29,7 @@ import com.cognifide.apm.api.actions.annotations.Named;
 import com.cognifide.apm.api.actions.annotations.Required;
 import com.cognifide.apm.main.actions.ActionGroup;
 import java.util.List;
+import java.util.Map;
 
 @Mapper(value = "DENY", group = ActionGroup.CORE)
 public class DenyMapper {
@@ -39,9 +40,10 @@ public class DenyMapper {
   @Mapping(
       examples = {
           "DENY '/content/dam' [READ]",
-          "DENY '/content/dam' glob='/*' [MODIFY]",
-          "DENY '/content/dam' properties=['jcr:title'] [MODIFY]",
-          "DENY '/content/dam' types=['nt:folder'] [MODIFY]",
+          "DENY '/content/dam' [MODIFY] glob='/*'",
+          "DENY '/content/dam' [MODIFY] properties=['jcr:title']",
+          "DENY '/content/dam' [MODIFY] types=['nt:folder']",
+          "DENY '/content/dam' [MODIFY] restrictions={'restriction1': 'value', 'restriction2': ['value1', 'value2']}",
           "DENY '/content/dam/domain' [READ, MODIFY] --IF-EXISTS"
       },
       reference = REFERENCE
@@ -51,9 +53,10 @@ public class DenyMapper {
       @Required(value = "permissions", description = "e.g.: [READ, 'jcr:all']") List<String> permissions,
       @Named(value = "glob", description = "regular expression to narrow set of paths") String glob,
       @Named(value = "types", description = "list of jcr types which will be affected") List<String> types,
-      @Named(value = "properties", description = "list of properties which will be affected ") List<String> items,
+      @Named(value = "properties", description = "list of properties which will be affected") List<String> items,
+      @Named(value = "restrictions", description = "map of custom restrictions") Map<String, Object> restrictions,
       @Flag(value = IF_EXISTS, description = "script doesn't fail if path doesn't exist") boolean ifExists) {
-    return new Deny(path, permissions, glob, types, items, ifExists);
+    return new Deny(path, permissions, glob, types, items, restrictions, ifExists);
   }
 
   @Mapping(
@@ -62,6 +65,7 @@ public class DenyMapper {
           "DENY [MODIFY] ON '/content/dam' glob='/*'",
           "DENY [MODIFY] ON '/content/dam' properties=['jcr:title']",
           "DENY [MODIFY] ON '/content/dam' types=['nt:folder']",
+          "DENY [MODIFY] ON '/content/dam' restrictions={'restriction1': 'value', 'restriction2': ['value1', 'value2']}",
           "DENY [READ, MODIFY] ON '/content/dam/domain' --IF-EXISTS"
       },
       reference = REFERENCE
@@ -71,8 +75,9 @@ public class DenyMapper {
       @Required(value = "path", description = "e.g.: '/content/dam'") String path,
       @Named(value = "glob", description = "regular expression to narrow set of paths") String glob,
       @Named(value = "types", description = "list of jcr types which will be affected") List<String> types,
-      @Named(value = "properties", description = "list of properties which will be affected ") List<String> items,
+      @Named(value = "properties", description = "list of properties which will be affected") List<String> items,
+      @Named(value = "restrictions", description = "map of custom restrictions") Map<String, Object> restrictions,
       @Flag(value = IF_EXISTS, description = "script doesn't fail if path doesn't exist") boolean ifExists) {
-    return new Deny(path, permissions, glob, types, items, ifExists);
+    return new Deny(path, permissions, glob, types, items, restrictions, ifExists);
   }
 }

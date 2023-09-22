@@ -22,6 +22,7 @@ package com.cognifide.apm.checks.actions.notexists;
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.annotations.Mapper;
 import com.cognifide.apm.api.actions.annotations.Mapping;
+import com.cognifide.apm.api.actions.annotations.Required;
 import com.cognifide.apm.checks.actions.ActionGroup;
 import java.util.Collections;
 import java.util.List;
@@ -32,16 +33,20 @@ public final class CheckNotExistsMapper {
   public static final String REFERENCE = "Verify that specific authorizables do not exist.";
 
   @Mapping(
+      examples = "CHECK-NOT-EXISTS 'author'",
       reference = REFERENCE
   )
-  public Action mapAction(String id) {
+  public Action mapAction(
+      @Required(value = "id", description = "users' or groups' id e.g.: 'author'") String id) {
     return mapAction(Collections.singletonList(id));
   }
 
   @Mapping(
+      examples = "CHECK-NOT-EXISTS ['author']",
       reference = REFERENCE
   )
-  public Action mapAction(List<String> ids) {
+  public Action mapAction(
+      @Required(value = "ids", description = "users' or groups' ids e.g.: ['author']") List<String> ids) {
     return new CheckNotExists(ids);
   }
 }

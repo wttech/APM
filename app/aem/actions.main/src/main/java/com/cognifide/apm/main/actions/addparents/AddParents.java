@@ -23,9 +23,10 @@ import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.apm.api.actions.Context;
 import com.cognifide.apm.api.exceptions.ActionExecutionException;
+import com.cognifide.apm.api.exceptions.AuthorizableNotFoundException;
+import com.cognifide.apm.api.status.Status;
 import com.cognifide.apm.main.utils.ActionUtils;
 import com.cognifide.apm.main.utils.MessagingUtils;
-import java.util.ArrayList;
 import java.util.List;
 import javax.jcr.RepositoryException;
 import org.apache.jackrabbit.api.security.user.Authorizable;
@@ -39,8 +40,11 @@ public class AddParents implements Action {
 
   private final List<String> groupIds;
 
-  public AddParents(final List<String> groupIds) {
+  private final boolean ignoreNonExistingGroups;
+
+  public AddParents(List<String> groupIds, boolean ignoreNonExistingGroups) {
     this.groupIds = groupIds;
+    this.ignoreNonExistingGroups = ignoreNonExistingGroups;
   }
 
   @Override
@@ -49,14 +53,13 @@ public class AddParents implements Action {
   }
 
   @Override
-  public ActionResult execute(final Context context) {
+  public ActionResult execute(Context context) {
     return process(context, true);
   }
 
-  private ActionResult process(final Context context, boolean execute) {
+  private ActionResult process(Context context, boolean execute) {
     ActionResult actionResult = context.createActionResult();
-    List<String> errors = new ArrayList<>();
-    Authorizable authorizable = null;
+    Authorizable authorizable;
     try {
       authorizable = context.getCurrentAuthorizable();
       actionResult.setAuthorizable(authorizable.getID());
@@ -75,17 +78,30 @@ public class AddParents implements Action {
         LOGGER.info(String.format("Adding Authorizable with id = %s to group with id = %s",
             authorizable.getID(), group.getID()));
 
+        boolean flag = true;
         if (execute) {
-          group.addMember(authorizable);
+          flag = group.addMember(authorizable);
+          if (!flag) {
+            flag = group.isMember(authorizable);
+          }
         }
-        actionResult.logMessage(MessagingUtils.addedToGroup(authorizable.getID(), id));
+        if (flag) {
+          actionResult.logMessage(MessagingUtils.addedToGroup(authorizable.getID(), id));
+        } else {
+          actionResult.logError(MessagingUtils.failedToAddToGroup(authorizable.getID(), id));
+        }
       } catch (RepositoryException | ActionExecutionException e) {
-        errors.add(MessagingUtils.createMessage(e));
+        actionResult.logError(MessagingUtils.createMessage(e));
+      } catch (AuthorizableNotFoundException e) {
+        if (ignoreNonExistingGroups) {
+          actionResult.logWarning(MessagingUtils.createMessage(e));
+        } else {
+          actionResult.logError(MessagingUtils.createMessage(e));
+        }
       }
     }
 
-    if (!errors.isEmpty()) {
-      ActionUtils.logErrors(errors, actionResult);
+    if (actionResult.getStatus() == Status.ERROR) {
       actionResult.logError("Execution interrupted");
     }
     return actionResult;

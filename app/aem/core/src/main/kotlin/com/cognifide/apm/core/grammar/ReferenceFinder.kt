@@ -24,7 +24,7 @@ import com.cognifide.apm.api.scripts.LaunchEnvironment
 import com.cognifide.apm.api.scripts.LaunchMode
 import com.cognifide.apm.api.scripts.Script
 import com.cognifide.apm.api.services.ScriptFinder
-import com.cognifide.apm.core.grammar.argument.toPlainString
+import com.cognifide.apm.core.grammar.common.getPath
 import com.cognifide.apm.core.grammar.executioncontext.ExecutionContext
 import com.cognifide.apm.core.grammar.parsedscript.ParsedScript
 import com.cognifide.apm.core.progress.ProgressImpl
@@ -104,13 +104,13 @@ class ReferenceFinder(
     inner class InternalVisitor(private val executionContext: ExecutionContext, val refGraph: ReferenceGraph, val currentNode: ReferenceGraph.TreeNode) : com.cognifide.apm.core.grammar.antlr.ApmLangBaseVisitor<Unit>() {
         val scripts = mutableSetOf<Script>()
 
-        override fun visitImportScript(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.ImportScriptContext?) {
-            val foundPath = ctx?.path()?.STRING_LITERAL()?.toPlainString()
+        override fun visitImportScript(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.ImportScriptContext) {
+            val foundPath = getPath(ctx.path())
             createTransition(foundPath, ReferenceGraph.TransitionType.IMPORT)
         }
 
-        override fun visitRunScript(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.RunScriptContext?) {
-            val foundPath = ctx?.path()?.STRING_LITERAL()?.toPlainString()
+        override fun visitRunScript(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.RunScriptContext) {
+            val foundPath = getPath(ctx.path())
             createTransition(foundPath, ReferenceGraph.TransitionType.RUN_SCRIPT)
         }
 

@@ -76,6 +76,7 @@ private class PropertyDelegate<T>(
         private val default: T
 ) {
 
+    @Suppress("UNCHECKED_CAST")
     operator fun getValue(thisRef: Any?, property: KProperty<*>): T? {
         return properties[name] as T ?: default
     }

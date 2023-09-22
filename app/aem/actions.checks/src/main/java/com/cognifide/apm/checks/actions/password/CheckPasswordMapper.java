@@ -22,6 +22,7 @@ package com.cognifide.apm.checks.actions.password;
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.annotations.Mapper;
 import com.cognifide.apm.api.actions.annotations.Mapping;
+import com.cognifide.apm.api.actions.annotations.Required;
 import com.cognifide.apm.checks.actions.ActionGroup;
 
 @Mapper(value = "CHECK-PASSWORD", group = ActionGroup.CHECKS)
@@ -30,9 +31,12 @@ public final class CheckPasswordMapper {
   public static final String REFERENCE = "Verify that specific password is set for given authorizable.";
 
   @Mapping(
+      examples = "CHECK-PASSWORD 'author' 'p@$$w0rd'",
       reference = REFERENCE
   )
-  public Action mapAction(String userId, String password) {
-    return new CheckPassword(userId, password);
+  public Action mapAction(
+      @Required(value = "id", description = "user's login e.g.: 'author'") String id,
+      @Required(value = "password", description = "user's password e.g.: 'p@$$w0rd'") String password) {
+    return new CheckPassword(id, password);
   }
 }

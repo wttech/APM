@@ -23,11 +23,12 @@ package com.cognifide.apm.core.grammar.argument
 import com.cognifide.apm.core.grammar.*
 import com.cognifide.apm.core.grammar.antlr.ApmLangParser.*
 import com.cognifide.apm.core.grammar.common.getIdentifier
+import com.cognifide.apm.core.grammar.common.getKey
 import com.cognifide.apm.core.grammar.common.getPath
 import com.cognifide.apm.core.grammar.executioncontext.VariableHolder
 import com.google.common.primitives.Ints
+import org.apache.commons.lang.text.StrSubstitutor
 import org.apache.commons.lang3.StringUtils
-import org.apache.commons.lang3.text.StrSubstitutor
 
 class ArgumentResolver(private val variableHolder: VariableHolder) {
 
@@ -116,7 +117,7 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
         }
 
         override fun visitStructureEntry(ctx: StructureEntryContext): ApmType {
-            val key = ctx.IDENTIFIER().toString()
+            val key = getKey(ctx.structureKey())
             return ctx.structureValue()
                 .children
                 ?.map { child -> child.accept(this) }

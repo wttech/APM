@@ -21,7 +21,6 @@ package com.cognifide.apm.core.services.async
 
 import com.cognifide.apm.api.scripts.Script
 import com.cognifide.apm.api.services.ExecutionMode
-import com.cognifide.apm.api.status.Status
 import com.cognifide.apm.core.Property
 import com.cognifide.apm.core.jobs.JobResultsCache
 import com.cognifide.apm.core.jobs.JobResultsCache.ExecutionSummary
@@ -48,13 +47,13 @@ class AsyncScriptExecutorImpl : AsyncScriptExecutor {
     @Transient
     private lateinit var jobResultsCache: JobResultsCache
 
-    override fun process(script: Script, executionMode: ExecutionMode, customDefinitions: Map<String, String>, resourceResolver: ResourceResolver): String {
+    override fun process(script: Script, executionMode: ExecutionMode, customDefinitions: Map<String, String>, executor: String): String {
         val id = UUID.randomUUID().toString()
         val properties = mutableMapOf<String, Any>()
         properties[ID] = id
         properties[SCRIPT_PATH] = script.path
         properties[EXECUTION_MODE] = executionMode.toString()
-        properties[USER_ID] = resourceResolver.userID!!
+        properties[USER_ID] = executor
         properties[DEFINITIONS] = customDefinitions
         jobResultsCache.put(id, ExecutionSummary.running())
         thread(start = true) {
@@ -74,7 +73,7 @@ class AsyncScriptExecutorImpl : AsyncScriptExecutor {
 
     private fun finishedExecution(executionSummary: ExecutionSummary): ExecutionStatus {
         val entries = executionSummary.result.entries
-        val errorEntry = entries.findLast { it.status == Status.ERROR }
+        val errorEntry = executionSummary.result.lastError
         return if (errorEntry != null) {
             FinishedFailedExecution(executionSummary.path, entries, errorEntry)
         } else {

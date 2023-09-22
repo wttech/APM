@@ -21,8 +21,6 @@ package com.cognifide.apm.main.permissions.exceptions;
 
 public class PermissionException extends Exception {
 
-  private static final long serialVersionUID = -764235266128215763L;
-
   public PermissionException(String message) {
     super(message);
   }

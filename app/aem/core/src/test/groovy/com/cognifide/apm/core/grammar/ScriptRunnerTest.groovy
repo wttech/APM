@@ -23,7 +23,6 @@ package com.cognifide.apm.core.grammar
 import com.cognifide.apm.api.scripts.Script
 import com.cognifide.apm.api.services.ScriptFinder
 import com.cognifide.apm.api.status.Status
-import com.cognifide.apm.core.grammar.argument.Arguments
 import com.cognifide.apm.core.progress.ProgressImpl
 import org.apache.commons.io.IOUtils
 import org.apache.sling.api.resource.ResourceResolver
@@ -86,9 +85,11 @@ class ScriptRunnerTest extends Specification {
                      "Executing command SHOW [[\"a\", \"b\"], [\"c\", \"d\"]]",
                      "Executing command SHOW [1, 2, 3]",
                      "Executing command SHOW [\"a\", \"b\", 1, 2]",
-                     "Executing command SHOW {x: \"a\", y: 1, z: [\"c\", 1]}",
+                     "Executing command SHOW {x: \"a\", y: 1, z: [\"c\", 1], t: \"t\"}",
                      "Executing command SHOW 1",
                      "Executing command SHOW 1",
+                     "Executing command SHOW \"t\"",
+                     "Executing command SHOW \"t\"",
                      "Executing command SHOW [3, \"ab\"]",
                      "Executing command SHOW [\"a\", \"b\", \"c\", \"d\", 1, 2]",
                      "Executing command SHOW [[\"a\", \"b\"], [\"c\", \"d\"]]"]
@@ -125,7 +126,7 @@ class ScriptRunnerTest extends Specification {
         def result = scriptExecutor.execute(script, new ProgressImpl(""))
 
         then:
-        result.entries.size() == 3
+        result.entries.size() == 7
         result.entries[0].messages ==
                 ["Import from script /import-define.apm. Notice, only DEFINE actions were processed!",
                  "Imported variable: var=\"imported val\""]
@@ -137,6 +138,11 @@ class ScriptRunnerTest extends Specification {
         result.entries[2].messages ==
                 ["Import from script /import-deep-define.apm. Notice, only DEFINE actions were processed!",
                  "Imported variable: deepNamespace={deeperNamespace: {var: \"imported val\"}, deepVar: \"imported val + imported val\"}"]
+
+        result.entries[3].command == "Executing command SHOW \"imported val\""
+        result.entries[4].command == "Executing command SHOW \"imported val\""
+        result.entries[5].command == "Executing command SHOW \"imported val\""
+        result.entries[6].command == "Executing command SHOW \"imported val + imported val\""
     }
 
     def "run script filename.apm"() {
