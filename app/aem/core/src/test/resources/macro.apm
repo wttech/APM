@@ -28,8 +28,17 @@ REGISTER-MACRO parameterizedMacro1(param) BEGIN
 END
 
 REGISTER-MACRO parameterizedMacro2(param1, param2) BEGIN
-    SHOW 'parameterizedMacro2 ${param1}'
-    SHOW 'parameterizedMacro2 ${param2}'
+    SHOW 'parameterizedMacro2 ${param1} ${param2}'
+END
+
+REGISTER-MACRO parameterizedMacroOuter(param) BEGIN
+    SHOW 'parameterizedMacroOuter ${param}'
+    RUN-MACRO parameterizedMacroInner($param, '1')
+    RUN-MACRO parameterizedMacroInner($param, '2')
+END
+
+REGISTER-MACRO parameterizedMacroInner(param1, param2) BEGIN
+    SHOW 'parameterizedMacroInner ${param1} ${param2}'
 END
 
 RUN-MACRO simpleMacro
@@ -37,3 +46,4 @@ RUN-MACRO parameterizedMacro1('param')
 RUN-MACRO parameterizedMacro2('param1', 'param2')
 RUN-MACRO parameterizedMacro1($str1 + $str2)
 RUN-MACRO parameterizedMacro2($str1, $str2)
+RUN-MACRO parameterizedMacroOuter('param')

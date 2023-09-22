@@ -107,11 +107,12 @@ class ScriptRunnerTest extends Specification {
                 .findAll { it.startsWith("Executing") }
         commands == ["Executing command SHOW \"simpleMacro\"",
                      "Executing command SHOW \"parameterizedMacro1 param\"",
-                     "Executing command SHOW \"parameterizedMacro2 param1\"",
-                     "Executing command SHOW \"parameterizedMacro2 param2\"",
+                     "Executing command SHOW \"parameterizedMacro2 param1 param2\"",
                      "Executing command SHOW \"parameterizedMacro1 ab\"",
-                     "Executing command SHOW \"parameterizedMacro2 a\"",
-                     "Executing command SHOW \"parameterizedMacro2 b\""]
+                     "Executing command SHOW \"parameterizedMacro2 a b\"",
+                     "Executing command SHOW \"parameterizedMacroOuter param\"",
+                     "Executing command SHOW \"parameterizedMacroInner param 1\"",
+                     "Executing command SHOW \"parameterizedMacroInner param 2\""]
     }
 
     def "run import"() {
