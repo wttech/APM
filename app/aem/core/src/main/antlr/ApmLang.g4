@@ -42,7 +42,7 @@ path
     ;
 
 array
-    : ARRAY_BEGIN arrayValue (',' arrayValue)* ARRAY_END
+    : ARRAY_BEGIN arrayValue (COMMA arrayValue)* ARRAY_END
     ;
 
 arrayValue
@@ -53,7 +53,7 @@ arrayValue
     ;
 
 structure
-    : STRUCTURE_BEGIN structureEntry (',' structureEntry)* STRUCTURE_END
+    : STRUCTURE_BEGIN structureEntry (COMMA structureEntry)* STRUCTURE_END
     ;
 
 structureEntry
@@ -116,6 +116,8 @@ command
     | FOR_EACH IDENTIFIER IN argument body # ForEach
     | DEFINE IDENTIFIER argument # DefineVariable
     | REQUIRE IDENTIFIER # RequireVariable
+    | REGISTER_MACRO identifier variableList? body # RegisterMacro
+    | RUN_MACRO identifier argumentList? # RunMacro
     | (ALLOW | DENY) argument ON? complexArguments # AllowDenyCommand
     | commandName complexArguments? body? # GenericCommand
     ;
@@ -159,6 +161,14 @@ body
     : BLOCK_BEGIN command+ BLOCK_END
     ;
 
+variableList
+    : BRACKET_BEGIN IDENTIFIER (COMMA IDENTIFIER)* BRACKET_END
+    ;
+
+argumentList
+    : BRACKET_BEGIN argument (COMMA argument)* BRACKET_END
+    ;
+
 /*
  * Lexer Rules
  */
@@ -175,6 +185,15 @@ STRUCTURE_BEGIN
     ;
 STRUCTURE_END
     : '}'
+    ;
+BRACKET_BEGIN
+    : '('
+    ;
+BRACKET_END
+    : ')'
+    ;
+COMMA
+    : ','
     ;
 BLOCK_BEGIN
     : 'begin'
@@ -203,6 +222,14 @@ IN
 DEFINE
     : 'define'
     | 'DEFINE'
+    ;
+REGISTER_MACRO
+    : 'register-macro'
+    | 'REGISTER-MACRO'
+    ;
+RUN_MACRO
+    : 'run-macro'
+    | 'RUN-MACRO'
     ;
 REQUIRE
     : 'require'
