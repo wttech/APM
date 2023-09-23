@@ -29,7 +29,6 @@ import com.cognifide.apm.core.grammar.argument.Arguments
 import com.cognifide.apm.core.grammar.common.getIdentifier
 import com.cognifide.apm.core.grammar.common.getPath
 import com.cognifide.apm.core.grammar.executioncontext.ExecutionContext
-import com.cognifide.apm.core.grammar.macro.Macro
 import com.cognifide.apm.core.grammar.parsedscript.InvalidSyntaxException
 import com.cognifide.apm.core.grammar.parsedscript.InvalidSyntaxMessageFactory
 import com.cognifide.apm.core.grammar.utils.ImportScript
@@ -221,45 +220,6 @@ class ScriptRunner(
             val result = ImportScript(executionContext).import(ctx)
             executionContext.variableHolder.setAll(result.variableHolder)
             progress(ctx, Status.SUCCESS, "import", result.toMessages())
-            return Status.SUCCESS
-        }
-
-        override fun visitRegisterMacro(ctx: RegisterMacroContext): Status {
-            val macroName = getIdentifier(ctx.identifier())
-            val variableList = ctx.variableList()
-                ?.IDENTIFIER()
-                ?.map { it.toString() }
-                ?: listOf()
-            val body = ctx.body()
-            executionContext.registerMacro(Macro(macroName, variableList, body))
-            return Status.SUCCESS
-        }
-
-        override fun visitRunMacro(ctx: RunMacroContext): Status {
-            val macroName = getIdentifier(ctx.identifier())
-            val macro = executionContext.fetchMacro(macroName)
-            if (macro == null) {
-                progress(ctx, Status.ERROR, "run-macro", "Macro \"$macroName\" is not registered")
-            } else {
-                val argumentList = ctx.argumentList()
-                    ?.argument()
-                    ?.map { executionContext.resolveArgument(it) }
-                    ?: listOf()
-                val values = macro.variableList
-                    .zip(argumentList)
-                    .toMap()
-                try {
-                    executionContext.createLocalContext()
-                    val valueStr = values.map { it.key + "=" + it.value }
-                        .joinToString()
-                    progress(ctx, Status.SUCCESS, "run-macro", "Begin: $valueStr")
-                    values.forEach { (k, v) -> executionContext.setVariable(k, v) }
-                    visit(macro.body)
-                    progress(ctx, Status.SUCCESS, "run-macro", "End")
-                } finally {
-                    executionContext.removeLocalContext()
-                }
-            }
             return Status.SUCCESS
         }
 
