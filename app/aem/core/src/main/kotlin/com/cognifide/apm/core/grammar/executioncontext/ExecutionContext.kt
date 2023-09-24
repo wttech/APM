@@ -90,7 +90,7 @@ class ExecutionContext private constructor(
         variableHolder[key] = value
     }
 
-    override fun getVariable(key: String): ApmType? {
+    override fun getVariable(key: String): ApmType {
         return variableHolder[key]
     }
 

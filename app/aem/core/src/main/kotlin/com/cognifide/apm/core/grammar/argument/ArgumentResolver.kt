@@ -155,8 +155,7 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
         private fun determineStringValue(value: String): ApmString {
             val tokens = StringUtils.substringsBetween(value, "\${", "}")
                 .orEmpty()
-                .map { it to variableHolder[it]!!.string }
-                .toMap()
+                .associateWith { variableHolder[it]!!.string }
             val strSubstitutor = StrSubstitutor(tokens, "\${", "}")
             return ApmString(if (tokens.isEmpty()) value else strSubstitutor.replace(value))
         }
@@ -177,7 +176,6 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
         override fun visitVariable(ctx: VariableContext): ApmType {
             val name = getIdentifier(ctx.variableIdentifier())
             return variableHolder[name]
-                ?: throw ArgumentResolverException("Variable \"$name\" not found")
         }
     }
 }
