@@ -95,6 +95,22 @@ class ScriptRunnerTest extends Specification {
                      "Executing command SHOW [[\"a\", \"b\"], [\"c\", \"d\"]]"]
     }
 
+    def "run macro"() {
+        given:
+        Script script = createScript("/run-macro.apm")
+        scriptFinder.find("/macro.apm", resourceResolver) >> createScript("/macro.apm")
+
+        when:
+        def result = scriptExecutor.execute(script, new ProgressImpl(""))
+
+        then:
+        def commands = result.entries
+                .collect { it.command }
+                .findAll { it.startsWith("Executing") }
+        commands == ["Executing command SHOW \"abc\"",
+                     "Executing command SHOW \"123\""]
+    }
+
     def "run import"() {
         given:
         Script script = createScript("/import.apm")
