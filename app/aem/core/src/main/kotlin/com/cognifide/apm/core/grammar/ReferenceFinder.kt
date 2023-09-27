@@ -25,6 +25,7 @@ import com.cognifide.apm.api.scripts.LaunchMode
 import com.cognifide.apm.api.scripts.Script
 import com.cognifide.apm.api.services.ScriptFinder
 import com.cognifide.apm.core.grammar.common.getPath
+import com.cognifide.apm.core.grammar.datasource.DataSourceInvoker
 import com.cognifide.apm.core.grammar.executioncontext.ExecutionContext
 import com.cognifide.apm.core.grammar.parsedscript.ParsedScript
 import com.cognifide.apm.core.progress.ProgressImpl
@@ -33,7 +34,8 @@ import java.util.*
 
 class ReferenceFinder(
         private val scriptFinder: ScriptFinder,
-        private val resourceResolver: ResourceResolver) {
+        private val resourceResolver: ResourceResolver,
+        private val dataSourceInvoker: DataSourceInvoker) {
 
     fun findReferences(script: Script): List<Script> {
         val result = mutableSetOf<Script>()
@@ -64,7 +66,7 @@ class ReferenceFinder(
     private fun fillReferenceGraph(refGraph: ReferenceGraph, script: Script) {
         if (refGraph.getNode(script) == null) {
             val parsedScript = ParsedScript.create(script).apm
-            val executionContext = ExecutionContext.create(scriptFinder, resourceResolver, script, ProgressImpl(resourceResolver.userID))
+            val executionContext = ExecutionContext.create(scriptFinder, resourceResolver, dataSourceInvoker, script, ProgressImpl(resourceResolver.userID))
             findReferences(refGraph, refGraph.addNode(script), listOf(script), executionContext, parsedScript)
         }
     }

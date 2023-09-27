@@ -24,11 +24,17 @@ import com.cognifide.apm.core.grammar.ApmMap
 import com.cognifide.apm.core.grammar.ScriptExecutionException
 import com.cognifide.apm.core.grammar.argument.ArgumentResolver
 import com.cognifide.apm.core.grammar.common.getPath
+import com.cognifide.apm.core.grammar.datasource.DataSourceInvoker
 import com.cognifide.apm.core.grammar.executioncontext.ExecutionContext
 import com.cognifide.apm.core.grammar.executioncontext.VariableHolder
 import com.cognifide.apm.core.grammar.parsedscript.ParsedScript
+import org.apache.sling.api.resource.ResourceResolver
 
-class ImportScript(private val executionContext: ExecutionContext) {
+class ImportScript(
+    private val executionContext: ExecutionContext,
+    private val resolver: ResourceResolver,
+    private val dataSourceInvoker: DataSourceInvoker
+) {
 
     private val visitedScripts: MutableSet<ParsedScript> = mutableSetOf()
 
@@ -49,7 +55,7 @@ class ImportScript(private val executionContext: ExecutionContext) {
     private inner class ImportScriptVisitor : com.cognifide.apm.core.grammar.antlr.ApmLangBaseVisitor<Unit>() {
         val variableHolder = VariableHolder()
 
-        val argumentResolver = ArgumentResolver(variableHolder)
+        val argumentResolver = ArgumentResolver(variableHolder, resolver, dataSourceInvoker)
 
         override fun visitDefineVariable(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.DefineVariableContext) {
             val variableName = ctx.IDENTIFIER().toString()

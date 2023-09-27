@@ -28,6 +28,7 @@ import com.cognifide.apm.core.grammar.argument.ArgumentResolverException
 import com.cognifide.apm.core.grammar.argument.Arguments
 import com.cognifide.apm.core.grammar.common.getIdentifier
 import com.cognifide.apm.core.grammar.common.getPath
+import com.cognifide.apm.core.grammar.datasource.DataSourceInvoker
 import com.cognifide.apm.core.grammar.executioncontext.ExecutionContext
 import com.cognifide.apm.core.grammar.parsedscript.InvalidSyntaxException
 import com.cognifide.apm.core.grammar.parsedscript.InvalidSyntaxMessageFactory
@@ -43,13 +44,14 @@ class ScriptRunner(
     private val scriptFinder: ScriptFinder,
     private val resourceResolver: ResourceResolver,
     private val validateOnly: Boolean = false,
-    private val actionInvoker: ActionInvoker
+    private val actionInvoker: ActionInvoker,
+    private val dataSourceInvoker: DataSourceInvoker
 ) {
 
     @JvmOverloads
     fun execute(script: Script, progress: Progress, initialDefinitions: Map<String, String> = mapOf()): Progress {
         try {
-            val executionContext = ExecutionContext.create(scriptFinder, resourceResolver, script, progress)
+            val executionContext = ExecutionContext.create(scriptFinder, resourceResolver, dataSourceInvoker, script, progress)
             initialDefinitions.forEach { (name, value) -> executionContext.setVariable(name, ApmString(value)) }
             val executor = Executor(executionContext)
             executor.visit(executionContext.root.apm)
@@ -219,7 +221,7 @@ class ScriptRunner(
         }
 
         override fun visitImportScript(ctx: ImportScriptContext): Status {
-            val result = ImportScript(executionContext).import(ctx)
+            val result = ImportScript(executionContext, resourceResolver, dataSourceInvoker).import(ctx)
             executionContext.variableHolder.setAll(result.variableHolder)
             progress(ctx, Status.SUCCESS, "import", result.toMessages())
             return Status.SUCCESS

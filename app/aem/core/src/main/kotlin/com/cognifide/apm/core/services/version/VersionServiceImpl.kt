@@ -24,6 +24,7 @@ import com.cognifide.apm.api.services.ScriptFinder
 import com.cognifide.apm.core.Property
 import com.cognifide.apm.core.grammar.ReferenceFinder
 import com.cognifide.apm.core.grammar.ScriptExecutionException
+import com.cognifide.apm.core.grammar.datasource.DataSourceInvoker
 import com.cognifide.apm.core.scripts.MutableScriptWrapper
 import com.cognifide.apm.core.scripts.ScriptNode
 import com.day.cq.commons.jcr.JcrUtil
@@ -51,6 +52,10 @@ class VersionServiceImpl : VersionService {
     @Transient
     private lateinit var scriptFinder: ScriptFinder
 
+    @Reference
+    @Transient
+    private lateinit var dataSourceInvoker: DataSourceInvoker
+
     override fun getScriptVersion(resolver: ResourceResolver, script: Script): ScriptVersion {
         val scriptVersionPath = getScriptVersionPath(script)
         return resolver.getResource(scriptVersionPath)?.adaptTo(ScriptVersionModel::class.java)
@@ -71,7 +76,7 @@ class VersionServiceImpl : VersionService {
     }
 
     override fun updateVersionIfNeeded(resolver: ResourceResolver, vararg scripts: Script) {
-        val referenceFinder = ReferenceFinder(scriptFinder, resolver)
+        val referenceFinder = ReferenceFinder(scriptFinder, resolver, dataSourceInvoker)
         scripts.forEach { script ->
             try {
                 val subtree = referenceFinder.findReferences(script)

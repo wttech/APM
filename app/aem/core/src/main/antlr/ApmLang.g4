@@ -42,7 +42,7 @@ path
     ;
 
 array
-    : ARRAY_BEGIN arrayValue (',' arrayValue)* ARRAY_END
+    : ARRAY_BEGIN arrayValue (COMMA arrayValue)* ARRAY_END
     ;
 
 arrayValue
@@ -53,7 +53,7 @@ arrayValue
     ;
 
 structure
-    : STRUCTURE_BEGIN structureEntry (',' structureEntry)* STRUCTURE_END
+    : STRUCTURE_BEGIN structureEntry (COMMA structureEntry)* STRUCTURE_END
     ;
 
 structureEntry
@@ -63,6 +63,10 @@ structureEntry
 structureKey
     : IDENTIFIER
     | STRING_LITERAL
+    ;
+
+dataSource
+    : identifier BRACKET_BEGIN (argument (COMMA argument)*)? BRACKET_END
     ;
 
 structureValue
@@ -108,6 +112,7 @@ expression
 argument
     : expression
     | path
+    | dataSource
     ;
 
 command
@@ -175,6 +180,15 @@ STRUCTURE_BEGIN
     ;
 STRUCTURE_END
     : '}'
+    ;
+BRACKET_BEGIN
+    : '('
+    ;
+BRACKET_END
+    : ')'
+    ;
+COMMA
+    : ','
     ;
 BLOCK_BEGIN
     : 'begin'

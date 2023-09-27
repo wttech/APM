@@ -24,6 +24,7 @@ import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.grammar.ReferenceFinder;
+import com.cognifide.apm.core.grammar.datasource.DataSourceInvoker;
 import com.cognifide.apm.core.history.History;
 import com.cognifide.apm.core.history.HistoryEntry;
 import com.cognifide.apm.core.launchers.AbstractLauncher;
@@ -75,6 +76,9 @@ public class ApmInstallService extends AbstractLauncher {
   @Reference
   private History history;
 
+  @Reference
+  private DataSourceInvoker dataSourceInvoker;
+
   @Activate
   public void activate(Configuration config) {
     SlingHelper.operateTraced(resolverProvider, resolver -> {
@@ -87,7 +91,7 @@ public class ApmInstallService extends AbstractLauncher {
   }
 
   private void processScripts(Configuration config, ResourceResolver resolver) throws PersistenceException {
-    ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resolver);
+    ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resolver, dataSourceInvoker);
     List<Script> scripts = Arrays.stream(config.scriptPaths())
         .map(scriptPath -> scriptFinder.find(scriptPath, resolver))
         .filter(Objects::nonNull)

@@ -23,6 +23,7 @@ package com.cognifide.apm.core.grammar
 import com.cognifide.apm.api.scripts.Script
 import com.cognifide.apm.api.services.ScriptFinder
 import com.cognifide.apm.api.status.Status
+import com.cognifide.apm.core.grammar.datasource.DataSourceInvoker
 import com.cognifide.apm.core.progress.ProgressImpl
 import org.apache.commons.io.IOUtils
 import org.apache.sling.api.resource.ResourceResolver
@@ -32,7 +33,8 @@ class ScriptRunnerTest extends Specification {
 
     def scriptFinder = Mock(ScriptFinder)
     def resourceResolver = Mock(ResourceResolver)
-    def scriptExecutor = new ScriptRunner(scriptFinder, resourceResolver, false, createActionInvoker())
+    def dataSourceInvoker = new DataSourceInvoker()
+    def scriptExecutor = new ScriptRunner(scriptFinder, resourceResolver, false, createActionInvoker(), dataSourceInvoker)
 
     def "run for-each"() {
         given:

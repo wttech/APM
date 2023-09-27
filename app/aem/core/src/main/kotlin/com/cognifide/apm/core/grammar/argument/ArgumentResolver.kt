@@ -25,11 +25,15 @@ import com.cognifide.apm.core.grammar.antlr.ApmLangParser.*
 import com.cognifide.apm.core.grammar.common.getIdentifier
 import com.cognifide.apm.core.grammar.common.getKey
 import com.cognifide.apm.core.grammar.common.getPath
+import com.cognifide.apm.core.grammar.datasource.DataSourceInvoker
 import com.cognifide.apm.core.grammar.executioncontext.VariableHolder
 import org.apache.commons.lang.text.StrSubstitutor
 import org.apache.commons.lang3.StringUtils
+import org.apache.sling.api.resource.ResourceResolver
 
-class ArgumentResolver(private val variableHolder: VariableHolder) {
+class ArgumentResolver(private val variableHolder: VariableHolder,
+                       private val resolver: ResourceResolver,
+                       private val dataSourceInvoker: DataSourceInvoker) {
 
     private val singleArgumentResolver: SingleArgumentResolver
 
@@ -175,6 +179,16 @@ class ArgumentResolver(private val variableHolder: VariableHolder) {
         override fun visitVariable(ctx: VariableContext): ApmType {
             val name = getIdentifier(ctx.variableIdentifier())
             return variableHolder[name]
+        }
+
+        override fun visitDataSource(ctx: DataSourceContext): ApmType {
+            val name = getIdentifier(ctx.identifier())
+            val values = ctx.children
+                ?.map { child -> child.accept(this) }
+                ?.filter { it !is ApmEmpty }
+                ?: listOf()
+            return dataSourceInvoker?.determine(name, resolver, values)
+                ?: throw ArgumentResolverException("Data source \"$name\" not found")
         }
     }
 }

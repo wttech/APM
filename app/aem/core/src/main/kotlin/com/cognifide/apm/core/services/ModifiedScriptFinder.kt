@@ -25,6 +25,7 @@ import com.cognifide.apm.api.services.ScriptFinder
 import com.cognifide.apm.core.Property
 import com.cognifide.apm.core.grammar.ReferenceFinder
 import com.cognifide.apm.core.grammar.ScriptExecutionException
+import com.cognifide.apm.core.grammar.datasource.DataSourceInvoker
 import com.cognifide.apm.core.history.History
 import com.cognifide.apm.core.services.version.VersionService
 import org.apache.sling.api.resource.ResourceResolver
@@ -54,9 +55,13 @@ class ModifiedScriptFinder {
     @Transient
     lateinit var history: History
 
+    @Reference
+    @Transient
+    lateinit var dataSourceInvoker: DataSourceInvoker
+
     fun findAll(filter: Predicate<Script>, resolver: ResourceResolver): List<Script> {
         val all = scriptFinder.findAll(filter, resolver)
-        val referenceFinder = ReferenceFinder(scriptFinder, resolver)
+        val referenceFinder = ReferenceFinder(scriptFinder, resolver, dataSourceInvoker)
         val modified = mutableListOf<Script>()
 
         all
