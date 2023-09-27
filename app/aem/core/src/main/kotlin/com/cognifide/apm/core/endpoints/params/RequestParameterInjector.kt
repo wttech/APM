@@ -21,7 +21,6 @@
 package com.cognifide.apm.core.endpoints.params
 
 import com.cognifide.apm.core.Property
-import com.google.common.primitives.Ints
 import org.apache.commons.lang3.StringUtils
 import org.apache.sling.api.SlingHttpServletRequest
 import org.apache.sling.models.spi.DisposalCallbackRegistry
@@ -69,7 +68,7 @@ class RequestParameterInjector : Injector, StaticInjectAnnotationProcessorFactor
         val parameterValue = request.getRequestParameter(fieldName) ?: return null
         return when {
             annotatedElement.isAnnotationPresent(FileName::class.java) -> parameterValue.fileName
-            fieldClass.name in listOf("java.lang.Integer", "int") -> Ints.tryParse(parameterValue.string)
+            fieldClass.name in listOf("java.lang.Integer", "int") -> parameterValue.string.toIntOrNull()
             fieldClass.name in listOf("java.lang.Boolean", "boolean") -> "true" == parameterValue.string
             fieldClass == InputStream::class.java -> parameterValue.inputStream
             fieldClass == LocalDateTime::class.java -> toLocalDateTime(annotatedElement, parameterValue)
@@ -106,6 +105,7 @@ class RequestParameterInjector : Injector, StaticInjectAnnotationProcessorFactor
             return annotation.value
         }
 
+        @Deprecated("")
         override fun isOptional(): Boolean {
             return annotation.optional
         }

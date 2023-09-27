@@ -64,8 +64,8 @@ class VariableHolder {
             for (key in keys) {
                 result = when (result) {
                     is ApmList -> result.list.getOrNull(key.toIntOrNull() ?: -1)
-                    is ApmMap -> result.map.get(key)
-                    else -> context.get(key)
+                    is ApmMap -> result.map[key]
+                    else -> context[key]
                 }
                 result ?: break
             }

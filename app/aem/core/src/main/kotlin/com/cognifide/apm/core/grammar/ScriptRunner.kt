@@ -92,7 +92,9 @@ class ScriptRunner(
 
         override fun visitRequireVariable(ctx: RequireVariableContext): Status {
             val variableName = ctx.IDENTIFIER().toString()
-            if (executionContext.getVariable(variableName) == null) {
+            try {
+                executionContext.getVariable(variableName)
+            } catch (e: ArgumentResolverException) {
                 val status = if (validateOnly) Status.WARNING else Status.ERROR
                 progress(ctx, status, "require", "Variable \"$variableName\" is required")
             }
