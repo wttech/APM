@@ -19,14 +19,24 @@
  */
 package com.cognifide.apm.core.grammar.datasource;
 
+import com.cognifide.apm.core.grammar.ApmString;
 import com.cognifide.apm.core.grammar.ApmType;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.osgi.service.component.annotations.Component;
 
 import java.util.List;
 
-public interface DataSource {
+@Component
+public class LowerDataSource implements DataSource {
 
-  String getName();
+  @Override
+  public String getName() {
+    return "LOWER";
+  }
 
-  ApmType determine(ResourceResolver resolver, List<ApmType> parameters);
+  @Override
+  public ApmType determine(ResourceResolver resolver, List<ApmType> parameters) {
+    String value = parameters.get(0).getString();
+    return new ApmString(value.toLowerCase());
+  }
 }
