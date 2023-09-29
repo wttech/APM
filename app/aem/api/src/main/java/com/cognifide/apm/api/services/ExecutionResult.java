@@ -42,6 +42,8 @@ public interface ExecutionResult {
 
     List<String> getMessages();
 
+    List<String> getPrettyMessages();
+
     List<String> getParameters();
 
     Status getStatus();

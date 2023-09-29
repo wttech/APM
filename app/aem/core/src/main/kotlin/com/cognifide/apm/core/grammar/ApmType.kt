@@ -21,9 +21,11 @@
 package com.cognifide.apm.core.grammar
 
 import com.cognifide.apm.core.crypto.DecryptionService
+import kotlin.math.min
 
 abstract class ApmType {
     abstract fun getArgument(decryptionService: DecryptionService): Any?
+    open fun prettyPrint(depth: Int, prefixDepth: Int): String = ""
     open val integer: Int?
         get() = null
     open val string: String?
@@ -46,7 +48,11 @@ data class ApmInteger(val value: Int) : ApmType() {
         get() = value.toString()
 
     override fun toString(): String {
-        return value.toString()
+        return prettyPrint(0, 0)
+    }
+
+    override fun prettyPrint(depth: Int, prefixDepth: Int): String {
+        return "\t".repeat(min(depth, prefixDepth)) + value.toString()
     }
 }
 
@@ -57,7 +63,11 @@ data class ApmString(val value: String) : ApmType() {
         get() = value
 
     override fun toString(): String {
-        return "\"$value\""
+        return prettyPrint(0, 0)
+    }
+
+    override fun prettyPrint(depth: Int, prefixDepth: Int): String {
+        return "\t".repeat(min(depth, prefixDepth)) + "\"$value\""
     }
 }
 
@@ -68,7 +78,22 @@ data class ApmList(val value: List<ApmType>) : ApmType() {
         get() = value
 
     override fun toString(): String {
-        return value.joinToString(prefix = "[", postfix = "]") { "$it" }
+        return prettyPrint(0, 0)
+    }
+
+    override fun prettyPrint(depth: Int, prefixDepth: Int): String {
+        return if (value.all { it is ApmString || it is ApmInteger }) {
+            value.joinToString(
+                prefix = "\t".repeat(prefixDepth) + "[",
+                postfix = "]"
+            ) { it.prettyPrint(0, 0) }
+        } else {
+            value.joinToString(
+                separator = ",\n",
+                prefix = "\t".repeat(prefixDepth) + "[\n",
+                postfix = "\n" + "\t".repeat(depth) + "]"
+            ) { it.prettyPrint(depth + 1, depth + 1) }
+        }
     }
 }
 
@@ -80,7 +105,25 @@ data class ApmMap(val value: Map<String, ApmType>) : ApmType() {
         get() = value
 
     override fun toString(): String {
-        return value.entries.joinToString(prefix = "{", postfix = "}") { "${it.key}: ${it.value}" }
+        return prettyPrint(0, 0)
+    }
+
+    override fun prettyPrint(depth: Int, prefixDepth: Int): String {
+        return if (value.size == 1
+            && (value.values.all { it is ApmString || it is ApmInteger }
+                || value.values.filterIsInstance<ApmList>().first().value.all { it is ApmString || it is ApmInteger })
+        ) {
+            value.entries.joinToString(
+                prefix = "\t".repeat(prefixDepth) + "{",
+                postfix = "}"
+            ) { "${it.key}: ${it.value.prettyPrint(0, 0)}" }
+        } else {
+            value.entries.joinToString(
+                separator = ",\n",
+                prefix = "\t".repeat(prefixDepth) + "{\n",
+                postfix = "\n" + "\t".repeat(depth) + "}"
+            ) { "\t".repeat(depth + 1) + "${it.key}: ${it.value.prettyPrint(depth + 1, 0)}" }
+        }
     }
 }
 
@@ -99,3 +142,4 @@ data class ApmPair(val value: Pair<String, ApmType>) : ApmType() {
 class ApmEmpty : ApmType() {
     override fun getArgument(decryptionService: DecryptionService): Any? = null
 }
+

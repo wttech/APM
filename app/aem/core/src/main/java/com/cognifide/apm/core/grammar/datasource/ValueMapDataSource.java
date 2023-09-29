@@ -25,10 +25,8 @@ import org.apache.sling.api.resource.ValueMap;
 import org.osgi.service.component.annotations.Component;
 
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -49,13 +47,27 @@ public class ValueMapDataSource implements DataSource {
       Object value = entry.getValue();
       if (value instanceof Object[]) {
         List<ApmType> list = Arrays.stream((Object[]) value)
-            .map(item -> new ApmString(item.toString()))
+            .map(this::determineValue)
             .collect(Collectors.toList());
         map.put(key, new ApmList(list));
       } else {
-        map.put(key, new ApmString(value.toString()));
+        map.put(key, determineValue(value));
       }
     }
     return new ApmMap(map);
+  }
+
+  private ApmType determineValue(Object value) {
+    ApmType result;
+    if (value instanceof Integer) {
+      result = new ApmInteger((Integer) value);
+    } else if (value instanceof Calendar) {
+      result = new ApmString((((Calendar) value).toInstant()).toString());
+    } else if (value instanceof InputStream) {
+      result = new ApmString("(binary)");
+    } else {
+      result = new ApmString(value.toString());
+    }
+    return result;
   }
 }

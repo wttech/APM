@@ -19,19 +19,14 @@
  */
 package com.cognifide.apm.core.grammar.datasource;
 
-import com.cognifide.apm.core.grammar.ApmList;
-import com.cognifide.apm.core.grammar.ApmMap;
-import com.cognifide.apm.core.grammar.ApmString;
-import com.cognifide.apm.core.grammar.ApmType;
+import com.cognifide.apm.core.grammar.*;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,7 +41,7 @@ public class ContentDataSource implements DataSource {
   @Override
   public ApmType determine(ResourceResolver resolver, List<ApmType> parameters) {
     List<Config> configs = determineConfigs(parameters);
-    Resource root = resolver.getResource("/content");
+    Resource root = resolver.getResource("/");
     return traverseTree(root, 0, configs);
   }
 
@@ -56,6 +51,10 @@ public class ContentDataSource implements DataSource {
     for (Resource resource : root.getChildren()) {
       Matcher matcher = config.pattern.matcher(resource.getPath());
       if (matcher.matches()) {
+        ApmType items = new ApmEmpty();
+        if (depth < configs.size() - 1) {
+          items = traverseTree(resource, depth + 1, configs);
+        }
         Map<String, ApmType> map = new HashMap<>();
         map.put("path", new ApmString(resource.getPath()));
         map.put("name", new ApmString(resource.getName()));
@@ -63,18 +62,26 @@ public class ContentDataSource implements DataSource {
           map.put(config.paramNames.get(i), new ApmString(matcher.group(i + 1)));
         }
         if (depth < configs.size() - 1) {
-          map.put("pages", traverseTree(resource, depth + 1, configs));
+          map.put("items", items);
         }
-        list.add(new ApmMap(map));
+        if (items instanceof ApmEmpty || !CollectionUtils.isEmpty(items.getList())) {
+          list.add(new ApmMap(map));
+        }
       }
     }
-    return new ApmList(list);
+    ApmType result;
+    if (list.size() == 1 && config.paramNames.size() == 0) {
+      result = list.get(0).getMap().get("items");
+    } else {
+      result = new ApmList(list);
+    }
+    return result;
   }
 
   private List<Config> determineConfigs(List<ApmType> parameters) {
     String regex = parameters.get(0).getString();
     List<ApmType> paramNames = parameters.get(1).getList();
-    String[] parts = StringUtils.substringAfter(regex, "/content/").split("/");
+    String[] parts = StringUtils.substringAfter(regex, "/").split("/");
     int paramIndex = 0;
     List<Config> configs = new ArrayList<>();
     for (String part : parts) {

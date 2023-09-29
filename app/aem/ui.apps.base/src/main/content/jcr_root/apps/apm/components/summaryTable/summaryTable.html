@@ -63,7 +63,7 @@
         </td>
         <td class="_coral-Table-cell">
           <ul>
-            <li data-sly-repeat.text="${execution.messages}">${text}</li>
+            <li data-sly-repeat.text="${execution.prettyMessages}">${text @ context='html'}</li>
           </ul>
         </td>
       </tr>

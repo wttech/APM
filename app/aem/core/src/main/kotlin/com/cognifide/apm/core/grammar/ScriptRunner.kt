@@ -88,7 +88,7 @@ class ScriptRunner(
             val variableName = ctx.IDENTIFIER().toString()
             val variableValue = executionContext.resolveArgument(ctx.argument())
             executionContext.setVariable(variableName, variableValue)
-            progress(ctx, Status.SUCCESS, "define", "Defined variable: $variableName= $variableValue")
+            progress(ctx, Status.SUCCESS, "define", "Defined variable: $variableName=$variableValue")
             return Status.SUCCESS
         }
 
