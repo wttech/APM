@@ -36,11 +36,12 @@ import org.apache.jackrabbit.api.security.user.Authorizable
 import org.apache.sling.api.resource.ResourceResolver
 
 class ExecutionContext private constructor(
-    private val scriptFinder: ScriptFinder,
-    private val resourceResolver: ResourceResolver,
-    private val dataSourceInvoker: DataSourceInvoker,
-    val root: ParsedScript,
-    override val progress: Progress) : ExternalExecutionContext {
+        private val scriptFinder: ScriptFinder,
+        private val resourceResolver: ResourceResolver,
+        private val dataSourceInvoker: DataSourceInvoker,
+        val root: ParsedScript,
+        override val progress: Progress
+) : ExternalExecutionContext {
 
     private val parsedScripts: MutableMap<String, ParsedScript> = mutableMapOf()
     private var runScripts: StackWithRoot<RunScript> = StackWithRoot(RunScript(root))

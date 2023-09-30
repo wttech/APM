@@ -31,9 +31,11 @@ import org.apache.commons.lang.text.StrSubstitutor
 import org.apache.commons.lang3.StringUtils
 import org.apache.sling.api.resource.ResourceResolver
 
-class ArgumentResolver(private val variableHolder: VariableHolder,
-                       private val resolver: ResourceResolver,
-                       private val dataSourceInvoker: DataSourceInvoker) {
+class ArgumentResolver(
+    private val variableHolder: VariableHolder,
+    private val resolver: ResourceResolver,
+    private val dataSourceInvoker: DataSourceInvoker
+) {
 
     private val singleArgumentResolver: SingleArgumentResolver
 
