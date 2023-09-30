@@ -48,7 +48,7 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 @Component(
-    service = ApmInstallService.class,
+    service = {ApmInstallService.class, Runnable.class},
     immediate = true,
     property = {
         Property.DESCRIPTION + "APM Launches configured scripts",
@@ -56,7 +56,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
     }
 )
 @Designate(ocd = ApmInstallService.Configuration.class, factory = true)
-public class ApmInstallService extends AbstractLauncher {
+public class ApmInstallService extends AbstractLauncher implements Runnable {
 
   private static final String AEM_MUTABLE_CONTENT_INSTANCE = "aem-install-mutable-content";
 
@@ -75,8 +75,20 @@ public class ApmInstallService extends AbstractLauncher {
   @Reference
   private History history;
 
+  private Configuration config;
+
   @Activate
   public void activate(Configuration config) {
+    this.config = config;
+    process();
+  }
+
+  @Override
+  public void run() {
+    process();
+  }
+
+  private void process() {
     SlingHelper.operateTraced(resolverProvider, resolver -> {
       boolean compositeNodeStore = RuntimeUtils.determineCompositeNodeStore(resolver);
       String instanceName = ManagementFactory.getRuntimeMXBean().getName();
@@ -119,6 +131,7 @@ public class ApmInstallService extends AbstractLauncher {
     @AttributeDefinition(name = "If Modified", description = "Executed script, only if script content's changed")
     boolean ifModified();
 
+    @AttributeDefinition(name = "CRON Expression", description = "Cron expression for scheduled execution")
+    String scheduler_expression();
   }
-
 }
