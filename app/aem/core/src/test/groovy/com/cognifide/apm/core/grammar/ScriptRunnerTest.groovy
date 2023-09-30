@@ -97,6 +97,36 @@ class ScriptRunnerTest extends Specification {
                      "Executing command SHOW [\n\t[\"a\", \"b\"],\n\t[\"c\", \"d\"]\n]"]
     }
 
+    def "run define map"() {
+        given:
+        Script script = createScript("/define-map.apm")
+
+        when:
+        def result = scriptExecutor.execute(script, new ProgressImpl(""))
+
+        then:
+        def commands = result.entries
+                .collect { it.command }
+                .findAll { it.startsWith("Executing") }
+        commands == ["Executing command SHOW 1",
+                     "Executing command SHOW 1",
+                     "Executing command SHOW 1",
+                     "Executing command SHOW 1",
+                     "Executing command SHOW \"a\"",
+                     "Executing command SHOW 2",
+                     "Executing command SHOW \"b\"",
+                     "Executing command SHOW 2",
+                     "Executing command SHOW \"b\"",
+                     "Executing command SHOW \"c\"",
+                     "Executing command SHOW \"d\"",
+                     "Executing command SHOW \"e\"",
+                     "Executing command SHOW \"f\"",
+                     "Executing command SHOW \"c\"",
+                     "Executing command SHOW \"d\"",
+                     "Executing command SHOW \"e\"",
+                     "Executing command SHOW \"f\""]
+    }
+
     def "run macro"() {
         given:
         Script script = createScript("/run-macro.apm")

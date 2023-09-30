@@ -56,8 +56,20 @@ class VariableHolder {
         contexts.peek().variables.putAll(variableHolder.contexts.peek().variables)
     }
 
+    private fun toPlainString(value: String): String {
+        if (value.startsWith("\"")) {
+            return value.trim('"')
+        }
+        if (value.startsWith("\'")) {
+            return value.trim('\'')
+        }
+        return value
+    }
+
     operator fun get(name: String): ApmType {
-        val keys = name.split('.', '[', ']').filter { it.isNotEmpty() }
+        val keys = name.split('.', '[', ']')
+            .filter { it.isNotEmpty() }
+            .map { toPlainString(it) }
         val context = contexts.firstOrNull { it.containsKey(keys[0]) }
         var result: ApmType? = null
         if (context != null) {

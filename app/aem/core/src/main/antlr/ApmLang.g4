@@ -33,7 +33,7 @@ name
     ;
 
 privilegeName
-    : IDENTIFIER ':' IDENTIFIER
+    : IDENTIFIER COLON IDENTIFIER
     ;
 
 path
@@ -57,7 +57,7 @@ structure
     ;
 
 structureEntry
-    : structureKey ':' structureValue
+    : structureKey COLON structureValue
     ;
 
 structureKey
@@ -190,6 +190,9 @@ BRACKET_END
 COMMA
     : ','
     ;
+COLON
+    : ':'
+    ;
 BLOCK_BEGIN
     : 'begin'
     | 'BEGIN'
@@ -279,7 +282,7 @@ fragment IdentifierPart
     : Letter LetterOrDigit*
     ;
 fragment VariablePart
-    : IdentifierPart (ARRAY_BEGIN LetterOrDigit+ ARRAY_END)?
+    : IdentifierPart (ARRAY_BEGIN (NUMBER_LITERAL | IDENTIFIER | STRING_LITERAL) ARRAY_END)*
     ;
 fragment PathPart
     : '/' (~[\r\n\t ])+
