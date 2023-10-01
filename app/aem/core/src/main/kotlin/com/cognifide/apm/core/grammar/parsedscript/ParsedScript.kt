@@ -30,7 +30,6 @@ class ParsedScript(val script: Script, val apm: ApmContext) {
     val path: String
         get() = script.path
 
-
     companion object Factory {
         fun create(script: Script): ParsedScript {
             val logger: Logger = LoggerFactory.getLogger(ParsedScript::class.java)

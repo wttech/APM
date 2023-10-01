@@ -19,7 +19,6 @@
  */
 package com.cognifide.apm.core.history;
 
-
 import com.cognifide.apm.core.logger.ProgressEntry;
 import com.cognifide.apm.core.progress.ProgressHelper;
 import com.cognifide.apm.core.utils.CalendarUtils;
