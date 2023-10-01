@@ -71,9 +71,9 @@ class ErrorBody(initMessage: String = "", initErrors: List<String> = listOf()) :
 }
 
 private class PropertyDelegate<T>(
-        private val properties: MutableMap<String, Any>,
-        private val name: String,
-        private val default: T
+    private val properties: MutableMap<String, Any>,
+    private val name: String,
+    private val default: T
 ) {
 
     @Suppress("UNCHECKED_CAST")

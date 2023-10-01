@@ -34,16 +34,16 @@ abstract class OsgiAwareInstallHook : InstallHook {
 
     init {
         currentBundle = FrameworkUtil.getBundle(this.javaClass)
-                ?: throw IllegalStateException("The class ${this.javaClass} was not loaded through a bundle classloader")
+            ?: throw IllegalStateException("The class ${this.javaClass} was not loaded through a bundle classloader")
 
         bundleContext = currentBundle.bundleContext
-                ?: throw IllegalStateException("Could not get bundle context for bundle $currentBundle")
+            ?: throw IllegalStateException("Could not get bundle context for bundle $currentBundle")
     }
 
     protected fun <T> getService(clazz: Class<T>): T {
         val serviceReference: ServiceReference<T> = bundleContext.getServiceReference(clazz)
-                ?: throw PackageException("Could not find service ${clazz.name} in OSGI service registry")
+            ?: throw PackageException("Could not find service ${clazz.name} in OSGI service registry")
         return bundleContext.getService(serviceReference)
-                ?: throw PackageException("Could not receive instance of ${clazz.name}")
+            ?: throw PackageException("Could not receive instance of ${clazz.name}")
     }
 }

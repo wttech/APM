@@ -23,7 +23,7 @@ package com.cognifide.apm.core.grammar.argument
 import com.cognifide.apm.core.grammar.ApmType
 
 data class Arguments(
-        val required: List<ApmType> = listOf(),
-        val named: Map<String, ApmType> = mapOf(),
-        val flags: List<String> = listOf()
+    val required: List<ApmType> = listOf(),
+    val named: Map<String, ApmType> = mapOf(),
+    val flags: List<String> = listOf()
 )

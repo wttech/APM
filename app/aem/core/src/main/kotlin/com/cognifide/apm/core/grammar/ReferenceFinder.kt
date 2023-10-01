@@ -31,9 +31,7 @@ import com.cognifide.apm.core.progress.ProgressImpl
 import org.apache.sling.api.resource.ResourceResolver
 import java.util.*
 
-class ReferenceFinder(
-        private val scriptFinder: ScriptFinder,
-        private val resourceResolver: ResourceResolver) {
+class ReferenceFinder(private val scriptFinder: ScriptFinder, private val resourceResolver: ResourceResolver) {
 
     fun findReferences(script: Script): List<Script> {
         val result = mutableSetOf<Script>()
@@ -64,7 +62,8 @@ class ReferenceFinder(
     private fun fillReferenceGraph(refGraph: ReferenceGraph, script: Script) {
         if (refGraph.getNode(script) == null) {
             val parsedScript = ParsedScript.create(script).apm
-            val executionContext = ExecutionContext.create(scriptFinder, resourceResolver, script, ProgressImpl(resourceResolver.userID))
+            val executionContext =
+                ExecutionContext.create(scriptFinder, resourceResolver, script, ProgressImpl(resourceResolver.userID))
             findReferences(refGraph, refGraph.addNode(script), listOf(script), executionContext, parsedScript)
         }
     }
@@ -81,9 +80,11 @@ class ReferenceFinder(
         return mutable.toList()
     }
 
-    private fun findReferences(refGraph: ReferenceGraph, currentNode: ReferenceGraph.TreeNode, ancestors: List<Script>,
-                               executionContext: ExecutionContext,
-                               ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.ApmContext) {
+    private fun findReferences(
+        refGraph: ReferenceGraph, currentNode: ReferenceGraph.TreeNode, ancestors: List<Script>,
+        executionContext: ExecutionContext,
+        ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.ApmContext
+    ) {
         val internalVisitor = InternalVisitor(executionContext, refGraph, currentNode)
         internalVisitor.visitApm(ctx)
         currentNode.visited = true
@@ -101,7 +102,11 @@ class ReferenceFinder(
         }
     }
 
-    inner class InternalVisitor(private val executionContext: ExecutionContext, val refGraph: ReferenceGraph, val currentNode: ReferenceGraph.TreeNode) : com.cognifide.apm.core.grammar.antlr.ApmLangBaseVisitor<Unit>() {
+    inner class InternalVisitor(
+        private val executionContext: ExecutionContext,
+        val refGraph: ReferenceGraph,
+        val currentNode: ReferenceGraph.TreeNode
+    ) : com.cognifide.apm.core.grammar.antlr.ApmLangBaseVisitor<Unit>() {
         val scripts = mutableSetOf<Script>()
 
         override fun visitImportScript(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.ImportScriptContext) {

@@ -25,17 +25,16 @@ import com.cognifide.apm.core.Property
 import com.cognifide.apm.core.jobs.JobResultsCache
 import com.cognifide.apm.core.jobs.JobResultsCache.ExecutionSummary
 import com.cognifide.apm.core.jobs.ScriptRunnerJobConsumer
-import org.apache.sling.api.resource.ResourceResolver
 import org.osgi.service.component.annotations.Component
 import org.osgi.service.component.annotations.Reference
 import java.util.*
 import kotlin.concurrent.thread
 
 @Component(
-        property = [
-            Property.DESCRIPTION + "APM Service for executing scripts in background and checking theirs status",
-            Property.VENDOR
-        ]
+    property = [
+        Property.DESCRIPTION + "APM Service for executing scripts in background and checking theirs status",
+        Property.VENDOR
+    ]
 )
 class AsyncScriptExecutorImpl : AsyncScriptExecutor {
 
@@ -47,7 +46,9 @@ class AsyncScriptExecutorImpl : AsyncScriptExecutor {
     @Transient
     private lateinit var jobResultsCache: JobResultsCache
 
-    override fun process(script: Script, executionMode: ExecutionMode, customDefinitions: Map<String, String>, executor: String): String {
+    override fun process(
+        script: Script, executionMode: ExecutionMode, customDefinitions: Map<String, String>, executor: String
+    ): String {
         val id = UUID.randomUUID().toString()
         val properties = mutableMapOf<String, Any>()
         properties[ID] = id

@@ -44,13 +44,14 @@ import javax.jcr.RepositoryException
 import javax.servlet.Servlet
 
 @Component(
-        service = [Servlet::class],
-        property = [
-            Property.PATH + "/bin/apm/scripts/exec",
-            Property.METHOD + "POST",
-            Property.DESCRIPTION + "APM Script Execution Servlet",
-            Property.VENDOR
-        ])
+    service = [Servlet::class],
+    property = [
+        Property.PATH + "/bin/apm/scripts/exec",
+        Property.METHOD + "POST",
+        Property.DESCRIPTION + "APM Script Execution Servlet",
+        Property.VENDOR
+    ]
+)
 class ScriptExecutionServlet : SlingAllMethodsServlet() {
 
     @Reference
@@ -104,12 +105,18 @@ class ScriptExecutionServlet : SlingAllMethodsServlet() {
         }
     }
 
-    private fun executeScript(form: ScriptExecutionForm, resourceResolver: ResourceResolver, executor: String): ResponseEntity<Any> {
+    private fun executeScript(
+        form: ScriptExecutionForm, resourceResolver: ResourceResolver, executor: String
+    ): ResponseEntity<Any> {
         try {
             val script: Script = scriptFinder.find(form.script, resourceResolver)
-                    ?: return notFound { message = "Script not found: ${form.script}" }
-            if (!script.isLaunchEnabled) return internalServerError { message = "Script cannot be executed because it is disabled" }
-            if (!script.isValid) return internalServerError { message = "Script cannot be executed because it is invalid" }
+                ?: return notFound { message = "Script not found: ${form.script}" }
+            if (!script.isLaunchEnabled) return internalServerError {
+                message = "Script cannot be executed because it is disabled"
+            }
+            if (!script.isValid) return internalServerError {
+                message = "Script cannot be executed because it is invalid"
+            }
 
             return if (form.async) {
                 asyncExecute(script, form, executor)
@@ -117,7 +124,9 @@ class ScriptExecutionServlet : SlingAllMethodsServlet() {
                 syncExecute(script, form, resourceResolver, executor)
             }
         } catch (e: RepositoryException) {
-            return internalServerError { message = "Script cannot be executed because of repository error: ${e.message}" }
+            return internalServerError {
+                message = "Script cannot be executed because of repository error: ${e.message}"
+            }
         }
     }
 
@@ -129,8 +138,11 @@ class ScriptExecutionServlet : SlingAllMethodsServlet() {
         }
     }
 
-    private fun syncExecute(script: Script, form: ScriptExecutionForm, resourceResolver: ResourceResolver, executor: String): ResponseEntity<Any> {
-        val result = scriptManager.process(script, form.executionMode, form.customDefinitions, resourceResolver, executor)
+    private fun syncExecute(
+        script: Script, form: ScriptExecutionForm, resourceResolver: ResourceResolver, executor: String
+    ): ResponseEntity<Any> {
+        val result =
+            scriptManager.process(script, form.executionMode, form.customDefinitions, resourceResolver, executor)
         return if (result.isSuccess) {
             ok {
                 message = "Script successfully executed"

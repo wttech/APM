@@ -25,7 +25,6 @@ import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.apm.api.actions.annotations.Named;
 import com.cognifide.apm.api.actions.annotations.Required;
 import com.cognifide.apm.checks.actions.ActionGroup;
-import java.util.Collections;
 import java.util.List;
 
 @Mapper(value = "CHECK-ALLOW", group = ActionGroup.CHECKS)

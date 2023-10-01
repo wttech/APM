@@ -23,7 +23,6 @@ package com.cognifide.apm.core.actions
 import com.cognifide.apm.api.actions.Action
 import com.cognifide.apm.api.actions.ActionResult
 import com.cognifide.apm.api.actions.Context
-import com.cognifide.apm.api.actions.annotations.*
 import com.cognifide.apm.api.exceptions.ActionExecutionException
 
 @Mapper("sample")

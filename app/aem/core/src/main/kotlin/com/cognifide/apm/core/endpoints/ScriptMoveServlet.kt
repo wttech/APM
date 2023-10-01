@@ -36,13 +36,14 @@ import javax.jcr.Session
 import javax.servlet.Servlet
 
 @Component(
-        service = [Servlet::class],
-        property = [
-            Property.PATH + "/bin/apm/scripts/move",
-            Property.METHOD + "POST",
-            Property.DESCRIPTION + "APM Script Move Servlet",
-            Property.VENDOR
-        ])
+    service = [Servlet::class],
+    property = [
+        Property.PATH + "/bin/apm/scripts/move",
+        Property.METHOD + "POST",
+        Property.DESCRIPTION + "APM Script Move Servlet",
+        Property.VENDOR
+    ]
+)
 class ScriptMoveServlet : AbstractFormServlet<ScriptMoveForm>(ScriptMoveForm::class.java) {
 
     @Reference

@@ -27,7 +27,7 @@ import javax.inject.Inject
 
 @Model(adaptables = [SlingHttpServletRequest::class])
 class ScriptMoveForm @Inject constructor(
-        @param:RequestParameter("path") val path: String,
-        @param:RequestParameter("dest") val dest: String,
-        @param:RequestParameter("rename") val rename: String
+    @param:RequestParameter("path") val path: String,
+    @param:RequestParameter("dest") val dest: String,
+    @param:RequestParameter("rename") val rename: String
 )

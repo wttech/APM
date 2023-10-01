@@ -26,6 +26,6 @@ import javax.inject.Named
 
 @Model(adaptables = [Resource::class])
 class ScriptVersionModel @Inject constructor(
-        @param:Named("scriptPath") override val scriptPath: String,
-        @param:Named("lastChecksum") override val lastChecksum: String? = null
+    @param:Named("scriptPath") override val scriptPath: String,
+    @param:Named("lastChecksum") override val lastChecksum: String? = null
 ) : ScriptVersion
