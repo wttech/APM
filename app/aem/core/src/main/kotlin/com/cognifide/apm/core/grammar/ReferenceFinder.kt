@@ -82,8 +82,7 @@ class ReferenceFinder(private val scriptFinder: ScriptFinder, private val resour
 
     private fun findReferences(
         refGraph: ReferenceGraph, currentNode: ReferenceGraph.TreeNode, ancestors: List<Script>,
-        executionContext: ExecutionContext,
-        ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.ApmContext
+        executionContext: ExecutionContext, ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.ApmContext
     ) {
         val internalVisitor = InternalVisitor(executionContext, refGraph, currentNode)
         internalVisitor.visitApm(ctx)

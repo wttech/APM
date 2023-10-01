@@ -60,10 +60,7 @@ class ExecutionContext private constructor(
     companion object {
         @JvmStatic
         fun create(
-            scriptFinder: ScriptFinder,
-            resourceResolver: ResourceResolver,
-            script: Script,
-            progress: Progress
+            scriptFinder: ScriptFinder, resourceResolver: ResourceResolver, script: Script, progress: Progress
         ): ExecutionContext {
             return ExecutionContext(scriptFinder, resourceResolver, ParsedScript.create(script), progress)
         }

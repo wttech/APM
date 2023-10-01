@@ -58,8 +58,8 @@ object ApmLangParserFactory {
     private class LexerErrorListener : BaseErrorListener() {
 
         override fun syntaxError(
-            recognizer: Recognizer<*, *>?, offendingSymbol: Any?, line: Int, charPositionInLine: Int,
-            msg: String?, e: RecognitionException?
+            recognizer: Recognizer<*, *>?, offendingSymbol: Any?, line: Int, charPositionInLine: Int, msg: String?,
+            e: RecognitionException?
         ) {
             throw InvalidSyntaxException(recognizer!!, line, charPositionInLine)
         }
@@ -68,8 +68,8 @@ object ApmLangParserFactory {
     private class ParserErrorListener : BaseErrorListener() {
 
         override fun syntaxError(
-            recognizer: Recognizer<*, *>?, offendingSymbol: Any?, line: Int, charPositionInLine: Int,
-            msg: String?, e: RecognitionException?
+            recognizer: Recognizer<*, *>?, offendingSymbol: Any?, line: Int, charPositionInLine: Int, msg: String?,
+            e: RecognitionException?
         ) {
             throw InvalidSyntaxException(e!!)
         }
