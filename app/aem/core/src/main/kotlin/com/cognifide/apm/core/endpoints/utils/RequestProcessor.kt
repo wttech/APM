@@ -33,8 +33,10 @@ import javax.servlet.http.HttpServletResponse
 
 class RequestProcessor<F>(private val modelFactory: ModelFactory, private val formClass: Class<F>) {
 
-    fun process(httpRequest: SlingHttpServletRequest, httpResponse: SlingHttpServletResponse,
-                process: (form: F, resourceResolver: ResourceResolver) -> ResponseEntity<Any>) {
+    fun process(
+        httpRequest: SlingHttpServletRequest, httpResponse: SlingHttpServletResponse,
+        process: (form: F, resourceResolver: ResourceResolver) -> ResponseEntity<Any>
+    ) {
         try {
             val form = modelFactory.createModel(httpRequest, formClass)
             val response = process(form, httpRequest.resourceResolver)

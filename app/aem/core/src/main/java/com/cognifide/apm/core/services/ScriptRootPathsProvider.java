@@ -36,7 +36,6 @@ import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
-
 @Component(service = {ScriptRootPathsProvider.class, ResourceDecorator.class}, immediate = true)
 @Designate(ocd = ScriptRootPathsProvider.Configuration.class)
 public class ScriptRootPathsProvider implements ResourceDecorator {

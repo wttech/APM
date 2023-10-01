@@ -53,7 +53,8 @@ abstract class ApmEvent {
         override fun getTopic(): String = SCRIPT_LAUNCHED
     }
 
-    class ScriptExecutedEvent(script: Script, mode: ExecutionMode, private val success: Boolean) : ExecutionModeApmEvent(script, mode) {
+    class ScriptExecutedEvent(script: Script, mode: ExecutionMode, private val success: Boolean) :
+        ExecutionModeApmEvent(script, mode) {
         override fun getTopic(): String = SCRIPT_EXECUTED
 
         override fun fulfillProperties(properties: MutableMap<String, Any>) {

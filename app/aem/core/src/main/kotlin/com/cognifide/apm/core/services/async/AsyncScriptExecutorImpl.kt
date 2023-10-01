@@ -46,7 +46,9 @@ class AsyncScriptExecutorImpl : AsyncScriptExecutor {
     @Transient
     private lateinit var jobResultsCache: JobResultsCache
 
-    override fun process(script: Script, executionMode: ExecutionMode, customDefinitions: Map<String, String>, executor: String): String {
+    override fun process(
+        script: Script, executionMode: ExecutionMode, customDefinitions: Map<String, String>, executor: String
+    ): String {
         val id = UUID.randomUUID().toString()
         val properties = mutableMapOf<String, Any>()
         properties[ID] = id

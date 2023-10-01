@@ -57,7 +57,12 @@ structure
     ;
 
 structureEntry
-    : IDENTIFIER ':' structureValue
+    : structureKey ':' structureValue
+    ;
+
+structureKey
+    : IDENTIFIER
+    | STRING_LITERAL
     ;
 
 structureValue
@@ -244,23 +249,23 @@ VARIABLE_IDENTIFIER
 COMMENT
     : '#' (~[\r\n] )* -> skip
     ;
-fragment Digits
-    : [0-9]+
-    ;
 fragment LetterOrDigit
     : Letter
-    | [0-9]
+    | Digit
     ;
 fragment Letter
     : [a-zA-Z_] // these are the "java letters" below 0x7F
     | ~[\u0000-\u007F\uD800-\uDBFF] // covers all characters above 0x7F which are not a surrogate
     | [\uD800-\uDBFF] [\uDC00-\uDFFF] // covers UTF-16 surrogate pairs encodings for U+10000 to U+10FFFF
     ;
+fragment Digit
+    : [0-9]
+    ;
 fragment IdentifierPart
     : Letter LetterOrDigit*
     ;
 fragment VariablePart
-    : IdentifierPart (ARRAY_BEGIN Digits ARRAY_END)?
+    : IdentifierPart (ARRAY_BEGIN LetterOrDigit+ ARRAY_END)?
     ;
 fragment PathPart
     : '/' (~[\r\n\t ])+

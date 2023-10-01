@@ -85,12 +85,30 @@ class ScriptRunnerTest extends Specification {
                      "Executing command SHOW [[\"a\", \"b\"], [\"c\", \"d\"]]",
                      "Executing command SHOW [1, 2, 3]",
                      "Executing command SHOW [\"a\", \"b\", 1, 2]",
-                     "Executing command SHOW {x: \"a\", y: 1, z: [\"c\", 1]}",
+                     "Executing command SHOW {x: \"a\", y: 1, z: [\"c\", 1], t: \"t\"}",
                      "Executing command SHOW 1",
                      "Executing command SHOW 1",
+                     "Executing command SHOW \"t\"",
+                     "Executing command SHOW \"t\"",
                      "Executing command SHOW [3, \"ab\"]",
                      "Executing command SHOW [\"a\", \"b\", \"c\", \"d\", 1, 2]",
                      "Executing command SHOW [[\"a\", \"b\"], [\"c\", \"d\"]]"]
+    }
+
+    def "run macro"() {
+        given:
+        Script script = createScript("/run-macro.apm")
+        scriptFinder.find("/macro.apm", resourceResolver) >> createScript("/macro.apm")
+
+        when:
+        def result = scriptExecutor.execute(script, new ProgressImpl(""))
+
+        then:
+        def commands = result.entries
+                .collect { it.command }
+                .findAll { it.startsWith("Executing") }
+        commands == ["Executing command SHOW \"abc\"",
+                     "Executing command SHOW \"123\""]
     }
 
     def "run import"() {

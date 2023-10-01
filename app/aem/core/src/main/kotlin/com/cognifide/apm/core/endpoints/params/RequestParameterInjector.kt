@@ -49,15 +49,19 @@ class RequestParameterInjector : Injector, StaticInjectAnnotationProcessorFactor
         return "apm-request-parameter"
     }
 
-    override fun getValue(adaptable: Any, fieldName: String, type: Type, annotatedElement: AnnotatedElement,
-                          disposalCallbackRegistry: DisposalCallbackRegistry): Any? {
+    override fun getValue(
+        adaptable: Any, fieldName: String, type: Type, annotatedElement: AnnotatedElement,
+        disposalCallbackRegistry: DisposalCallbackRegistry
+    ): Any? {
         if (adaptable is SlingHttpServletRequest) {
             val annotation = annotatedElement.getAnnotation(RequestParameter::class.java)
             if (annotation != null) {
                 val parameterName = annotation.value
                 return when {
-                    type is ParameterizedType && type.rawType is Class<*> && Map::class.java.isAssignableFrom(type.rawType as Class<*>) -> extractParams(adaptable, fieldName)
-                    type is Class<*> -> getValue(adaptable, type, StringUtils.defaultString(parameterName, fieldName), annotatedElement)
+                    type is ParameterizedType && type.rawType is Class<*> && Map::class.java.isAssignableFrom(type.rawType as Class<*>) ->
+                        extractParams(adaptable, fieldName)
+                    type is Class<*> ->
+                        getValue(adaptable, type, StringUtils.defaultString(parameterName, fieldName), annotatedElement)
                     else -> null
                 }
             }
@@ -65,7 +69,9 @@ class RequestParameterInjector : Injector, StaticInjectAnnotationProcessorFactor
         return null
     }
 
-    private fun getValue(request: SlingHttpServletRequest, fieldClass: Class<*>, fieldName: String, annotatedElement: AnnotatedElement): Any? {
+    private fun getValue(
+        request: SlingHttpServletRequest, fieldClass: Class<*>, fieldName: String, annotatedElement: AnnotatedElement
+    ): Any? {
         val parameterValue = request.getRequestParameter(fieldName) ?: return null
         return when {
             annotatedElement.isAnnotationPresent(FileName::class.java) -> parameterValue.fileName
@@ -90,7 +96,9 @@ class RequestParameterInjector : Injector, StaticInjectAnnotationProcessorFactor
             .mapKeys { it.key.removePrefix(prefix) }
             .mapKeys { entry -> entry.key.replaceFirstChar { it.lowercase() } }
 
-    private fun toLocalDateTime(annotatedElement: AnnotatedElement, parameterValue: org.apache.sling.api.request.RequestParameter): LocalDateTime {
+    private fun toLocalDateTime(
+        annotatedElement: AnnotatedElement, parameterValue: org.apache.sling.api.request.RequestParameter
+    ): LocalDateTime {
         val dateFormat = annotatedElement.getAnnotation(DateFormat::class.java)?.value
             ?: DateTimeFormatter.ISO_LOCAL_DATE_TIME.toString()
         return LocalDateTime.parse(parameterValue.string, DateTimeFormatter.ofPattern(dateFormat))
@@ -100,12 +108,14 @@ class RequestParameterInjector : Injector, StaticInjectAnnotationProcessorFactor
         return element.getAnnotation(RequestParameter::class.java)?.let { RequestParameterAnnotationProcessor(it) }
     }
 
-    class RequestParameterAnnotationProcessor(private val annotation: RequestParameter) : AbstractInjectAnnotationProcessor2() {
+    class RequestParameterAnnotationProcessor(private val annotation: RequestParameter) :
+        AbstractInjectAnnotationProcessor2() {
 
         override fun getName(): String {
             return annotation.value
         }
 
+        @Deprecated("")
         override fun isOptional(): Boolean {
             return annotation.optional
         }
