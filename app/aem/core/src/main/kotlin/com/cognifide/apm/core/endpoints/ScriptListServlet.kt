@@ -31,13 +31,14 @@ import org.osgi.service.component.annotations.Reference
 import javax.servlet.Servlet
 
 @Component(
-        service = [Servlet::class],
-        property = [
-            Property.PATH + "/bin/apm/scripts",
-            Property.METHOD + "GET",
-            Property.DESCRIPTION + "APM Script List Servlet",
-            Property.VENDOR
-        ])
+    service = [Servlet::class],
+    property = [
+        Property.PATH + "/bin/apm/scripts",
+        Property.METHOD + "GET",
+        Property.DESCRIPTION + "APM Script List Servlet",
+        Property.VENDOR
+    ]
+)
 class ScriptListServlet : SlingAllMethodsServlet() {
 
     @Reference
@@ -46,8 +47,8 @@ class ScriptListServlet : SlingAllMethodsServlet() {
 
     override fun doGet(request: SlingHttpServletRequest, response: SlingHttpServletResponse) {
         val scripts = scriptFinder.findAll(request.resourceResolver)
-                .map { ScriptDto(it) }
-                .sortedBy { it.path }
+            .map { ScriptDto(it) }
+            .sortedBy { it.path }
         ServletUtils.writeJson(response, scripts)
     }
 }

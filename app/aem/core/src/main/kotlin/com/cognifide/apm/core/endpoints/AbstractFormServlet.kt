@@ -37,7 +37,9 @@ abstract class AbstractFormServlet<F>(private val formClass: Class<F>) : SlingAl
 
     @Throws(IOException::class)
     override fun doPost(request: SlingHttpServletRequest, response: SlingHttpServletResponse) {
-        RequestProcessor(modelFactory, formClass).process(request, response) { form, resourceResolver -> doPost(form, resourceResolver) }
+        RequestProcessor(modelFactory, formClass).process(request, response) { form, resourceResolver ->
+            doPost(form, resourceResolver)
+        }
     }
 
     abstract fun setup(modelFactory: ModelFactory)

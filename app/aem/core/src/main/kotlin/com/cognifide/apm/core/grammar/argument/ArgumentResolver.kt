@@ -20,8 +20,29 @@
 
 package com.cognifide.apm.core.grammar.argument
 
-import com.cognifide.apm.core.grammar.*
-import com.cognifide.apm.core.grammar.antlr.ApmLangParser.*
+import com.cognifide.apm.core.grammar.ApmEmpty
+import com.cognifide.apm.core.grammar.ApmInteger
+import com.cognifide.apm.core.grammar.ApmList
+import com.cognifide.apm.core.grammar.ApmMap
+import com.cognifide.apm.core.grammar.ApmPair
+import com.cognifide.apm.core.grammar.ApmString
+import com.cognifide.apm.core.grammar.ApmType
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser.ArgumentContext
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser.ArrayContext
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser.ComplexArgumentsContext
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser.ExpressionContext
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser.FlagContext
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser.NameContext
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser.NamedArgumentContext
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser.NamedArgumentsContext
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser.NumberValueContext
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser.PathContext
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser.PrivilegeNameContext
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser.RequiredArgumentContext
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser.StringValueContext
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser.StructureContext
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser.StructureEntryContext
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser.VariableContext
 import com.cognifide.apm.core.grammar.common.getIdentifier
 import com.cognifide.apm.core.grammar.common.getKey
 import com.cognifide.apm.core.grammar.common.getPath

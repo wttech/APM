@@ -27,5 +27,5 @@ import javax.inject.Inject
 
 @Model(adaptables = [SlingHttpServletRequest::class])
 class ScriptExecutionStatusForm @Inject constructor(
-        @param:RequestParameter("id", optional = false) val id: String
+    @param:RequestParameter("id", optional = false) val id: String
 )

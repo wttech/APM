@@ -22,7 +22,14 @@ package com.cognifide.apm.core.services.async
 import com.cognifide.apm.api.services.ExecutionResult
 
 sealed class ExecutionStatus(val status: String)
+
 class RunningExecution : ExecutionStatus("running")
+
 class UnknownExecution : ExecutionStatus("unknown")
-class FinishedSuccessfulExecution(val path: String, val entries: List<ExecutionResult.Entry>) : ExecutionStatus("finished")
-class FinishedFailedExecution(val path: String, val entries: List<ExecutionResult.Entry>, val error: ExecutionResult.Entry) : ExecutionStatus("finished")
+
+class FinishedSuccessfulExecution(val path: String, val entries: List<ExecutionResult.Entry>) :
+    ExecutionStatus("finished")
+
+class FinishedFailedExecution(
+    val path: String, val entries: List<ExecutionResult.Entry>, val error: ExecutionResult.Entry
+) : ExecutionStatus("finished")

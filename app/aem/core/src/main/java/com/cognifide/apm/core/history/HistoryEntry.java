@@ -19,7 +19,6 @@
  */
 package com.cognifide.apm.core.history;
 
-
 import java.util.Calendar;
 import java.util.Date;
 

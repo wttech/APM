@@ -32,7 +32,9 @@ object InvalidSyntaxMessageFactory {
         return underlineError(e.recognizer, e.offendingToken, e.line, e.charPositionInLine)
     }
 
-    private fun underlineError(recognizer: Recognizer<*, *>, offendingToken: Token?, line: Int, charPositionInLine: Int): List<String> {
+    private fun underlineError(
+        recognizer: Recognizer<*, *>, offendingToken: Token?, line: Int, charPositionInLine: Int
+    ): List<String> {
         val errorLine = getErrorLine(recognizer, line)
         val invalidLine = "Invalid line [$line:$charPositionInLine]: $errorLine"
         return if (offendingToken != null && StringUtils.isNotBlank(offendingToken.text)) {

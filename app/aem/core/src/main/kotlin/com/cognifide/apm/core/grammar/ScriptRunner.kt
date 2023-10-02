@@ -23,7 +23,14 @@ package com.cognifide.apm.core.grammar
 import com.cognifide.apm.api.scripts.Script
 import com.cognifide.apm.api.services.ScriptFinder
 import com.cognifide.apm.api.status.Status
-import com.cognifide.apm.core.grammar.antlr.ApmLangParser.*
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser.AllowDenyCommandContext
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser.BodyContext
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser.DefineVariableContext
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser.ForEachContext
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser.GenericCommandContext
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser.ImportScriptContext
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser.RequireVariableContext
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser.RunScriptContext
 import com.cognifide.apm.core.grammar.argument.ArgumentResolverException
 import com.cognifide.apm.core.grammar.argument.Arguments
 import com.cognifide.apm.core.grammar.common.getIdentifier

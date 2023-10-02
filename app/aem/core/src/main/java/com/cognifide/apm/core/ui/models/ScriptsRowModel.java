@@ -101,9 +101,9 @@ public final class ScriptsRowModel {
         this.runs.add(createScriptRun("runOnAuthor", script, scriptHistory.getLastLocalRun()));
         this.launchMode = LabelUtils.capitalize(script.getLaunchMode());
         this.launchEnvironment = Stream.concat(
-            Stream.of(script.getLaunchEnvironment().getRunMode()),
-            CollectionUtils.emptyIfNull(script.getLaunchRunModes()).stream()
-        )
+                Stream.of(script.getLaunchEnvironment().getRunMode()),
+                CollectionUtils.emptyIfNull(script.getLaunchRunModes()).stream()
+            )
             .filter(StringUtils::isNotBlank)
             .distinct()
             .collect(Collectors.joining(", "));

@@ -28,8 +28,8 @@ import javax.inject.Inject
 
 @Model(adaptables = [SlingHttpServletRequest::class])
 class ScriptExecutionForm @Inject constructor(
-        @param:RequestParameter("script", optional = false) val script: String,
-        @param:RequestParameter("executionMode", optional = false) val executionMode: ExecutionMode,
-        @param:RequestParameter("async") val async: Boolean = false,
-        @param:RequestParameter("define") val customDefinitions: Map<String, String> = mapOf()
+    @param:RequestParameter("script", optional = false) val script: String,
+    @param:RequestParameter("executionMode", optional = false) val executionMode: ExecutionMode,
+    @param:RequestParameter("async") val async: Boolean = false,
+    @param:RequestParameter("define") val customDefinitions: Map<String, String> = mapOf()
 )
