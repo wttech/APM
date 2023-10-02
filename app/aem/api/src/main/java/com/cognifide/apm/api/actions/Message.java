@@ -32,8 +32,8 @@ public final class Message {
     this.type = type;
   }
 
-  // Gson library needs this
   private Message() {
+    // Gson library needs this
   }
 
   public String getText() {

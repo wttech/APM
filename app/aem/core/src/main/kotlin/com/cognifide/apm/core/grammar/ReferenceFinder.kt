@@ -109,8 +109,8 @@ class ReferenceFinder(
 
     inner class InternalVisitor(
         private val executionContext: ExecutionContext,
-        val refGraph: ReferenceGraph,
-        val currentNode: ReferenceGraph.TreeNode
+        private val refGraph: ReferenceGraph,
+        private val currentNode: ReferenceGraph.TreeNode
     ) : com.cognifide.apm.core.grammar.antlr.ApmLangBaseVisitor<Unit>() {
         val scripts = mutableSetOf<Script>()
 

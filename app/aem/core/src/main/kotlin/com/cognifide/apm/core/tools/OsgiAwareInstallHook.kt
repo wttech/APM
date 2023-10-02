@@ -29,16 +29,11 @@ import org.osgi.framework.ServiceReference
 
 abstract class OsgiAwareInstallHook : InstallHook {
 
-    protected var currentBundle: Bundle
-    protected var bundleContext: BundleContext
+    private var currentBundle: Bundle = FrameworkUtil.getBundle(this.javaClass)
+        ?: throw IllegalStateException("The class ${this.javaClass} was not loaded through a bundle classloader")
 
-    init {
-        currentBundle = FrameworkUtil.getBundle(this.javaClass)
-            ?: throw IllegalStateException("The class ${this.javaClass} was not loaded through a bundle classloader")
-
-        bundleContext = currentBundle.bundleContext
-            ?: throw IllegalStateException("Could not get bundle context for bundle $currentBundle")
-    }
+    private var bundleContext: BundleContext = currentBundle.bundleContext
+        ?: throw IllegalStateException("Could not get bundle context for bundle $currentBundle")
 
     protected fun <T> getService(clazz: Class<T>): T {
         val serviceReference: ServiceReference<T> = bundleContext.getServiceReference(clazz)

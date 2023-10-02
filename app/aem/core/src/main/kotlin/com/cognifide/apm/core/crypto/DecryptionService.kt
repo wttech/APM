@@ -43,8 +43,7 @@ open class DecryptionService {
     fun decrypt(text: String): String {
         val tokens = StringUtils.substringsBetween(text, "{", "}")
             .orEmpty()
-            .map { it to unprotect("{$it}") }
-            .toMap()
+            .associateWith { unprotect("{$it}") }
         val strSubstitutor = StrSubstitutor(tokens, "{", "}")
         return if (tokens.isEmpty()) text else strSubstitutor.replace(text)
     }

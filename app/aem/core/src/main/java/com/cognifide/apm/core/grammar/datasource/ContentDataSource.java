@@ -102,7 +102,7 @@ public class ContentDataSource implements DataSource {
     return configs;
   }
 
-  private class Config {
+  private static class Config {
 
     Pattern pattern;
 

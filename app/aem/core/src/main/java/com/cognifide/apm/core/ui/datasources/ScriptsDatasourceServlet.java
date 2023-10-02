@@ -68,7 +68,7 @@ public class ScriptsDatasourceServlet extends SlingSafeMethodsServlet {
     request.setAttribute(DataSource.class.getName(), dataSource);
   }
 
-  private class ResourceTypeWrapper extends ResourceWrapper {
+  private static class ResourceTypeWrapper extends ResourceWrapper {
 
     ResourceTypeWrapper(Resource resource) {
       super(resource);

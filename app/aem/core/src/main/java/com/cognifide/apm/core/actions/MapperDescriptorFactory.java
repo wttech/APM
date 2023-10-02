@@ -93,7 +93,7 @@ public class MapperDescriptorFactory {
       Type type = types[i];
       Annotation[] parameterAnnotations = annotations[i];
       Class<? extends ApmType> apmType = getApmType(type);
-      ParameterDescriptor parameterDescriptor = null;
+      ParameterDescriptor parameterDescriptor;
       if (containsAnnotation(parameterAnnotations, Named.class)) {
         Named namedAnnotation = getAnnotation(parameterAnnotations, Named.class);
         parameterDescriptor = new NamedParameterDescriptor(apmType, namedAnnotation);
@@ -115,9 +115,9 @@ public class MapperDescriptorFactory {
   }
 
   private <T extends Annotation> T getAnnotation(Annotation[] annotations, Class<T> type) {
-    for (int i = 0; i < annotations.length; i++) {
-      if (type.isInstance(annotations[i])) {
-        return (T) annotations[i];
+    for (Annotation annotation : annotations) {
+      if (type.isInstance(annotation)) {
+        return (T) annotation;
       }
     }
     return null;

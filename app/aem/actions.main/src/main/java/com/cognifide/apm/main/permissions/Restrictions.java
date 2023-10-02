@@ -82,7 +82,6 @@ public class Restrictions {
     for (Map.Entry<String, Object> entry : customRestrictions.entrySet()) {
       if (!isMultivalue(entry)) {
         String value;
-
         if (entry.getValue() instanceof String) {
           value = (String) entry.getValue();
         } else {

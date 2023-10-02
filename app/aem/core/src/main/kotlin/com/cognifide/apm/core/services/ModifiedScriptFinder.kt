@@ -71,7 +71,7 @@ class ModifiedScriptFinder {
                     val subtree = referenceFinder.findReferences(script)
                     val checksum = versionService.countChecksum(subtree)
                     val scriptVersion = versionService.getScriptVersion(resolver, script)
-                    var scriptHistory = history.findScriptHistory(resolver, script)
+                    val scriptHistory = history.findScriptHistory(resolver, script)
                     if (checksum != scriptVersion.lastChecksum
                         || scriptHistory.lastLocalRun == null
                         || checksum != scriptHistory.lastLocalRun.checksum

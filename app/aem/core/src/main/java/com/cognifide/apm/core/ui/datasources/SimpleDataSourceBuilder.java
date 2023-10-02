@@ -59,7 +59,7 @@ class SimpleDataSourceBuilder {
   }
 
   public SimpleDataSourceBuilder addOptions(Collection<Option> options) {
-    options.addAll(options);
+    this.options.addAll(options);
     return this;
   }
 
