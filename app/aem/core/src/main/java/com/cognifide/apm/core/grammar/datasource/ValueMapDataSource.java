@@ -19,15 +19,21 @@
  */
 package com.cognifide.apm.core.grammar.datasource;
 
-import com.cognifide.apm.core.grammar.*;
+import com.cognifide.apm.core.grammar.ApmInteger;
+import com.cognifide.apm.core.grammar.ApmList;
+import com.cognifide.apm.core.grammar.ApmMap;
+import com.cognifide.apm.core.grammar.ApmString;
+import com.cognifide.apm.core.grammar.ApmType;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
 import org.osgi.service.component.annotations.Component;
-
-import java.io.InputStream;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Component
 public class ValueMapDataSource implements DataSource {

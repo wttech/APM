@@ -74,7 +74,7 @@ public class ProgressEntry implements Entry {
   @Override
   public List<String> getPrettyMessages() {
     return messages.stream()
-        .map(message ->  message.replaceAll("\n", "<br>").replaceAll("\t", "&nbsp;&nbsp;&nbsp;&nbsp;"))
+        .map(message -> message.replaceAll("\n", "<br>").replaceAll("\t", "&nbsp;&nbsp;&nbsp;&nbsp;"))
         .collect(Collectors.toList());
   }
 

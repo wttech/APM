@@ -82,7 +82,7 @@ data class ApmList(val value: List<ApmType>) : ApmType() {
     }
 
     override fun prettyPrint(depth: Int, prefixDepth: Int): String {
-        return if (value.all { it is ApmString || it is ApmInteger }) {
+        return if (value.isEmpty() || value.all { it is ApmString || it is ApmInteger }) {
             value.joinToString(
                 prefix = "\t".repeat(prefixDepth) + "[",
                 postfix = "]"
@@ -109,9 +109,9 @@ data class ApmMap(val value: Map<String, ApmType>) : ApmType() {
     }
 
     override fun prettyPrint(depth: Int, prefixDepth: Int): String {
-        return if (value.size == 1
+        return if (value.isEmpty() || value.size == 1
             && (value.values.all { it is ApmString || it is ApmInteger }
-                || value.values.filterIsInstance<ApmList>().first().value.all { it is ApmString || it is ApmInteger })
+                    || value.values.first { it is ApmList }.list!!.all { it is ApmString || it is ApmInteger })
         ) {
             value.entries.joinToString(
                 prefix = "\t".repeat(prefixDepth) + "{",

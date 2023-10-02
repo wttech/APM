@@ -1,16 +1,14 @@
 package com.cognifide.apm.core.grammar.datasource;
 
-import com.cognifide.apm.core.grammar.*;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.sling.api.resource.ResourceResolver;
-import org.osgi.service.component.annotations.Component;
-
+import com.cognifide.apm.core.grammar.ApmList;
+import com.cognifide.apm.core.grammar.ApmString;
+import com.cognifide.apm.core.grammar.ApmType;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.osgi.service.component.annotations.Component;
 
 @Component
 public class GroupsDataSource implements DataSource {

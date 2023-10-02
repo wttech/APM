@@ -20,9 +20,8 @@
 package com.cognifide.apm.core.grammar.datasource;
 
 import com.cognifide.apm.core.grammar.ApmType;
-import org.apache.sling.api.resource.ResourceResolver;
-
 import java.util.List;
+import org.apache.sling.api.resource.ResourceResolver;
 
 public interface DataSource {
 

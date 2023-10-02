@@ -19,16 +19,22 @@
  */
 package com.cognifide.apm.core.grammar.datasource;
 
-import com.cognifide.apm.core.grammar.*;
+import com.cognifide.apm.core.grammar.ApmEmpty;
+import com.cognifide.apm.core.grammar.ApmList;
+import com.cognifide.apm.core.grammar.ApmMap;
+import com.cognifide.apm.core.grammar.ApmString;
+import com.cognifide.apm.core.grammar.ApmType;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;
-
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Component
 public class ContentDataSource implements DataSource {
