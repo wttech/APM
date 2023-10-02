@@ -211,8 +211,8 @@ class ArgumentResolver(
                 ?.map { child -> child.accept(this) }
                 ?.filter { it !is ApmEmpty }
                 ?: listOf()
-            return dataSourceInvoker?.determine(name, resolver, values)
-                ?: throw ArgumentResolverException("Data source \"$name\" not found")
+            return dataSourceInvoker.determine(name, resolver, values)
+                ?: throw ArgumentResolverException("Data source \"${name.uppercase()}\" not found")
         }
     }
 }

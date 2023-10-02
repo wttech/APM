@@ -20,6 +20,7 @@
 package com.cognifide.apm.core.grammar.datasource;
 
 import com.cognifide.apm.core.grammar.ApmType;
+import com.cognifide.apm.core.grammar.argument.ArgumentResolverException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,15 +37,19 @@ public class DataSourceInvoker {
 
   @Reference(policy = ReferencePolicy.DYNAMIC, cardinality = ReferenceCardinality.MULTIPLE, service = DataSource.class)
   protected final void bindDataSource(DataSource dataSource) {
-    dataSources.put(dataSource.getName().toLowerCase(), dataSource);
+    dataSources.put(dataSource.getName().toUpperCase(), dataSource);
   }
 
   protected final void unbindDataSource(DataSource dataSource) {
-    dataSources.remove(dataSource.getName().toLowerCase());
+    dataSources.remove(dataSource.getName().toUpperCase());
   }
 
   public ApmType determine(String name, ResourceResolver resolver, List<ApmType> parameters) {
-    DataSource dataSource = dataSources.get(name.toLowerCase());
-    return dataSource == null ? null : dataSource.determine(resolver, parameters);
+    DataSource dataSource = dataSources.get(name.toUpperCase());
+    try {
+      return dataSource == null ? null : dataSource.determine(resolver, parameters);
+    } catch (Exception e) {
+      throw new ArgumentResolverException(String.format("%s data source: %s", name.toUpperCase(), e.getMessage()));
+    }
   }
 }

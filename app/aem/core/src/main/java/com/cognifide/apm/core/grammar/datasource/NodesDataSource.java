@@ -23,9 +23,8 @@ import com.cognifide.apm.core.grammar.ApmList;
 import com.cognifide.apm.core.grammar.ApmMap;
 import com.cognifide.apm.core.grammar.ApmString;
 import com.cognifide.apm.core.grammar.ApmType;
-import java.util.HashMap;
+import com.google.common.collect.ImmutableMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -44,17 +43,15 @@ public class NodesDataSource implements DataSource {
   @Override
   public ApmType determine(ResourceResolver resolver, List<ApmType> parameters) {
     String path = parameters.get(0).getString();
-    String regex = parameters.size() >= 2 ? parameters.get(1).getString() : "[^:]+";
+    String regex = parameters.get(1).getString();
     Pattern pattern = Pattern.compile(regex);
     Resource root = resolver.getResource(path);
     List<ApmMap> values = StreamSupport.stream(root.getChildren().spliterator(), false)
         .filter(resource -> pattern.matcher(resource.getName()).matches())
-        .map(resource -> {
-          Map<String, ApmType> map = new HashMap<>();
-          map.put("path", new ApmString(resource.getPath()));
-          map.put("name", new ApmString(resource.getName()));
-          return new ApmMap(map);
-        })
+        .map(resource -> new ApmMap(ImmutableMap.of(
+            "path", new ApmString(resource.getPath()),
+            "name", new ApmString(resource.getName())
+        )))
         .collect(Collectors.toList());
     return new ApmList(values);
   }
