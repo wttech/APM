@@ -24,7 +24,9 @@ import com.cognifide.apm.api.scripts.Script
 import com.cognifide.apm.api.services.ScriptFinder
 import com.cognifide.apm.core.grammar.ApmType
 import com.cognifide.apm.core.grammar.ScriptExecutionException
-import com.cognifide.apm.core.grammar.antlr.ApmLangParser.*
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser.ArgumentContext
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser.ComplexArgumentsContext
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser.NamedArgumentsContext
 import com.cognifide.apm.core.grammar.argument.ArgumentResolver
 import com.cognifide.apm.core.grammar.argument.Arguments
 import com.cognifide.apm.core.grammar.common.StackWithRoot
@@ -36,11 +38,11 @@ import org.apache.jackrabbit.api.security.user.Authorizable
 import org.apache.sling.api.resource.ResourceResolver
 
 class ExecutionContext private constructor(
-        private val scriptFinder: ScriptFinder,
-        private val resourceResolver: ResourceResolver,
-        private val dataSourceInvoker: DataSourceInvoker,
-        val root: ParsedScript,
-        override val progress: Progress
+    private val scriptFinder: ScriptFinder,
+    private val resourceResolver: ResourceResolver,
+    private val dataSourceInvoker: DataSourceInvoker,
+    val root: ParsedScript,
+    override val progress: Progress
 ) : ExternalExecutionContext {
 
     private val parsedScripts: MutableMap<String, ParsedScript> = mutableMapOf()
@@ -59,8 +61,13 @@ class ExecutionContext private constructor(
 
     companion object {
         @JvmStatic
-        fun create(scriptFinder: ScriptFinder, resourceResolver: ResourceResolver, dataSourceInvoker: DataSourceInvoker, script: Script, progress: Progress): ExecutionContext {
-            return ExecutionContext(scriptFinder, resourceResolver, dataSourceInvoker, ParsedScript.create(script), progress)
+        fun create(
+            scriptFinder: ScriptFinder, resourceResolver: ResourceResolver, dataSourceInvoker: DataSourceInvoker,
+            script: Script, progress: Progress
+        ): ExecutionContext {
+            return ExecutionContext(
+                scriptFinder, resourceResolver, dataSourceInvoker, ParsedScript.create(script), progress
+            )
         }
     }
 
