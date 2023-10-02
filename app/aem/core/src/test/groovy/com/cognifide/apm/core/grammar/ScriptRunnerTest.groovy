@@ -23,6 +23,7 @@ package com.cognifide.apm.core.grammar
 import com.cognifide.apm.api.scripts.Script
 import com.cognifide.apm.api.services.ScriptFinder
 import com.cognifide.apm.api.status.Status
+import com.cognifide.apm.core.grammar.datasource.DataSource
 import com.cognifide.apm.core.grammar.datasource.DataSourceInvoker
 import com.cognifide.apm.core.progress.ProgressImpl
 import org.apache.commons.io.IOUtils
@@ -33,8 +34,7 @@ class ScriptRunnerTest extends Specification {
 
     def scriptFinder = Mock(ScriptFinder)
     def resourceResolver = Mock(ResourceResolver)
-    def dataSourceInvoker = new DataSourceInvoker()
-    def scriptExecutor = new ScriptRunner(scriptFinder, resourceResolver, false, createActionInvoker(), dataSourceInvoker)
+    def scriptExecutor = new ScriptRunner(scriptFinder, resourceResolver, false, createActionInvoker(), createDataSourceInvoker())
 
     def "run for-each"() {
         given:
@@ -94,7 +94,10 @@ class ScriptRunnerTest extends Specification {
                      "Executing command SHOW \"t\"",
                      "Executing command SHOW [3, \"ab\"]",
                      "Executing command SHOW [\"a\", \"b\", \"c\", \"d\", 1, 2]",
-                     "Executing command SHOW [\n\t[\"a\", \"b\"],\n\t[\"c\", \"d\"]\n]"]
+                     "Executing command SHOW [\n\t[\"a\", \"b\"],\n\t[\"c\", \"d\"]\n]",
+                     "Executing command SHOW \"a\"",
+                     "Executing command SHOW \"b\"",
+                     "Executing command SHOW \"C\""]
     }
 
     def "run define map"() {
@@ -231,5 +234,34 @@ class ScriptRunnerTest extends Specification {
                 return Status.SUCCESS
             }
         }
+    }
+
+    private static DataSourceInvoker createDataSourceInvoker() {
+        def dataSourceInvoker = new DataSourceInvoker()
+        def bindDataSource = DataSourceInvoker.class.getDeclaredMethod("bindDataSource", DataSource.class)
+        bindDataSource.setAccessible(true)
+        bindDataSource.invoke(dataSourceInvoker, new DataSource() {
+            @Override
+            String getName() {
+                return "FUNC"
+            }
+
+            @Override
+            ApmType determine(ResourceResolver resolver, List<ApmType> parameters) {
+                return parameters.get(0)
+            }
+        })
+        bindDataSource.invoke(dataSourceInvoker, new DataSource() {
+            @Override
+            String getName() {
+                return "UPPER"
+            }
+
+            @Override
+            ApmType determine(ResourceResolver resolver, List<ApmType> parameters) {
+                return new ApmString(parameters.get(0).getString().toUpperCase())
+            }
+        })
+        return dataSourceInvoker
     }
 }
