@@ -20,7 +20,6 @@
 
 package com.cognifide.apm.core.grammar
 
-
 import com.cognifide.apm.api.scripts.Script
 import com.cognifide.apm.api.services.ScriptFinder
 import com.cognifide.apm.core.grammar.ReferenceGraph.Transition

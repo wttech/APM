@@ -33,13 +33,14 @@ import org.osgi.service.component.annotations.Reference
 import javax.servlet.Servlet
 
 @Component(
-        service = [Servlet::class],
-        property = [
-            Property.PATH + "/bin/apm/scripts/protect",
-            Property.METHOD + "POST",
-            Property.DESCRIPTION + "APM Encrypt Text Servlet",
-            Property.VENDOR
-        ])
+    service = [Servlet::class],
+    property = [
+        Property.PATH + "/bin/apm/scripts/protect",
+        Property.METHOD + "POST",
+        Property.DESCRIPTION + "APM Encrypt Text Servlet",
+        Property.VENDOR
+    ]
+)
 class ProtectTextServlet : AbstractFormServlet<ProtectTextForm>(ProtectTextForm::class.java) {
 
     @Reference

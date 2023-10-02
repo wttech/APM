@@ -33,8 +33,10 @@ import javax.servlet.http.HttpServletResponse
 
 class RequestProcessor<F>(private val modelFactory: ModelFactory, private val formClass: Class<F>) {
 
-    fun process(httpRequest: SlingHttpServletRequest, httpResponse: SlingHttpServletResponse,
-                process: (form: F, resourceResolver: ResourceResolver) -> ResponseEntity<Any>) {
+    fun process(
+        httpRequest: SlingHttpServletRequest, httpResponse: SlingHttpServletResponse,
+        process: (form: F, resourceResolver: ResourceResolver) -> ResponseEntity<Any>
+    ) {
         try {
             val form = modelFactory.createModel(httpRequest, formClass)
             val response = process(form, httpRequest.resourceResolver)
@@ -51,8 +53,8 @@ class RequestProcessor<F>(private val modelFactory: ModelFactory, private val fo
     }
 
     private fun toErrors(e: MissingElementsException) = e.missingElements.mapNotNull { it.element }
-            .mapNotNull { it.getAnnotation(RequestParameter::class.java) }
-            .map { "Missing required parameter: ${it.value}" }
+        .mapNotNull { it.getAnnotation(RequestParameter::class.java) }
+        .map { "Missing required parameter: ${it.value}" }
 
     private fun body(body: Any) = if (body is JsonObject) body.toMap() else body
 

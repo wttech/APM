@@ -24,7 +24,9 @@ import com.cognifide.apm.api.services.ExecutionMode
 
 interface AsyncScriptExecutor {
 
-    fun process(script: Script, executionMode: ExecutionMode, customDefinitions: Map<String, String>, executor: String): String
+    fun process(
+        script: Script, executionMode: ExecutionMode, customDefinitions: Map<String, String>, executor: String
+    ): String
 
     fun checkStatus(id: String): ExecutionStatus
 }

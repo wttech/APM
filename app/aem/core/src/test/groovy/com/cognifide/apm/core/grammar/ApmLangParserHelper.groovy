@@ -20,7 +20,6 @@
 
 package com.cognifide.apm.core.grammar
 
-
 import org.antlr.v4.runtime.CharStream
 import org.antlr.v4.runtime.CharStreams
 import org.antlr.v4.runtime.CommonTokenStream

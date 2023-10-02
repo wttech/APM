@@ -20,7 +20,6 @@
 
 package com.cognifide.apm.core.actions
 
-
 import com.cognifide.apm.api.actions.annotations.Flags
 import com.cognifide.apm.api.actions.annotations.Mapper
 import com.cognifide.apm.api.actions.annotations.Mapping

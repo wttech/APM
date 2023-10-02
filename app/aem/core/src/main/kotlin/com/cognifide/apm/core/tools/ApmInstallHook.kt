@@ -72,7 +72,9 @@ class ApmInstallHook : OsgiAwareInstallHook() {
         }
     }
 
-    private fun executeScripts(context: InstallContext, currentEnvironment: LaunchEnvironment, currentHook: String, resolver: ResourceResolver) {
+    private fun executeScripts(
+        context: InstallContext, currentEnvironment: LaunchEnvironment, currentHook: String, resolver: ResourceResolver
+    ) {
         val scriptManager = getService(ScriptManager::class.java)
         val scriptFinder = getService(ScriptFinder::class.java)
         val modifiedScriptFinder = getService(ModifiedScriptFinder::class.java)
@@ -80,7 +82,11 @@ class ApmInstallHook : OsgiAwareInstallHook() {
 
         val scripts = mutableListOf<Script>()
         scripts.addAll(scriptFinder.findAll(onInstall(currentEnvironment, runModesProvider, currentHook), resolver))
-        scripts.addAll(modifiedScriptFinder.findAll(onInstallIfModified(currentEnvironment, runModesProvider, currentHook), resolver))
+        scripts.addAll(
+            modifiedScriptFinder.findAll(
+                onInstallIfModified(currentEnvironment, runModesProvider, currentHook), resolver
+            )
+        )
         scripts.forEach { script ->
             val result: ExecutionResult = scriptManager.process(script, ExecutionMode.AUTOMATIC_RUN, resolver)
             logStatus(context, script.path, result)
@@ -92,9 +98,9 @@ class ApmInstallHook : OsgiAwareInstallHook() {
     private fun getCurrentHook(context: InstallContext): String {
         val properties = context.`package`?.metaInf?.properties ?: Properties()
         val hookPropertyKey = properties.entries.asSequence()
-                .filter { entry -> entry.value == this::class.java.name }
-                .map { entry -> entry.key as String }
-                .firstOrNull() ?: ""
+            .filter { entry -> entry.value == this::class.java.name }
+            .map { entry -> entry.key as String }
+            .firstOrNull() ?: ""
         val hookRegex = Regex("installhook\\.(\\w+)\\.class")
         val result = hookRegex.matchEntire(hookPropertyKey)
         return result?.groups?.get(1)?.value ?: ""
@@ -113,13 +119,14 @@ class ApmInstallHook : OsgiAwareInstallHook() {
             val packageException = PackageException("Script cannot be executed properly: $scriptPath")
             context.options.listener?.onError(ProgressTrackerListener.Mode.TEXT, "", packageException)
             logger.error("", packageException)
-            result.entries
-                    .stream()
-                    .filter { it.status == Status.ERROR }
-                    .map { it.messages }
-                    .flatMap { it.stream() }
-                    .forEach { context.options.listener?.onMessage(ProgressTrackerListener.Mode.TEXT, "E", it) }
-            context.options.listener?.onMessage(ProgressTrackerListener.Mode.TEXT, "APM scripts installed (with errors, check logs!)", "")
+            result.entries.stream()
+                .filter { it.status == Status.ERROR }
+                .map { it.messages }
+                .flatMap { it.stream() }
+                .forEach { context.options.listener?.onMessage(ProgressTrackerListener.Mode.TEXT, "E", it) }
+            context.options.listener?.onMessage(
+                ProgressTrackerListener.Mode.TEXT, "APM scripts installed (with errors, check logs!)", ""
+            )
             throw packageException
         }
     }

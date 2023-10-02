@@ -27,5 +27,5 @@ import javax.inject.Inject
 
 @Model(adaptables = [SlingHttpServletRequest::class])
 class ProtectTextForm @Inject constructor(
-        @param:RequestParameter("text", optional = false) val text: String
+    @param:RequestParameter("text", optional = false) val text: String
 )
