@@ -54,9 +54,8 @@ class VersionServiceImpl : VersionService {
 
     override fun getScriptVersion(resolver: ResourceResolver, script: Script): ScriptVersion {
         val scriptVersionPath = getScriptVersionPath(script)
-        return resolver.getResource(scriptVersionPath)?.adaptTo(ScriptVersionModel::class.java) ?: ScriptVersionModel(
-            script.path
-        )
+        return resolver.getResource(scriptVersionPath)?.adaptTo(ScriptVersionModel::class.java)
+            ?: ScriptVersionModel(script.path)
     }
 
     override fun getVersionPath(script: Script): String {
