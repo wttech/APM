@@ -27,16 +27,16 @@ import com.cognifide.apm.main.actions.ActionGroup;
 import java.util.List;
 import org.apache.commons.lang3.NotImplementedException;
 
-@Mapper(value = "CONTENT", group = ActionGroup.DATASOURCE)
-public class ContentMapper {
+@Mapper(value = "TRAVERSE", group = ActionGroup.DATASOURCE)
+public class TraverseMapper {
 
   @Mapping(
-      examples = "CONTENT('/content/(.+)/(.+)/(.+)', ['brand', 'country', 'language'])",
-      reference = "Provides content structure for given resource path matching given path regex and parameters names"
+      examples = "TRAVERSE('/content', [{regex: '(.+)', paramNames: ['brand']},{regex: '(.+)_(.+)', paramNames: ['country', 'language']}])",
+      reference = "Traverse content structure for given resource path matching given content structure map"
   )
   public Action mapAction(
-      @Required(value = "pathRegex", description = "Path regex expression") String pathRegex,
-      @Required(value = "paramNames", description = "List of parameters names") List<String> paramNames) {
+      @Required(value = "rootPath", description = "Root path") String rootPath,
+      @Required(value = "structureMap", description = "Map of content structure ") List<Object> structureMap) {
     throw new NotImplementedException("");
   }
 }
