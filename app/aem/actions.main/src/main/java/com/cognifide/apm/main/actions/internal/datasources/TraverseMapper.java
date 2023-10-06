@@ -31,7 +31,11 @@ import org.apache.commons.lang3.NotImplementedException;
 public class TraverseMapper {
 
   @Mapping(
-      examples = "TRAVERSE('/content', [{regex: '(.+)', paramNames: ['brand']},{regex: '(.+)_(.+)', paramNames: ['country', 'language']}])",
+      examples = "TRAVERSE('/content', [<br>" +
+          "&nbsp;&nbsp;&nbsp;&nbsp;{regex: '(.+)_(.+)', paramNames: ['param1', 'param2']},<br>" +
+          "&nbsp;&nbsp;&nbsp;&nbsp;{excludeRegex: '[^:]+'},<br>" +
+          "&nbsp;&nbsp;&nbsp;&nbsp;{template: '/apps/test/pageTemplate', resourceType: 'test/pageRenderer'}<br>" +
+          "])",
       reference = "Traverse content structure for given resource path matching given content structure map"
   )
   public Action mapAction(

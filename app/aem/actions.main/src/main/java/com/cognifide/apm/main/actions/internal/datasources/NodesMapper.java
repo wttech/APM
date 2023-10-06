@@ -30,7 +30,7 @@ import org.apache.commons.lang3.NotImplementedException;
 public class NodesMapper {
 
   @Mapping(
-      examples = "NODES('/content/dam', '[^:+]')",
+      examples = "NODES('/content/dam', '[^:]+')",
       reference = "Prints all nodes for given resource path matching given regex"
   )
   public Action mapAction(
