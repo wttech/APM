@@ -40,7 +40,7 @@ public class TraverseMapper {
   )
   public Action mapAction(
       @Required(value = "rootPath", description = "Root path") String rootPath,
-      @Required(value = "structureMap", description = "Map of content structure ") List<Object> structureMap) {
+      @Required(value = "structureMap", description = "Map of content structure") List<Object> structureMap) {
     throw new NotImplementedException("");
   }
 }
