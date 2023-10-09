@@ -98,7 +98,8 @@ class ScriptRunnerTest extends Specification {
                      "Executing command SHOW \"a\"",
                      "Executing command SHOW \"b\"",
                      "Executing command SHOW \"C\"",
-                     "Executing command SHOW \"AB1\""]
+                     "Executing command SHOW \"AB1\"",
+                     "Executing command SHOW \"Ab1\""]
     }
 
     def "run define map"() {
