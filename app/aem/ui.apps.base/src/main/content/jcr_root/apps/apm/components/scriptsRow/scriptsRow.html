@@ -33,7 +33,7 @@
   </td>
   <td is="coral-table-cell" value="${item.lastModified.timeInMillis || 0}">
     <time data-sly-test="${item.lastModified}" datetime="${item.lastModified.timeInMillis || 0}"
-          data-sly-use.lastMod="${'com.adobe.cq.xf.ui.DateFormatter' @ date=item.lastModified, relativeFormat='r'}">
+          data-sly-use.lastMod="${'com.adobe.cq.xf.ui.DateFormatter' @ date=item.lastModified, simpleFormat='yyyy-MM-dd HH:mm:ss'}">
       ${lastMod.date}
     </time>
   </td>
@@ -53,7 +53,7 @@
     <a data-sly-test="${run.time}" is="coral-anchorbutton" iconsize="S" icon="${run.success ? 'check' : 'close'}"
        href="/apm/summary.html${run.summary}"></a>
     <time data-sly-test="${run.time}" datetime="${run.time.timeInMillis || 0}"
-          data-sly-use.runTime="${'com.adobe.cq.xf.ui.DateFormatter' @ date=run.time, relativeFormat='r'}">
+          data-sly-use.runTime="${'com.adobe.cq.xf.ui.DateFormatter' @ date=run.time, simpleFormat='yyyy-MM-dd HH:mm:ss'}">
       ${runTime.date}
     </time>
   </td>
