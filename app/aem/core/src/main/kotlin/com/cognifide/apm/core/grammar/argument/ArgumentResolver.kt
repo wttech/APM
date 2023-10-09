@@ -168,6 +168,7 @@ class ArgumentResolver(
             }
             return when {
                 ctx.value() != null -> visit(ctx.value())
+                ctx.dataSource() != null -> visit(ctx.dataSource())
                 else -> super.visitExpression(ctx)
             }
         }

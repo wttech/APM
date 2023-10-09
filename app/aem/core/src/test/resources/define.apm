@@ -45,6 +45,7 @@ DEFINE tabEnum [a, b, "c", "d", 1, 2]
 DEFINE tab4 [1 + 2, "a" + "b"]
 DEFINE func FUNC('a')
 DEFINE funcTab [FUNC('b'), UPPER('c')]
+DEFINE funcSum UPPER('a') + UPPER('b') + 1
 SHOW $a
 SHOW $b
 SHOW $tab1
@@ -65,3 +66,4 @@ SHOW $tab3
 SHOW $func
 SHOW $funcTab[0]
 SHOW $funcTab[1]
+SHOW $funcSum
