@@ -27,6 +27,7 @@ import com.cognifide.apm.core.grammar.ApmType;
 import com.day.cq.wcm.api.NameConstants;
 import com.google.common.collect.ImmutableMap;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,8 +52,8 @@ public class TraverseDataSource implements DataSource {
   }
 
   @Override
-  public ApmType determine(ResourceResolver resolver, List<ApmType> parameters) {
-    String rootPath = parameters.get(0).getString();
+  public ApmType determine(ResourceResolver resolver, List<Object> parameters) {
+    String rootPath = (String) parameters.get(0);
     List<Config> configs = determineConfigs(parameters);
     Resource root = resolver.getResource(rootPath);
     return traverseTree(root, 0, configs);
@@ -88,11 +89,10 @@ public class TraverseDataSource implements DataSource {
     return new ApmList(list);
   }
 
-  private List<Config> determineConfigs(List<ApmType> parameters) {
-    return parameters.get(1)
-        .getList()
+  private List<Config> determineConfigs(List<Object> parameters) {
+    return ((List<Object>) parameters.get(1))
         .stream()
-        .map(ApmType::getMap)
+        .map(item -> (Map<String, Object>) item)
         .map(Config::new)
         .collect(Collectors.toList());
   }
@@ -109,22 +109,18 @@ public class TraverseDataSource implements DataSource {
 
     List<String> paramNames;
 
-    Config(Map<String, ApmType> map) {
-      String regex = map.getOrDefault("regex", new ApmEmpty()).getString();
+    Config(Map<String, Object> map) {
+      String regex = (String) map.get("regex");
       if (StringUtils.isNotEmpty(regex)) {
         pattern = Pattern.compile(regex);
       }
-      String excludeRegex = map.getOrDefault("excludeRegex", new ApmEmpty()).getString();
+      String excludeRegex = (String) map.get("excludeRegex");
       if (StringUtils.isNotEmpty(excludeRegex)) {
         excludePattern = Pattern.compile(excludeRegex);
       }
-      template = map.getOrDefault("template", new ApmEmpty()).getString();
-      resourceType = map.getOrDefault("resourceType", new ApmEmpty()).getString();
-      paramNames = map.getOrDefault("paramNames", new ApmList(new ArrayList<>()))
-          .getList()
-          .stream()
-          .map(ApmType::getString)
-          .collect(Collectors.toList());
+      template = (String) map.get("template");
+      resourceType = (String) map.get("resourceType");
+      paramNames = (List<String>) map.getOrDefault("paramNames", Collections.emptyList());
       if (StringUtils.countMatches(regex, "(") != paramNames.size()) {
         throw new IllegalArgumentException("Number of paramNames must match number of regex groups");
       }

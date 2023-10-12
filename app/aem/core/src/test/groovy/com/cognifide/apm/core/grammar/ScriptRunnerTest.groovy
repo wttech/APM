@@ -23,10 +23,12 @@ package com.cognifide.apm.core.grammar
 import com.cognifide.apm.api.scripts.Script
 import com.cognifide.apm.api.services.ScriptFinder
 import com.cognifide.apm.api.status.Status
+import com.cognifide.apm.core.crypto.DecryptionService
 import com.cognifide.apm.core.grammar.datasource.DataSource
 import com.cognifide.apm.core.grammar.datasource.DataSourceInvoker
 import com.cognifide.apm.core.progress.ProgressImpl
 import org.apache.commons.io.IOUtils
+import org.apache.commons.lang3.reflect.FieldUtils
 import org.apache.sling.api.resource.ResourceResolver
 import spock.lang.Specification
 
@@ -242,6 +244,7 @@ class ScriptRunnerTest extends Specification {
 
     private static DataSourceInvoker createDataSourceInvoker() {
         def dataSourceInvoker = new DataSourceInvoker()
+        FieldUtils.writeField(dataSourceInvoker, "decryptionService", new DecryptionService(), true)
         def bindDataSource = DataSourceInvoker.class.getDeclaredMethod("bindDataSource", DataSource.class)
         bindDataSource.setAccessible(true)
         bindDataSource.invoke(dataSourceInvoker, new DataSource() {
@@ -251,8 +254,8 @@ class ScriptRunnerTest extends Specification {
             }
 
             @Override
-            ApmType determine(ResourceResolver resolver, List<ApmType> parameters) {
-                return parameters.get(0)
+            ApmType determine(ResourceResolver resolver, List<Object> parameters) {
+                return new ApmString(parameters.get(0))
             }
         })
         bindDataSource.invoke(dataSourceInvoker, new DataSource() {
@@ -262,8 +265,8 @@ class ScriptRunnerTest extends Specification {
             }
 
             @Override
-            ApmType determine(ResourceResolver resolver, List<ApmType> parameters) {
-                return new ApmString(parameters.get(0).getString().toUpperCase())
+            ApmType determine(ResourceResolver resolver, List<Object> parameters) {
+                return new ApmString(parameters.get(0).toUpperCase())
             }
         })
         return dataSourceInvoker

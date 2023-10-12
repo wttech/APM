@@ -41,9 +41,9 @@ public class NodesDataSource implements DataSource {
   }
 
   @Override
-  public ApmType determine(ResourceResolver resolver, List<ApmType> parameters) {
-    String path = parameters.get(0).getString();
-    String regex = parameters.get(1).getString();
+  public ApmType determine(ResourceResolver resolver, List<Object> parameters) {
+    String path = (String) parameters.get(0);
+    String regex = (String) parameters.get(1);
     Pattern pattern = Pattern.compile(regex);
     Resource root = resolver.getResource(path);
     List<ApmMap> values = StreamSupport.stream(root.getChildren().spliterator(), false)

@@ -44,8 +44,8 @@ public class ValueMapDataSource implements DataSource {
   }
 
   @Override
-  public ApmType determine(ResourceResolver resolver, List<ApmType> parameters) {
-    String path = parameters.get(0).getString();
+  public ApmType determine(ResourceResolver resolver, List<Object> parameters) {
+    String path = (String) parameters.get(0);
     ValueMap valueMap = resolver.getResource(path).getValueMap();
     Map<String, ApmType> map = new HashMap<>();
     for (Map.Entry<String, Object> entry : valueMap.entrySet()) {

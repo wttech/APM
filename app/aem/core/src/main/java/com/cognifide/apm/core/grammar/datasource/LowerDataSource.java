@@ -34,8 +34,8 @@ public class LowerDataSource implements DataSource {
   }
 
   @Override
-  public ApmType determine(ResourceResolver resolver, List<ApmType> parameters) {
-    String value = parameters.get(0).getString();
+  public ApmType determine(ResourceResolver resolver, List<Object> parameters) {
+    String value = (String) parameters.get(0);
     return new ApmString(value.toLowerCase());
   }
 }

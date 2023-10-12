@@ -38,9 +38,9 @@ public class GroupsDataSource implements DataSource {
   }
 
   @Override
-  public ApmType determine(ResourceResolver resolver, List<ApmType> parameters) {
-    String value = parameters.get(0).getString();
-    String regex = parameters.get(1).getString();
+  public ApmType determine(ResourceResolver resolver, List<Object> parameters) {
+    String value = (String) parameters.get(0);
+    String regex = (String) parameters.get(1);
     Pattern pattern = Pattern.compile(regex);
     Matcher matcher = pattern.matcher(value);
     List<ApmType> list = new ArrayList<>();

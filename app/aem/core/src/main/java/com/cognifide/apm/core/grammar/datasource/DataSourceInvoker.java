@@ -19,11 +19,13 @@
  */
 package com.cognifide.apm.core.grammar.datasource;
 
+import com.cognifide.apm.core.crypto.DecryptionService;
 import com.cognifide.apm.core.grammar.ApmType;
 import com.cognifide.apm.core.grammar.argument.ArgumentResolverException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -32,6 +34,9 @@ import org.osgi.service.component.annotations.ReferencePolicy;
 
 @Component(service = DataSourceInvoker.class)
 public class DataSourceInvoker {
+
+  @Reference
+  private DecryptionService decryptionService;
 
   private final Map<String, DataSource> dataSources = new HashMap<>();
 
@@ -47,7 +52,10 @@ public class DataSourceInvoker {
   public ApmType determine(String name, ResourceResolver resolver, List<ApmType> parameters) {
     DataSource dataSource = dataSources.get(name.toUpperCase());
     try {
-      return dataSource == null ? null : dataSource.determine(resolver, parameters);
+      List<Object> decryptedParameters = parameters.stream()
+          .map(parameter -> parameter.getArgument(decryptionService))
+          .collect(Collectors.toList());
+      return dataSource == null ? null : dataSource.determine(resolver, decryptedParameters);
     } catch (Exception e) {
       throw new ArgumentResolverException(String.format("%s data source: %s", name.toUpperCase(), e.getMessage()));
     }
