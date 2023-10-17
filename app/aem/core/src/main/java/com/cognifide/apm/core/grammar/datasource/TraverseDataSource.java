@@ -69,14 +69,9 @@ public class TraverseDataSource implements DataSource {
       if (config.isValid(resource)) {
         Map<String, ApmType> map = new HashMap<>(ImmutableMap.of(
             "path", new ApmString(resource.getPath()),
-            "name", new ApmString(resource.getName()))
-        );
-        if (config.pattern != null && config.paramNames.size() > 0) {
-          Matcher matcher = config.pattern.matcher(resource.getName());
-          for (int i = 0; i < config.paramNames.size(); i++) {
-            map.put(config.paramNames.get(i), new ApmString(matcher.group(i + 1)));
-          }
-        }
+            "name", new ApmString(resource.getName())
+        ));
+        map.putAll(config.determineParams(resource));
         ApmType items = traverseTree(resource, depth + 1, configs);
         if (items instanceof ApmList) {
           map.put("items", items);
@@ -99,48 +94,101 @@ public class TraverseDataSource implements DataSource {
 
   private static class Config {
 
-    Pattern pattern;
+    private final Pattern pattern;
 
-    Pattern excludePattern;
+    private final Pattern excludePattern;
 
-    String template;
+    private final String template;
 
-    String resourceType;
+    private final String resourceType;
 
-    List<String> paramNames;
+    private final List<String> paramNames;
 
-    Config(Map<String, Object> map) {
-      String regex = (String) map.get("regex");
-      if (StringUtils.isNotEmpty(regex)) {
-        pattern = Pattern.compile(regex);
-      }
+    private final List<ConfigProperty> matchProperties;
+
+    public Config(Map<String, Object> map) {
+      String regex = (String) map.get("excludeRegex");
+      pattern = StringUtils.isNotEmpty(regex) ? Pattern.compile(regex) : null;
       String excludeRegex = (String) map.get("excludeRegex");
-      if (StringUtils.isNotEmpty(excludeRegex)) {
-        excludePattern = Pattern.compile(excludeRegex);
-      }
+      excludePattern = StringUtils.isNotEmpty(excludeRegex) ? Pattern.compile(excludeRegex) : null;
       template = (String) map.get("template");
       resourceType = (String) map.get("resourceType");
       paramNames = (List<String>) map.getOrDefault("paramNames", Collections.emptyList());
       if (StringUtils.countMatches(regex, "(") != paramNames.size()) {
         throw new IllegalArgumentException("Number of paramNames must match number of regex groups");
       }
+      matchProperties = ((List<Object>) map.getOrDefault("matchProperties", Collections.emptyList()))
+          .stream()
+          .map(it -> (Map<String, Object>) it)
+          .map(ConfigProperty::new)
+          .collect(Collectors.toList());
     }
 
     public boolean isValid(Resource resource) {
       boolean result = true;
       if (pattern != null) {
-        result &= pattern.matcher(resource.getName()).matches();
+        result = pattern.matcher(resource.getName()).matches();
       }
-      if (excludePattern != null) {
-        result &= !excludePattern.matcher(resource.getName()).matches();
+      if (result && excludePattern != null) {
+        result = !excludePattern.matcher(resource.getName()).matches();
       }
-      if (!StringUtils.isAllEmpty(template, resourceType)) {
-        result &= resource.isResourceType(NameConstants.NT_PAGE);
-        ValueMap valueMap = Optional.ofNullable(resource.getChild(JcrConstants.JCR_CONTENT))
-            .map(Resource::getValueMap)
-            .orElse(ValueMap.EMPTY);
-        result &= StringUtils.isEmpty(template) || StringUtils.equals(template, valueMap.get(NameConstants.PN_TEMPLATE, String.class));
+      if (result && !StringUtils.isAllEmpty(template, resourceType)) {
+        ValueMap valueMap;
+        if (resource.isResourceType(NameConstants.NT_PAGE)) {
+          valueMap = Optional.ofNullable(resource.getChild(JcrConstants.JCR_CONTENT))
+              .map(Resource::getValueMap)
+              .orElse(ValueMap.EMPTY);
+        } else if (!resource.isResourceType("cq:PageContent")) {
+          valueMap = resource.getValueMap();
+        } else {
+          valueMap = ValueMap.EMPTY;
+        }
+        result = StringUtils.isEmpty(template) || StringUtils.equals(template, valueMap.get(NameConstants.PN_TEMPLATE, String.class));
         result &= StringUtils.isEmpty(resourceType) || StringUtils.equals(resourceType, valueMap.get(ResourceResolver.PROPERTY_RESOURCE_TYPE, String.class));
+      }
+      if (result && CollectionUtils.isNotEmpty(matchProperties)) {
+        result = matchProperties.stream()
+            .allMatch(property -> property.isValid(resource));
+      }
+      return result;
+    }
+
+    public Map<String, ApmType> determineParams(Resource resource) {
+      Map<String, ApmType> params = new HashMap<>();
+      if (pattern != null && paramNames.size() > 0) {
+        Matcher matcher = pattern.matcher(resource.getName());
+        for (int i = 0; i < paramNames.size(); i++) {
+          params.put(paramNames.get(i), new ApmString(matcher.group(i + 1)));
+        }
+      }
+      return params;
+    }
+  }
+
+  private static class ConfigProperty {
+
+    private final String name;
+
+    private final Pattern pattern;
+
+    private final Pattern excludePattern;
+
+    public ConfigProperty(Map<String, Object> map) {
+      name = (String) map.get("name");
+      String regex = (String) map.get("excludeRegex");
+      pattern = StringUtils.isNotEmpty(regex) ? Pattern.compile(regex) : null;
+      String excludeRegex = (String) map.get("excludeRegex");
+      excludePattern = StringUtils.isNotEmpty(excludeRegex) ? Pattern.compile(excludeRegex) : null;
+    }
+
+    public boolean isValid(Resource resource) {
+      String value = resource.getValueMap().get(name, String.class);
+      boolean result = StringUtils.isNotEmpty(value);
+      if (result && pattern != null) {
+        result = pattern.matcher(resource.getName()).matches();
+      }
+      if (result && excludePattern != null) {
+        result = !excludePattern.matcher(resource.getName()).matches();
       }
       return result;
     }
