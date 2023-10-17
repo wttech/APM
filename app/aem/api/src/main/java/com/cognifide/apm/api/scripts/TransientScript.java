@@ -83,6 +83,11 @@ public class TransientScript implements MutableScript {
   }
 
   @Override
+  public String getCronExpression() {
+    return null;
+  }
+
+  @Override
   public Date getLastExecuted() {
     return null;
   }

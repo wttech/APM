@@ -48,7 +48,7 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 @Component(
-    service = {ApmInstallService.class, Runnable.class},
+    service = Runnable.class,
     immediate = true,
     property = {
         Property.DESCRIPTION + "APM Launches configured scripts",
@@ -80,7 +80,9 @@ public class ApmInstallService extends AbstractLauncher implements Runnable {
   @Activate
   public void activate(Configuration config) {
     this.config = config;
-    process();
+    if (StringUtils.isNotEmpty(config.scheduler_expression())) {
+      process();
+    }
   }
 
   @Override

@@ -41,6 +41,7 @@
       'apm:launchRunModes',
       'apm:launchHook',
       'apm:launchSchedule',
+      'apm:launchCronExpression',
     ];
 
     function Console($el) {

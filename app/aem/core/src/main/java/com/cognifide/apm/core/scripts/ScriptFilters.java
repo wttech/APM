@@ -58,6 +58,13 @@ public class ScriptFilters {
         .and(script -> script.getLastExecuted() == null && script.getLaunchSchedule().before(date));
   }
 
+  public static Predicate<Script> onCronExpression(LaunchEnvironment environment, RunModesProvider runModesProvider) {
+    return enabled()
+        .and(withLaunchMode(LaunchMode.ON_CRON_EXPRESSION))
+        .and(withLaunchEnvironment(environment))
+        .and(withLaunchRunModes(runModesProvider.getRunModes()));
+  }
+
   public static Predicate<Script> onStartup(LaunchEnvironment environment, RunModesProvider runModesProvider) {
     return enabled()
         .and(withLaunchMode(LaunchMode.ON_STARTUP))

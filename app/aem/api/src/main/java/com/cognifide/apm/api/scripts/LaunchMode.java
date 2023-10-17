@@ -36,6 +36,11 @@ public enum LaunchMode {
   ON_SCHEDULE,
 
   /**
+   * Executed on CRON expression
+   */
+  ON_CRON_EXPRESSION,
+
+  /**
    * Executed always on bundle start
    */
   ON_STARTUP,

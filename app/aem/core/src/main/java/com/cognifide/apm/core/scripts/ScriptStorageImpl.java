@@ -114,6 +114,7 @@ public class ScriptStorageImpl implements ScriptStorage {
       setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_RUN_MODES, launchMetadata.getLaunchRunModes());
       setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_HOOK, launchMetadata.getExecutionHook());
       setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_SCHEDULE, launchMetadata.getExecutionSchedule());
+      setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_CRON_EXPRESSION, launchMetadata.getCronExpression());
       removeProperty(fileNode, ScriptNode.APM_LAST_EXECUTED);
       JcrUtils.setLastModified(fileNode, Calendar.getInstance());
       session.save();

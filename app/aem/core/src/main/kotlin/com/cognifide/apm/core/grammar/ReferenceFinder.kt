@@ -158,6 +158,8 @@ class ReferenceFinder(private val scriptFinder: ScriptFinder, private val resour
 
         override fun getLaunchSchedule(): Date? = null
 
+        override fun getCronExpression(): String? = null
+
         override fun getLastExecuted(): Date? = null
 
         override fun getChecksum(): String? = null

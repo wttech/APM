@@ -31,6 +31,7 @@
     launchRunModes: 'apm:launchRunModes',
     launchHook: 'apm:launchHook',
     launchSchedule: 'apm:launchSchedule',
+    launchCronExpression: 'apm:launchCronExpression',
   };
 
   const LaunchModes = {
@@ -38,6 +39,7 @@
     onInstall: 'ON_INSTALL',
     onInstallIfModified: 'ON_INSTALL_IF_MODIFIED',
     onSchedule: 'ON_SCHEDULE',
+    onCronExpression: 'ON_CRON_EXPRESSION',
   };
 
   class EditorGrid {
@@ -52,6 +54,7 @@
         launchRunModes: fields[FieldNames.launchRunModes],
         launchHook: fields[FieldNames.launchHook],
         launchSchedule: fields[FieldNames.launchSchedule],
+        launchCronExpression: fields[FieldNames.launchCronExpression],
       };
 
       this.init();
@@ -98,6 +101,9 @@
         }
         if (launchMode === LaunchModes.onSchedule) {
           showFields.push(this.fields.launchSchedule);
+        }
+        if (launchMode === LaunchModes.onCronExpression) {
+          showFields.push(this.fields.launchCronExpression);
         }
         if (launchMode !== LaunchModes.onDemand) {
           showFields.push(this.fields.launchEnvironment);

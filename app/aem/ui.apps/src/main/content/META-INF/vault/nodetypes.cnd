@@ -8,6 +8,7 @@
   - apm:launchRunModes (string) multiple
   - apm:launchHook (string)
   - apm:launchSchedule (date)
+  - apm:launchCronExpression (string)
   - apm:lastExecuted (date)
   - apm:checksum (string)
   - apm:verified (string)
