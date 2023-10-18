@@ -74,12 +74,12 @@ public class ScriptsResourceChangeListener implements ResourceChangeListener {
   }
 
   @Override
-  public void onChange(List<ResourceChange> list) {
+  public void onChange(List<ResourceChange> changes) {
     Bundle currentBundle = FrameworkUtil.getBundle(ScriptsResourceChangeListener.class);
     BundleContext bundleContext = currentBundle.getBundleContext();
 
     SlingHelper.operateTraced(resolverProvider, resolver ->
-        list.stream()
+        changes.stream()
             .filter(resourceChange -> StringUtils.endsWith(resourceChange.getPath(), Apm.FILE_EXT))
             .forEach(resourceChange -> {
               if (resourceChange.getType() == ResourceChange.ChangeType.ADDED) {
