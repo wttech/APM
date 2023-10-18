@@ -1,7 +1,10 @@
 package com.cognifide.apm.core.services;
 
+import static com.cognifide.apm.core.scripts.ScriptFilters.onScheduleOrCronExpression;
+
 import com.cognifide.apm.api.scripts.LaunchMode;
 import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.RunModesProvider;
 import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.apm.core.Apm;
@@ -24,6 +27,7 @@ import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 
 @Component(
@@ -47,6 +51,9 @@ public class ScriptsResourceChangeListener implements ResourceChangeListener {
   @Reference
   private ScriptManager scriptManager;
 
+  @Reference
+  private RunModesProvider runModesProvider;
+
   private Map<String, RegisterScript> registeredScripts;
 
   @Activate
@@ -56,13 +63,16 @@ public class ScriptsResourceChangeListener implements ResourceChangeListener {
     BundleContext bundleContext = currentBundle.getBundleContext();
 
     SlingHelper.operateTraced(resolverProvider, resolver ->
-        scriptFinder.findAll(script -> {
-              LaunchMode launchMode = script.getLaunchMode();
-              return launchMode == LaunchMode.ON_SCHEDULE && script.getLaunchSchedule() != null
-                  || launchMode == LaunchMode.ON_CRON_EXPRESSION && StringUtils.isNotEmpty(script.getCronExpression());
-            }, resolver)
+        scriptFinder.findAll(onScheduleOrCronExpression(runModesProvider), resolver)
             .forEach(script -> registerService(script, bundleContext))
     );
+  }
+
+  @Deactivate
+  public void deactivate() {
+    registeredScripts.values()
+        .forEach(registeredScript -> registeredScript.registration.unregister());
+    registeredScripts.clear();
   }
 
   @Override
@@ -76,7 +86,7 @@ public class ScriptsResourceChangeListener implements ResourceChangeListener {
             .forEach(resourceChange -> {
               if (resourceChange.getType() == ResourceChange.ChangeType.ADDED) {
                 Script script = scriptFinder.find(resourceChange.getPath(), resolver);
-                if (script != null) {
+                if (onScheduleOrCronExpression(runModesProvider).test(script)) {
                   registerService(script, bundleContext);
                 }
               } else if (resourceChange.getType() == ResourceChange.ChangeType.REMOVED) {
@@ -88,7 +98,7 @@ public class ScriptsResourceChangeListener implements ResourceChangeListener {
               } else if (resourceChange.getType() == ResourceChange.ChangeType.CHANGED) {
                 Script script = scriptFinder.find(resourceChange.getPath(), resolver);
                 RegisterScript registeredScript = registeredScripts.get(resourceChange.getPath());
-                if (script != null && !Objects.equals(script, registeredScript.script)) {
+                if (onScheduleOrCronExpression(runModesProvider).test(script) && !Objects.equals(script, registeredScript.script)) {
                   registeredScript.registration.unregister();
                   registeredScripts.remove(resourceChange.getPath());
                   registerService(script, bundleContext);
@@ -111,11 +121,11 @@ public class ScriptsResourceChangeListener implements ResourceChangeListener {
     registeredScripts.put(script.getPath(), new RegisterScript(script, registration));
   }
 
-  private class RegisterScript {
+  private static class RegisterScript {
 
-    private Script script;
+    private final Script script;
 
-    private ServiceRegistration<Runnable> registration;
+    private final ServiceRegistration<Runnable> registration;
 
     public RegisterScript(Script script, ServiceRegistration<Runnable> registration) {
       this.script = script;
