@@ -31,10 +31,12 @@ import com.cognifide.apm.core.utils.RuntimeUtils;
 import com.day.cq.commons.jcr.JcrConstants;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.PostConstruct;
@@ -259,5 +261,30 @@ public class ScriptModel implements MutableScript {
 
   private static List<String> getArrayProperty(Resource resource, String name) {
     return Lists.newArrayList(resource.getValueMap().get(name, new String[]{}));
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj instanceof ScriptModel) {
+      ScriptModel that = (ScriptModel) obj;
+      return Objects.equals(path, that.path)
+          && Objects.equals(launchEnabled, that.launchEnabled)
+          && Objects.equals(launchMode, that.launchMode)
+          && Objects.equals(launchEnvironment, that.launchEnvironment)
+          && Arrays.equals(launchRunModes, that.launchRunModes)
+          && Objects.equals(launchHook, that.launchHook)
+          && Objects.equals(launchSchedule, that.launchSchedule)
+          && Objects.equals(checksum, that.checksum)
+          && Objects.equals(verified, that.verified);
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(path);
   }
 }
