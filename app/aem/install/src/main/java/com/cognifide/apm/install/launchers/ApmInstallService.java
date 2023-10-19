@@ -43,7 +43,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.observation.ResourceChange;
 import org.apache.sling.api.resource.observation.ResourceChangeListener;
@@ -94,7 +93,7 @@ public class ApmInstallService extends AbstractLauncher implements Runnable {
   public void activate(Configuration config, BundleContext bundleContext) {
     scriptPaths = Arrays.asList(config.scriptPaths());
     ifModified = config.ifModified();
-    process(scriptPaths);
+    processAllScripts();
     if (ifModified) {
       registerScripts(bundleContext);
     }
@@ -108,24 +107,27 @@ public class ApmInstallService extends AbstractLauncher implements Runnable {
 
   @Override
   public void run() {
-    process(scriptPaths);
+    processAllScripts();
   }
 
-  private void process(List<String> scriptPaths) {
-    SlingHelper.operateTraced(resolverProvider, resolver -> process(scriptPaths, resolver));
+  private void processAllScripts() {
+    SlingHelper.operateTraced(resolverProvider, resolver -> {
+      List<Script> scripts = determineScripts(scriptPaths, resolver);
+      processScripts(scripts, resolver);
+    });
   }
 
-  private void process(List<String> scriptPaths, ResourceResolver resolver) throws PersistenceException {
+  private List<Script> determineScripts(List<String> scriptPaths, ResourceResolver resolver) {
     boolean compositeNodeStore = RuntimeUtils.determineCompositeNodeStore(resolver);
     String instanceName = ManagementFactory.getRuntimeMXBean().getName();
     if (!compositeNodeStore || StringUtils.contains(instanceName, AEM_MUTABLE_CONTENT_INSTANCE)) {
-      List<Script> scripts = scriptPaths.stream()
+      return scriptPaths.stream()
           .map(scriptPath -> scriptFinder
               .find(scriptPath, resolver))
           .filter(script -> isValid(script, resolver))
           .collect(Collectors.toList());
-      processScripts(scripts, resolver);
     }
+    return Collections.emptyList();
   }
 
   private boolean isValid(Script script, ResourceResolver resolver) {
@@ -179,7 +181,8 @@ public class ApmInstallService extends AbstractLauncher implements Runnable {
         Script newScript = scriptFinder.find(scriptPath, resolver);
         if (!Objects.equals(script, newScript)) {
           script = newScript;
-          process(Collections.singletonList(scriptPath), resolver);
+          List<Script> scripts = determineScripts(Collections.singletonList(scriptPath), resolver);
+          processScripts(scripts, resolver);
         }
       });
     }
