@@ -81,8 +81,7 @@ public class ScriptFilters {
 
   private static Predicate<Script> withLaunchEnvironment(RunModesProvider runModesProvider) {
     LaunchEnvironment environment = LaunchEnvironment.of(runModesProvider);
-    return script -> script.getLaunchEnvironment() == LaunchEnvironment.ALL
-        || environment == script.getLaunchEnvironment();
+    return withLaunchEnvironment(environment);
   }
 
   private static Predicate<Script> withLaunchRunModes(Set<String> runModes) {

@@ -162,22 +162,21 @@ public class ApmInstallService extends AbstractLauncher implements Runnable {
 
   private class ScriptResourceChangeListener implements ResourceChangeListener {
 
-    private Script script;
+    private Script prevScript;
 
     private final String scriptPath;
 
     public ScriptResourceChangeListener(Script script, String scriptPath) {
-      this.script = script;
+      this.prevScript = script;
       this.scriptPath = scriptPath;
     }
 
     @Override
     public void onChange(List<ResourceChange> changes) {
       SlingHelper.operateTraced(resolverProvider, resolver -> {
-        Script newScript = scriptFinder.find(scriptPath, resolver);
-        if (!Objects.equals(script, newScript)) {
-          script = newScript;
-          List<Script> scripts = determineScripts(Collections.singletonList(scriptPath), resolver);
+        List<Script> scripts = determineScripts(Collections.singletonList(scriptPath), resolver);
+        if (!scripts.isEmpty() && !Objects.equals(prevScript, scripts.get(0))) {
+          prevScript = scripts.get(0);
           processScripts(scripts, resolver);
         }
       });

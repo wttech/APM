@@ -126,6 +126,7 @@ public class ScriptsResourceChangeListener implements ResourceChangeListener {
   }
 
   private void registerScript(Script script, BundleContext bundleContext) {
+    ApmInstallService service = new ApmInstallService(script.getPath(), resolverProvider, scriptManager, scriptFinder);
     Dictionary<String, Object> dictionary = new Hashtable<>();
     if (script.getLaunchMode() == LaunchMode.ON_SCHEDULE) {
       SimpleDateFormat cronExpressionFormat = new SimpleDateFormat("s m H d M ? y");
@@ -133,7 +134,6 @@ public class ScriptsResourceChangeListener implements ResourceChangeListener {
     } else if (script.getLaunchMode() == LaunchMode.ON_CRON_EXPRESSION) {
       dictionary.put("scheduler.expression", script.getCronExpression());
     }
-    ApmInstallService service = new ApmInstallService(script.getPath(), resolverProvider, scriptManager, scriptFinder);
     ServiceRegistration<Runnable> registration = bundleContext.registerService(Runnable.class, service, dictionary);
     registeredScripts.put(script.getPath(), new RegisterScript(script, registration));
   }
