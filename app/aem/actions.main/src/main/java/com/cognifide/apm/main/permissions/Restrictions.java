@@ -32,12 +32,8 @@ import javax.jcr.PropertyType;
 import javax.jcr.Value;
 import javax.jcr.ValueFactory;
 import javax.jcr.ValueFormatException;
-import lombok.Getter;
-import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 
-@Getter
-@ToString
 public class Restrictions {
 
   private static final String STRICT = "STRICT";
@@ -82,7 +78,6 @@ public class Restrictions {
     for (Map.Entry<String, Object> entry : customRestrictions.entrySet()) {
       if (!isMultivalue(entry)) {
         String value;
-
         if (entry.getValue() instanceof String) {
           value = (String) entry.getValue();
         } else {
@@ -153,5 +148,21 @@ public class Restrictions {
       result = entry.getValue() instanceof List;
     }
     return result;
+  }
+
+  public String getGlob() {
+    return glob;
+  }
+
+  public List<String> getNtNames() {
+    return ntNames;
+  }
+
+  public List<String> getItemNames() {
+    return itemNames;
+  }
+
+  public Map<String, Object> getCustomRestrictions() {
+    return customRestrictions;
   }
 }

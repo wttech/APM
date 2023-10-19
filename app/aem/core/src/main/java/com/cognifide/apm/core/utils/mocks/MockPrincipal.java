@@ -20,11 +20,9 @@
 package com.cognifide.apm.core.utils.mocks;
 
 import java.security.Principal;
-import lombok.Getter;
 
 public class MockPrincipal implements Principal {
 
-  @Getter
   private final String name;
 
   public MockPrincipal(final String name) {
@@ -46,5 +44,9 @@ public class MockPrincipal implements Principal {
   @Override
   public int hashCode() {
     return name.hashCode();
+  }
+
+  public String getName() {
+    return name;
   }
 }

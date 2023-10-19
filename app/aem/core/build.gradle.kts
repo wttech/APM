@@ -46,9 +46,6 @@ dependencies {
 
     antlr("org.antlr:antlr4:4.7.2")
 
-    compileOnly("org.projectlombok:lombok:1.18.8")
-    annotationProcessor("org.projectlombok:lombok:1.18.8")
-
     compileOnly(kotlin("stdlib-jdk8"))
     compileOnly(kotlin("reflect"))
 }
