@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.observation.ResourceChange;
 import org.apache.sling.api.resource.observation.ResourceChangeListener;
@@ -89,8 +90,12 @@ public class ApmInstallService extends AbstractLauncher implements Runnable {
   public void activate(Configuration config, BundleContext bundleContext) {
     scriptPaths = Arrays.asList(config.scriptPaths());
     ifModified = config.ifModified();
-    processAllScripts();
-    registerScripts(bundleContext);
+    if (StringUtils.isEmpty(config.scheduler_expression())) {
+      processAllScripts();
+    }
+    if (ifModified) {
+      registerScripts(bundleContext);
+    }
   }
 
   @Deactivate
@@ -134,7 +139,7 @@ public class ApmInstallService extends AbstractLauncher implements Runnable {
   private void registerScripts(BundleContext bundleContext) {
     registrations = new HashSet<>();
     SlingHelper.operateTraced(resolverProvider, resolver -> {
-      if (ifModified && RuntimeUtils.isMutableContentInstance(resolver)) {
+      if (RuntimeUtils.isMutableContentInstance(resolver)) {
         scriptPaths.forEach(scriptPath -> registerScript(scriptPath, resolver, bundleContext));
       }
     });
