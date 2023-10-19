@@ -1,5 +1,5 @@
 {
   "scripts":[
-    "register nodetypes\n<<===\n<apm='http://www.cognifide.com/apm/1.1'>\n\n[apm:Script]\nmixin\n- apm:launchEnabled (boolean)\n- apm:launchMode (string)\n- apm:launchEnvironment (string)\n- apm:launchRunModes (string) multiple\n- apm:launchHook (string)\n- apm:launchSchedule (date)\n- apm:lastExecuted (date)\n- apm:checksum (string)\n- apm:verified (string)\n===>>"
+    "register nodetypes\n<<===\n<apm='http://www.cognifide.com/apm/1.1'>\n\n[apm:Script]\nmixin\n- apm:launchEnabled (boolean)\n- apm:launchMode (string)\n- apm:launchEnvironment (string)\n- apm:launchRunModes (string) multiple\n- apm:launchHook (string)\n- apm:launchSchedule (date)\n- apm:launchCronExpression (string)\n- apm:lastExecuted (date)\n- apm:checksum (string)\n- apm:verified (string)\n===>>"
   ]
 }

@@ -44,9 +44,10 @@ class ScriptUploadForm @Inject constructor(
     @param:RequestParameter(ScriptNode.APM_LAUNCH_ENVIRONMENT) val launchEnvironment: LaunchEnvironment?,
     @param:RequestParameter(ScriptNode.APM_LAUNCH_RUN_MODES) val launchRunModes: Array<String>?,
     @param:RequestParameter(ScriptNode.APM_LAUNCH_HOOK) val launchHook: String?,
-    @param:RequestParameter(ScriptNode.APM_LAUNCH_SCHEDULE) @param:DateFormat("yyyy-MM-dd'T'HH:mm:ss") val launchSchedule: LocalDateTime?
+    @param:RequestParameter(ScriptNode.APM_LAUNCH_SCHEDULE) @param:DateFormat("yyyy-MM-dd'T'HH:mm:ss") val launchSchedule: LocalDateTime?,
+    @param:RequestParameter(ScriptNode.APM_LAUNCH_CRON_EXPRESSION) val cronExpression: String?
 ) {
     fun toLaunchMetadata(): LaunchMetadata {
-        return LaunchMetadata(launchEnabled, launchMode, launchEnvironment, launchRunModes, launchHook, launchSchedule)
+        return LaunchMetadata(launchEnabled, launchMode, launchEnvironment, launchRunModes, launchHook, launchSchedule, cronExpression)
     }
 }

@@ -36,15 +36,17 @@ public class LaunchMetadata {
   private final String[] launchRunModes;
   private final String executionHook;
   private final LocalDateTime executionSchedule;
+  private final String cronExpression;
 
   public LaunchMetadata(boolean executionEnabled, LaunchMode launchMode, LaunchEnvironment launchEnvironment,
-      String[] launchRunModes, String executionHook, LocalDateTime executionSchedule) {
+      String[] launchRunModes, String executionHook, LocalDateTime executionSchedule, String cronExpression) {
     this.executionEnabled = executionEnabled;
     this.launchMode = launchMode;
     this.launchEnvironment = launchEnvironment;
     this.launchRunModes = launchRunModes;
     this.executionHook = executionHook;
     this.executionSchedule = executionSchedule;
+    this.cronExpression  = cronExpression;
   }
 
   public boolean isExecutionEnabled() {
@@ -74,5 +76,9 @@ public class LaunchMetadata {
 
   public LocalDateTime getExecutionSchedule() {
     return executionSchedule;
+  }
+
+  public String  getCronExpression() {
+    return cronExpression;
   }
 }

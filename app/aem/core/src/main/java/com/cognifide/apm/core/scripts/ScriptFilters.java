@@ -23,7 +23,6 @@ import com.cognifide.apm.api.scripts.LaunchEnvironment;
 import com.cognifide.apm.api.scripts.LaunchMode;
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.RunModesProvider;
-import java.util.Date;
 import java.util.Set;
 import java.util.function.Predicate;
 import org.apache.commons.lang3.StringUtils;
@@ -50,12 +49,11 @@ public class ScriptFilters {
         .and(withLaunchHook(currentHook));
   }
 
-  public static Predicate<Script> onSchedule(LaunchEnvironment environment, RunModesProvider runModesProvider, Date date) {
+  public static Predicate<Script> onScheduleOrCronExpression(RunModesProvider runModesProvider) {
     return enabled()
-        .and(withLaunchMode(LaunchMode.ON_SCHEDULE))
-        .and(withLaunchEnvironment(environment))
-        .and(withLaunchRunModes(runModesProvider.getRunModes()))
-        .and(script -> script.getLastExecuted() == null && script.getLaunchSchedule().before(date));
+        .and(withSchedule().or(withCronExpression()))
+        .and(withLaunchEnvironment(runModesProvider))
+        .and(withLaunchRunModes(runModesProvider.getRunModes()));
   }
 
   public static Predicate<Script> onStartup(LaunchEnvironment environment, RunModesProvider runModesProvider) {
@@ -81,16 +79,29 @@ public class ScriptFilters {
         || environment == script.getLaunchEnvironment();
   }
 
-  private static Predicate<? super Script> withLaunchRunModes(Set<String> runModes) {
+  private static Predicate<Script> withLaunchEnvironment(RunModesProvider runModesProvider) {
+    LaunchEnvironment environment = LaunchEnvironment.of(runModesProvider);
+    return withLaunchEnvironment(environment);
+  }
+
+  private static Predicate<Script> withLaunchRunModes(Set<String> runModes) {
     return script -> script.getLaunchRunModes() == null
         || runModes.containsAll(script.getLaunchRunModes());
   }
 
-  private static Predicate<Script> withLaunchMode(final LaunchMode mode) {
+  private static Predicate<Script> withLaunchMode(LaunchMode mode) {
     return script -> script.getLaunchMode() == mode;
   }
 
+  private static Predicate<Script> withSchedule() {
+    return script -> script.getLaunchMode() == LaunchMode.ON_SCHEDULE && script.getLaunchSchedule() != null;
+  }
+
+  private static Predicate<Script> withCronExpression() {
+    return script -> script.getLaunchMode() == LaunchMode.ON_CRON_EXPRESSION && StringUtils.isNotEmpty(script.getCronExpression());
+  }
+
   private static Predicate<Script> enabled() {
-    return script -> script.isLaunchEnabled();
+    return Script::isLaunchEnabled;
   }
 }
