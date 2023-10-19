@@ -25,13 +25,9 @@ import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.apm.core.services.ResourceResolverProvider;
 import com.cognifide.apm.core.utils.RuntimeUtils;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
-import java.lang.management.ManagementFactory;
 import java.util.Collections;
-import org.apache.commons.lang3.StringUtils;
 
 public class ApmInstallService extends AbstractLauncher implements Runnable {
-
-  private static final String AEM_MUTABLE_CONTENT_INSTANCE = "aem-install-mutable-content";
 
   private final String scriptPath;
 
@@ -51,9 +47,7 @@ public class ApmInstallService extends AbstractLauncher implements Runnable {
   @Override
   public void run() {
     SlingHelper.operateTraced(resolverProvider, resolver -> {
-      boolean compositeNodeStore = RuntimeUtils.determineCompositeNodeStore(resolver);
-      String instanceName = ManagementFactory.getRuntimeMXBean().getName();
-      if (!compositeNodeStore || StringUtils.contains(instanceName, AEM_MUTABLE_CONTENT_INSTANCE)) {
+      if (RuntimeUtils.isMutableContentInstance(resolver)) {
         Script script = scriptFinder.find(scriptPath, resolver);
         processScripts(Collections.singletonList(script), resolver);
       }
