@@ -51,6 +51,7 @@
       this.$textArea = this.$el.find('#cqsm').eq(0);
       this.$fileName = this.$el.find('#fname').eq(0);
       this.$validateButton = this.$el.find('#validateButton').eq(0);
+      this.$cryptoButton = this.$el.find('#cryptoButton').eq(0);
       this.$saveButton = this.$el.find('#saveButton').eq(0);
       this.$saveAndCloseButton = this.$el.find('#saveAndCloseButton').eq(0);
       this.initialValue = this.$textArea.val();
@@ -132,30 +133,6 @@
           }
         });
       },
-      protectText: function () {
-        const self = this;
-        let range = self.editor.find(/{{((?!}}).)+}}/, {
-          wrap: true,
-          regExp: true
-        });
-        const token = range && self.editor.session.getTextRange(range);
-        token && $.ajax({
-          type: 'POST',
-          async: false,
-          url: '/bin/apm/scripts/protect',
-          data: {
-            text: token.substring(token.indexOf('{{') + 2, token.indexOf('}}'))
-          }
-        }).done(function (data) {
-          setTimeout(function () {
-            range = self.editor.find(token, {
-              wrap: true
-            });
-            range && self.editor.session.replace(range, data.text);
-          }, 10);
-        });
-      },
-
       initEditor: function () {
         const self = this;
         let editor = null;
@@ -179,13 +156,8 @@
           });
         });
 
-        editor.session.on('change', function (delta) {
-          const value = editor.session.getValue();
-          if (value.indexOf('{{') > -1
-            && value.indexOf('{{') < value.lastIndexOf('}}')
-            && delta.data.action.startsWith('insert')) {
-            self.protectText();
-          }
+        editor.session.selection.on('changeSelection', function() {
+          self.$cryptoButton.attr('disabled', editor.getSelectedText().length === 0);
         });
 
         return editor;
@@ -234,6 +206,21 @@
             error: function (response) {
               self.showError(response.responseJSON);
             }
+          });
+        });
+
+        this.$cryptoButton.click(function () {
+          let range = self.editor.getSelectionRange()
+          let text = self.editor.getSelectedText();
+          $.ajax({
+            type: 'POST',
+            async: false,
+            url: '/bin/apm/scripts/protect',
+            data: {
+              text: text
+            }
+          }).done(function (data) {
+            self.editor.session.replace(range, data.text);
           });
         });
 
