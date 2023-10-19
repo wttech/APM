@@ -23,11 +23,12 @@ package com.cognifide.apm.core.utils;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Optional;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class CalendarUtils {
+
+  private CalendarUtils() {
+    // intentionally empty
+  }
 
   public static Calendar asCalendar(Date date) {
     return Optional.ofNullable(date)

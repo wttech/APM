@@ -20,15 +20,27 @@
 
 package com.cognifide.apm.core.actions;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-@Getter
-@RequiredArgsConstructor
 public class ArgumentDescription {
 
   private final String name;
   private final String type;
   private final String description;
 
+  public ArgumentDescription(String name, String type, String description) {
+    this.name = name;
+    this.type = type;
+    this.description = description;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public String getType() {
+    return type;
+  }
+
+  public String getDescription() {
+    return description;
+  }
 }

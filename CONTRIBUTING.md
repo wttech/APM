@@ -48,7 +48,6 @@ Below is short list of things that will help us maintaining APM quality and acce
 - update [documentation](https://github.com/wttech/apm/tree/master/documentation) and include changes in the same pull request which modifies the code,
 - when committing an improvement, try to show it in local demo example,
 - when logging use proper levels: `INFO` and `WARNING` should log only very important messages.
-- to generate getters and setters use [Lombok](https://projectlombok.org/). Plugins available both on Eclipse & Intellij IDE 
 
 ## Mailing List
 To get notification about build changes add your email to .travis.yml in email section. More configuration for notification available in [documentation](https://docs.travis-ci.com/user/notifications#Email-notifications)

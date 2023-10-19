@@ -22,15 +22,16 @@ package com.cognifide.apm.core.utils;
 import java.lang.management.ManagementFactory;
 import javax.jcr.Node;
 import javax.jcr.Session;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.ResourceResolver;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RuntimeUtils {
 
   private static final String AEM_MUTABLE_CONTENT_INSTANCE = "aem-install-mutable-content";
+
+  private RuntimeUtils() {
+    // intentionally empty
+  }
 
   public static boolean determineCompositeNodeStore(ResourceResolver resolver) {
     boolean result;

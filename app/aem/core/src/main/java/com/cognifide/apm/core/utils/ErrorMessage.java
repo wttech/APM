@@ -23,16 +23,17 @@ package com.cognifide.apm.core.utils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
-@Getter
-@AllArgsConstructor
 public class ErrorMessage implements ResponseMessage {
 
   private final String message;
   private final List<String> errors;
   private final String type = "error";
+
+  public ErrorMessage(String message, List<String> errors) {
+    this.message = message;
+    this.errors = errors;
+  }
 
   public static ErrorMessageBuilder errorMessageBuilder(String message) {
     return new ErrorMessageBuilder(message);
@@ -40,6 +41,18 @@ public class ErrorMessage implements ResponseMessage {
 
   public static ErrorMessage errorMessage(String message) {
     return new ErrorMessageBuilder(message).build();
+  }
+
+  public String getMessage() {
+    return message;
+  }
+
+  public List<String> getErrors() {
+    return errors;
+  }
+
+  public String getType() {
+    return type;
   }
 
   public static class ErrorMessageBuilder {

@@ -25,8 +25,6 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 
@@ -56,12 +54,17 @@ public class JobResultsCache {
     return cache.getIfPresent(id);
   }
 
-  @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
   public static class ExecutionSummary implements Serializable {
 
     private final boolean finished;
     private final ExecutionResult result;
     private final String path;
+
+    private ExecutionSummary(boolean finished, ExecutionResult result, String path) {
+      this.finished = finished;
+      this.result = result;
+      this.path = path;
+    }
 
     public static ExecutionSummary running() {
       return new ExecutionSummary(false, null, null);

@@ -22,7 +22,6 @@ package com.cognifide.apm.core.ui.models;
 import com.cognifide.apm.core.history.History;
 import com.cognifide.apm.core.history.HistoryEntry;
 import javax.inject.Inject;
-import lombok.Getter;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.OSGiService;
@@ -30,7 +29,6 @@ import org.apache.sling.models.annotations.injectorspecific.OSGiService;
 @Model(adaptables = SlingHttpServletRequest.class)
 public final class SummaryTableModel {
 
-  @Getter
   private final HistoryEntry entry;
 
   @Inject
@@ -38,4 +36,7 @@ public final class SummaryTableModel {
     entry = history.findHistoryEntry(request.getResourceResolver(), request.getRequestPathInfo().getSuffix());
   }
 
+  public HistoryEntry getEntry() {
+    return entry;
+  }
 }

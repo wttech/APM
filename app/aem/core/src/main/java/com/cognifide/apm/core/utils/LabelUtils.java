@@ -21,12 +21,13 @@ package com.cognifide.apm.core.utils;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class LabelUtils {
+
+  private LabelUtils() {
+    // intentionally empty
+  }
 
   public static String capitalize(Object item) {
     return capitalize(item.toString());

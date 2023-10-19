@@ -21,10 +21,7 @@ package com.cognifide.apm.main;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RandomPasswordGenerator {
 
   private static final int MAX_BITS = 130;
@@ -32,6 +29,10 @@ public final class RandomPasswordGenerator {
   private static final int RADIX = 32;
 
   private static final SecureRandom random = new SecureRandom();
+
+  private RandomPasswordGenerator() {
+    // intentionally empty
+  }
 
   public static String getRandomPassword() {
     return new BigInteger(MAX_BITS, random).toString(RADIX);

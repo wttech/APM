@@ -28,16 +28,12 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Default;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Model;
 
-@Getter
 @Model(adaptables = Resource.class, defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
-@EqualsAndHashCode
 public class HistoryEntryImpl implements HistoryEntry {
 
   public static final String AUTHOR = "author";
@@ -129,4 +125,63 @@ public class HistoryEntryImpl implements HistoryEntry {
     executionTimeCalendar = CalendarUtils.asCalendar(executionTime);
   }
 
+  public String getAuthor() {
+    return author;
+  }
+
+  public Date getExecutionTime() {
+    return executionTime;
+  }
+
+  public Long getExecutionDuration() {
+    return executionDuration;
+  }
+
+  public String getExecutor() {
+    return executor;
+  }
+
+  public String getScriptPath() {
+    return scriptPath;
+  }
+
+  public String getScriptName() {
+    return scriptName;
+  }
+
+  public boolean isRunSuccessful() {
+    return isRunSuccessful;
+  }
+
+  public String getMode() {
+    return mode;
+  }
+
+  public String getChecksum() {
+    return checksum;
+  }
+
+  public Date getUploadTime() {
+    return uploadTime;
+  }
+
+  public String getExecutionSummaryJson() {
+    return executionSummaryJson;
+  }
+
+  public String getScriptContentPath() {
+    return scriptContentPath;
+  }
+
+  public String getInstanceName() {
+    return instanceName;
+  }
+
+  public String getPath() {
+    return path;
+  }
+
+  public Calendar getExecutionTimeCalendar() {
+    return executionTimeCalendar;
+  }
 }

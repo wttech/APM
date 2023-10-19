@@ -26,12 +26,10 @@ import com.cognifide.apm.core.actions.CommandDescription;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
-import lombok.Getter;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.injectorspecific.OSGiService;
 
-@Getter
 @Model(adaptables = SlingHttpServletRequest.class)
 public class ReferencesModel {
 
@@ -43,5 +41,13 @@ public class ReferencesModel {
   public ReferencesModel(@OSGiService ActionFactory actionFactory, @OSGiService ScriptManager scriptManager) {
     this.references = actionFactory.getCommandDescriptions();
     this.definitions = scriptManager.getPredefinedDefinitions();
+  }
+
+  public List<CommandDescription> getReferences() {
+    return references;
+  }
+
+  public Map<String, String> getDefinitions() {
+    return definitions;
   }
 }

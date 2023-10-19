@@ -21,11 +21,7 @@
 package com.cognifide.apm.core.actions;
 
 import java.util.List;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
-@Getter
-@RequiredArgsConstructor
 public class CommandDescription {
 
   private final String name;
@@ -34,4 +30,31 @@ public class CommandDescription {
   private final String description;
   private final List<ArgumentDescription> arguments;
 
+  public CommandDescription(String name, String group, List<String> examples, String description, List<ArgumentDescription> arguments) {
+    this.name = name;
+    this.group = group;
+    this.examples = examples;
+    this.description = description;
+    this.arguments = arguments;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public String getGroup() {
+    return group;
+  }
+
+  public List<String> getExamples() {
+    return examples;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public List<ArgumentDescription> getArguments() {
+    return arguments;
+  }
 }

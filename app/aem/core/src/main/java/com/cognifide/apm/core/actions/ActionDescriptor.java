@@ -21,15 +21,28 @@ package com.cognifide.apm.core.actions;
 
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.core.grammar.argument.Arguments;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
-@Getter
-@RequiredArgsConstructor
 public final class ActionDescriptor {
 
   private final String command;
   private final Action action;
   private final Arguments arguments;
 
+  public ActionDescriptor(String command, Action action, Arguments arguments) {
+    this.command = command;
+    this.action = action;
+    this.arguments = arguments;
+  }
+
+  public String getCommand() {
+    return command;
+  }
+
+  public Action getAction() {
+    return action;
+  }
+
+  public Arguments getArguments() {
+    return arguments;
+  }
 }
