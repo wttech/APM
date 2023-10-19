@@ -32,7 +32,6 @@ import com.cognifide.apm.core.services.version.ScriptVersion;
 import com.cognifide.apm.core.services.version.VersionService;
 import com.cognifide.apm.core.utils.RuntimeUtils;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
-import java.lang.management.ManagementFactory;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Dictionary;
@@ -42,7 +41,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.observation.ResourceChange;
 import org.apache.sling.api.resource.observation.ResourceChangeListener;
@@ -65,8 +63,6 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 )
 @Designate(ocd = ApmInstallService.Configuration.class, factory = true)
 public class ApmInstallService extends AbstractLauncher implements Runnable {
-
-  private static final String AEM_MUTABLE_CONTENT_INSTANCE = "aem-install-mutable-content";
 
   @Reference
   private ResourceResolverProvider resolverProvider;
@@ -112,41 +108,44 @@ public class ApmInstallService extends AbstractLauncher implements Runnable {
 
   private void processAllScripts() {
     SlingHelper.operateTraced(resolverProvider, resolver -> {
-      List<Script> scripts = determineScripts(scriptPaths, resolver);
-      processScripts(scripts, resolver);
+      if (RuntimeUtils.isMutableContentInstance(resolver)) {
+        List<Script> scripts = determineScripts(scriptPaths, resolver);
+        processScripts(scripts, resolver);
+      }
     });
   }
 
   private List<Script> determineScripts(List<String> scriptPaths, ResourceResolver resolver) {
-    boolean compositeNodeStore = RuntimeUtils.determineCompositeNodeStore(resolver);
-    String instanceName = ManagementFactory.getRuntimeMXBean().getName();
-    if (!compositeNodeStore || StringUtils.contains(instanceName, AEM_MUTABLE_CONTENT_INSTANCE)) {
-      return scriptPaths.stream()
-          .map(scriptPath -> scriptFinder
-              .find(scriptPath, resolver))
-          .filter(script -> isValid(script, resolver))
-          .collect(Collectors.toList());
-    }
-    return Collections.emptyList();
+    return scriptPaths.stream()
+        .map(scriptPath -> scriptFinder.find(scriptPath, resolver))
+        .filter(script -> isValid(script, resolver))
+        .collect(Collectors.toList());
   }
 
   private boolean isValid(Script script, ResourceResolver resolver) {
     if (script == null) {
       return false;
     }
+    if (!ifModified) {
+      return true;
+    }
     ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resolver);
     List<Script> subtree = referenceFinder.findReferences(script);
     String checksum = versionService.countChecksum(subtree);
     ScriptVersion scriptVersion = versionService.getScriptVersion(resolver, script);
     HistoryEntry lastLocalRun = history.findScriptHistory(resolver, script).getLastLocalRun();
-    return !ifModified || !checksum.equals(scriptVersion.getLastChecksum()) || lastLocalRun == null || !checksum.equals(lastLocalRun.getChecksum());
+    return !checksum.equals(scriptVersion.getLastChecksum())
+        || lastLocalRun == null
+        || !checksum.equals(lastLocalRun.getChecksum());
   }
 
   private void registerScripts(BundleContext bundleContext) {
     registrations = new HashSet<>();
-    SlingHelper.operateTraced(resolverProvider, resolver ->
-        scriptPaths.forEach(scriptPath -> registerScript(scriptPath, resolver, bundleContext))
-    );
+    SlingHelper.operateTraced(resolverProvider, resolver -> {
+      if (RuntimeUtils.isMutableContentInstance(resolver)) {
+        scriptPaths.forEach(scriptPath -> registerScript(scriptPath, resolver, bundleContext));
+      }
+    });
   }
 
   private void registerScript(String scriptPath, ResourceResolver resolver, BundleContext bundleContext) {
