@@ -114,27 +114,21 @@ public class ApmInstallService extends AbstractLauncher implements Runnable {
   }
 
   private List<Script> determineScripts(List<String> scriptPaths, ResourceResolver resolver) {
+    ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resolver);
     return scriptPaths.stream()
         .map(scriptPath -> scriptFinder.find(scriptPath, resolver))
-        .filter(script -> isValid(script, resolver))
+        .filter(Objects::nonNull)
+        .filter(script -> {
+          List<Script> subtree = referenceFinder.findReferences(script);
+          String checksum = versionService.countChecksum(subtree);
+          ScriptVersion scriptVersion = versionService.getScriptVersion(resolver, script);
+          HistoryEntry lastLocalRun = history.findScriptHistory(resolver, script).getLastLocalRun();
+          return !ifModified
+              || !checksum.equals(scriptVersion.getLastChecksum())
+              || lastLocalRun == null
+              || !checksum.equals(lastLocalRun.getChecksum());
+        })
         .collect(Collectors.toList());
-  }
-
-  private boolean isValid(Script script, ResourceResolver resolver) {
-    if (script == null) {
-      return false;
-    }
-    if (!ifModified) {
-      return true;
-    }
-    ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resolver);
-    List<Script> subtree = referenceFinder.findReferences(script);
-    String checksum = versionService.countChecksum(subtree);
-    ScriptVersion scriptVersion = versionService.getScriptVersion(resolver, script);
-    HistoryEntry lastLocalRun = history.findScriptHistory(resolver, script).getLastLocalRun();
-    return !checksum.equals(scriptVersion.getLastChecksum())
-        || lastLocalRun == null
-        || !checksum.equals(lastLocalRun.getChecksum());
   }
 
   private void registerScripts(BundleContext bundleContext) {
