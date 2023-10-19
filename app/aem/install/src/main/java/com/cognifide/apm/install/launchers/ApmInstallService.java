@@ -90,9 +90,7 @@ public class ApmInstallService extends AbstractLauncher implements Runnable {
     scriptPaths = Arrays.asList(config.scriptPaths());
     ifModified = config.ifModified();
     processAllScripts();
-    if (ifModified) {
-      registerScripts(bundleContext);
-    }
+    registerScripts(bundleContext);
   }
 
   @Deactivate
@@ -142,7 +140,7 @@ public class ApmInstallService extends AbstractLauncher implements Runnable {
   private void registerScripts(BundleContext bundleContext) {
     registrations = new HashSet<>();
     SlingHelper.operateTraced(resolverProvider, resolver -> {
-      if (RuntimeUtils.isMutableContentInstance(resolver)) {
+      if (ifModified && RuntimeUtils.isMutableContentInstance(resolver)) {
         scriptPaths.forEach(scriptPath -> registerScript(scriptPath, resolver, bundleContext));
       }
     });
