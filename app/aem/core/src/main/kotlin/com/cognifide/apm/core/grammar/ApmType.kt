@@ -67,7 +67,7 @@ data class ApmString(val value: String) : ApmType() {
     }
 
     override fun prettyPrint(depth: Int, prefixDepth: Int): String {
-        return "\t".repeat(min(depth, prefixDepth)) + "\"$value\""
+        return "\t".repeat(min(depth, prefixDepth)) + "'$value'"
     }
 }
 

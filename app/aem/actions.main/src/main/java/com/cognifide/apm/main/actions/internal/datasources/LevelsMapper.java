@@ -27,16 +27,22 @@ import com.cognifide.apm.main.actions.ActionGroup;
 import java.util.List;
 import org.apache.commons.lang3.NotImplementedException;
 
-@Mapper(value = "TRAVERSE", group = ActionGroup.DATASOURCE)
-public class TraverseMapper {
+@Mapper(value = "LEVELS", group = ActionGroup.DATASOURCE)
+public class LevelsMapper {
 
   @Mapping(
-      examples = "TRAVERSE('/content', [<br>" +
-          "&nbsp;&nbsp;&nbsp;&nbsp;{regex: '(.+)_(.+)', paramNames: ['param1', 'param2']},<br>" +
-          "&nbsp;&nbsp;&nbsp;&nbsp;{excludeRegex: '[^:]+'},<br>" +
-          "&nbsp;&nbsp;&nbsp;&nbsp;{template: '/apps/test/pageTemplate', resourceType: 'test/pageRenderer'}<br>" +
+      examples = "LEVELS('/content', [<br>" +
+          "&nbsp;&nbsp;&nbsp;&nbsp;{regex: '(.+)_(.+)',paramNames: ['param1', 'param2']}, # 1st level<br>" +
+          "&nbsp;&nbsp;&nbsp;&nbsp;{excludeRegex: '[^:]+'}, # 2nd level<br>" +
+          "&nbsp;&nbsp;&nbsp;&nbsp;{template: '/apps/test/pageTemplate', resourceType: 'test/pageRenderer'}, # 3rd level<br>" +
+          "&nbsp;&nbsp;&nbsp;&nbsp;{properties: [ # 4rd level<br>" +
+          "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{name: 'jcr:primaryType', regex: 'cq:Page'},<br>" +
+          "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{name: 'jcr:primaryType', excludeRegex: 'cq:PageContent'},<br>" +
+          "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{name: 'jcr:content/cq:template', regex: '/apps/test/pageTemplate'},<br>" +
+          "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{name: 'jcr:content/sling:resourceType', regex: 'test/pageRenderer'}<br>" +
+          "&nbsp;&nbsp;&nbsp;&nbsp;]}<br>" +
           "])",
-      reference = "Traverse content structure for given resource path matching given content structure map"
+      reference = "Provides levels of content for given resource path matching given content structure map"
   )
   public Action mapAction(
       @Required(value = "rootPath", description = "Root path") String rootPath,

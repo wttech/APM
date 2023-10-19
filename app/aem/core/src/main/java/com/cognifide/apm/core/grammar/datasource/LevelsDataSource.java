@@ -44,11 +44,11 @@ import org.apache.sling.api.resource.ValueMap;
 import org.osgi.service.component.annotations.Component;
 
 @Component
-public class TraverseDataSource implements DataSource {
+public class LevelsDataSource implements DataSource {
 
   @Override
   public String getName() {
-    return "TRAVERSE";
+    return "LEVELS";
   }
 
   @Override
@@ -104,7 +104,7 @@ public class TraverseDataSource implements DataSource {
 
     private final List<String> paramNames;
 
-    private final List<ConfigProperty> matchProperties;
+    private final List<ConfigProperty> properties;
 
     public Config(Map<String, Object> map) {
       String regex = (String) map.get("excludeRegex");
@@ -117,7 +117,7 @@ public class TraverseDataSource implements DataSource {
       if (StringUtils.countMatches(regex, "(") != paramNames.size()) {
         throw new IllegalArgumentException("Number of paramNames must match number of regex groups");
       }
-      matchProperties = ((List<Object>) map.getOrDefault("matchProperties", Collections.emptyList()))
+      properties = ((List<Object>) map.getOrDefault("properties", Collections.emptyList()))
           .stream()
           .map(it -> (Map<String, Object>) it)
           .map(ConfigProperty::new)
@@ -146,8 +146,8 @@ public class TraverseDataSource implements DataSource {
         result = StringUtils.isEmpty(template) || StringUtils.equals(template, valueMap.get(NameConstants.PN_TEMPLATE, String.class));
         result &= StringUtils.isEmpty(resourceType) || StringUtils.equals(resourceType, valueMap.get(ResourceResolver.PROPERTY_RESOURCE_TYPE, String.class));
       }
-      if (result && CollectionUtils.isNotEmpty(matchProperties)) {
-        result = matchProperties.stream()
+      if (result && CollectionUtils.isNotEmpty(properties)) {
+        result = properties.stream()
             .allMatch(property -> property.isValid(resource));
       }
       return result;
