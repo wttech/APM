@@ -32,18 +32,16 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import lombok.Getter;
 import org.apache.commons.collections4.ListUtils;
 
 public class MappingDescriptor {
 
-  @Getter
   private final String name;
-  @Getter
+
   private final String group;
-  @Getter
+
   private final String description;
-  @Getter
+
   private final List<String> examples;
 
   private final Method method;
@@ -95,5 +93,21 @@ public class MappingDescriptor {
     } catch (IllegalAccessException | InvocationTargetException e) {
       throw new RuntimeException("Cannot invoke mapping method", e);
     }
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public String getGroup() {
+    return group;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public List<String> getExamples() {
+    return examples;
   }
 }

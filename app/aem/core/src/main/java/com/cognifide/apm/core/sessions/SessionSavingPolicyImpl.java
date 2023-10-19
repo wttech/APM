@@ -23,11 +23,9 @@ import com.cognifide.apm.api.actions.SessionSavingMode;
 import com.cognifide.apm.api.actions.SessionSavingPolicy;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import lombok.Setter;
 
 public class SessionSavingPolicyImpl implements SessionSavingPolicy {
 
-  @Setter
   private SessionSavingMode mode;
 
   public SessionSavingPolicyImpl() {
@@ -41,4 +39,7 @@ public class SessionSavingPolicyImpl implements SessionSavingPolicy {
     session.save();
   }
 
+  public void setMode(SessionSavingMode mode) {
+    this.mode = mode;
+  }
 }

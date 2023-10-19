@@ -22,7 +22,6 @@ package com.cognifide.apm.core.history;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import lombok.Getter;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Model;
@@ -46,22 +45,18 @@ public class ScriptHistoryImpl implements ScriptHistory {
   private History history;
 
   @Inject
-  @Getter
   @Named(SCRIPT_PATH)
   private String scriptPath;
 
   @Inject
-  @Getter
   @Named(LAST_LOCAL_RUN)
   private String lastLocalRunPath;
 
   @Inject
-  @Getter
   @Named(LAST_LOCAL_DRY_RUN)
   private String lastLocalDryRunPath;
 
   @Inject
-  @Getter
   @Named(LAST_CHECKSUM)
   private String lastChecksum;
 
@@ -95,4 +90,19 @@ public class ScriptHistoryImpl implements ScriptHistory {
     return historyEntry;
   }
 
+  public String getScriptPath() {
+    return scriptPath;
+  }
+
+  public String getLastLocalRunPath() {
+    return lastLocalRunPath;
+  }
+
+  public String getLastLocalDryRunPath() {
+    return lastLocalDryRunPath;
+  }
+
+  public String getLastChecksum() {
+    return lastChecksum;
+  }
 }

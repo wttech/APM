@@ -19,11 +19,11 @@
  */
 package com.cognifide.apm.core.utils;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PathUtils {
+
+  private PathUtils() {
+    // intentionally empty
+  }
 
   public static boolean isAppsOrLibsPath(String path) {
     return path.startsWith("/apps") || path.startsWith("/libs");
