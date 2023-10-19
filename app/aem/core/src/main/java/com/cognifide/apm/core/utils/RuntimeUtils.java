@@ -19,14 +19,18 @@
  */
 package com.cognifide.apm.core.utils;
 
+import java.lang.management.ManagementFactory;
 import javax.jcr.Node;
 import javax.jcr.Session;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.ResourceResolver;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RuntimeUtils {
+
+  private static final String AEM_MUTABLE_CONTENT_INSTANCE = "aem-install-mutable-content";
 
   public static boolean determineCompositeNodeStore(ResourceResolver resolver) {
     boolean result;
@@ -43,4 +47,9 @@ public final class RuntimeUtils {
     return result;
   }
 
+  public static boolean isMutableContentInstance(ResourceResolver resolver) {
+    boolean compositeNodeStore = RuntimeUtils.determineCompositeNodeStore(resolver);
+    String instanceName = ManagementFactory.getRuntimeMXBean().getName();
+    return !compositeNodeStore || StringUtils.contains(instanceName, AEM_MUTABLE_CONTENT_INSTANCE);
+  }
 }
