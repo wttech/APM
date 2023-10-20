@@ -18,16 +18,37 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm.core.endpoints
+package com.cognifide.apm.core.endpoints;
 
-import com.cognifide.apm.core.endpoints.params.RequestParameter
-import org.apache.sling.api.SlingHttpServletRequest
-import org.apache.sling.models.annotations.Model
-import javax.inject.Inject
+import com.cognifide.apm.core.endpoints.params.RequestParameter;
+import javax.inject.Inject;
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.models.annotations.Model;
 
-@Model(adaptables = [SlingHttpServletRequest::class])
-class ScriptMoveForm @Inject constructor(
-    @param:RequestParameter("path") val path: String,
-    @param:RequestParameter("dest") val dest: String,
-    @param:RequestParameter("rename") val rename: String
-)
+@Model(adaptables = SlingHttpServletRequest.class)
+public class ScriptMoveForm {
+
+  @Inject
+  @RequestParameter("path")
+  private String path;
+
+  @Inject
+  @RequestParameter("dest")
+  private String dest;
+
+  @Inject
+  @RequestParameter("rename")
+  private String rename;
+
+  public String getPath() {
+    return path;
+  }
+
+  public String getDest() {
+    return dest;
+  }
+
+  public String getRename() {
+    return rename;
+  }
+}

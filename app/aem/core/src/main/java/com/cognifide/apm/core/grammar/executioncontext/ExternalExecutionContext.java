@@ -18,16 +18,21 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm.core.grammar.executioncontext
+package com.cognifide.apm.core.grammar.executioncontext;
 
-import com.cognifide.apm.core.grammar.ApmType
-import com.cognifide.apm.core.logger.Progress
-import org.apache.jackrabbit.api.security.user.Authorizable
+import com.cognifide.apm.core.grammar.ApmType;
+import com.cognifide.apm.core.logger.Progress;
+import org.apache.jackrabbit.api.security.user.Authorizable;
 
-interface ExternalExecutionContext {
-    val progress: Progress
-    fun setVariable(key: String, value: ApmType)
-    fun getVariable(key: String): ApmType
-    fun setAuthorizable(authorizable: Authorizable?)
-    fun getAuthorizable(): Authorizable?
+public interface ExternalExecutionContext {
+
+  Progress getProgress();
+
+  void setVariable(String key, ApmType value);
+
+  ApmType getVariable(String key);
+
+  void setAuthorizable(Authorizable authorizable);
+
+  Authorizable getAuthorizable();
 }

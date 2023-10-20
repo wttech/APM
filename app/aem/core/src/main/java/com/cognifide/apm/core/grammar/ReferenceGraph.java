@@ -17,108 +17,203 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.core.grammar
+package com.cognifide.apm.core.grammar;
 
-import com.cognifide.apm.api.scripts.Script
-import java.util.*
+import com.cognifide.apm.api.scripts.Script;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
 
-class ReferenceGraph(
-    val nodes: MutableList<TreeNode> = mutableListOf(),
-    val transitions: MutableList<Transition> = mutableListOf()
-) {
+public class ReferenceGraph {
 
-    fun addNode(script: Script): TreeNode {
-        val node = TreeNodeFactory().create(script)
-        nodes.add(node)
-        return node
+  private final List<TreeNode> nodes;
+
+  private final List<Transition> transitions;
+
+  public ReferenceGraph() {
+    this.nodes = new ArrayList<>();
+    this.transitions = new ArrayList<>();
+  }
+
+  public TreeNode addNode(Script script) {
+    TreeNode node = TreeNodeFactory.create(script);
+    nodes.add(node);
+    return node;
+  }
+
+  public TreeNode getNode(Script script) {
+    return nodes.stream()
+        .filter(node -> StringUtils.equals(node.getScriptPath(), script.getPath()))
+        .findFirst()
+        .orElse(null);
+  }
+
+  public void createTransition(TreeNode fromNode, Script toScript, TransitionType transitionType) {
+    TreeNode toNode = Optional.ofNullable(getNode(toScript))
+        .orElse(addNode(toScript));
+    transitions.add(new Transition(fromNode, toNode, transitionType));
+  }
+
+  public Set<TreeNode> getSubTreeForScript(Script script) {
+    TreeNode currentNode = getNode(script);
+    Set<TreeNode> subtree = new HashSet<>();
+    if (currentNode != null) {
+      subtree.add(currentNode);
+      transitions.stream()
+          .filter(transition -> Objects.equals(transition.from, currentNode))
+          .forEach(transition -> subtree.addAll(getSubTreeForScript(transition.to.script)));
+    }
+    return subtree;
+  }
+
+  public Transition getCycleIfExist() {
+    return transitions.stream()
+        .filter(Transition::isCycleDetected)
+        .findFirst()
+        .orElse(null);
+  }
+
+  public void detectCycle(TreeNode fromNode, Script toScript) {
+    transitions.stream()
+        .filter(transition -> Objects.equals(transition.from, fromNode) && Objects.equals(transition.to, getNode(toScript)))
+        .findFirst()
+        .ifPresent(it -> it.setCycleDetected(true));
+  }
+
+  public static class Transition {
+
+    private final TreeNode from;
+
+    private final TreeNode to;
+
+    private final TransitionType transitionType;
+
+    private final String id;
+
+    private boolean cycleDetected;
+
+    private Transition(TreeNode from, TreeNode to, TransitionType transitionType) {
+      this.from = from;
+      this.to = to;
+      this.transitionType = transitionType;
+      this.id = String.format("%s|%s|%s", from.id, to.id, transitionType.name());
     }
 
-    fun getNode(script: Script): TreeNode? {
-        return nodes.find { it.getScriptPath() == script.path }
+    public TreeNode getFrom() {
+      return from;
     }
 
-    fun createTransition(fromNode: TreeNode, toScript: Script, transitionType: TransitionType) {
-        val toNode = getNode(toScript) ?: addNode(toScript)
-        transitions.add(Transition(fromNode, toNode, transitionType))
+    public TreeNode getTo() {
+      return to;
     }
 
-    fun getSubTreeForScript(script: Script): Set<TreeNode> {
-        val currentNode = getNode(script)
-        val subtree = mutableSetOf<TreeNode>()
-        if (currentNode != null) {
-            subtree.add(currentNode)
-            transitions.filter { it.from === currentNode }.forEach {
-                subtree.addAll(getSubTreeForScript(it.to.script))
-            }
-        }
-        return subtree
+    public boolean isCycleDetected() {
+      return cycleDetected;
     }
 
-    fun getCycleIfExist(): Transition? {
-        return transitions.firstOrNull { it.cycleDetected }
+    public void setCycleDetected(boolean cycleDetected) {
+      this.cycleDetected = cycleDetected;
     }
 
-    fun detectCycle(fromNode: TreeNode, to: Script) {
-        transitions.first { it.from == fromNode && it.to == getNode(to) }.cycleDetected = true
+    @Override
+    public boolean equals(Object obj) {
+      if (this == obj) {
+        return true;
+      }
+      if (obj instanceof Transition) {
+        Transition that = (Transition) obj;
+        return Objects.equals(id, that.id);
+      }
+      return false;
     }
 
-    inner class Transition(val from: TreeNode, val to: TreeNode, val transitionType: TransitionType) {
-        var cycleDetected: Boolean = false
+    @Override
+    public int hashCode() {
+      return Objects.hash(id);
+    }
+  }
 
-        var id: String = "${from.id}|${to.id}|${transitionType.name}"
+  public enum TransitionType {
+    IMPORT, RUN_SCRIPT
+  }
 
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (javaClass != other?.javaClass) return false
+  public static class TreeNode {
 
-            other as Transition
+    private final Script script;
 
-            return other.id == this.id
-        }
+    private final String id;
 
-        override fun hashCode(): Int {
-            return id.hashCode()
-        }
+    private boolean visited;
+
+    private boolean valid;
+
+    private TreeNode(Script script) {
+      this(script, true);
     }
 
-    enum class TransitionType {
-        IMPORT, RUN_SCRIPT
+    private TreeNode(Script script, boolean valid) {
+      this.script = script;
+      this.id = DigestUtils.md5Hex(script.getPath());
+      this.valid = valid;
     }
 
-    open class TreeNode(val script: Script) {
-        var visited = false
-        var id: String = Base64.getEncoder().encodeToString(script.path.toByteArray())
-        open var valid = true
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (javaClass != other?.javaClass) return false
-
-            other as TreeNode
-
-            return script.path == other.script.path
-        }
-
-        override fun hashCode(): Int {
-            return script.hashCode()
-        }
-
-        fun getScriptPath(): String {
-            return script.path
-        }
+    public String getScriptPath() {
+      return script.getPath();
     }
 
-    class NonExistingTreeNode(script: Script) : TreeNode(script) {
-        override var valid = false
+    public Script getScript() {
+      return script;
     }
-}
 
-class TreeNodeFactory {
-
-    fun create(script: Script): ReferenceGraph.TreeNode {
-        if (script is ReferenceFinder.NonExistingScript) {
-            return ReferenceGraph.NonExistingTreeNode(script)
-        }
-        return ReferenceGraph.TreeNode(script)
+    public boolean isVisited() {
+      return visited;
     }
+
+    public void setVisited(boolean visited) {
+      this.visited = visited;
+    }
+
+    public void setValid(boolean valid) {
+      this.valid = valid;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (this == obj) {
+        return true;
+      }
+      if (obj instanceof TreeNode) {
+        TreeNode that = (TreeNode) obj;
+        return Objects.equals(id, that.id);
+      }
+      return false;
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(id);
+    }
+  }
+
+  public static class NonExistingTreeNode extends TreeNode {
+
+    public NonExistingTreeNode(Script script) {
+      super(script, false);
+    }
+  }
+
+  private static class TreeNodeFactory {
+
+    public static TreeNode create(Script script) {
+      if (script instanceof ReferenceFinder.NonExistingScript) {
+        return new ReferenceGraph.NonExistingTreeNode(script);
+      }
+      return new ReferenceGraph.TreeNode(script);
+    }
+  }
 }

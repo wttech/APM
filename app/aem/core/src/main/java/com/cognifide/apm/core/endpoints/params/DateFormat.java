@@ -18,8 +18,16 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm.core.endpoints.params
+package com.cognifide.apm.core.endpoints.params;
 
-@Target(AnnotationTarget.FIELD, AnnotationTarget.VALUE_PARAMETER)
-@Retention(AnnotationRetention.RUNTIME)
-annotation class DateFormat(val value: String)
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Target({ElementType.FIELD, ElementType.PARAMETER})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface DateFormat {
+
+  String value();
+}

@@ -35,7 +35,7 @@ class ParsedScriptTest extends Specification {
         script.path >> file
 
         when:
-        new ParsedScript.Factory().create(script)
+        ParsedScript.create(script)
 
         then:
         def e = thrown(InvalidSyntaxException)

@@ -32,11 +32,11 @@ import com.cognifide.apm.core.actions.ParameterDescriptor.FlagParameterDescripto
 import com.cognifide.apm.core.actions.ParameterDescriptor.FlagsParameterDescriptor;
 import com.cognifide.apm.core.actions.ParameterDescriptor.NamedParameterDescriptor;
 import com.cognifide.apm.core.actions.ParameterDescriptor.RequiredParameterDescriptor;
-import com.cognifide.apm.core.grammar.ApmInteger;
-import com.cognifide.apm.core.grammar.ApmList;
-import com.cognifide.apm.core.grammar.ApmMap;
-import com.cognifide.apm.core.grammar.ApmString;
 import com.cognifide.apm.core.grammar.ApmType;
+import com.cognifide.apm.core.grammar.ApmType.ApmInteger;
+import com.cognifide.apm.core.grammar.ApmType.ApmList;
+import com.cognifide.apm.core.grammar.ApmType.ApmMap;
+import com.cognifide.apm.core.grammar.ApmType.ApmString;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import java.lang.annotation.Annotation;

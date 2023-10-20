@@ -18,248 +18,287 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm.core.grammar
+package com.cognifide.apm.core.grammar;
 
-import com.cognifide.apm.api.scripts.Script
-import com.cognifide.apm.api.services.ScriptFinder
-import com.cognifide.apm.api.status.Status
-import com.cognifide.apm.core.grammar.antlr.ApmLangParser.AllowDenyCommandContext
-import com.cognifide.apm.core.grammar.antlr.ApmLangParser.BodyContext
-import com.cognifide.apm.core.grammar.antlr.ApmLangParser.DefineVariableContext
-import com.cognifide.apm.core.grammar.antlr.ApmLangParser.ForEachContext
-import com.cognifide.apm.core.grammar.antlr.ApmLangParser.GenericCommandContext
-import com.cognifide.apm.core.grammar.antlr.ApmLangParser.ImportScriptContext
-import com.cognifide.apm.core.grammar.antlr.ApmLangParser.RequireVariableContext
-import com.cognifide.apm.core.grammar.antlr.ApmLangParser.RunScriptContext
-import com.cognifide.apm.core.grammar.argument.ArgumentResolverException
-import com.cognifide.apm.core.grammar.argument.Arguments
-import com.cognifide.apm.core.grammar.common.getIdentifier
-import com.cognifide.apm.core.grammar.common.getPath
-import com.cognifide.apm.core.grammar.executioncontext.ExecutionContext
-import com.cognifide.apm.core.grammar.parsedscript.InvalidSyntaxException
-import com.cognifide.apm.core.grammar.parsedscript.InvalidSyntaxMessageFactory
-import com.cognifide.apm.core.grammar.utils.ImportScript
-import com.cognifide.apm.core.grammar.utils.RequiredVariablesChecker
-import com.cognifide.apm.core.logger.Position
-import com.cognifide.apm.core.logger.Progress
-import org.antlr.v4.runtime.ParserRuleContext
-import org.antlr.v4.runtime.tree.RuleNode
-import org.apache.sling.api.resource.ResourceResolver
+import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.ScriptFinder;
+import com.cognifide.apm.api.status.Status;
+import com.cognifide.apm.core.grammar.ApmType.ApmEmpty;
+import com.cognifide.apm.core.grammar.ApmType.ApmList;
+import com.cognifide.apm.core.grammar.ApmType.ApmString;
+import com.cognifide.apm.core.grammar.antlr.ApmLangBaseVisitor;
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser.AllowDenyCommandContext;
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser.BodyContext;
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser.DefineVariableContext;
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser.ForEachContext;
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser.GenericCommandContext;
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser.ImportScriptContext;
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser.RequireVariableContext;
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser.RunScriptContext;
+import com.cognifide.apm.core.grammar.argument.ArgumentResolverException;
+import com.cognifide.apm.core.grammar.argument.Arguments;
+import com.cognifide.apm.core.grammar.common.Functions;
+import com.cognifide.apm.core.grammar.executioncontext.ExecutionContext;
+import com.cognifide.apm.core.grammar.parsedscript.InvalidSyntaxException;
+import com.cognifide.apm.core.grammar.parsedscript.InvalidSyntaxMessageFactory;
+import com.cognifide.apm.core.grammar.parsedscript.ParsedScript;
+import com.cognifide.apm.core.grammar.utils.ImportScript;
+import com.cognifide.apm.core.grammar.utils.RequiredVariablesChecker;
+import com.cognifide.apm.core.logger.Position;
+import com.cognifide.apm.core.logger.Progress;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.stream.Collectors;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.RuleNode;
+import org.apache.sling.api.resource.ResourceResolver;
 
-class ScriptRunner(
-    private val scriptFinder: ScriptFinder,
-    private val resourceResolver: ResourceResolver,
-    private val validateOnly: Boolean = false,
-    private val actionInvoker: ActionInvoker
-) {
+public class ScriptRunner {
 
-    @JvmOverloads
-    fun execute(script: Script, progress: Progress, initialDefinitions: Map<String, String> = mapOf()): Progress {
+  private final ScriptFinder scriptFinder;
+
+  private final ResourceResolver resourceResolver;
+
+  private final boolean validateOnly;
+
+  private final ActionInvoker actionInvoker;
+
+  public ScriptRunner(ScriptFinder scriptFinder, ResourceResolver resourceResolver, boolean validateOnly, ActionInvoker actionInvoker) {
+    this.scriptFinder = scriptFinder;
+    this.resourceResolver = resourceResolver;
+    this.validateOnly = validateOnly;
+    this.actionInvoker = actionInvoker;
+  }
+
+  public Progress execute(Script script, Progress progress, Map<String, String> initialDefinitions) {
+    try {
+      ExecutionContext executionContext = ExecutionContext.create(scriptFinder, resourceResolver, script, progress);
+      initialDefinitions.forEach((name, value) -> executionContext.setVariable(name, new ApmString(value)));
+      Executor executor = new Executor(executionContext);
+      executor.visit(executionContext.getRoot().getApm());
+    } catch (InvalidSyntaxException e) {
+      List<String> errorMessages = InvalidSyntaxMessageFactory.detailedSyntaxError(e);
+      progress.addEntry(Status.ERROR, errorMessages);
+    } catch (ArgumentResolverException | ScriptExecutionException e) {
+      progress.addEntry(Status.ERROR, e.getMessage());
+    }
+    return progress;
+  }
+
+  public Progress execute(Script script, Progress progress) {
+    return execute(script, progress, Collections.emptyMap());
+  }
+
+  private class Executor extends ApmLangBaseVisitor<Status> {
+
+    private final ExecutionContext executionContext;
+
+    private Status globalResult;
+
+    public Executor(ExecutionContext executionContext) {
+      this.executionContext = executionContext;
+      this.globalResult = Status.SUCCESS;
+    }
+
+    private boolean shouldVisitNextChild() {
+      return globalResult != Status.ERROR;
+    }
+
+    @Override
+    protected boolean shouldVisitNextChild(RuleNode node, Status currentResult) {
+      return shouldVisitNextChild();
+    }
+
+    @Override
+    protected Status aggregateResult(Status aggregate, Status nextResult) {
+      globalResult = nextResult == Status.ERROR ? Status.ERROR : globalResult;
+      return globalResult;
+    }
+
+    @Override
+    public Status visitDefineVariable(DefineVariableContext ctx) {
+      String variableName = ctx.IDENTIFIER().toString();
+      ApmType variableValue = executionContext.resolveArgument(ctx.argument());
+      executionContext.setVariable(variableName, variableValue);
+      progress(ctx, Status.SUCCESS, "define", String.format("Defined variable: %s=%s", variableName, variableValue));
+      return Status.SUCCESS;
+    }
+
+    @Override
+    public Status visitRequireVariable(RequireVariableContext ctx) {
+      String variableName = ctx.IDENTIFIER().toString();
+      try {
+        executionContext.getVariable(variableName);
+      } catch (ArgumentResolverException e) {
+        Status status = validateOnly ? Status.WARNING : Status.ERROR;
+        progress(ctx, status, "require", String.format("Variable \"%s\" is required", variableName));
+      }
+      return Status.SUCCESS;
+    }
+
+    @Override
+    public Status visitForEach(ForEachContext ctx) {
+      List<Map<String, ApmType>> values = readValues(ctx);
+      ListIterator<Map<String, ApmType>> iterator = values.listIterator();
+      while (iterator.hasNext() && shouldVisitNextChild()) {
         try {
-            val executionContext = ExecutionContext.create(scriptFinder, resourceResolver, script, progress)
-            initialDefinitions.forEach { (name, value) -> executionContext.setVariable(name, ApmString(value)) }
-            val executor = Executor(executionContext)
-            executor.visit(executionContext.root.apm)
-        } catch (e: InvalidSyntaxException) {
-            val errorMessages = InvalidSyntaxMessageFactory.detailedSyntaxError(e)
-            progress.addEntry(Status.ERROR, errorMessages)
-        } catch (e: ArgumentResolverException) {
-            progress.addEntry(Status.ERROR, e.message)
-        } catch (e: ScriptExecutionException) {
-            progress.addEntry(Status.ERROR, e.message)
+          int index = iterator.nextIndex();
+          Map<String, ApmType> value = iterator.next();
+          executionContext.createLocalContext();
+          String valueStr = value.entrySet()
+              .stream()
+              .map(entry -> String.format("%s=%s", entry.getKey(), entry.getValue()))
+              .collect(Collectors.joining());
+          progress(ctx, Status.SUCCESS, "for-each", String.format("%d. Begin: %s", index, valueStr));
+          value.forEach(executionContext::setVariable);
+          visit(ctx.body());
+          progress(ctx, Status.SUCCESS, "for-each", String.format("%d. End", index));
+        } finally {
+          executionContext.removeLocalContext();
         }
-        return progress
+      }
+      return Status.SUCCESS;
     }
 
-    private inner class Executor(
-        private val executionContext: ExecutionContext,
-        private var globalResult: Status = Status.SUCCESS
-    ) : com.cognifide.apm.core.grammar.antlr.ApmLangBaseVisitor<Status>() {
-
-        private fun shouldVisitNextChild(): Boolean {
-            return globalResult != Status.ERROR
+    @Override
+    public Status visitRunScript(RunScriptContext ctx) {
+      String path = Functions.getPath(ctx.path());
+      Arguments arguments = executionContext.resolveArguments(ctx.namedArguments());
+      ParsedScript loadScript = executionContext.loadScript(path);
+      if (executionContext.scriptIsOnStack(loadScript)) {
+        throw new ScriptExecutionException(String.format("Found cyclic reference to %s", loadScript.getPath()));
+      }
+      RequiredVariablesChecker.Result result = new RequiredVariablesChecker().checkNamedArguments(loadScript, arguments);
+      if (result.isValid()) {
+        executionContext.createScriptContext(loadScript);
+        try {
+          arguments.getNamed().forEach(executionContext::setVariable);
+          progress(ctx, Status.SUCCESS, "run", String.format("Begin: path=%s", loadScript.getPath()), arguments);
+          visit(loadScript.getApm());
+          progress(ctx, Status.SUCCESS, "run", "End");
+        } finally {
+          executionContext.removeScriptContext();
         }
-
-        override fun shouldVisitNextChild(node: RuleNode, currentResult: Status?): Boolean {
-            return shouldVisitNextChild()
-        }
-
-        override fun aggregateResult(aggregate: Status?, nextResult: Status?): Status {
-            globalResult = if (nextResult == Status.ERROR) Status.ERROR else globalResult
-            return globalResult
-        }
-
-        override fun visitDefineVariable(ctx: DefineVariableContext): Status {
-            val variableName = ctx.IDENTIFIER().toString()
-            val variableValue = executionContext.resolveArgument(ctx.argument())
-            executionContext.setVariable(variableName, variableValue)
-            progress(ctx, Status.SUCCESS, "define", "Defined variable: $variableName= $variableValue")
-            return Status.SUCCESS
-        }
-
-        override fun visitRequireVariable(ctx: RequireVariableContext): Status {
-            val variableName = ctx.IDENTIFIER().toString()
-            try {
-                executionContext.getVariable(variableName)
-            } catch (e: ArgumentResolverException) {
-                val status = if (validateOnly) Status.WARNING else Status.ERROR
-                progress(ctx, status, "require", "Variable \"$variableName\" is required")
-            }
-            return Status.SUCCESS
-        }
-
-        override fun visitForEach(ctx: ForEachContext): Status {
-            val values: List<Map<String, ApmType>> = readValues(ctx)
-            for ((index, value) in values.withIndex()) {
-                if (shouldVisitNextChild()) {
-                    try {
-                        executionContext.createLocalContext()
-                        val valueStr = value.map { it.key + "=" + it.value }
-                            .joinToString()
-                        progress(ctx, Status.SUCCESS, "for-each", "$index. Begin: $valueStr")
-                        value.forEach { (k, v) -> executionContext.setVariable(k, v) }
-                        visit(ctx.body())
-                        progress(ctx, Status.SUCCESS, "for-each", "$index. End")
-                    } finally {
-                        executionContext.removeLocalContext()
-                    }
-                }
-            }
-            return Status.SUCCESS
-        }
-
-        override fun visitRunScript(ctx: RunScriptContext): Status {
-            val path = getPath(ctx.path())
-            val arguments = executionContext.resolveArguments(ctx.namedArguments())
-            val loadScript = executionContext.loadScript(path)
-            if (executionContext.scriptIsOnStack(loadScript))
-                throw ScriptExecutionException("Found cyclic reference to ${loadScript.path}")
-            val result = RequiredVariablesChecker().checkNamedArguments(loadScript, arguments)
-            if (result.isValid) {
-                executionContext.createScriptContext(loadScript)
-                try {
-                    arguments.named.forEach { (key, value) -> executionContext.setVariable(key, value) }
-                    progress(ctx, Status.SUCCESS, "run", "Begin: path=${loadScript.path}", arguments)
-                    visit(loadScript.apm)
-                    progress(ctx, Status.SUCCESS, "run", "End")
-                } finally {
-                    executionContext.removeScriptContext()
-                }
-            } else {
-                progress(ctx, Status.ERROR, "run", result.toMessages(), arguments)
-            }
-            return Status.SUCCESS
-        }
-
-        override fun visitGenericCommand(ctx: GenericCommandContext): Status {
-            val commandName = getIdentifier(ctx.commandName().identifier()).uppercase()
-            val arguments = executionContext.resolveArguments(ctx.complexArguments())
-            return visitGenericCommand(ctx, commandName, arguments, ctx.body())
-        }
-
-        override fun visitAllowDenyCommand(ctx: AllowDenyCommandContext): Status {
-            val commandName = if (ctx.ALLOW() != null) "ALLOW" else "DENY"
-            val argument = executionContext.resolveArgument(ctx.argument())
-            val arguments = executionContext.resolveArguments(ctx.complexArguments())
-            val required = if (ctx.ON() == null) {
-                listOf(argument) + arguments.required
-            } else {
-                arguments.required + argument
-            }
-            val newArguments = Arguments(required, arguments.named, arguments.flags)
-            return visitGenericCommand(ctx, commandName, newArguments)
-        }
-
-        private fun visitGenericCommand(
-            ctx: ParserRuleContext, commandName: String, arguments: Arguments, body: BodyContext? = null
-        ): Status {
-            return if (validateOnly) {
-                visitGenericCommandValidateMode(ctx, commandName, arguments, body)
-            } else {
-                visitGenericCommandRunMode(ctx, commandName, arguments, body)
-            }
-        }
-
-        private fun visitGenericCommandRunMode(
-            ctx: ParserRuleContext, commandName: String, arguments: Arguments, body: BodyContext?
-        ): Status {
-            try {
-                if (body != null) {
-                    executionContext.createLocalContext()
-                }
-                val status = actionInvoker.runAction(executionContext, commandName, arguments)
-                if (status == Status.SUCCESS && body != null) {
-                    visit(body)
-                }
-                return status
-            } catch (e: ArgumentResolverException) {
-                progress(ctx, Status.ERROR, commandName, "Action failed: ${e.message}")
-            } finally {
-                if (body != null) {
-                    executionContext.removeLocalContext()
-                }
-            }
-            return Status.ERROR
-        }
-
-        private fun visitGenericCommandValidateMode(
-            ctx: ParserRuleContext, commandName: String, arguments: Arguments, body: BodyContext?
-        ): Status {
-            try {
-                if (body != null) {
-                    executionContext.createLocalContext()
-                }
-                try {
-                    actionInvoker.runAction(executionContext, commandName, arguments)
-                } catch (e: ArgumentResolverException) {
-                    progress(ctx, Status.WARNING, commandName, "Couldn't invoke action: ${e.message}")
-                }
-                if (body != null) {
-                    visit(body)
-                }
-            } finally {
-                if (body != null) {
-                    executionContext.removeLocalContext()
-                }
-            }
-            return Status.SUCCESS
-        }
-
-        override fun visitImportScript(ctx: ImportScriptContext): Status {
-            val result = ImportScript(executionContext).import(ctx)
-            executionContext.variableHolder.setAll(result.variableHolder)
-            progress(ctx, Status.SUCCESS, "import", result.toMessages())
-            return Status.SUCCESS
-        }
-
-        private fun readValues(ctx: ForEachContext): List<Map<String, ApmType>> {
-            val keys = listOf(ctx.IDENTIFIER().toString())
-            val values = when (val variableValue = executionContext.resolveArgument(ctx.argument())) {
-                is ApmList -> variableValue.list.map { listOf(it) }
-                is ApmEmpty -> listOf(listOf())
-                else -> listOf(listOf(variableValue))
-            }
-            return values.map { keys.zip(it).toMap() }
-        }
-
-        private fun progress(
-            ctx: ParserRuleContext,
-            status: Status = Status.SUCCESS,
-            command: String,
-            details: String = "",
-            arguments: Arguments? = null
-        ) {
-            progress(ctx, status, command, listOf(details), arguments)
-        }
-
-        private fun progress(
-            ctx: ParserRuleContext,
-            status: Status = Status.SUCCESS,
-            command: String,
-            details: List<String> = listOf(),
-            arguments: Arguments? = null
-        ) {
-            executionContext.progress.addEntry(status, details, command, "", arguments, Position(ctx.start.line))
-        }
+      } else {
+        progress(ctx, Status.ERROR, "run", result.toMessages(), arguments);
+      }
+      return Status.SUCCESS;
     }
+
+    @Override
+    public Status visitGenericCommand(GenericCommandContext ctx) {
+      String commandName = Functions.getIdentifier(ctx.commandName().identifier()).toUpperCase();
+      Arguments arguments = executionContext.resolveArguments(ctx.complexArguments());
+      return visitGenericCommand(ctx, commandName, arguments, ctx.body());
+    }
+
+    @Override
+    public Status visitAllowDenyCommand(AllowDenyCommandContext ctx) {
+      String commandName = ctx.ALLOW() != null ? "ALLOW" : "DENY";
+      ApmType argument = executionContext.resolveArgument(ctx.argument());
+      Arguments arguments = executionContext.resolveArguments(ctx.complexArguments());
+      List<ApmType> required = new ArrayList<>(arguments.getRequired());
+      if (ctx.ON() == null) {
+        required.add(0, argument);
+      } else {
+        required.add(argument);
+      }
+      Arguments newArguments = new Arguments(required, arguments.getNamed(), arguments.getFlags());
+      return visitGenericCommand(ctx, commandName, newArguments, null);
+    }
+
+    private Status visitGenericCommand(ParserRuleContext ctx, String commandName, Arguments arguments, BodyContext body) {
+      if (validateOnly) {
+        return visitGenericCommandValidateMode(ctx, commandName, arguments, body);
+      } else {
+        return visitGenericCommandRunMode(ctx, commandName, arguments, body);
+      }
+    }
+
+    private Status visitGenericCommandRunMode(ParserRuleContext ctx, String commandName, Arguments arguments, BodyContext body) {
+      try {
+        if (body != null) {
+          executionContext.createLocalContext();
+        }
+        Status status = actionInvoker.runAction(executionContext, commandName, arguments);
+        if (status == Status.SUCCESS && body != null) {
+          visit(body);
+        }
+        return status;
+      } catch (ArgumentResolverException e) {
+        progress(ctx, Status.ERROR, commandName, String.format("Action failed: %s", e.getMessage()));
+      } finally {
+        if (body != null) {
+          executionContext.removeLocalContext();
+        }
+      }
+      return Status.ERROR;
+    }
+
+    private Status visitGenericCommandValidateMode(ParserRuleContext ctx, String commandName, Arguments arguments, BodyContext body) {
+      try {
+        if (body != null) {
+          executionContext.createLocalContext();
+        }
+        try {
+          actionInvoker.runAction(executionContext, commandName, arguments);
+        } catch (ArgumentResolverException e) {
+          progress(ctx, Status.WARNING, commandName, String.format("Couldn't invoke action: %s", e.getMessage()));
+        }
+        if (body != null) {
+          visit(body);
+        }
+      } finally {
+        if (body != null) {
+          executionContext.removeLocalContext();
+        }
+      }
+      return Status.SUCCESS;
+    }
+
+    @Override
+    public Status visitImportScript(ImportScriptContext ctx) {
+      ImportScript.Result result = new ImportScript(executionContext).importScript(ctx);
+      executionContext.getVariableHolder().setAll(result.getVariableHolder());
+      progress(ctx, Status.SUCCESS, "import", result.toMessages());
+      return Status.SUCCESS;
+    }
+
+    private List<Map<String, ApmType>> readValues(ForEachContext ctx) {
+      String key = ctx.IDENTIFIER().toString();
+      ApmType variableValue = executionContext.resolveArgument(ctx.argument());
+      List<ApmType> values;
+      if (variableValue instanceof ApmList) {
+        values = variableValue.getList();
+      } else if (variableValue instanceof ApmEmpty) {
+        values = Collections.emptyList();
+      } else {
+        values = ImmutableList.of(variableValue);
+      }
+      return values.stream()
+          .map(value -> ImmutableMap.of(key, value))
+          .collect(Collectors.toList());
+    }
+
+    private void progress(ParserRuleContext ctx, Status status, String command, String detail) {
+      progress(ctx, status, command, detail, null);
+    }
+
+    private void progress(ParserRuleContext ctx, Status status, String command, String detail, Arguments arguments) {
+      progress(ctx, status, command, ImmutableList.of(detail), arguments);
+    }
+
+    private void progress(ParserRuleContext ctx, Status status, String command, List<String> details) {
+      progress(ctx, status, command, details, null);
+    }
+
+    private void progress(ParserRuleContext ctx, Status status, String command, List<String> details, Arguments arguments) {
+      executionContext.getProgress().addEntry(status, details, command, "", arguments, new Position(ctx.start.getLine()));
+    }
+  }
 }

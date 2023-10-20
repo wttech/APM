@@ -18,6 +18,11 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm.core.grammar.argument
+package com.cognifide.apm.core.grammar.argument;
 
-class ArgumentResolverException(message: String) : RuntimeException(message)
+public class ArgumentResolverException extends RuntimeException {
+
+  public ArgumentResolverException(String message) {
+    super(message);
+  }
+}

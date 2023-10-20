@@ -18,24 +18,41 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm.core.grammar.common
+package com.cognifide.apm.core.grammar.common;
 
-import java.util.*
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.Iterator;
+import java.util.List;
 
-class StackWithRoot<E>(private val root: E) : Iterable<E> {
+public class StackWithRoot<T> implements Iterable<T> {
 
-    override fun iterator(): Iterator<E> {
-        val values = mutableListOf<E>()
-        values.addAll(internal)
-        values.add(root)
-        return values.iterator()
-    }
+  private final T root;
 
-    private val internal: ArrayDeque<E> = ArrayDeque()
+  private final Deque<T> internal;
 
-    fun push(element: E) = internal.push(element)
+  public StackWithRoot(T root) {
+    this.root = root;
+    this.internal = new ArrayDeque<>();
+  }
 
-    fun pop(): E = if (internal.isEmpty()) root else internal.pop()
+  @Override
+  public Iterator<T> iterator() {
+    List<T> values = new ArrayList<>(internal);
+    values.add(root);
+    return values.iterator();
+  }
 
-    fun peek(): E = if (internal.isEmpty()) root else internal.peek()
+  public void push(T element) {
+    internal.push(element);
+  }
+
+  public T pop() {
+    return internal.isEmpty() ? root : internal.pop();
+  }
+
+  public T peek() {
+    return internal.isEmpty() ? root : internal.peek();
+  }
 }

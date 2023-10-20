@@ -18,31 +18,59 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm.core.grammar.utils
+package com.cognifide.apm.core.grammar.utils;
 
-import com.cognifide.apm.core.grammar.argument.Arguments
-import com.cognifide.apm.core.grammar.parsedscript.ParsedScript
+import com.cognifide.apm.core.grammar.antlr.ApmLangBaseVisitor;
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser;
+import com.cognifide.apm.core.grammar.argument.Arguments;
+import com.cognifide.apm.core.grammar.parsedscript.ParsedScript;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
-class RequiredVariablesChecker {
+public class RequiredVariablesChecker {
 
-    fun checkNamedArguments(parsedScript: ParsedScript, arguments: Arguments): Result {
-        val requireVariableVisitor = RequireVariableVisitor()
-        requireVariableVisitor.visit(parsedScript.apm)
-        val missingNamedArguments = requireVariableVisitor.variables.filter { !arguments.named.containsKey(it) }
-        return Result(missingNamedArguments)
+  public Result checkNamedArguments(ParsedScript parsedScript, Arguments arguments) {
+    RequireVariableVisitor requireVariableVisitor = new RequireVariableVisitor();
+    requireVariableVisitor.visit(parsedScript.getApm());
+    List<String> missingNamedArguments = requireVariableVisitor.variables
+        .stream()
+        .filter(variable -> !arguments.getNamed().containsKey(variable))
+        .collect(Collectors.toList());
+    return new Result(missingNamedArguments);
+  }
+
+  private static class RequireVariableVisitor extends ApmLangBaseVisitor<Object> {
+
+    private final List<String> variables;
+
+    public RequireVariableVisitor() {
+      this.variables = new ArrayList<>();
     }
 
-    private inner class RequireVariableVisitor : com.cognifide.apm.core.grammar.antlr.ApmLangBaseVisitor<Unit>() {
+    @Override
+    public Object visitRequireVariable(ApmLangParser.RequireVariableContext ctx) {
+      variables.add(ctx.IDENTIFIER().toString());
+      return null;
+    }
+  }
 
-        val variables = mutableListOf<String>()
+  public static class Result {
 
-        override fun visitRequireVariable(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.RequireVariableContext) {
-            variables.add(ctx.IDENTIFIER().toString())
-        }
+    private final List<String> missingNamedArguments;
+
+    public Result(List<String> missingNamedArguments) {
+      this.missingNamedArguments = missingNamedArguments;
     }
 
-    class Result(val missingNamedArguments: List<String>) {
-        val isValid: Boolean get() = missingNamedArguments.isEmpty()
-        fun toMessages(): List<String> = missingNamedArguments.map { "Parameter \"$it\" is required" }
+    public boolean isValid() {
+      return missingNamedArguments.isEmpty();
     }
+
+    public List<String> toMessages() {
+      return missingNamedArguments.stream()
+          .map(parameter -> String.format("Parameter \"%s\" is required", parameter))
+          .collect(Collectors.toList());
+    }
+  }
 }

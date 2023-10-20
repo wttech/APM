@@ -18,157 +18,224 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm.core.grammar
+package com.cognifide.apm.core.grammar;
 
-import com.cognifide.apm.api.scripts.LaunchEnvironment
-import com.cognifide.apm.api.scripts.LaunchMode
-import com.cognifide.apm.api.scripts.Script
-import com.cognifide.apm.api.services.ScriptFinder
-import com.cognifide.apm.core.grammar.common.getPath
-import com.cognifide.apm.core.grammar.executioncontext.ExecutionContext
-import com.cognifide.apm.core.grammar.parsedscript.ParsedScript
-import com.cognifide.apm.core.progress.ProgressImpl
-import org.apache.sling.api.resource.ResourceResolver
-import java.util.*
+import com.cognifide.apm.api.scripts.LaunchEnvironment;
+import com.cognifide.apm.api.scripts.LaunchMode;
+import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.ScriptFinder;
+import com.cognifide.apm.core.grammar.antlr.ApmLangBaseVisitor;
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser;
+import com.cognifide.apm.core.grammar.common.Functions;
+import com.cognifide.apm.core.grammar.executioncontext.ExecutionContext;
+import com.cognifide.apm.core.grammar.parsedscript.ParsedScript;
+import com.cognifide.apm.core.progress.ProgressImpl;
+import com.google.common.collect.ImmutableList;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import org.apache.sling.api.resource.ResourceResolver;
 
-class ReferenceFinder(private val scriptFinder: ScriptFinder, private val resourceResolver: ResourceResolver) {
+public class ReferenceFinder {
 
-    fun findReferences(script: Script): List<Script> {
-        val result = mutableSetOf<Script>()
-        val refGraph = getReferenceGraph(script)
-        val possibleCycle = refGraph.getCycleIfExist()
-        if (possibleCycle != null) {
-            throw ScriptExecutionException("Cycle detected ${possibleCycle.from.getScriptPath()} -> ${possibleCycle.to.getScriptPath()}")
-        } else {
-            refGraph.getSubTreeForScript(script).forEach {
-                if (it is ReferenceGraph.NonExistingTreeNode) {
-                    throw ScriptExecutionException("Script doesn't exist ${it.getScriptPath()}")
-                } else {
-                    result.add(it.script)
-                }
+  private final ScriptFinder scriptFinder;
+
+  private final ResourceResolver resourceResolver;
+
+  public ReferenceFinder(ScriptFinder scriptFinder, ResourceResolver resourceResolver) {
+    this.scriptFinder = scriptFinder;
+    this.resourceResolver = resourceResolver;
+  }
+
+  public List<Script> findReferences(Script script) {
+    Set<Script> result = new TreeSet<>(Comparator.comparing(Script::getPath));
+    ReferenceGraph refGraph = getReferenceGraph(script);
+    ReferenceGraph.Transition possibleCycle = refGraph.getCycleIfExist();
+    if (possibleCycle != null) {
+      throw new ScriptExecutionException(String.format("Cycle detected %s -> %s", possibleCycle.getFrom().getScriptPath(), possibleCycle.getTo().getScriptPath()));
+    } else {
+      refGraph.getSubTreeForScript(script)
+          .forEach(node -> {
+            if (node instanceof ReferenceGraph.NonExistingTreeNode) {
+              throw new ScriptExecutionException(String.format("Script doesn't exist %s", node.getScriptPath()));
+            } else {
+              result.add(node.getScript());
             }
-        }
-        return result.toList()
+          });
     }
+    return new ArrayList<>(result);
+  }
 
-    fun getReferenceGraph(vararg scripts: Script): ReferenceGraph {
-        val refGraph = ReferenceGraph()
-        scripts.forEach {
-            fillReferenceGraph(refGraph, it)
-        }
-        return refGraph
+  public ReferenceGraph getReferenceGraph(Script... scripts) {
+    ReferenceGraph refGraph = new ReferenceGraph();
+    for (Script script : scripts) {
+      fillReferenceGraph(refGraph, script);
     }
+    return refGraph;
+  }
 
-    private fun fillReferenceGraph(refGraph: ReferenceGraph, script: Script) {
-        if (refGraph.getNode(script) == null) {
-            val parsedScript = ParsedScript.create(script).apm
-            val executionContext =
-                ExecutionContext.create(scriptFinder, resourceResolver, script, ProgressImpl(resourceResolver.userID))
-            findReferences(refGraph, refGraph.addNode(script), listOf(script), executionContext, parsedScript)
-        }
+  private void fillReferenceGraph(ReferenceGraph refGraph, Script script) {
+    if (refGraph.getNode(script) == null) {
+      ApmLangParser.ApmContext apmContext = ParsedScript.create(script).getApm();
+      ExecutionContext executionContext = ExecutionContext.create(scriptFinder, resourceResolver, script, new ProgressImpl(resourceResolver.getUserID()));
+      findReferences(refGraph, refGraph.addNode(script), ImmutableList.of(script.getPath()), executionContext, apmContext);
     }
+  }
 
-    fun <T> List<T>.add(value: T): List<T> {
-        val mutable = this.toMutableList()
-        mutable.add(value)
-        return mutable.toList()
-    }
-
-    fun <T> List<T>.remove(value: T): List<T> {
-        val mutable = this.toMutableList()
-        mutable.remove(value)
-        return mutable.toList()
-    }
-
-    private fun findReferences(
-        refGraph: ReferenceGraph, currentNode: ReferenceGraph.TreeNode, ancestors: List<Script>,
-        executionContext: ExecutionContext, ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.ApmContext
-    ) {
-        val internalVisitor = InternalVisitor(executionContext, refGraph, currentNode)
-        internalVisitor.visitApm(ctx)
-        currentNode.visited = true
-        internalVisitor.scripts.forEach { script ->
-            val node = refGraph.getNode(script)
-            if (node != null && node !is ReferenceGraph.NonExistingTreeNode) {
-                val parsedScript = executionContext.loadScript(script.path)
-                executionContext.createScriptContext(parsedScript)
-                if (ancestors.contains(script)) {
-                    refGraph.detectCycle(currentNode, script)
-                } else if (!node.visited) {
-                    findReferences(refGraph, node, ancestors.add(script), executionContext, parsedScript.apm)
-                }
+  private void findReferences(ReferenceGraph refGraph, ReferenceGraph.TreeNode currentNode, List<String> ancestors, ExecutionContext executionContext, ApmLangParser.ApmContext ctx) {
+    InternalVisitor internalVisitor = new InternalVisitor(executionContext, refGraph, currentNode);
+    internalVisitor.visitApm(ctx);
+    currentNode.setVisited(true);
+    internalVisitor.scripts
+        .forEach(script -> {
+          ReferenceGraph.TreeNode node = refGraph.getNode(script);
+          if (node != null && !(node instanceof ReferenceGraph.NonExistingTreeNode)) {
+            ParsedScript parsedScript = executionContext.loadScript(script.getPath());
+            executionContext.createScriptContext(parsedScript);
+            if (ancestors.contains(script.getPath())) {
+              refGraph.detectCycle(currentNode, script);
+            } else if (!node.isVisited()) {
+              List<String> newAncestors = new ArrayList<>(ancestors);
+              newAncestors.add(script.getPath());
+              findReferences(refGraph, node, newAncestors, executionContext, parsedScript.getApm());
             }
-        }
+          }
+        });
+  }
+
+  private static class InternalVisitor extends ApmLangBaseVisitor<Object> {
+
+    private final ExecutionContext executionContext;
+
+    private final ReferenceGraph refGraph;
+
+    private final ReferenceGraph.TreeNode currentNode;
+
+    private final Set<Script> scripts;
+
+    public InternalVisitor(ExecutionContext executionContext, ReferenceGraph refGraph, ReferenceGraph.TreeNode currentNode) {
+      this.executionContext = executionContext;
+      this.refGraph = refGraph;
+      this.currentNode = currentNode;
+      this.scripts = new HashSet<>();
     }
 
-    inner class InternalVisitor(
-        private val executionContext: ExecutionContext,
-        val refGraph: ReferenceGraph,
-        val currentNode: ReferenceGraph.TreeNode
-    ) : com.cognifide.apm.core.grammar.antlr.ApmLangBaseVisitor<Unit>() {
-        val scripts = mutableSetOf<Script>()
-
-        override fun visitImportScript(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.ImportScriptContext) {
-            val foundPath = getPath(ctx.path())
-            createTransition(foundPath, ReferenceGraph.TransitionType.IMPORT)
-        }
-
-        override fun visitRunScript(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.RunScriptContext) {
-            val foundPath = getPath(ctx.path())
-            createTransition(foundPath, ReferenceGraph.TransitionType.RUN_SCRIPT)
-        }
-
-        private fun createTransition(foundPath: String?, transitionType: ReferenceGraph.TransitionType) {
-            val script: Script? = loadScript(foundPath)
-            if (script != null) {
-                refGraph.createTransition(currentNode, script, transitionType)
-                scripts.add(script)
-            }
-        }
-
-        private fun loadScript(foundPath: String?): Script? {
-            var script: Script? = null
-            if (foundPath != null) {
-                try {
-                    script = executionContext.loadScript(foundPath).script
-                } catch (e: ScriptExecutionException) {
-                    script = NonExistingScript(foundPath)
-                    currentNode.valid = false
-                }
-            }
-            return script
-        }
+    @Override
+    public Object visitImportScript(ApmLangParser.ImportScriptContext ctx) {
+      String foundPath = Functions.getPath(ctx.path());
+      createTransition(foundPath, ReferenceGraph.TransitionType.IMPORT);
+      return null;
     }
 
-    class NonExistingScript(val scriptPath: String) : Script {
-
-        override fun getPath(): String = scriptPath
-
-        override fun isValid(): Boolean = false
-
-        override fun isLaunchEnabled(): Boolean = false
-
-        override fun getLaunchMode(): LaunchMode = LaunchMode.ON_DEMAND
-
-        override fun getLaunchEnvironment(): LaunchEnvironment? = null
-
-        override fun getLaunchRunModes(): Set<String>? = null
-
-        override fun getLaunchHook(): String? = null
-
-        override fun getLaunchSchedule(): Date? = null
-
-        override fun getCronExpression(): String? = null
-
-        override fun getLastExecuted(): Date? = null
-
-        override fun getChecksum(): String? = null
-
-        override fun getAuthor(): String? = null
-
-        override fun getLastModified(): Date? = null
-
-        override fun getData(): String? = null
+    @Override
+    public Object visitRunScript(ApmLangParser.RunScriptContext ctx) {
+      String foundPath = Functions.getPath(ctx.path());
+      createTransition(foundPath, ReferenceGraph.TransitionType.RUN_SCRIPT);
+      return null;
     }
 
+    private void createTransition(String foundPath, ReferenceGraph.TransitionType transitionType) {
+      Script script = loadScript(foundPath);
+      if (script != null) {
+        refGraph.createTransition(currentNode, script, transitionType);
+        scripts.add(script);
+      }
+    }
+
+    private Script loadScript(String foundPath) {
+      Script script = null;
+      if (foundPath != null) {
+        try {
+          script = executionContext.loadScript(foundPath).getScript();
+        } catch (ScriptExecutionException e) {
+          script = new NonExistingScript(foundPath);
+          currentNode.setValid(false);
+        }
+      }
+      return script;
+    }
+  }
+
+  public static class NonExistingScript implements Script {
+
+    private final String scriptPath;
+
+    public NonExistingScript(String scriptPath) {
+      this.scriptPath = scriptPath;
+    }
+
+    @Override
+    public String getPath() {
+      return scriptPath;
+    }
+
+    @Override
+    public boolean isValid() {
+      return false;
+    }
+
+    @Override
+    public boolean isLaunchEnabled() {
+      return false;
+    }
+
+    @Override
+    public LaunchMode getLaunchMode() {
+      return null;
+    }
+
+    @Override
+    public LaunchEnvironment getLaunchEnvironment() {
+      return null;
+    }
+
+    @Override
+    public Set<String> getLaunchRunModes() {
+      return null;
+    }
+
+    @Override
+    public String getLaunchHook() {
+      return null;
+    }
+
+    @Override
+    public Date getLaunchSchedule() {
+      return null;
+    }
+
+    @Override
+    public String getCronExpression() {
+      return null;
+    }
+
+    @Override
+    public Date getLastExecuted() {
+      return null;
+    }
+
+    @Override
+    public String getChecksum() {
+      return null;
+    }
+
+    @Override
+    public String getAuthor() {
+      return null;
+    }
+
+    @Override
+    public Date getLastModified() {
+      return null;
+    }
+
+    @Override
+    public String getData() {
+      return null;
+    }
+  }
 }

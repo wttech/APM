@@ -17,16 +17,15 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.core.services.async
+package com.cognifide.apm.core.services.async;
 
-import com.cognifide.apm.api.scripts.Script
-import com.cognifide.apm.api.services.ExecutionMode
+import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.ExecutionMode;
+import java.util.Map;
 
-interface AsyncScriptExecutor {
+public interface AsyncScriptExecutor {
 
-    fun process(
-        script: Script, executionMode: ExecutionMode, customDefinitions: Map<String, String>, executor: String
-    ): String
+  String process(Script script, ExecutionMode executionMode, Map<String, String> customDefinitions, String executor);
 
-    fun checkStatus(id: String): ExecutionStatus
+  ExecutionStatus checkStatus(String id);
 }

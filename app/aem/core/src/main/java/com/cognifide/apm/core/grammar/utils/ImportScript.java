@@ -18,68 +18,114 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm.core.grammar.utils
+package com.cognifide.apm.core.grammar.utils;
 
-import com.cognifide.apm.core.grammar.ApmMap
-import com.cognifide.apm.core.grammar.ScriptExecutionException
-import com.cognifide.apm.core.grammar.argument.ArgumentResolver
-import com.cognifide.apm.core.grammar.common.getPath
-import com.cognifide.apm.core.grammar.executioncontext.ExecutionContext
-import com.cognifide.apm.core.grammar.executioncontext.VariableHolder
-import com.cognifide.apm.core.grammar.parsedscript.ParsedScript
+import com.cognifide.apm.core.grammar.ApmType;
+import com.cognifide.apm.core.grammar.ApmType.ApmMap;
+import com.cognifide.apm.core.grammar.ScriptExecutionException;
+import com.cognifide.apm.core.grammar.antlr.ApmLangBaseVisitor;
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser;
+import com.cognifide.apm.core.grammar.argument.ArgumentResolver;
+import com.cognifide.apm.core.grammar.common.Functions;
+import com.cognifide.apm.core.grammar.executioncontext.ExecutionContext;
+import com.cognifide.apm.core.grammar.executioncontext.VariableHolder;
+import com.cognifide.apm.core.grammar.parsedscript.ParsedScript;
+import com.google.common.collect.ImmutableList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang3.StringUtils;
 
-class ImportScript(private val executionContext: ExecutionContext) {
+public class ImportScript {
 
-    private val visitedScripts: MutableSet<ParsedScript> = mutableSetOf()
+  private final ExecutionContext executionContext;
 
-    fun import(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.ImportScriptContext): Result {
-        val path = getPath(ctx.path())
-        val importScriptVisitor = ImportScriptVisitor()
-        importScriptVisitor.visit(ctx)
-        return Result(path, importScriptVisitor.variableHolder)
+  private final Set<ParsedScript> visitedScripts;
+
+  public ImportScript(ExecutionContext executionContext) {
+    this.executionContext = executionContext;
+    this.visitedScripts = new HashSet<>();
+  }
+
+  public Result importScript(ApmLangParser.ImportScriptContext ctx) {
+    String path = Functions.getPath(ctx.path());
+    ImportScriptVisitor importScriptVisitor = new ImportScriptVisitor();
+    importScriptVisitor.visit(ctx);
+    return new Result(path, importScriptVisitor.variableHolder);
+  }
+
+  private String getNamespace(ApmLangParser.ImportScriptContext ctx) {
+    return ctx.name() != null ? ctx.name().IDENTIFIER().toString() : "";
+  }
+
+  private class ImportScriptVisitor extends ApmLangBaseVisitor<Object> {
+
+    private final VariableHolder variableHolder;
+
+    private final ArgumentResolver argumentResolver;
+
+    public ImportScriptVisitor() {
+      this.variableHolder = new VariableHolder();
+      this.argumentResolver = new ArgumentResolver(variableHolder);
     }
 
-    private fun getNamespace(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.ImportScriptContext): String =
-        if (ctx.name() != null) {
-            ctx.name().IDENTIFIER().toString()
-        } else {
-            ""
-        }
-
-    private inner class ImportScriptVisitor : com.cognifide.apm.core.grammar.antlr.ApmLangBaseVisitor<Unit>() {
-        val variableHolder = VariableHolder()
-
-        val argumentResolver = ArgumentResolver(variableHolder)
-
-        override fun visitDefineVariable(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.DefineVariableContext) {
-            val variableName = ctx.IDENTIFIER().toString()
-            val variableValue = argumentResolver.resolve(ctx.argument())
-            variableHolder[variableName] = variableValue
-        }
-
-        override fun visitImportScript(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.ImportScriptContext) {
-            val path = getPath(ctx.path())
-            val namespace = getNamespace(ctx)
-            val importScriptVisitor = ImportScriptVisitor()
-            val parsedScript = executionContext.loadScript(path)
-
-            if (parsedScript !in visitedScripts) visitedScripts.add(parsedScript)
-            else throw ScriptExecutionException("Found cyclic reference to ${parsedScript.path}")
-
-            importScriptVisitor.visit(parsedScript.apm)
-            val scriptVariableHolder = importScriptVisitor.variableHolder
-            if (namespace == "") {
-                variableHolder.setAll(scriptVariableHolder)
-            } else {
-                variableHolder[namespace] = ApmMap(scriptVariableHolder.toMap())
-            }
-        }
+    @Override
+    public Object visitDefineVariable(ApmLangParser.DefineVariableContext ctx) {
+      String variableName = ctx.IDENTIFIER().toString();
+      ApmType variableValue = argumentResolver.resolve(ctx.argument());
+      variableHolder.set(variableName, variableValue);
+      return null;
     }
 
-    class Result(val path: String, val variableHolder: VariableHolder) {
-        fun toMessages(): List<String> {
-            val importedVariables = variableHolder.toMap().map { "Imported variable: ${it.key}=${it.value}" }
-            return listOf("Import from script $path. Notice, only DEFINE actions were processed!") + importedVariables
-        }
+    @Override
+    public Object visitImportScript(ApmLangParser.ImportScriptContext ctx) {
+      String path = Functions.getPath(ctx.path());
+      String namespace = getNamespace(ctx);
+      ImportScriptVisitor importScriptVisitor = new ImportScriptVisitor();
+      ParsedScript parsedScript = executionContext.loadScript(path);
+
+      if (!visitedScripts.contains(parsedScript)) {
+        visitedScripts.add(parsedScript);
+      } else {
+        throw new ScriptExecutionException(String.format("Found cyclic reference to %s", parsedScript.getPath()));
+      }
+
+      importScriptVisitor.visit(parsedScript.getApm());
+      VariableHolder scriptVariableHolder = importScriptVisitor.variableHolder;
+      if (StringUtils.isEmpty(namespace)) {
+        variableHolder.setAll(scriptVariableHolder);
+      } else {
+        variableHolder.set(namespace, new ApmMap(scriptVariableHolder.toMap()));
+      }
+      return null;
     }
+  }
+
+  public static class Result {
+
+    private final String path;
+
+    private final VariableHolder variableHolder;
+
+    public Result(String path, VariableHolder variableHolder) {
+      this.path = path;
+      this.variableHolder = variableHolder;
+    }
+
+    public VariableHolder getVariableHolder() {
+      return variableHolder;
+    }
+
+    public List<String> toMessages() {
+      List<String> resultMessagesPrefix = ImmutableList.of(String.format("Import from script %s. Notice, only DEFINE actions were processed!", path));
+      List<String> importedVariables = variableHolder.toMap()
+          .entrySet()
+          .stream()
+          .map(entry -> String.format("Imported variable: %s=%s", entry.getKey(), entry.getValue()))
+          .collect(Collectors.toList());
+      return ListUtils.union(resultMessagesPrefix, importedVariables);
+    }
+  }
 }

@@ -17,44 +17,49 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.core.crypto
+package com.cognifide.apm.core.crypto;
 
-import com.adobe.granite.crypto.CryptoException
-import com.adobe.granite.crypto.CryptoSupport
-import com.cognifide.apm.core.Property
-import org.apache.commons.lang.text.StrSubstitutor
-import org.apache.commons.lang3.StringUtils
-import org.osgi.service.component.annotations.Component
-import org.osgi.service.component.annotations.Reference
+import com.adobe.granite.crypto.CryptoException;
+import com.adobe.granite.crypto.CryptoSupport;
+import com.cognifide.apm.core.Property;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import org.apache.commons.lang.text.StrSubstitutor;
+import org.apache.commons.lang3.StringUtils;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 @Component(
-    service = [DecryptionService::class],
-    property = [
+    service = DecryptionService.class,
+    property = {
         Property.DESCRIPTION + "APM Service for decryption encrypted values",
         Property.VENDOR
-    ]
+    }
 )
-open class DecryptionService {
+public class DecryptionService {
 
-    @Reference
-    @Transient
-    private lateinit var cryptoSupport: CryptoSupport
+  @Reference
+  private CryptoSupport cryptoSupport;
 
-    fun decrypt(text: String): String {
-        val tokens = StringUtils.substringsBetween(text, "{", "}")
-            .orEmpty()
-            .map { it to unprotect("{$it}") }
-            .toMap()
-        val strSubstitutor = StrSubstitutor(tokens, "{", "}")
-        return if (tokens.isEmpty()) text else strSubstitutor.replace(text)
+  public String decrypt(String text) {
+    Map<String, String> tokens = Optional.ofNullable(StringUtils.substringsBetween(text, "{", "}"))
+        .map(Arrays::stream)
+        .orElse(Stream.empty())
+        .distinct()
+        .collect(Collectors.toMap(Function.identity(), token -> unprotect("{" + token + "}")));
+    StrSubstitutor strSubstitutor = new StrSubstitutor(tokens, "{", "}");
+    return tokens.isEmpty() ? text : strSubstitutor.replace(text);
+  }
+
+  protected String unprotect(String text) {
+    try {
+      return cryptoSupport.unprotect(text);
+    } catch (CryptoException e) {
+      throw new IllegalArgumentException(String.format("Unable to decrypt '%s', wrong hmac or master key", text), e);
     }
-
-    protected open fun unprotect(text: String): String {
-        return try {
-            cryptoSupport.unprotect(text)
-        } catch (e: CryptoException) {
-            throw IllegalArgumentException(String.format("Unable to decrypt '%s', wrong hmac or master key", text), e)
-        }
-    }
-
+  }
 }

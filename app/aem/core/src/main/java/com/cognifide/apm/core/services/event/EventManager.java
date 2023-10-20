@@ -17,9 +17,9 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.core.services.event
+package com.cognifide.apm.core.services.event;
 
-interface EventManager {
+public interface EventManager {
 
-    fun trigger(event: ApmEvent)
+  void trigger(ApmEvent event);
 }

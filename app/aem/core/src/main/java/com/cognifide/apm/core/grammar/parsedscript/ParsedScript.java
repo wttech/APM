@@ -18,24 +18,61 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm.core.grammar.parsedscript
+package com.cognifide.apm.core.grammar.parsedscript;
 
-import com.cognifide.apm.api.scripts.Script
-import com.cognifide.apm.core.grammar.antlr.ApmLangParser.ApmContext
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser;
+import java.util.Objects;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-class ParsedScript(val script: Script, val apm: ApmContext) {
+public class ParsedScript {
 
-    val path: String
-        get() = script.path
+  private final Script script;
 
-    companion object Factory {
-        fun create(script: Script): ParsedScript {
-            val logger: Logger = LoggerFactory.getLogger(ParsedScript::class.java)
-            logger.warn("Script parsing {}", script.path)
-            val apmLangParser = ApmLangParserFactory.createParserForScriptContent(script.data)
-            return ParsedScript(script, apmLangParser.apm())
-        }
+  private final ApmLangParser.ApmContext apm;
+
+  private final String path;
+
+  private ParsedScript(Script script, ApmLangParser.ApmContext apm) {
+    this.script = script;
+    this.apm = apm;
+    this.path = script.getPath();
+  }
+
+  public Script getScript() {
+    return script;
+  }
+
+  public ApmLangParser.ApmContext getApm() {
+    return apm;
+  }
+
+  public String getPath() {
+    return path;
+  }
+
+  public static ParsedScript create(Script script) {
+    Logger LOGGER = LoggerFactory.getLogger(ParsedScript.class);
+    LOGGER.warn("Script parsing {}", script.getPath());
+    ApmLangParser apmLangParser = ApmLangParserFactory.createParserForScriptContent(script.getData());
+    return new ParsedScript(script, apmLangParser.apm());
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
     }
+    if (obj instanceof ParsedScript) {
+      ParsedScript that = (ParsedScript) obj;
+      return Objects.equals(path, that.path);
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(path);
+  }
 }

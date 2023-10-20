@@ -18,32 +18,50 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm.core.endpoints.response
+package com.cognifide.apm.core.endpoints.response;
 
-import javax.servlet.http.HttpServletResponse
+import java.util.HashMap;
+import java.util.Map;
+import javax.servlet.http.HttpServletResponse;
 
-class ResponseEntity<T>(val statusCode: Int, val body: T)
+public class ResponseEntity {
 
-fun badRequest(body: ErrorBody.() -> Unit): ResponseEntity<Any> {
-    return error(HttpServletResponse.SC_BAD_REQUEST, body)
-}
+  private final int statusCode;
 
-fun notFound(body: ErrorBody.() -> Unit): ResponseEntity<Any> {
-    return error(HttpServletResponse.SC_NOT_FOUND, body)
-}
+  private final Map<String, Object> body;
 
-fun internalServerError(body: ErrorBody.() -> Unit): ResponseEntity<Any> {
-    return error(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, body)
-}
+  private ResponseEntity(int statusCode, String message) {
+    this.statusCode = statusCode;
+    this.body = new HashMap<>();
+    addEntry("message", message);
+  }
 
-fun ok(body: SuccessBody.() -> Unit): ResponseEntity<Any> {
-    return success(200, body)
-}
+  public ResponseEntity addEntry(String key, Object value) {
+    body.put(key, value);
+    return this;
+  }
 
-fun error(statusCode: Int, body: ErrorBody.() -> Unit): ResponseEntity<Any> {
-    return ResponseEntity(statusCode, ErrorBody().apply(body))
-}
+  public int getStatusCode() {
+    return statusCode;
+  }
 
-fun success(statusCode: Int, body: SuccessBody.() -> Unit): ResponseEntity<Any> {
-    return ResponseEntity(statusCode, SuccessBody().apply(body))
+  public Map<String, Object> getBody() {
+    return body;
+  }
+
+  public static ResponseEntity badRequest(String message) {
+    return new ResponseEntity(HttpServletResponse.SC_BAD_REQUEST, message);
+  }
+
+  public static ResponseEntity notFound(String message) {
+    return new ResponseEntity(HttpServletResponse.SC_NOT_FOUND, message);
+  }
+
+  public static ResponseEntity internalServerError(String message) {
+    return new ResponseEntity(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, message);
+  }
+
+  public static ResponseEntity ok(String message) {
+    return new ResponseEntity(HttpServletResponse.SC_OK, message);
+  }
 }

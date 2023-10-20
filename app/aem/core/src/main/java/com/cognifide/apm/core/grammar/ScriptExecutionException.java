@@ -18,6 +18,11 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm.core.grammar
+package com.cognifide.apm.core.grammar;
 
-class ScriptExecutionException(message: String) : RuntimeException(message)
+public class ScriptExecutionException extends RuntimeException {
+
+  public ScriptExecutionException(String message) {
+    super(message);
+  }
+}

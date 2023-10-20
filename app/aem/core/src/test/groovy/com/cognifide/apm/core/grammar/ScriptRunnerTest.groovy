@@ -82,17 +82,17 @@ class ScriptRunnerTest extends Specification {
                      "Executing command SHOW \"a\"",
                      "Executing command SHOW \"b\"",
                      "Executing command SHOW [\"c\", \"d\"]",
-                     "Executing command SHOW [[\"a\", \"b\"], [\"c\", \"d\"]]",
+                     "Executing command SHOW [\n\t[\"a\", \"b\"],\n\t[\"c\", \"d\"]\n]",
                      "Executing command SHOW [1, 2, 3]",
                      "Executing command SHOW [\"a\", \"b\", 1, 2]",
-                     "Executing command SHOW {x: \"a\", y: 1, z: [\"c\", 1], t: \"t\"}",
+                     "Executing command SHOW {\n\tx: \"a\",\n\ty: 1,\n\tz: [\"c\", 1],\n\tt: \"t\"\n}",
                      "Executing command SHOW 1",
                      "Executing command SHOW 1",
                      "Executing command SHOW \"t\"",
                      "Executing command SHOW \"t\"",
                      "Executing command SHOW [3, \"ab\"]",
                      "Executing command SHOW [\"a\", \"b\", \"c\", \"d\", 1, 2]",
-                     "Executing command SHOW [[\"a\", \"b\"], [\"c\", \"d\"]]"]
+                     "Executing command SHOW [\n\t[\"a\", \"b\"],\n\t[\"c\", \"d\"]\n]"]
     }
 
     def "run macro"() {
@@ -132,7 +132,7 @@ class ScriptRunnerTest extends Specification {
 
         result.entries[2].messages ==
                 ["Import from script /import-deep-define.apm. Notice, only DEFINE actions were processed!",
-                 "Imported variable: deepNamespace={deeperNamespace: {var: \"imported val\"}, deepVar: \"imported val + imported val\"}"]
+                 "Imported variable: deepNamespace={\n\tdeeperNamespace: {var: \"imported val\"},\n\tdeepVar: \"imported val + imported val\"\n}"]
 
         result.entries[3].command == "Executing command SHOW \"imported val\""
         result.entries[4].command == "Executing command SHOW \"imported val\""
@@ -181,7 +181,7 @@ class ScriptRunnerTest extends Specification {
     private Script createScript(String file) {
         def content = IOUtils.toString(getClass().getResourceAsStream(file))
         def script = Mock(Script)
-        script.path >> "/conf/apm/scripts/main.apm"
+        script.path >> ("/conf/apm/scripts" + file)
         script.data >> content
         return script
     }

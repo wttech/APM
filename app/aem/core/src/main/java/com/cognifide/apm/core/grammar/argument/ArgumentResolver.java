@@ -18,184 +18,226 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm.core.grammar.argument
+package com.cognifide.apm.core.grammar.argument;
 
-import com.cognifide.apm.core.grammar.ApmEmpty
-import com.cognifide.apm.core.grammar.ApmInteger
-import com.cognifide.apm.core.grammar.ApmList
-import com.cognifide.apm.core.grammar.ApmMap
-import com.cognifide.apm.core.grammar.ApmPair
-import com.cognifide.apm.core.grammar.ApmString
-import com.cognifide.apm.core.grammar.ApmType
-import com.cognifide.apm.core.grammar.antlr.ApmLangParser.ArgumentContext
-import com.cognifide.apm.core.grammar.antlr.ApmLangParser.ArrayContext
-import com.cognifide.apm.core.grammar.antlr.ApmLangParser.ComplexArgumentsContext
-import com.cognifide.apm.core.grammar.antlr.ApmLangParser.ExpressionContext
-import com.cognifide.apm.core.grammar.antlr.ApmLangParser.FlagContext
-import com.cognifide.apm.core.grammar.antlr.ApmLangParser.NameContext
-import com.cognifide.apm.core.grammar.antlr.ApmLangParser.NamedArgumentContext
-import com.cognifide.apm.core.grammar.antlr.ApmLangParser.NamedArgumentsContext
-import com.cognifide.apm.core.grammar.antlr.ApmLangParser.NumberValueContext
-import com.cognifide.apm.core.grammar.antlr.ApmLangParser.PathContext
-import com.cognifide.apm.core.grammar.antlr.ApmLangParser.PrivilegeNameContext
-import com.cognifide.apm.core.grammar.antlr.ApmLangParser.RequiredArgumentContext
-import com.cognifide.apm.core.grammar.antlr.ApmLangParser.StringValueContext
-import com.cognifide.apm.core.grammar.antlr.ApmLangParser.StructureContext
-import com.cognifide.apm.core.grammar.antlr.ApmLangParser.StructureEntryContext
-import com.cognifide.apm.core.grammar.antlr.ApmLangParser.VariableContext
-import com.cognifide.apm.core.grammar.common.getIdentifier
-import com.cognifide.apm.core.grammar.common.getKey
-import com.cognifide.apm.core.grammar.common.getPath
-import com.cognifide.apm.core.grammar.executioncontext.VariableHolder
-import org.apache.commons.lang.text.StrSubstitutor
-import org.apache.commons.lang3.StringUtils
+import com.cognifide.apm.core.grammar.ApmType;
+import com.cognifide.apm.core.grammar.ApmType.ApmEmpty;
+import com.cognifide.apm.core.grammar.ApmType.ApmInteger;
+import com.cognifide.apm.core.grammar.ApmType.ApmList;
+import com.cognifide.apm.core.grammar.ApmType.ApmMap;
+import com.cognifide.apm.core.grammar.ApmType.ApmPair;
+import com.cognifide.apm.core.grammar.ApmType.ApmString;
+import com.cognifide.apm.core.grammar.antlr.ApmLangBaseVisitor;
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser;
+import com.cognifide.apm.core.grammar.common.Functions;
+import com.cognifide.apm.core.grammar.executioncontext.VariableHolder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang.text.StrSubstitutor;
+import org.apache.commons.lang3.StringUtils;
 
-class ArgumentResolver(private val variableHolder: VariableHolder) {
+public class ArgumentResolver {
 
-    private val singleArgumentResolver: SingleArgumentResolver
+  private final VariableHolder variableHolder;
 
-    init {
-        this.singleArgumentResolver = SingleArgumentResolver()
+  private final SingleArgumentResolver singleArgumentResolver;
+
+  public ArgumentResolver(VariableHolder variableHolder) {
+    this.variableHolder = variableHolder;
+    this.singleArgumentResolver = new SingleArgumentResolver();
+  }
+
+  public Arguments resolve(ApmLangParser.ComplexArgumentsContext context) {
+    if (context != null) {
+      MultiArgumentResolver multiArgumentResolver = new MultiArgumentResolver();
+      multiArgumentResolver.visitComplexArguments(context);
+      return new Arguments(multiArgumentResolver.required, multiArgumentResolver.named, multiArgumentResolver.flags);
+    } else {
+      return new Arguments();
+    }
+  }
+
+  public Arguments resolve(ApmLangParser.NamedArgumentsContext context) {
+    if (context != null) {
+      MultiArgumentResolver multiArgumentResolver = new MultiArgumentResolver();
+      multiArgumentResolver.visitNamedArguments(context);
+      return new Arguments(multiArgumentResolver.required, multiArgumentResolver.named, multiArgumentResolver.flags);
+    } else {
+      return new Arguments();
+    }
+  }
+
+  public ApmType resolve(ApmLangParser.ArgumentContext context) {
+    if (context != null) {
+      return singleArgumentResolver.visitArgument(context);
+    } else {
+      return new ApmEmpty();
+    }
+  }
+
+  private class MultiArgumentResolver extends ApmLangBaseVisitor<Object> {
+
+    private final List<ApmType> required = new ArrayList<>();
+
+    private final Map<String, ApmType> named = new HashMap<>();
+
+    private final List<String> flags = new ArrayList<>();
+
+    @Override
+    public Object visitRequiredArgument(ApmLangParser.RequiredArgumentContext ctx) {
+      required.add(singleArgumentResolver.visitArgument(ctx.argument()));
+      return null;
     }
 
-    fun resolve(context: ComplexArgumentsContext?): Arguments {
-        return if (context != null) {
-            val multiArgumentResolver = MultiArgumentResolver()
-            multiArgumentResolver.visitComplexArguments(context)
-            Arguments(multiArgumentResolver.required, multiArgumentResolver.named, multiArgumentResolver.flags)
+    @Override
+    public Object visitNamedArgument(ApmLangParser.NamedArgumentContext ctx) {
+      named.put(ctx.IDENTIFIER().toString(), singleArgumentResolver.visitArgument(ctx.argument()));
+      return null;
+    }
+
+    @Override
+    public Object visitFlag(ApmLangParser.FlagContext ctx) {
+      flags.add(Functions.getIdentifier(ctx.identifier()));
+      return null;
+    }
+  }
+
+  private class SingleArgumentResolver extends ApmLangBaseVisitor<ApmType> {
+
+    @Override
+    protected ApmType defaultResult() {
+      return new ApmEmpty();
+    }
+
+    @Override
+    public ApmType visitArray(ApmLangParser.ArrayContext ctx) {
+      List<ApmType> values = ctx.children
+          .stream()
+          .map(child -> child.accept(this))
+          .filter(value -> !(value instanceof ApmEmpty))
+          .collect(Collectors.toList());
+      return new ApmList(values);
+    }
+
+    @Override
+    public ApmType visitName(ApmLangParser.NameContext ctx) {
+      return new ApmString(ctx.IDENTIFIER().toString());
+    }
+
+    @Override
+    public ApmType visitPrivilegeName(ApmLangParser.PrivilegeNameContext ctx) {
+      String value = ctx.children
+          .stream()
+          .map(Object::toString)
+          .collect(Collectors.joining());
+      return new ApmString(value);
+    }
+
+    @Override
+    public ApmType visitStructure(ApmLangParser.StructureContext ctx) {
+      Map<String, ApmType> values = ctx.children
+          .stream()
+          .map(child -> child.accept(this))
+          .filter(ApmPair.class::isInstance)
+          .map(ApmPair.class::cast)
+          .collect(Collectors.toMap(
+              ApmPair::getKey,
+              ApmPair::getValue,
+              (key, value) -> {
+                throw new IllegalStateException(String.format("Duplicate key %s", key));
+              },
+              LinkedHashMap::new
+          ));
+      return new ApmMap(values);
+    }
+
+    @Override
+    public ApmType visitStructureEntry(ApmLangParser.StructureEntryContext ctx) {
+      String key = Functions.getKey(ctx.structureKey());
+      return ctx.structureValue()
+          .children
+          .stream()
+          .map(child -> child.accept(this))
+          .map(value -> new ApmPair(key, value))
+          .findFirst()
+          .map(ApmType.class::cast)
+          .orElse(new ApmEmpty());
+    }
+
+    @Override
+    public ApmType visitExpression(ApmLangParser.ExpressionContext ctx) {
+      if (ctx.plus() != null) {
+        ApmType left = visit(ctx.expression(0));
+        ApmType right = visit(ctx.expression(1));
+        if (left instanceof ApmString && right instanceof ApmString) {
+          return new ApmString(left.getString() + right.getString());
+        } else if (left instanceof ApmString && right instanceof ApmInteger) {
+          return new ApmString(left.getString() + right.getInteger().toString());
+        } else if (left instanceof ApmInteger && right instanceof ApmString) {
+          return new ApmString(left.getInteger().toString() + right.getString());
+        } else if (left instanceof ApmInteger && right instanceof ApmInteger) {
+          return new ApmInteger(left.getInteger() + right.getInteger());
+        } else if (left instanceof ApmList && right instanceof ApmList) {
+          return new ApmList(ListUtils.union(left.getList(), right.getList()));
         } else {
-            Arguments()
+          throw new ArgumentResolverException(String.format("Operation not supported for given values %s and %s", left, right));
         }
+      } else if (ctx.value() != null) {
+        return visit(ctx.value());
+      } else {
+        return super.visitExpression(ctx);
+      }
     }
 
-    fun resolve(context: NamedArgumentsContext?): Arguments {
-        return if (context != null) {
-            val multiArgumentResolver = MultiArgumentResolver()
-            multiArgumentResolver.visitNamedArguments(context)
-            Arguments(multiArgumentResolver.required, multiArgumentResolver.named, multiArgumentResolver.flags)
-        } else {
-            Arguments()
-        }
+    @Override
+    public ApmType visitNumberValue(ApmLangParser.NumberValueContext ctx) {
+      String value = ctx.NUMBER_LITERAL().toString();
+      try {
+        int number = Integer.parseInt(value);
+        return new ApmInteger(number);
+      } catch (NumberFormatException e) {
+        throw new ArgumentResolverException(String.format("Found invalid number value %s", value));
+      }
     }
 
-    fun resolve(context: ArgumentContext?): ApmType {
-        return if (context != null) {
-            singleArgumentResolver.visitArgument(context)
-        } else {
-            ApmEmpty()
-        }
+    private ApmString determineStringValue(String value) {
+      Map<String, String> tokens = Optional.ofNullable(StringUtils.substringsBetween(value, "${", "}"))
+          .map(Arrays::stream)
+          .orElse(Stream.empty())
+          .distinct()
+          .collect(Collectors.toMap(Function.identity(), token -> variableHolder.get(token).getString()));
+      StrSubstitutor strSubstitutor = new StrSubstitutor(tokens, "${", "}");
+      return new ApmString(tokens.isEmpty() ? value : strSubstitutor.replace(value));
     }
 
-    private inner class MultiArgumentResolver : com.cognifide.apm.core.grammar.antlr.ApmLangBaseVisitor<Unit>() {
-
-        val required = mutableListOf<ApmType>()
-        val named = mutableMapOf<String, ApmType>()
-        val flags = mutableListOf<String>()
-
-        override fun visitRequiredArgument(ctx: RequiredArgumentContext) {
-            required.add(singleArgumentResolver.visitArgument(ctx.argument()))
-        }
-
-        override fun visitNamedArgument(ctx: NamedArgumentContext) {
-            named[ctx.IDENTIFIER().toString()] = singleArgumentResolver.visitArgument(ctx.argument())
-        }
-
-        override fun visitFlag(ctx: FlagContext) {
-            flags.add(getIdentifier(ctx.identifier()))
-        }
+    @Override
+    public ApmType visitStringValue(ApmLangParser.StringValueContext ctx) {
+      if (ctx.STRING_LITERAL() != null) {
+        String value = Functions.toPlainString(ctx.STRING_LITERAL().toString());
+        return determineStringValue(value);
+      }
+      throw new ArgumentResolverException(String.format("Found invalid string value %s", ctx));
     }
 
-    private inner class SingleArgumentResolver : com.cognifide.apm.core.grammar.antlr.ApmLangBaseVisitor<ApmType>() {
-
-        override fun defaultResult(): ApmType {
-            return ApmEmpty()
-        }
-
-        override fun visitArray(ctx: ArrayContext): ApmType {
-            val values = ctx.children
-                ?.map { child -> child.accept(this) }
-                ?.filter { it !is ApmEmpty }
-                ?: listOf()
-            return ApmList(values)
-        }
-
-        override fun visitName(ctx: NameContext): ApmType {
-            return ApmString(ctx.IDENTIFIER().toString())
-        }
-
-        override fun visitPrivilegeName(ctx: PrivilegeNameContext): ApmType {
-            return ApmString(ctx.children.joinToString(""))
-        }
-
-        override fun visitStructure(ctx: StructureContext): ApmType {
-            val values = ctx.children
-                ?.map { child -> child.accept(this) }
-                ?.filterIsInstance<ApmPair>()
-                ?.associate { it.pair }
-                ?: mapOf()
-            return ApmMap(values)
-        }
-
-        override fun visitStructureEntry(ctx: StructureEntryContext): ApmType {
-            val key = getKey(ctx.structureKey())
-            return ctx.structureValue()
-                .children
-                ?.map { child -> child.accept(this) }
-                ?.map { ApmPair(Pair(key, it)) }
-                ?.first()
-                ?: ApmEmpty()
-        }
-
-        override fun visitExpression(ctx: ExpressionContext): ApmType {
-            if (ctx.plus() != null) {
-                val left = visit(ctx.expression(0))
-                val right = visit(ctx.expression(1))
-                return when {
-                    left is ApmString && right is ApmString -> ApmString(left.string + right.string)
-                    left is ApmString && right is ApmInteger -> ApmString(left.string + right.integer.toString())
-                    left is ApmInteger && right is ApmString -> ApmString(left.integer.toString() + right.string)
-                    left is ApmInteger && right is ApmInteger -> ApmInteger(left.integer + right.integer)
-                    left is ApmList && right is ApmList -> ApmList(left.list + right.list)
-                    else -> throw ArgumentResolverException("Operation not supported for given values $left and $right")
-                }
-            }
-            return when {
-                ctx.value() != null -> visit(ctx.value())
-                else -> super.visitExpression(ctx)
-            }
-        }
-
-        override fun visitNumberValue(ctx: NumberValueContext): ApmType {
-            val value = ctx.NUMBER_LITERAL().toString()
-            val number = value.toIntOrNull()
-                ?: throw ArgumentResolverException("Found invalid number value $value")
-            return ApmInteger(number)
-        }
-
-        private fun determineStringValue(value: String): ApmString {
-            val tokens = StringUtils.substringsBetween(value, "\${", "}")
-                .orEmpty()
-                .associateWith { variableHolder[it].string }
-            val strSubstitutor = StrSubstitutor(tokens, "\${", "}")
-            return ApmString(if (tokens.isEmpty()) value else strSubstitutor.replace(value))
-        }
-
-        override fun visitStringValue(ctx: StringValueContext): ApmType {
-            if (ctx.STRING_LITERAL() != null) {
-                val value = ctx.STRING_LITERAL().toPlainString()
-                return determineStringValue(value)
-            }
-            throw ArgumentResolverException("Found invalid string value $ctx")
-        }
-
-        override fun visitPath(ctx: PathContext): ApmType {
-            val value = getPath(ctx)
-            return determineStringValue(value)
-        }
-
-        override fun visitVariable(ctx: VariableContext): ApmType {
-            val name = getIdentifier(ctx.variableIdentifier())
-            return variableHolder[name]
-        }
+    @Override
+    public ApmType visitPath(ApmLangParser.PathContext ctx) {
+      String value = Functions.getPath(ctx);
+      return determineStringValue(value);
     }
+
+    @Override
+    public ApmType visitVariable(ApmLangParser.VariableContext ctx) {
+      String name = Functions.getIdentifier(ctx.variableIdentifier());
+      return variableHolder.get(name);
+    }
+  }
 }

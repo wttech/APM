@@ -17,10 +17,11 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.core.services.version
+package com.cognifide.apm.core.services.version;
 
-interface ScriptVersion {
+public interface ScriptVersion {
 
-    val scriptPath: String
-    val lastChecksum: String?
+  String getScriptPath();
+
+  String getLastChecksum();
 }

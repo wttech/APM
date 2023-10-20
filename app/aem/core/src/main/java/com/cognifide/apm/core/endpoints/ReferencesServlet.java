@@ -17,34 +17,35 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.core.endpoints
+package com.cognifide.apm.core.endpoints;
 
-import com.cognifide.apm.core.Property
-import com.cognifide.apm.core.actions.ActionFactory
-import com.cognifide.apm.core.utils.ServletUtils
-import org.apache.sling.api.SlingHttpServletRequest
-import org.apache.sling.api.SlingHttpServletResponse
-import org.apache.sling.api.servlets.SlingAllMethodsServlet
-import org.osgi.service.component.annotations.Component
-import org.osgi.service.component.annotations.Reference
-import javax.servlet.Servlet
+import com.cognifide.apm.core.Property;
+import com.cognifide.apm.core.actions.ActionFactory;
+import com.cognifide.apm.core.utils.ServletUtils;
+import java.io.IOException;
+import javax.servlet.Servlet;
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.SlingHttpServletResponse;
+import org.apache.sling.api.servlets.SlingAllMethodsServlet;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 @Component(
-    service = [Servlet::class],
-    property = [
+    service = Servlet.class,
+    property = {
         Property.PATH + "/bin/apm/references",
         Property.METHOD + "GET",
         Property.DESCRIPTION + "APM References Servlet",
         Property.VENDOR
-    ]
-)
-class ReferencesServlet : SlingAllMethodsServlet() {
-
-    @Reference
-    @Transient
-    private lateinit var actionFactory: ActionFactory
-
-    override fun doGet(request: SlingHttpServletRequest, response: SlingHttpServletResponse) {
-        ServletUtils.writeJson(response, actionFactory.commandDescriptions)
     }
+)
+public class ReferencesServlet extends SlingAllMethodsServlet {
+
+  @Reference
+  private ActionFactory actionFactory;
+
+  @Override
+  protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) throws IOException {
+    ServletUtils.writeJson(response, actionFactory.getCommandDescriptions());
+  }
 }

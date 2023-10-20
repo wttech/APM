@@ -18,31 +18,50 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm.core.grammar.parsedscript
+package com.cognifide.apm.core.grammar.parsedscript;
 
-import org.antlr.v4.runtime.Parser
-import org.antlr.v4.runtime.RecognitionException
-import org.antlr.v4.runtime.Recognizer
-import org.antlr.v4.runtime.Token
+import org.antlr.v4.runtime.RecognitionException;
+import org.antlr.v4.runtime.Recognizer;
+import org.antlr.v4.runtime.Token;
 
-class InvalidSyntaxException : RuntimeException {
+public class InvalidSyntaxException extends RuntimeException {
 
-    val recognizer: Recognizer<*, *>
-    val offendingToken: Token?
-    val line: Int
-    val charPositionInLine: Int
+  private final Recognizer<?, ?> recognizer;
 
-    constructor(e: RecognitionException) : super(e) {
-        this.recognizer = e.recognizer as Parser
-        this.offendingToken = e.offendingToken
-        this.line = offendingToken!!.line
-        this.charPositionInLine = offendingToken.charPositionInLine
-    }
+  private final Token offendingToken;
 
-    constructor(recognizer: Recognizer<*, *>, line: Int, charPositionInLine: Int) {
-        this.recognizer = recognizer
-        this.offendingToken = null
-        this.line = line
-        this.charPositionInLine = charPositionInLine
-    }
+  private final int line;
+
+  private final int charPositionInLine;
+
+  public InvalidSyntaxException(RecognitionException e) {
+    super(e);
+    this.recognizer = e.getRecognizer();
+    this.offendingToken = e.getOffendingToken();
+    this.line = offendingToken.getLine();
+    this.charPositionInLine = offendingToken.getCharPositionInLine();
+  }
+
+  public InvalidSyntaxException(Recognizer<?, ?> recognizer, int line, int charPositionInLine) {
+    this.recognizer = recognizer;
+    this.offendingToken = null;
+    this.line = line;
+    this.charPositionInLine = charPositionInLine;
+  }
+
+  public Recognizer<?, ?> getRecognizer() {
+    return recognizer;
+  }
+
+  public Token getOffendingToken() {
+    return offendingToken;
+  }
+
+  public int getLine() {
+    return line;
+  }
+
+  public int getCharPositionInLine() {
+    return charPositionInLine;
+  }
 }

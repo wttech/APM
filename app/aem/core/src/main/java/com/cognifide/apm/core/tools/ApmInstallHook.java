@@ -18,116 +18,147 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm.core.tools
+package com.cognifide.apm.core.tools;
 
-import com.cognifide.apm.api.scripts.LaunchEnvironment
-import com.cognifide.apm.api.scripts.Script
-import com.cognifide.apm.api.services.ExecutionMode
-import com.cognifide.apm.api.services.ExecutionResult
-import com.cognifide.apm.api.services.RunModesProvider
-import com.cognifide.apm.api.services.ScriptFinder
-import com.cognifide.apm.api.services.ScriptManager
-import com.cognifide.apm.api.status.Status
-import com.cognifide.apm.core.scripts.ScriptFilters.onInstall
-import com.cognifide.apm.core.scripts.ScriptFilters.onInstallIfModified
-import com.cognifide.apm.core.services.ModifiedScriptFinder
-import com.cognifide.apm.core.services.ResourceResolverProvider
-import com.cognifide.apm.core.services.event.ApmEvent
-import com.cognifide.apm.core.services.event.EventManager
-import com.cognifide.apm.core.utils.sling.SlingHelper
-import org.apache.jackrabbit.vault.fs.api.ProgressTrackerListener
-import org.apache.jackrabbit.vault.packaging.InstallContext
-import org.apache.jackrabbit.vault.packaging.PackageException
-import org.apache.sling.api.resource.ResourceResolver
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
-import java.util.*
+import static com.cognifide.apm.core.scripts.ScriptFilters.onInstall;
+import static com.cognifide.apm.core.scripts.ScriptFilters.onInstallIfModified;
 
-class ApmInstallHook : OsgiAwareInstallHook() {
+import com.cognifide.apm.api.scripts.LaunchEnvironment;
+import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.ExecutionMode;
+import com.cognifide.apm.api.services.ExecutionResult;
+import com.cognifide.apm.api.services.RunModesProvider;
+import com.cognifide.apm.api.services.ScriptFinder;
+import com.cognifide.apm.api.services.ScriptManager;
+import com.cognifide.apm.api.status.Status;
+import com.cognifide.apm.core.services.ModifiedScriptFinder;
+import com.cognifide.apm.core.services.ResourceResolverProvider;
+import com.cognifide.apm.core.services.event.ApmEvent;
+import com.cognifide.apm.core.services.event.EventManager;
+import com.cognifide.apm.core.utils.sling.SlingHelper;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.jcr.RepositoryException;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.jackrabbit.vault.fs.api.ProgressTrackerListener;
+import org.apache.jackrabbit.vault.fs.config.MetaInf;
+import org.apache.jackrabbit.vault.fs.io.ImportOptions;
+import org.apache.jackrabbit.vault.packaging.InstallContext;
+import org.apache.jackrabbit.vault.packaging.PackageException;
+import org.apache.jackrabbit.vault.packaging.VaultPackage;
+import org.apache.sling.api.resource.PersistenceException;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-    private val logger: Logger = LoggerFactory.getLogger(ApmInstallHook::class.java)
+public class ApmInstallHook extends OsgiAwareInstallHook {
 
-    override fun execute(context: InstallContext) {
-        if (context.phase == InstallContext.Phase.INSTALLED) {
-            val currentEnvironment = getCurrentEnvironment()
-            val currentHook = getCurrentHook(context)
+  private static final Logger LOGGER = LoggerFactory.getLogger(ApmInstallHook.class);
 
-            handleScripts(context, currentEnvironment, currentHook)
-        }
+  @Override
+  public void execute(InstallContext context) throws PackageException {
+    if (context.getPhase() == InstallContext.Phase.INSTALLED) {
+      LaunchEnvironment currentEnvironment = getCurrentEnvironment();
+      String currentHook = getCurrentHook(context);
+
+      handleScripts(context, currentEnvironment, currentHook);
     }
+  }
 
-    private fun handleScripts(context: InstallContext, currentEnvironment: LaunchEnvironment, currentHook: String) {
-        val resolverProvider = getService(ResourceResolverProvider::class.java)
-
-        try {
-            context.options.listener?.onMessage(ProgressTrackerListener.Mode.TEXT, "Installing APM scripts...", "")
-            logger.info("Installing APM scripts...")
-            SlingHelper.operateTraced(resolverProvider) { resolver ->
-                executeScripts(context, currentEnvironment, currentHook, resolver)
-            }
-            val eventManager = getService(EventManager::class.java)
-            eventManager.trigger(ApmEvent.InstallHookExecuted(currentHook))
-        } catch (e: Exception) {
-            throw PackageException("Could not run scripts", e)
-        }
+  private void handleScripts(InstallContext context, LaunchEnvironment currentEnvironment, String currentHook) throws PackageException {
+    ResourceResolverProvider resolverProvider = getService(ResourceResolverProvider.class);
+    try {
+      onMessage(context, ProgressTrackerListener.Mode.TEXT, "Installing APM scripts...", "");
+      LOGGER.info("Installing APM scripts...");
+      SlingHelper.operateTraced(resolverProvider, resolver ->
+          executeScripts(context, currentEnvironment, currentHook, resolver)
+      );
+      EventManager eventManager = getService(EventManager.class);
+      eventManager.trigger(new ApmEvent.InstallHookExecuted(currentHook));
+    } catch (Exception e) {
+      throw new PackageException("Could not run scripts", e);
     }
+  }
 
-    private fun executeScripts(
-        context: InstallContext, currentEnvironment: LaunchEnvironment, currentHook: String, resolver: ResourceResolver
-    ) {
-        val scriptManager = getService(ScriptManager::class.java)
-        val scriptFinder = getService(ScriptFinder::class.java)
-        val modifiedScriptFinder = getService(ModifiedScriptFinder::class.java)
-        val runModesProvider = getService(RunModesProvider::class.java)
+  private void executeScripts(InstallContext context, LaunchEnvironment currentEnvironment, String currentHook, ResourceResolver resolver) throws PackageException, PersistenceException, RepositoryException {
+    ScriptManager scriptManager = getService(ScriptManager.class);
+    ScriptFinder scriptFinder = getService(ScriptFinder.class);
+    ModifiedScriptFinder modifiedScriptFinder = getService(ModifiedScriptFinder.class);
+    RunModesProvider runModesProvider = getService(RunModesProvider.class);
 
-        val scripts = mutableListOf<Script>()
-        scripts.addAll(scriptFinder.findAll(onInstall(currentEnvironment, runModesProvider, currentHook), resolver))
-        scripts.addAll(
-            modifiedScriptFinder.findAll(
-                onInstallIfModified(currentEnvironment, runModesProvider, currentHook), resolver
-            )
+    List<Script> scripts = new ArrayList<>();
+    scripts.addAll(scriptFinder.findAll(onInstall(currentEnvironment, runModesProvider, currentHook), resolver));
+    scripts.addAll(
+        modifiedScriptFinder.findAll(
+            onInstallIfModified(currentEnvironment, runModesProvider, currentHook), resolver
         )
-        scripts.forEach { script ->
-            val result: ExecutionResult = scriptManager.process(script, ExecutionMode.AUTOMATIC_RUN, resolver)
-            logStatus(context, script.path, result)
-        }
-        context.options.listener?.onMessage(ProgressTrackerListener.Mode.TEXT, "APM scripts installed.", "")
-        logger.info("APM scripts installed.")
+    );
+    for (Script script : scripts) {
+      ExecutionResult result = scriptManager.process(script, ExecutionMode.AUTOMATIC_RUN, resolver);
+      logStatus(context, script.getPath(), result);
     }
+    onMessage(context, ProgressTrackerListener.Mode.TEXT, "APM scripts installed.", "");
+    LOGGER.info("APM scripts installed.");
+  }
 
-    private fun getCurrentHook(context: InstallContext): String {
-        val properties = context.`package`?.metaInf?.properties ?: Properties()
-        val hookPropertyKey = properties.entries.asSequence()
-            .filter { entry -> entry.value == this::class.java.name }
-            .map { entry -> entry.key as String }
-            .firstOrNull() ?: ""
-        val hookRegex = Regex("installhook\\.(\\w+)\\.class")
-        val result = hookRegex.matchEntire(hookPropertyKey)
-        return result?.groups?.get(1)?.value ?: ""
-    }
+  private String getCurrentHook(InstallContext context) {
+    Properties properties = Optional.of(context)
+        .map(InstallContext::getPackage)
+        .map(VaultPackage::getMetaInf)
+        .map(MetaInf::getProperties)
+        .orElse(new Properties());
+    String hookPropertyKey = properties.entrySet()
+        .stream()
+        .filter(entry -> StringUtils.equals((String) entry.getValue(), this.getClass().getCanonicalName()))
+        .map(entry -> (String) entry.getKey())
+        .findFirst()
+        .orElse("");
 
-    private fun getCurrentEnvironment(): LaunchEnvironment {
-        val runModesProvider = getService(RunModesProvider::class.java)
-        return LaunchEnvironment.of(runModesProvider)
-    }
+    Pattern hookPattern = Pattern.compile("installhook\\.(\\w+)\\.class");
+    Matcher result = hookPattern.matcher(hookPropertyKey);
+    return result.matches() ? result.group(1) : "";
+  }
 
-    private fun logStatus(context: InstallContext, scriptPath: String, result: ExecutionResult) {
-        context.options.listener?.onMessage(ProgressTrackerListener.Mode.TEXT, "", scriptPath)
-        if (result.isSuccess) {
-            logger.info("Script successfully executed: $scriptPath")
-        } else {
-            val packageException = PackageException("Script cannot be executed properly: $scriptPath")
-            context.options.listener?.onError(ProgressTrackerListener.Mode.TEXT, "", packageException)
-            logger.error("", packageException)
-            result.entries.stream()
-                .filter { it.status == Status.ERROR }
-                .map { it.messages }
-                .flatMap { it.stream() }
-                .forEach { context.options.listener?.onMessage(ProgressTrackerListener.Mode.TEXT, "E", it) }
-            context.options.listener?.onMessage(
-                ProgressTrackerListener.Mode.TEXT, "APM scripts installed (with errors, check logs!)", ""
-            )
-            throw packageException
-        }
+  private LaunchEnvironment getCurrentEnvironment() throws PackageException {
+    RunModesProvider runModesProvider = getService(RunModesProvider.class);
+    return LaunchEnvironment.of(runModesProvider);
+  }
+
+  private void logStatus(InstallContext context, String scriptPath, ExecutionResult result) throws PackageException {
+    onMessage(context, ProgressTrackerListener.Mode.TEXT, "", scriptPath);
+    if (result.isSuccess()) {
+      LOGGER.info("Script successfully executed: {}", scriptPath);
+    } else {
+      PackageException packageException = new PackageException(String.format("Script cannot be executed properly: %s", scriptPath));
+      onError(context, ProgressTrackerListener.Mode.TEXT, "", packageException);
+      LOGGER.error("", packageException);
+      result.getEntries()
+          .stream()
+          .filter(entry -> entry.getStatus() == Status.ERROR)
+          .map(ExecutionResult.Entry::getMessages)
+          .flatMap(Collection::stream)
+          .forEach(message -> onMessage(context, ProgressTrackerListener.Mode.TEXT, "E", message));
+      onMessage(context, ProgressTrackerListener.Mode.TEXT, "APM scripts installed (with errors, check logs!)", "");
+      throw packageException;
     }
+  }
+
+  private void onMessage(InstallContext context, ProgressTrackerListener.Mode mode, String text1, String text2) {
+    Optional.of(context)
+        .map(InstallContext::getOptions)
+        .map(ImportOptions::getListener)
+        .ifPresent(listener -> listener.onMessage(mode, text1, text2));
+  }
+
+  private void onError(InstallContext context, ProgressTrackerListener.Mode mode, String text, Exception e) {
+    Optional.of(context)
+        .map(InstallContext::getOptions)
+        .map(ImportOptions::getListener)
+        .ifPresent(listener -> listener.onError(mode, text, e));
+  }
 }

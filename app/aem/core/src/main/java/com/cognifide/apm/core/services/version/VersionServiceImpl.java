@@ -17,128 +17,135 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.core.services.version
+package com.cognifide.apm.core.services.version;
 
-import com.cognifide.apm.api.scripts.Script
-import com.cognifide.apm.api.services.ScriptFinder
-import com.cognifide.apm.core.Property
-import com.cognifide.apm.core.grammar.ReferenceFinder
-import com.cognifide.apm.core.grammar.ScriptExecutionException
-import com.cognifide.apm.core.scripts.MutableScriptWrapper
-import com.cognifide.apm.core.scripts.ScriptNode
-import com.day.cq.commons.jcr.JcrUtil
-import com.day.crx.JcrConstants
-import org.apache.commons.codec.digest.DigestUtils
-import org.apache.jackrabbit.commons.JcrUtils
-import org.apache.sling.api.resource.ResourceResolver
-import org.osgi.service.component.annotations.Component
-import org.osgi.service.component.annotations.Reference
-import org.slf4j.LoggerFactory
-import javax.jcr.Node
-import javax.jcr.RepositoryException
-import javax.jcr.Session
+import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.ScriptFinder;
+import com.cognifide.apm.core.Property;
+import com.cognifide.apm.core.grammar.ReferenceFinder;
+import com.cognifide.apm.core.grammar.ScriptExecutionException;
+import com.cognifide.apm.core.scripts.MutableScriptWrapper;
+import com.cognifide.apm.core.scripts.ScriptNode;
+import com.day.cq.commons.jcr.JcrUtil;
+import com.day.crx.JcrConstants;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+import javax.jcr.Node;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.jackrabbit.commons.JcrUtils;
+import org.apache.sling.api.resource.PersistenceException;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component(
-    property = [
+    property = {
         Property.DESCRIPTION + "APM Version Service",
         Property.VENDOR
-    ]
+    }
 )
-class VersionServiceImpl : VersionService {
+public class VersionServiceImpl implements VersionService {
 
-    private val logger = LoggerFactory.getLogger(VersionServiceImpl::class.java)
+  private static final Logger LOGGER = LoggerFactory.getLogger(VersionServiceImpl.class);
 
-    @Reference
-    @Transient
-    private lateinit var scriptFinder: ScriptFinder
+  private final static String VERSIONS_ROOT = "/var/apm/versions";
 
-    override fun getScriptVersion(resolver: ResourceResolver, script: Script): ScriptVersion {
-        val scriptVersionPath = getScriptVersionPath(script)
-        return resolver.getResource(scriptVersionPath)?.adaptTo(ScriptVersionModel::class.java)
-            ?: ScriptVersionModel(script.path)
-    }
+  private final static String SCRIPT_NODE_NAME = "script";
 
-    override fun getVersionPath(script: Script): String {
-        return "$versionsRoot/${script.normalizedPath()}/${script.checksum}/$scriptNodeName"
-    }
+  @Reference
+  private ScriptFinder scriptFinder;
 
-    override fun countChecksum(root: Iterable<Script>): String {
-        val checksums = root.asSequence()
-            .map { it.data }
-            .map { DigestUtils.md5Hex(it) }
-            .reduce { previous, current -> previous + current }
-        return DigestUtils.md5Hex(checksums)
-    }
+  @Override
+  public ScriptVersion getScriptVersion(ResourceResolver resolver, Script script) {
+    String scriptVersionPath = getScriptVersionPath(script);
+    return Optional.ofNullable(resolver.getResource(scriptVersionPath))
+        .map(resource -> resource.adaptTo(ScriptVersionModel.class))
+        .orElse(new ScriptVersionModel(script.getPath(), null));
+  }
 
-    override fun updateVersionIfNeeded(resolver: ResourceResolver, vararg scripts: Script) {
-        val referenceFinder = ReferenceFinder(scriptFinder, resolver)
-        scripts.forEach { script ->
-            try {
-                val subtree = referenceFinder.findReferences(script)
-                val checksum = countChecksum(subtree)
-                val scriptVersion = getScriptVersion(resolver, script)
-                if (checksum != script.checksum) {
-                    MutableScriptWrapper(script).apply {
-                        setChecksum(checksum)
-                    }
-                }
-                if (checksum != scriptVersion.lastChecksum) {
-                    createVersion(resolver, script)
-                }
-            } catch (e: ScriptExecutionException) {
-                logger.error(e.message)
-            }
+  @Override
+  public String getVersionPath(Script script) {
+    return VERSIONS_ROOT + "/" + normalizedPath(script) + "/" + script.getChecksum() + "/" + SCRIPT_NODE_NAME;
+  }
+
+  @Override
+  public String countChecksum(Iterable<Script> root) {
+    String checksums = StreamSupport.stream(root.spliterator(), false)
+        .map(Script::getData)
+        .map(DigestUtils::md5Hex)
+        .collect(Collectors.joining());
+    return DigestUtils.md5Hex(checksums);
+  }
+
+  @Override
+  public void updateVersionIfNeeded(ResourceResolver resolver, Script... scripts) {
+    ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resolver);
+    for (Script script : scripts) {
+      try {
+        List<Script> subtree = referenceFinder.findReferences(script);
+        String checksum = countChecksum(subtree);
+        ScriptVersion scriptVersion = getScriptVersion(resolver, script);
+        if (!StringUtils.equals(checksum, script.getChecksum())) {
+          MutableScriptWrapper mutableScriptWrapper = new MutableScriptWrapper(script);
+          mutableScriptWrapper.setChecksum(checksum);
         }
-    }
-
-    private fun createVersion(resolver: ResourceResolver, script: Script) {
-        try {
-            val session = resolver.adaptTo(Session::class.java)!!
-            val scriptNode = createScriptNode(script, session)
-            val versionNode = createVersionNode(scriptNode, script, session)
-            copyScriptContent(versionNode, script, session)
-            session.save()
-            resolver.commit()
-        } catch (e: Exception) {
-            logger.error("Issues with saving to repository while logging script execution", e)
+        if (!StringUtils.equals(checksum, scriptVersion.getLastChecksum())) {
+          createVersion(resolver, script);
         }
+      } catch (ScriptExecutionException | PersistenceException e) {
+        LOGGER.error(e.getMessage());
+      }
     }
+  }
 
-    @Throws(RepositoryException::class)
-    private fun createScriptNode(script: Script, session: Session): Node {
-        val path = getScriptVersionPath(script)
-        val scriptHistory =
-            JcrUtils.getOrCreateByPath(path, "sling:OrderedFolder", JcrConstants.NT_UNSTRUCTURED, session, true)
-        scriptHistory.setProperty("scriptPath", script.path)
-        scriptHistory.setProperty("lastChecksum", script.checksum)
-        return scriptHistory
+  private void createVersion(ResourceResolver resolver, Script script) {
+    try {
+      Session session = resolver.adaptTo(Session.class);
+      Node scriptNode = createScriptNode(script, session);
+      Node versionNode = createVersionNode(scriptNode, script, session);
+      copyScriptContent(versionNode, script, session);
+      session.save();
+      resolver.commit();
+    } catch (Exception e) {
+      LOGGER.error("Issues with saving to repository while logging script execution", e);
     }
+  }
 
-    private fun getScriptVersionPath(script: Script) = "$versionsRoot/${script.normalizedPath()}"
+  private Node createScriptNode(Script script, Session session) throws RepositoryException {
+    String path = getScriptVersionPath(script);
+    Node scriptHistory = JcrUtils.getOrCreateByPath(path, "sling:OrderedFolder", JcrConstants.NT_UNSTRUCTURED, session, true);
+    scriptHistory.setProperty("scriptPath", script.getPath());
+    scriptHistory.setProperty("lastChecksum", script.getChecksum());
+    return scriptHistory;
+  }
 
-    @Throws(RepositoryException::class)
-    private fun createVersionNode(parent: Node, script: Script, session: Session): Node {
-        val path = parent.path + "/" + script.checksum
-        return JcrUtils.getOrCreateByPath(path, "sling:OrderedFolder", "sling:OrderedFolder", session, true)
+  private String getScriptVersionPath(Script script) {
+    return VERSIONS_ROOT + "/" + normalizedPath(script);
+  }
+
+  private Node createVersionNode(Node parent, Script script, Session session) throws RepositoryException {
+    String path = parent.getPath() + "/" + script.getChecksum();
+    return JcrUtils.getOrCreateByPath(path, "sling:OrderedFolder", "sling:OrderedFolder", session, true);
+  }
+
+  private Node copyScriptContent(Node parent, Script script, Session session) throws RepositoryException {
+    if (!parent.hasNode(SCRIPT_NODE_NAME)) {
+      Node source = session.getNode(script.getPath());
+      Node file = JcrUtil.copy(source, parent, SCRIPT_NODE_NAME);
+      file.addMixin(ScriptNode.APM_SCRIPT);
+      return file;
     }
+    return parent.getNode(SCRIPT_NODE_NAME);
+  }
 
-    @Throws(RepositoryException::class)
-    private fun copyScriptContent(parent: Node, script: Script, session: Session): Node {
-        if (!parent.hasNode(scriptNodeName)) {
-            val source = session.getNode(script.path)
-            val file = JcrUtil.copy(source, parent, scriptNodeName)
-            file.addMixin(ScriptNode.APM_SCRIPT)
-            return file
-        }
-        return parent.getNode(scriptNodeName)
-    }
-
-    private fun Script.normalizedPath(): String {
-        return path.replace("/", "_").substring(1)
-    }
-
-    companion object {
-        const val versionsRoot = "/var/apm/versions"
-        const val scriptNodeName = "script"
-    }
+  private String normalizedPath(Script script) {
+    return script.getPath().replaceAll("/", "_").substring(1);
+  }
 }

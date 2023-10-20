@@ -17,19 +17,83 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.core.services.async
+package com.cognifide.apm.core.services.async;
 
-import com.cognifide.apm.api.services.ExecutionResult
+import com.cognifide.apm.api.services.ExecutionResult;
+import java.util.List;
 
-sealed class ExecutionStatus(val status: String)
+public abstract class ExecutionStatus {
 
-class RunningExecution : ExecutionStatus("running")
+  private final String status;
 
-class UnknownExecution : ExecutionStatus("unknown")
+  private ExecutionStatus(String status) {
+    this.status = status;
+  }
 
-class FinishedSuccessfulExecution(val path: String, val entries: List<ExecutionResult.Entry>) :
-    ExecutionStatus("finished")
+  public String getStatus() {
+    return status;
+  }
 
-class FinishedFailedExecution(
-    val path: String, val entries: List<ExecutionResult.Entry>, val error: ExecutionResult.Entry
-) : ExecutionStatus("finished")
+  public static class RunningExecution extends ExecutionStatus {
+
+    public RunningExecution() {
+      super("running");
+    }
+  }
+
+  public static class UnknownExecution extends ExecutionStatus {
+
+    public UnknownExecution() {
+      super("unknown");
+    }
+  }
+
+  public static class FinishedSuccessfulExecution extends ExecutionStatus {
+
+    private final String path;
+
+    private final List<ExecutionResult.Entry> entries;
+
+    public FinishedSuccessfulExecution(String path, List<ExecutionResult.Entry> entries) {
+      super("finished");
+      this.path = path;
+      this.entries = entries;
+    }
+
+    public String getPath() {
+      return path;
+    }
+
+    public List<ExecutionResult.Entry> getEntries() {
+      return entries;
+    }
+  }
+
+  public static class FinishedFailedExecution extends ExecutionStatus {
+
+    private final String path;
+
+    private final List<ExecutionResult.Entry> entries;
+
+    private final ExecutionResult.Entry error;
+
+    public FinishedFailedExecution(String path, List<ExecutionResult.Entry> entries, ExecutionResult.Entry error) {
+      super("finished");
+      this.path = path;
+      this.entries = entries;
+      this.error = error;
+    }
+
+    public String getPath() {
+      return path;
+    }
+
+    public List<ExecutionResult.Entry> getEntries() {
+      return entries;
+    }
+
+    public ExecutionResult.Entry getError() {
+      return error;
+    }
+  }
+}

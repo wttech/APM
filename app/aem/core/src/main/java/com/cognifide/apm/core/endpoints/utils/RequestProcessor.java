@@ -17,45 +17,61 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.core.endpoints.utils
+package com.cognifide.apm.core.endpoints.utils;
 
-import com.cognifide.apm.core.endpoints.params.RequestParameter
-import com.cognifide.apm.core.endpoints.response.ErrorBody
-import com.cognifide.apm.core.endpoints.response.JsonObject
-import com.cognifide.apm.core.endpoints.response.ResponseEntity
-import com.cognifide.apm.core.utils.ServletUtils
-import org.apache.sling.api.SlingHttpServletRequest
-import org.apache.sling.api.SlingHttpServletResponse
-import org.apache.sling.api.resource.ResourceResolver
-import org.apache.sling.models.factory.MissingElementsException
-import org.apache.sling.models.factory.ModelFactory
-import javax.servlet.http.HttpServletResponse
+import com.cognifide.apm.core.endpoints.params.RequestParameter;
+import com.cognifide.apm.core.endpoints.response.ResponseEntity;
+import com.cognifide.apm.core.utils.ServletUtils;
+import com.google.common.collect.ImmutableMap;
+import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.BiFunction;
+import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.SlingHttpServletResponse;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.models.factory.MissingElementException;
+import org.apache.sling.models.factory.MissingElementsException;
+import org.apache.sling.models.factory.ModelFactory;
 
-class RequestProcessor<F>(private val modelFactory: ModelFactory, private val formClass: Class<F>) {
+public final class RequestProcessor {
 
-    fun process(
-        httpRequest: SlingHttpServletRequest, httpResponse: SlingHttpServletResponse,
-        process: (form: F, resourceResolver: ResourceResolver) -> ResponseEntity<Any>
-    ) {
-        try {
-            val form = modelFactory.createModel(httpRequest, formClass)
-            val response = process(form, httpRequest.resourceResolver)
+  private RequestProcessor() {
+    // intentionally empty
+  }
 
-            httpResponse.status = response.statusCode
-            ServletUtils.writeJson(httpResponse, body(response.body))
-        } catch (e: MissingElementsException) {
-            httpResponse.status = HttpServletResponse.SC_BAD_REQUEST
-            ServletUtils.writeJson(httpResponse, body(ErrorBody("Bad request", toErrors(e))))
-        } catch (e: Exception) {
-            httpResponse.status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR
-            ServletUtils.writeJson(httpResponse, body(ErrorBody(e.message ?: "")))
-        }
+  public static <T> void process(ModelFactory modelFactory, Class<T> formClass, SlingHttpServletRequest httpRequest, SlingHttpServletResponse httpResponse, BiFunction<T, ResourceResolver, ResponseEntity> processFunc) throws IOException {
+    try {
+      T form = modelFactory.createModel(httpRequest, formClass);
+      ResponseEntity response = processFunc.apply(form, httpRequest.getResourceResolver());
+
+      httpResponse.setStatus(response.getStatusCode());
+      ServletUtils.writeJson(httpResponse, response.getBody());
+    } catch (MissingElementsException e) {
+      httpResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+      ServletUtils.writeJson(httpResponse, ImmutableMap.of(
+          "message", "Bad request",
+          "errors", toErrors(e)
+      ));
+    } catch (Exception e) {
+      httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+      ServletUtils.writeJson(httpResponse, ImmutableMap.of(
+          "message", StringUtils.defaultString(e.getMessage())
+      ));
     }
+  }
 
-    private fun toErrors(e: MissingElementsException) = e.missingElements.mapNotNull { it.element }
-        .mapNotNull { it.getAnnotation(RequestParameter::class.java) }
-        .map { "Missing required parameter: ${it.value}" }
-
-    private fun body(body: Any) = if (body is JsonObject) body.toMap() else body
-
+  private static List<String> toErrors(MissingElementsException e) {
+    return e.getMissingElements()
+        .stream()
+        .map(MissingElementException::getElement)
+        .filter(Objects::nonNull)
+        .map(element -> element.getAnnotation(RequestParameter.class))
+        .filter(Objects::nonNull)
+        .map(annotation -> String.format("Missing required parameter: %s", annotation.value()))
+        .collect(Collectors.toList());
+  }
 }

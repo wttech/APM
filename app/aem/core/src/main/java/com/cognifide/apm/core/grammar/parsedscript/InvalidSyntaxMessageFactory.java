@@ -18,39 +18,52 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm.core.grammar.parsedscript
+package com.cognifide.apm.core.grammar.parsedscript;
 
-import org.antlr.v4.runtime.CommonTokenStream
-import org.antlr.v4.runtime.IntStream
-import org.antlr.v4.runtime.Recognizer
-import org.antlr.v4.runtime.Token
-import org.apache.commons.lang3.StringUtils
+import com.google.common.collect.ImmutableList;
+import java.util.List;
+import java.util.Optional;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.IntStream;
+import org.antlr.v4.runtime.Recognizer;
+import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.TokenSource;
+import org.apache.commons.lang3.StringUtils;
 
-object InvalidSyntaxMessageFactory {
+public final class InvalidSyntaxMessageFactory {
 
-    fun detailedSyntaxError(e: InvalidSyntaxException): List<String> {
-        return underlineError(e.recognizer, e.offendingToken, e.line, e.charPositionInLine)
+  private InvalidSyntaxMessageFactory() {
+    // intentionally empty
+  }
+
+  public static List<String> detailedSyntaxError(InvalidSyntaxException e) {
+    return underlineError(e.getRecognizer(), e.getOffendingToken(), e.getLine(), e.getCharPositionInLine());
+  }
+
+  private static List<String> underlineError(Recognizer<?, ?> recognizer, Token offendingToken, int line, int charPositionInLine) {
+    String errorLine = getErrorLine(recognizer, line);
+    String invalidLine = String.format("Invalid line [%d:%d]: %s", line, charPositionInLine, errorLine);
+    if (offendingToken != null && StringUtils.isNotBlank(offendingToken.getText())) {
+      return ImmutableList.of(invalidLine, String.format("Invalid sequence: %s", offendingToken.getText()));
+    } else {
+      return ImmutableList.of(invalidLine);
     }
+  }
 
-    private fun underlineError(
-        recognizer: Recognizer<*, *>, offendingToken: Token?, line: Int, charPositionInLine: Int
-    ): List<String> {
-        val errorLine = getErrorLine(recognizer, line)
-        val invalidLine = "Invalid line [$line:$charPositionInLine]: $errorLine"
-        return if (offendingToken != null && StringUtils.isNotBlank(offendingToken.text)) {
-            listOf(invalidLine, "Invalid sequence: ${offendingToken.text}")
-        } else {
-            listOf(invalidLine)
-        }
-    }
+  private static String getErrorLine(Recognizer<?, ?> recognizer, int line) {
+    String input = toString(recognizer.getInputStream());
+    String[] lines = input.split("\n");
+    return lines[line - 1];
+  }
 
-    private fun getErrorLine(recognizer: Recognizer<*, *>, line: Int): String {
-        val input = toString(recognizer.inputStream)
-        val lines = input.split("\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-        return lines[line - 1]
-    }
-
-    private fun toString(inputStream: IntStream): String {
-        return (inputStream as? CommonTokenStream)?.tokenSource?.inputStream?.toString() ?: inputStream.toString()
-    }
+  private static String toString(IntStream inputStream) {
+    return Optional.of(inputStream)
+        .filter(CommonTokenStream.class::isInstance)
+        .map(CommonTokenStream.class::cast)
+        .map(CommonTokenStream::getTokenSource)
+        .map(TokenSource::getInputStream)
+        .map(CharStream::toString)
+        .orElse(inputStream.toString());
+  }
 }

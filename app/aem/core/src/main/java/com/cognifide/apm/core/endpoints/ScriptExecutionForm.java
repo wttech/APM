@@ -18,18 +18,47 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm.core.endpoints
+package com.cognifide.apm.core.endpoints;
 
-import com.cognifide.apm.api.services.ExecutionMode
-import com.cognifide.apm.core.endpoints.params.RequestParameter
-import org.apache.sling.api.SlingHttpServletRequest
-import org.apache.sling.models.annotations.Model
-import javax.inject.Inject
+import com.cognifide.apm.api.services.ExecutionMode;
+import com.cognifide.apm.core.endpoints.params.RequestParameter;
+import java.util.Map;
+import javax.inject.Inject;
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.models.annotations.Model;
 
-@Model(adaptables = [SlingHttpServletRequest::class])
-class ScriptExecutionForm @Inject constructor(
-    @param:RequestParameter("script", optional = false) val script: String,
-    @param:RequestParameter("executionMode", optional = false) val executionMode: ExecutionMode,
-    @param:RequestParameter("async") val async: Boolean = false,
-    @param:RequestParameter("define") val customDefinitions: Map<String, String> = mapOf()
-)
+@Model(adaptables = SlingHttpServletRequest.class)
+public class ScriptExecutionForm {
+
+  @Inject
+  @RequestParameter(value = "script", optional = false)
+  private String script;
+
+  @Inject
+  @RequestParameter(value = "executionMode", optional = false)
+  private ExecutionMode executionMode;
+
+  @Inject
+  @RequestParameter("async")
+  private boolean async;
+
+  @Inject
+  @RequestParameter("define")
+  private Map<String, String> customDefinitions;
+
+  public String getScript() {
+    return script;
+  }
+
+  public ExecutionMode getExecutionMode() {
+    return executionMode;
+  }
+
+  public boolean isAsync() {
+    return async;
+  }
+
+  public Map<String, String> getCustomDefinitions() {
+    return customDefinitions;
+  }
+}

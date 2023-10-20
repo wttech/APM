@@ -18,13 +18,13 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm.core.grammar
+package com.cognifide.apm.core.grammar;
 
-import com.cognifide.apm.api.status.Status
-import com.cognifide.apm.core.grammar.argument.Arguments
-import com.cognifide.apm.core.grammar.executioncontext.ExternalExecutionContext
+import com.cognifide.apm.api.status.Status;
+import com.cognifide.apm.core.grammar.argument.Arguments;
+import com.cognifide.apm.core.grammar.executioncontext.ExternalExecutionContext;
 
-interface ActionInvoker {
+public interface ActionInvoker {
 
-    fun runAction(executionContext: ExternalExecutionContext, commandName: String, arguments: Arguments): Status
+  Status runAction(ExternalExecutionContext executionContext, String commandName, Arguments arguments);
 }

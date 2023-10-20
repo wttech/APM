@@ -18,32 +18,33 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm.core.tools
+package com.cognifide.apm.core.tools;
 
-import org.apache.jackrabbit.vault.packaging.InstallHook
-import org.apache.jackrabbit.vault.packaging.PackageException
-import org.osgi.framework.Bundle
-import org.osgi.framework.BundleContext
-import org.osgi.framework.FrameworkUtil
-import org.osgi.framework.ServiceReference
+import java.util.Optional;
+import org.apache.jackrabbit.vault.packaging.InstallHook;
+import org.apache.jackrabbit.vault.packaging.PackageException;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceReference;
 
-abstract class OsgiAwareInstallHook : InstallHook {
+public abstract class OsgiAwareInstallHook implements InstallHook {
 
-    protected var currentBundle: Bundle
-    protected var bundleContext: BundleContext
+  protected final Bundle currentBundle;
 
-    init {
-        currentBundle = FrameworkUtil.getBundle(this.javaClass)
-            ?: throw IllegalStateException("The class ${this.javaClass} was not loaded through a bundle classloader")
+  protected final BundleContext bundleContext;
 
-        bundleContext = currentBundle.bundleContext
-            ?: throw IllegalStateException("Could not get bundle context for bundle $currentBundle")
-    }
+  public OsgiAwareInstallHook() {
+    currentBundle = Optional.ofNullable(FrameworkUtil.getBundle(this.getClass()))
+        .orElseThrow(() -> new IllegalStateException(String.format("The class %s was not loaded through a bundle classloader", this.getClass().getCanonicalName())));
+    bundleContext = Optional.ofNullable(currentBundle.getBundleContext())
+        .orElseThrow(() -> new IllegalStateException(String.format("Could not get bundle context for bundle %s", currentBundle)));
+  }
 
-    protected fun <T> getService(clazz: Class<T>): T {
-        val serviceReference: ServiceReference<T> = bundleContext.getServiceReference(clazz)
-            ?: throw PackageException("Could not find service ${clazz.name} in OSGI service registry")
-        return bundleContext.getService(serviceReference)
-            ?: throw PackageException("Could not receive instance of ${clazz.name}")
-    }
+  protected <T> T getService(Class<T> clazz) throws PackageException {
+    ServiceReference<T> serviceReference = Optional.ofNullable(bundleContext.getServiceReference(clazz))
+        .orElseThrow(() -> new PackageException(String.format("Could not find service %s in OSGI service registry", clazz.getCanonicalName())));
+    return Optional.ofNullable(bundleContext.getService(serviceReference))
+        .orElseThrow(() -> new PackageException(String.format("Could not receive instance of %s", clazz.getCanonicalName())));
+  }
 }

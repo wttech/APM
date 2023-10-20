@@ -17,52 +17,49 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.core.crypto
+package com.cognifide.apm.core.crypto;
 
-import com.adobe.granite.crypto.CryptoException
-import com.adobe.granite.crypto.CryptoSupport
-import com.cognifide.apm.core.Property
-import com.cognifide.apm.core.endpoints.AbstractFormServlet
-import com.cognifide.apm.core.endpoints.response.ResponseEntity
-import com.cognifide.apm.core.endpoints.response.badRequest
-import com.cognifide.apm.core.endpoints.response.ok
-import org.apache.sling.api.resource.ResourceResolver
-import org.apache.sling.models.factory.ModelFactory
-import org.osgi.service.component.annotations.Component
-import org.osgi.service.component.annotations.Reference
-import javax.servlet.Servlet
+import com.adobe.granite.crypto.CryptoException;
+import com.adobe.granite.crypto.CryptoSupport;
+import com.cognifide.apm.core.Property;
+import com.cognifide.apm.core.endpoints.response.ResponseEntity;
+import com.cognifide.apm.core.endpoints.utils.RequestProcessor;
+import java.io.IOException;
+import javax.servlet.Servlet;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.SlingHttpServletResponse;
+import org.apache.sling.api.servlets.SlingAllMethodsServlet;
+import org.apache.sling.models.factory.ModelFactory;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 @Component(
-    service = [Servlet::class],
-    property = [
+    service = Servlet.class,
+    property = {
         Property.PATH + "/bin/apm/scripts/protect",
         Property.METHOD + "POST",
         Property.DESCRIPTION + "APM Encrypt Text Servlet",
         Property.VENDOR
-    ]
+    }
 )
-class ProtectTextServlet : AbstractFormServlet<ProtectTextForm>(ProtectTextForm::class.java) {
+public class ProtectTextServlet extends SlingAllMethodsServlet {
 
-    @Reference
-    @Transient
-    private lateinit var cryptoSupport: CryptoSupport
+  @Reference
+  private CryptoSupport cryptoSupport;
 
-    @Reference
-    override fun setup(modelFactory: ModelFactory) {
-        this.modelFactory = modelFactory
-    }
+  @Reference
+  private ModelFactory modelFactory;
 
-    override fun doPost(form: ProtectTextForm, resourceResolver: ResourceResolver): ResponseEntity<Any> {
-        return try {
-            ok {
-                message = "Text successfully encrypted"
-                "text" set cryptoSupport.protect(form.text)
-            }
-        } catch (e: CryptoException) {
-            badRequest {
-                message = e.message ?: "Errors while encrypting text"
-            }
-        }
-    }
-
+  @Override
+  protected void doPost(SlingHttpServletRequest request, SlingHttpServletResponse response) throws IOException {
+    RequestProcessor.process(modelFactory, ProtectTextForm.class, request, response, (form, resourceResolver) -> {
+      try {
+        return ResponseEntity.ok("Text successfully encrypted")
+            .addEntry("text", cryptoSupport.protect(form.getText()));
+      } catch (CryptoException e) {
+        return ResponseEntity.badRequest(StringUtils.defaultString(e.getMessage(), "Errors while encrypting text"));
+      }
+    });
+  }
 }

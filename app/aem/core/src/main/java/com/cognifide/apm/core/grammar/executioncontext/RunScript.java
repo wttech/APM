@@ -18,14 +18,51 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm.core.grammar.executioncontext
+package com.cognifide.apm.core.grammar.executioncontext;
 
-import com.cognifide.apm.core.grammar.parsedscript.ParsedScript
+import com.cognifide.apm.core.grammar.parsedscript.ParsedScript;
+import java.util.Objects;
 
-class RunScript(val parsedScript: ParsedScript) {
+public class RunScript {
 
-    val variableHolder = VariableHolder()
+  private final ParsedScript parsedScript;
 
-    val path: String
-        get() = parsedScript.script.path
+  private final VariableHolder variableHolder;
+
+  private final String path;
+
+  public RunScript(ParsedScript parsedScript) {
+    this.parsedScript = parsedScript;
+    this.variableHolder = new VariableHolder();
+    this.path = parsedScript.getPath();
+  }
+
+  public ParsedScript getParsedScript() {
+    return parsedScript;
+  }
+
+  public VariableHolder getVariableHolder() {
+    return variableHolder;
+  }
+
+  public String getPath() {
+    return path;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj instanceof RunScript) {
+      RunScript that = (RunScript) obj;
+      return Objects.equals(path, that.path);
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(path);
+  }
 }

@@ -18,60 +18,76 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm.core.grammar.parsedscript
+package com.cognifide.apm.core.grammar.parsedscript;
 
-import org.antlr.v4.runtime.*
+import com.cognifide.apm.core.grammar.antlr.ApmLangLexer;
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser;
+import org.antlr.v4.runtime.BaseErrorListener;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CodePointCharStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.DefaultErrorStrategy;
+import org.antlr.v4.runtime.InputMismatchException;
+import org.antlr.v4.runtime.Parser;
+import org.antlr.v4.runtime.RecognitionException;
+import org.antlr.v4.runtime.Recognizer;
+import org.antlr.v4.runtime.Token;
 
-object ApmLangParserFactory {
+public final class ApmLangParserFactory {
 
-    fun createParserForScriptContent(scriptContent: String): com.cognifide.apm.core.grammar.antlr.ApmLangParser {
-        val charStream = CharStreams.fromString(scriptContent)
-        val lexer = com.cognifide.apm.core.grammar.antlr.ApmLangLexer(charStream)
-        lexer.removeErrorListeners()
-        lexer.addErrorListener(LexerErrorListener())
-        val commonTokenStream = CommonTokenStream(lexer)
-        val apmLangParser = com.cognifide.apm.core.grammar.antlr.ApmLangParser(commonTokenStream)
-        apmLangParser.removeErrorListeners()
-        apmLangParser.addErrorListener(ParserErrorListener())
-        apmLangParser.errorHandler = ErrorStrategy()
-        return apmLangParser
+  private ApmLangParserFactory() {
+    // intentionally empty
+  }
+
+  public static ApmLangParser createParserForScriptContent(String scriptContent) {
+    CodePointCharStream charStream = CharStreams.fromString(scriptContent);
+    ApmLangLexer lexer = new ApmLangLexer(charStream);
+    lexer.removeErrorListeners();
+    lexer.addErrorListener(new LexerErrorListener());
+    CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
+    ApmLangParser apmLangParser = new ApmLangParser(commonTokenStream);
+    apmLangParser.removeErrorListeners();
+    apmLangParser.addErrorListener(new ParserErrorListener());
+    apmLangParser.setErrorHandler(new ErrorStrategy());
+    return apmLangParser;
+  }
+
+  private static class ErrorStrategy extends DefaultErrorStrategy {
+
+    @Override
+    public void recover(Parser recognizer, RecognitionException e) {
+      throw new InvalidSyntaxException(e);
     }
 
-    private class ErrorStrategy : DefaultErrorStrategy() {
-
-        override fun recover(recognizer: Parser, e: RecognitionException?) {
-            throw InvalidSyntaxException(e!!)
-        }
-
-        @Throws(RecognitionException::class)
-        override fun recoverInline(recognizer: Parser): Token {
-            throw InvalidSyntaxException(InputMismatchException(recognizer))
-        }
-
-        override fun reportError(recognizer: Parser?, e: RecognitionException?) {
-            throw InvalidSyntaxException(e!!)
-        }
-
-        override fun sync(recognizer: Parser) {}
+    @Override
+    public Token recoverInline(Parser recognizer) throws RecognitionException {
+      throw new InvalidSyntaxException(new InputMismatchException(recognizer));
     }
 
-    private class LexerErrorListener : BaseErrorListener() {
-
-        override fun syntaxError(
-            recognizer: Recognizer<*, *>?, offendingSymbol: Any?, line: Int, charPositionInLine: Int, msg: String?,
-            e: RecognitionException?
-        ) {
-            throw InvalidSyntaxException(recognizer!!, line, charPositionInLine)
-        }
+    @Override
+    public void reportError(Parser recognizer, RecognitionException e) {
+      throw new InvalidSyntaxException(e);
     }
 
-    private class ParserErrorListener : BaseErrorListener() {
-
-        override fun syntaxError(
-            recognizer: Recognizer<*, *>?, offendingSymbol: Any?, line: Int, charPositionInLine: Int, msg: String?,
-            e: RecognitionException?
-        ) {
-            throw InvalidSyntaxException(e!!)
-        }
+    @Override
+    public void sync(Parser recognizer) throws RecognitionException {
+      // intentionally empty
     }
+  }
+
+  private static class LexerErrorListener extends BaseErrorListener {
+
+    @Override
+    public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
+      throw new InvalidSyntaxException(recognizer, line, charPositionInLine);
+    }
+  }
+
+  private static class ParserErrorListener extends BaseErrorListener {
+
+    @Override
+    public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
+      throw new InvalidSyntaxException(e);
+    }
+  }
 }

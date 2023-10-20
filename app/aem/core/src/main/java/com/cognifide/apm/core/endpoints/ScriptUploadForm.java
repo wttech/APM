@@ -18,36 +18,87 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm.core.endpoints
+package com.cognifide.apm.core.endpoints;
 
-import com.cognifide.apm.api.scripts.LaunchEnvironment
-import com.cognifide.apm.api.scripts.LaunchMode
-import com.cognifide.apm.core.endpoints.params.DateFormat
-import com.cognifide.apm.core.endpoints.params.FileName
-import com.cognifide.apm.core.endpoints.params.RequestParameter
-import com.cognifide.apm.core.scripts.LaunchMetadata
-import com.cognifide.apm.core.scripts.ScriptNode
-import org.apache.sling.api.SlingHttpServletRequest
-import org.apache.sling.models.annotations.Model
-import java.io.InputStream
-import java.time.LocalDateTime
-import javax.inject.Inject
+import com.cognifide.apm.api.scripts.LaunchEnvironment;
+import com.cognifide.apm.api.scripts.LaunchMode;
+import com.cognifide.apm.core.endpoints.params.DateFormat;
+import com.cognifide.apm.core.endpoints.params.FileName;
+import com.cognifide.apm.core.endpoints.params.RequestParameter;
+import com.cognifide.apm.core.scripts.LaunchMetadata;
+import com.cognifide.apm.core.scripts.ScriptNode;
+import java.io.InputStream;
+import java.time.LocalDateTime;
+import javax.inject.Inject;
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.models.annotations.Model;
 
-@Model(adaptables = [SlingHttpServletRequest::class])
-class ScriptUploadForm @Inject constructor(
-    @param:RequestParameter("file", optional = false) val file: InputStream,
-    @param:RequestParameter("file", optional = false) @param:FileName val fileName: String,
-    @param:RequestParameter("overwrite") val overwrite: Boolean,
-    @param:RequestParameter(ScriptNode.APM_SAVE_PATH) val savePath: String?,
-    @param:RequestParameter(ScriptNode.APM_LAUNCH_ENABLED) val launchEnabled: Boolean,
-    @param:RequestParameter(ScriptNode.APM_LAUNCH_MODE) val launchMode: LaunchMode?,
-    @param:RequestParameter(ScriptNode.APM_LAUNCH_ENVIRONMENT) val launchEnvironment: LaunchEnvironment?,
-    @param:RequestParameter(ScriptNode.APM_LAUNCH_RUN_MODES) val launchRunModes: Array<String>?,
-    @param:RequestParameter(ScriptNode.APM_LAUNCH_HOOK) val launchHook: String?,
-    @param:RequestParameter(ScriptNode.APM_LAUNCH_SCHEDULE) @param:DateFormat("yyyy-MM-dd'T'HH:mm:ss") val launchSchedule: LocalDateTime?,
-    @param:RequestParameter(ScriptNode.APM_LAUNCH_CRON_EXPRESSION) val cronExpression: String?
-) {
-    fun toLaunchMetadata(): LaunchMetadata {
-        return LaunchMetadata(launchEnabled, launchMode, launchEnvironment, launchRunModes, launchHook, launchSchedule, cronExpression)
-    }
+@Model(adaptables = SlingHttpServletRequest.class)
+public class ScriptUploadForm {
+
+  @Inject
+  @RequestParameter(value = "file", optional = false)
+  private InputStream file;
+
+  @Inject
+  @RequestParameter(value = "file", optional = false)
+  @FileName
+  private String fileName;
+
+  @Inject
+  @RequestParameter("overwrite")
+  private boolean overwrite;
+
+  @Inject
+  @RequestParameter(ScriptNode.APM_SAVE_PATH)
+  private String savePath;
+
+  @Inject
+  @RequestParameter(ScriptNode.APM_LAUNCH_ENABLED)
+  private boolean launchEnabled;
+
+  @Inject
+  @RequestParameter(ScriptNode.APM_LAUNCH_MODE)
+  private LaunchMode launchMode;
+
+  @Inject
+  @RequestParameter(ScriptNode.APM_LAUNCH_ENVIRONMENT)
+  private LaunchEnvironment launchEnvironment;
+
+  @Inject
+  @RequestParameter(ScriptNode.APM_LAUNCH_RUN_MODES)
+  private String[] launchRunModes;
+
+  @Inject
+  @RequestParameter(ScriptNode.APM_LAUNCH_HOOK)
+  private String launchHook;
+
+  @Inject
+  @RequestParameter(ScriptNode.APM_LAUNCH_SCHEDULE)
+  @DateFormat("yyyy-MM-dd'T'HH:mm:ss")
+  private LocalDateTime launchSchedule;
+
+  @Inject
+  @RequestParameter(ScriptNode.APM_LAUNCH_HOOK)
+  private String cronExpression;
+
+  public LaunchMetadata toLaunchMetadata() {
+    return new LaunchMetadata(launchEnabled, launchMode, launchEnvironment, launchRunModes, launchHook, launchSchedule, cronExpression);
+  }
+
+  public String getFileName() {
+    return fileName;
+  }
+
+  public String getSavePath() {
+    return savePath;
+  }
+
+  public InputStream getFile() {
+    return file;
+  }
+
+  public boolean isOverwrite() {
+    return overwrite;
+  }
 }

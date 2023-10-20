@@ -18,12 +18,40 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm.core.grammar.argument
+package com.cognifide.apm.core.grammar.argument;
 
-import com.cognifide.apm.core.grammar.ApmType
+import com.cognifide.apm.core.grammar.ApmType;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
-data class Arguments(
-    val required: List<ApmType> = listOf(),
-    val named: Map<String, ApmType> = mapOf(),
-    val flags: List<String> = listOf()
-)
+public class Arguments {
+
+  private final List<ApmType> required;
+
+  private final Map<String, ApmType> named;
+
+  private final List<String> flags;
+
+  public Arguments() {
+    this(Collections.emptyList(), Collections.emptyMap(), Collections.emptyList());
+  }
+
+  public Arguments(List<ApmType> required, Map<String, ApmType> named, List<String> flags) {
+    this.required = required;
+    this.named = named;
+    this.flags = flags;
+  }
+
+  public List<ApmType> getRequired() {
+    return required;
+  }
+
+  public Map<String, ApmType> getNamed() {
+    return named;
+  }
+
+  public List<String> getFlags() {
+    return flags;
+  }
+}

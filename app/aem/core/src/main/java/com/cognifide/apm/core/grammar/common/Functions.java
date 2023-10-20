@@ -18,31 +18,60 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm.core.grammar.common
+package com.cognifide.apm.core.grammar.common;
 
-import com.cognifide.apm.core.grammar.ScriptExecutionException
-import com.cognifide.apm.core.grammar.argument.toPlainString
+import com.cognifide.apm.core.grammar.ScriptExecutionException;
+import com.cognifide.apm.core.grammar.antlr.ApmLangParser;
+import org.apache.commons.lang3.StringUtils;
 
-fun getIdentifier(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.IdentifierContext) = when {
-    ctx.IDENTIFIER() != null -> ctx.IDENTIFIER().toString()
-    ctx.EXTENDED_IDENTIFIER() != null -> ctx.EXTENDED_IDENTIFIER().toString()
-    else -> throw ScriptExecutionException("Cannot resolve identifier")
-}
+public final class Functions {
 
-fun getIdentifier(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.VariableIdentifierContext) = when {
-    ctx.IDENTIFIER() != null -> ctx.IDENTIFIER().toString()
-    ctx.VARIABLE_IDENTIFIER() != null -> ctx.VARIABLE_IDENTIFIER().toString()
-    else -> throw ScriptExecutionException("Cannot resolve identifier")
-}
+  private Functions() {
+    // intentionally empty
+  }
 
-fun getKey(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.StructureKeyContext) = when {
-    ctx.IDENTIFIER() != null -> ctx.IDENTIFIER().toString()
-    ctx.STRING_LITERAL() != null -> ctx.STRING_LITERAL().toPlainString()
-    else -> throw ScriptExecutionException("Cannot resolve key")
-}
+  public static String getIdentifier(ApmLangParser.IdentifierContext ctx) {
+    if (ctx.IDENTIFIER() != null) {
+      return ctx.IDENTIFIER().toString();
+    } else if (ctx.EXTENDED_IDENTIFIER() != null) {
+      return ctx.EXTENDED_IDENTIFIER().toString();
+    }
+    throw new ScriptExecutionException("Cannot resolve identifier");
+  }
 
-fun getPath(ctx: com.cognifide.apm.core.grammar.antlr.ApmLangParser.PathContext) = when {
-    ctx.STRING_LITERAL() != null -> ctx.STRING_LITERAL().toPlainString()
-    ctx.PATH_IDENTIFIER() != null -> ctx.PATH_IDENTIFIER().toString()
-    else -> throw ScriptExecutionException("Cannot resolve path")
+  public static String getIdentifier(ApmLangParser.VariableIdentifierContext ctx) {
+    if (ctx.IDENTIFIER() != null) {
+      return ctx.IDENTIFIER().toString();
+    } else if (ctx.VARIABLE_IDENTIFIER() != null) {
+      return ctx.VARIABLE_IDENTIFIER().toString();
+    }
+    throw new ScriptExecutionException("Cannot resolve identifier");
+  }
+
+  public static String getKey(ApmLangParser.StructureKeyContext ctx) {
+    if (ctx.IDENTIFIER() != null) {
+      return ctx.IDENTIFIER().toString();
+    } else if (ctx.STRING_LITERAL() != null) {
+      return toPlainString(ctx.STRING_LITERAL().toString());
+    }
+    throw new ScriptExecutionException("Cannot resolve key");
+  }
+
+  public static String getPath(ApmLangParser.PathContext ctx) {
+    if (ctx.STRING_LITERAL() != null) {
+      return toPlainString(ctx.STRING_LITERAL().toString());
+    } else if (ctx.PATH_IDENTIFIER() != null) {
+      return ctx.PATH_IDENTIFIER().toString();
+    }
+    throw new ScriptExecutionException("Cannot resolve path");
+  }
+
+  public static String toPlainString(String value) {
+    if (StringUtils.startsWith(value, "\"")) {
+      return StringUtils.strip(value, "\"");
+    } else if (StringUtils.startsWith(value, "'")) {
+      return StringUtils.strip(value, "'");
+    }
+    return value;
+  }
 }

@@ -84,7 +84,7 @@ public class ScriptStorageImpl implements ScriptStorage {
   public Script save(ScriptUploadForm form, ResourceResolver resolver) throws RepositoryException, PersistenceException {
     FileDescriptor fileDescriptor = FileDescriptor.createFileDescriptor(form.getFileName(), form.getSavePath(), form.getFile());
     validate(Collections.singletonList(fileDescriptor));
-    return saveScript(fileDescriptor, form.toLaunchMetadata(), form.getOverwrite(), resolver);
+    return saveScript(fileDescriptor, form.toLaunchMetadata(), form.isOverwrite(), resolver);
   }
 
   private Script saveScript(FileDescriptor descriptor, LaunchMetadata launchMetadata, boolean overwrite,

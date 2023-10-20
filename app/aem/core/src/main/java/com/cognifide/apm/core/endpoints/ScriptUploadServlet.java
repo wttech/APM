@@ -17,60 +17,63 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.core.endpoints
+package com.cognifide.apm.core.endpoints;
 
-import com.cognifide.apm.api.services.ExecutionMode
-import com.cognifide.apm.api.services.ScriptManager
-import com.cognifide.apm.core.Property
-import com.cognifide.apm.core.endpoints.dto.ScriptDto
-import com.cognifide.apm.core.endpoints.response.ResponseEntity
-import com.cognifide.apm.core.endpoints.response.badRequest
-import com.cognifide.apm.core.endpoints.response.ok
-import com.cognifide.apm.core.scripts.ScriptStorage
-import com.cognifide.apm.core.scripts.ScriptStorageException
-import org.apache.sling.api.resource.ResourceResolver
-import org.apache.sling.models.factory.ModelFactory
-import org.osgi.service.component.annotations.Component
-import org.osgi.service.component.annotations.Reference
-import javax.servlet.Servlet
+import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.ExecutionMode;
+import com.cognifide.apm.api.services.ScriptManager;
+import com.cognifide.apm.core.Property;
+import com.cognifide.apm.core.endpoints.dto.ScriptDto;
+import com.cognifide.apm.core.endpoints.response.ResponseEntity;
+import com.cognifide.apm.core.endpoints.utils.RequestProcessor;
+import com.cognifide.apm.core.scripts.ScriptStorage;
+import com.cognifide.apm.core.scripts.ScriptStorageException;
+import java.io.IOException;
+import javax.jcr.RepositoryException;
+import javax.servlet.Servlet;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.SlingHttpServletResponse;
+import org.apache.sling.api.resource.PersistenceException;
+import org.apache.sling.api.servlets.SlingAllMethodsServlet;
+import org.apache.sling.models.factory.ModelFactory;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 @Component(
-    service = [Servlet::class],
-    property = [
+    service = Servlet.class,
+    property = {
         Property.PATH + "/bin/apm/scripts/upload",
         Property.METHOD + "POST",
         Property.DESCRIPTION + "APM Script Upload Servlet",
         Property.VENDOR
-    ]
+    }
 )
-class ScriptUploadServlet : AbstractFormServlet<ScriptUploadForm>(ScriptUploadForm::class.java) {
+public class ScriptUploadServlet extends SlingAllMethodsServlet {
 
-    @Reference
-    @Transient
-    private lateinit var scriptStorage: ScriptStorage
+  @Reference
+  private ScriptStorage scriptStorage;
 
-    @Reference
-    @Transient
-    private lateinit var scriptManager: ScriptManager
+  @Reference
+  private ScriptManager scriptManager;
 
-    @Reference
-    override fun setup(modelFactory: ModelFactory) {
-        this.modelFactory = modelFactory
-    }
+  @Reference
+  private ModelFactory modelFactory;
 
-    override fun doPost(form: ScriptUploadForm, resourceResolver: ResourceResolver): ResponseEntity<Any> {
-        return try {
-            val script = scriptStorage.save(form, resourceResolver)
-            scriptManager.process(script, ExecutionMode.VALIDATION, resourceResolver)
-            ok {
-                message = "File successfully saved"
-                "uploadedScript" set ScriptDto(script)
-            }
-        } catch (e: ScriptStorageException) {
-            badRequest {
-                message = e.message ?: "Errors while saving script"
-                errors = e.errors
-            }
-        }
-    }
+  @Override
+  protected void doPost(SlingHttpServletRequest request, SlingHttpServletResponse response) throws IOException {
+    RequestProcessor.process(modelFactory, ScriptUploadForm.class, request, response, (form, resourceResolver) -> {
+      try {
+        Script script = scriptStorage.save(form, resourceResolver);
+        scriptManager.process(script, ExecutionMode.VALIDATION, resourceResolver);
+        return ResponseEntity.ok("File successfully saved")
+            .addEntry("uploadedScript", new ScriptDto(script));
+      } catch (ScriptStorageException e) {
+        return ResponseEntity.badRequest(StringUtils.defaultString(e.getMessage(), "Errors while saving script"))
+            .addEntry("errors", e.getErrors());
+      } catch (PersistenceException | RepositoryException e) {
+        throw new RuntimeException(e);
+      }
+    });
+  }
 }

@@ -18,65 +18,70 @@
  * =========================LICENSE_END==================================
  */
 
-package com.cognifide.apm.core.services
+package com.cognifide.apm.core.services;
 
-import com.cognifide.apm.api.scripts.Script
-import com.cognifide.apm.api.services.ScriptFinder
-import com.cognifide.apm.core.Property
-import com.cognifide.apm.core.grammar.ReferenceFinder
-import com.cognifide.apm.core.grammar.ScriptExecutionException
-import com.cognifide.apm.core.history.History
-import com.cognifide.apm.core.services.version.VersionService
-import org.apache.sling.api.resource.ResourceResolver
-import org.osgi.service.component.annotations.Component
-import org.osgi.service.component.annotations.Reference
-import org.slf4j.LoggerFactory
-import java.util.function.Predicate
+import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.ScriptFinder;
+import com.cognifide.apm.core.Property;
+import com.cognifide.apm.core.grammar.ReferenceFinder;
+import com.cognifide.apm.core.grammar.ScriptExecutionException;
+import com.cognifide.apm.core.history.History;
+import com.cognifide.apm.core.history.ScriptHistory;
+import com.cognifide.apm.core.services.version.ScriptVersion;
+import com.cognifide.apm.core.services.version.VersionService;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component(
-    service = [ModifiedScriptFinder::class],
-    property = [
+    service = ModifiedScriptFinder.class,
+    property = {
+        Property.DESCRIPTION + "APM Modified Script Finder",
         Property.VENDOR
-    ]
-)
-class ModifiedScriptFinder {
-
-    private val logger = LoggerFactory.getLogger(ModifiedScriptFinder::class.java)
-
-    @Reference
-    @Transient
-    lateinit var versionService: VersionService
-
-    @Reference
-    @Transient
-    lateinit var scriptFinder: ScriptFinder
-
-    @Reference
-    @Transient
-    lateinit var history: History
-
-    fun findAll(filter: Predicate<Script>, resolver: ResourceResolver): List<Script> {
-        val all = scriptFinder.findAll(filter, resolver)
-        val referenceFinder = ReferenceFinder(scriptFinder, resolver)
-        val modified = mutableListOf<Script>()
-
-        all.filter { it.isValid }
-            .forEach { script ->
-                try {
-                    val subtree = referenceFinder.findReferences(script)
-                    val checksum = versionService.countChecksum(subtree)
-                    val scriptVersion = versionService.getScriptVersion(resolver, script)
-                    var scriptHistory = history.findScriptHistory(resolver, script)
-                    if (checksum != scriptVersion.lastChecksum
-                        || scriptHistory.lastLocalRun == null
-                        || checksum != scriptHistory.lastLocalRun.checksum
-                    ) {
-                        modified.add(script)
-                    }
-                } catch (e: ScriptExecutionException) {
-                    logger.error(e.message)
-                }
-            }
-        return modified
     }
+)
+public class ModifiedScriptFinder {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(ModifiedScriptFinder.class);
+
+  @Reference
+  private VersionService versionService;
+
+  @Reference
+  private ScriptFinder scriptFinder;
+
+  @Reference
+  private History history;
+
+  public List<Script> findAll(Predicate<Script> filter, ResourceResolver resolver) {
+    List<Script> all = scriptFinder.findAll(filter, resolver);
+    ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resolver);
+    List<Script> modified = new ArrayList<>();
+    all.stream()
+        .filter(Script::isValid)
+        .forEach(script -> {
+              try {
+                List<Script> subtree = referenceFinder.findReferences(script);
+                String checksum = versionService.countChecksum(subtree);
+                ScriptVersion scriptVersion = versionService.getScriptVersion(resolver, script);
+                ScriptHistory scriptHistory = history.findScriptHistory(resolver, script);
+                if (!StringUtils.equals(checksum, scriptVersion.getLastChecksum())
+                    || scriptHistory.getLastLocalRun() == null
+                    || !StringUtils.equals(checksum, scriptHistory.getLastLocalRun().getChecksum())
+                ) {
+                  modified.add(script);
+                }
+              } catch (ScriptExecutionException e) {
+                LOGGER.error(e.getMessage());
+              }
+            }
+        );
+    return modified;
+  }
 }
