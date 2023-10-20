@@ -46,7 +46,7 @@ public class LaunchMetadata {
     this.launchRunModes = launchRunModes;
     this.executionHook = executionHook;
     this.executionSchedule = executionSchedule;
-    this.cronExpression  = cronExpression;
+    this.cronExpression = cronExpression;
   }
 
   public boolean isExecutionEnabled() {
@@ -78,7 +78,7 @@ public class LaunchMetadata {
     return executionSchedule;
   }
 
-  public String  getCronExpression() {
+  public String getCronExpression() {
     return cronExpression;
   }
 }
