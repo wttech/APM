@@ -29,13 +29,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceMetadata;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.wrappers.ValueMapDecorator;
 
-@RequiredArgsConstructor
 class SimpleDataSourceBuilder {
 
   private static final String CONFIGURATION_NAME_PROP = "text";
@@ -43,6 +41,10 @@ class SimpleDataSourceBuilder {
 
   private final ResourceResolver resourceResolver;
   private final List<Option> options = new ArrayList<>();
+
+  public SimpleDataSourceBuilder(ResourceResolver resourceResolver) {
+    this.resourceResolver = resourceResolver;
+  }
 
   public SimpleDataSourceBuilder addOption(Option option) {
     options.add(option);
@@ -59,7 +61,7 @@ class SimpleDataSourceBuilder {
   }
 
   public SimpleDataSourceBuilder addOptions(Collection<Option> options) {
-    options.addAll(options);
+    this.options.addAll(options);
     return this;
   }
 
@@ -79,10 +81,14 @@ class SimpleDataSourceBuilder {
     return new ValueMapResource(resolver, new ResourceMetadata(), JcrConstants.NT_RESOURCE, result);
   }
 
-  @RequiredArgsConstructor
   public static class Option {
 
     private final String name;
     private final String value;
+
+    public Option(String name, String value) {
+      this.name = name;
+      this.value = value;
+    }
   }
 }

@@ -54,5 +54,10 @@
                 name="apm:launchSchedule"
                 type="datetime"
                 valueFormat="YYYY-MM-DD[T]HH:mm:ss"/>
+        <cronExpression
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                fieldLabel="CRON expression"
+                name="apm:launchCronExpression"/>
     </items>
 </jcr:root>

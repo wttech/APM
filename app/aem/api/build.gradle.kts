@@ -1,4 +1,3 @@
-import com.cognifide.gradle.aem.bundle.tasks.bundle
 import org.gradle.jvm.tasks.Jar
 
 plugins {

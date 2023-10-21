@@ -39,7 +39,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import lombok.Getter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
@@ -60,31 +59,22 @@ public final class ScriptsRowModel {
   @Inject
   private History history;
 
-  @Getter
   private String scriptName;
 
-  @Getter
   private boolean isFolder;
 
-  @Getter
   private boolean isValid;
 
-  @Getter
   private String author;
 
-  @Getter
   private Calendar lastModified;
 
-  @Getter
   private final List<ScriptRun> runs = new ArrayList<>();
 
-  @Getter
   private String launchMode;
 
-  @Getter
   private String launchEnvironment;
 
-  @Getter
   private boolean isLaunchEnabled;
 
   @PostConstruct
@@ -132,7 +122,42 @@ public final class ScriptsRowModel {
     return SCRIPTS_ROW_RESOURCE_TYPE;
   }
 
-  @Getter
+  public String getScriptName() {
+    return scriptName;
+  }
+
+  public boolean isFolder() {
+    return isFolder;
+  }
+
+  public boolean isValid() {
+    return isValid;
+  }
+
+  public String getAuthor() {
+    return author;
+  }
+
+  public Calendar getLastModified() {
+    return lastModified;
+  }
+
+  public List<ScriptRun> getRuns() {
+    return runs;
+  }
+
+  public String getLaunchMode() {
+    return launchMode;
+  }
+
+  public String getLaunchEnvironment() {
+    return launchEnvironment;
+  }
+
+  public boolean isLaunchEnabled() {
+    return isLaunchEnabled;
+  }
+
   public static class ScriptRun {
 
     private final String type;
@@ -152,6 +177,22 @@ public final class ScriptsRowModel {
       this.summary = historyEntry.getPath();
       this.success = historyEntry.isRunSuccessful();
       this.time = CalendarUtils.asCalendar(historyEntry.getExecutionTime());
+    }
+
+    public String getType() {
+      return type;
+    }
+
+    public String getSummary() {
+      return summary;
+    }
+
+    public boolean isSuccess() {
+      return success;
+    }
+
+    public Calendar getTime() {
+      return time;
     }
   }
 }

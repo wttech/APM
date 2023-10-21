@@ -30,8 +30,6 @@ import com.cognifide.apm.core.utils.AuthorizableManagerImpl;
 import javax.jcr.RepositoryException;
 import javax.jcr.ValueFactory;
 import javax.jcr.security.AccessControlManager;
-import lombok.Getter;
-import lombok.Setter;
 import org.apache.jackrabbit.api.JackrabbitSession;
 import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.apache.jackrabbit.api.security.user.Group;
@@ -39,22 +37,16 @@ import org.apache.jackrabbit.api.security.user.User;
 
 public final class ContextImpl implements Context {
 
-  @Getter
   private final AccessControlManager accessControlManager;
 
-  @Getter
   private final AuthorizableManager authorizableManager;
 
-  @Getter
   private final SessionSavingPolicy savingPolicy;
 
-  @Getter
   private final JackrabbitSession session;
 
-  @Setter
   private Authorizable currentAuthorizable;
 
-  @Getter
   private final boolean compositeNodeStore;
 
   public ContextImpl(JackrabbitSession session, boolean compositeNodeStore) throws RepositoryException {
@@ -124,4 +116,27 @@ public final class ContextImpl implements Context {
     return new ContextImpl(accessControlManager, authorizableManager, savingPolicy, session, compositeNodeStore);
   }
 
+  public AccessControlManager getAccessControlManager() {
+    return accessControlManager;
+  }
+
+  public AuthorizableManager getAuthorizableManager() {
+    return authorizableManager;
+  }
+
+  public SessionSavingPolicy getSavingPolicy() {
+    return savingPolicy;
+  }
+
+  public JackrabbitSession getSession() {
+    return session;
+  }
+
+  public boolean isCompositeNodeStore() {
+    return compositeNodeStore;
+  }
+
+  public void setCurrentAuthorizable(Authorizable currentAuthorizable) {
+    this.currentAuthorizable = currentAuthorizable;
+  }
 }

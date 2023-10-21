@@ -21,12 +21,10 @@
 package com.cognifide.apm.core.history;
 
 import java.util.Calendar;
-import lombok.Builder;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.Resource;
 
-@Builder
-public class HistoryEntryWriter {
+public final class HistoryEntryWriter {
 
   private final String author;
   private final Calendar executionTime;
@@ -38,6 +36,23 @@ public class HistoryEntryWriter {
   private final String mode;
   private final String progressLog;
   private final String instanceName;
+
+  private HistoryEntryWriter(String author, Calendar executionTime, String executor, long executionDuration, String fileName, String filePath, Boolean isRunSuccessful, String mode, String progressLog, String instanceName) {
+    this.author = author;
+    this.executionTime = executionTime;
+    this.executor = executor;
+    this.executionDuration = executionDuration;
+    this.fileName = fileName;
+    this.filePath = filePath;
+    this.isRunSuccessful = isRunSuccessful;
+    this.mode = mode;
+    this.progressLog = progressLog;
+    this.instanceName = instanceName;
+  }
+
+  public static HistoryEntryWriterBuilder builder() {
+    return new HistoryEntryWriterBuilder();
+  }
 
   public void writeTo(Resource historyLogResource) {
     ModifiableValueMap valueMap = historyLogResource.adaptTo(ModifiableValueMap.class);
@@ -51,5 +66,77 @@ public class HistoryEntryWriter {
     valueMap.put(HistoryEntryImpl.EXECUTION_DURATION, executionDuration);
     valueMap.put(HistoryEntryImpl.EXECUTOR, executor);
     valueMap.put(HistoryEntryImpl.INSTANCE_NAME, instanceName);
+  }
+
+  public static class HistoryEntryWriterBuilder {
+
+    private String author;
+    private Calendar executionTime;
+    private String executor;
+    private long executionDuration;
+    private String fileName;
+    private String filePath;
+    private Boolean isRunSuccessful;
+    private String mode;
+    private String progressLog;
+    private String instanceName;
+
+    private HistoryEntryWriterBuilder() {
+      // intentionally empty
+    }
+
+    public HistoryEntryWriterBuilder author(String author) {
+      this.author = author;
+      return this;
+    }
+
+    public HistoryEntryWriterBuilder executionTime(Calendar executionTime) {
+      this.executionTime = executionTime;
+      return this;
+    }
+
+    public HistoryEntryWriterBuilder executor(String executor) {
+      this.executor = executor;
+      return this;
+    }
+
+    public HistoryEntryWriterBuilder executionDuration(long executionDuration) {
+      this.executionDuration = executionDuration;
+      return this;
+    }
+
+    public HistoryEntryWriterBuilder fileName(String fileName) {
+      this.fileName = fileName;
+      return this;
+    }
+
+    public HistoryEntryWriterBuilder filePath(String filePath) {
+      this.filePath = filePath;
+      return this;
+    }
+
+    public HistoryEntryWriterBuilder isRunSuccessful(Boolean isRunSuccessful) {
+      this.isRunSuccessful = isRunSuccessful;
+      return this;
+    }
+
+    public HistoryEntryWriterBuilder mode(String mode) {
+      this.mode = mode;
+      return this;
+    }
+
+    public HistoryEntryWriterBuilder progressLog(String progressLog) {
+      this.progressLog = progressLog;
+      return this;
+    }
+
+    public HistoryEntryWriterBuilder instanceName(String instanceName) {
+      this.instanceName = instanceName;
+      return this;
+    }
+
+    public HistoryEntryWriter build() {
+      return new HistoryEntryWriter(author, executionTime, executor, executionDuration, fileName, filePath, isRunSuccessful, mode, progressLog, instanceName);
+    }
   }
 }

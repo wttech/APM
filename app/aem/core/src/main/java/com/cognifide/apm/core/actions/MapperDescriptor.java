@@ -23,18 +23,20 @@ package com.cognifide.apm.core.actions;
 import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.core.grammar.argument.Arguments;
 import java.util.List;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
-@Getter
-@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public class MapperDescriptor {
 
   private final Object mapper;
   private final String name;
   private final String group;
   private final List<MappingDescriptor> mappingDescriptors;
+
+  MapperDescriptor(Object mapper, String name, String group, List<MappingDescriptor> mappingDescriptors) {
+    this.mapper = mapper;
+    this.name = name;
+    this.group = group;
+    this.mappingDescriptors = mappingDescriptors;
+  }
 
   public boolean handles(Arguments arguments) {
     return mappingDescriptors.stream().anyMatch(it -> it.handles(arguments));
@@ -45,5 +47,21 @@ public class MapperDescriptor {
         .filter(it -> it.handles(arguments)).findFirst()
         .orElseThrow(() -> new RuntimeException("Cannot find matching mapping method"))
         .handle(mapper, arguments, mapperContext);
+  }
+
+  public Object getMapper() {
+    return mapper;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public String getGroup() {
+    return group;
+  }
+
+  public List<MappingDescriptor> getMappingDescriptors() {
+    return mappingDescriptors;
   }
 }

@@ -51,6 +51,11 @@ public interface Script {
   Date getLaunchSchedule();
 
   /**
+   * Get CRON expression
+   */
+  String getCronExpression();
+
+  /**
    * Get last execution date
    */
   Date getLastExecuted();

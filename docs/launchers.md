@@ -12,6 +12,7 @@ To launch script automatically, the script needs to be placed under `/conf/apm/s
 * `ON_STARTUP` - to launch the script on every bundle activation without any other conditions,
 * `ON_STARTUP_IF_MODIFIED` - to launch the script on bundle activation if the file's changed,
 * `ON_SCHEDULE` - to launch the script on specific date, which needs to be set in property `apm:launchSchedule`,
+* `ON_CRON_EXPRESSION` - to launch the script on specific CRON expression, which needs to be set in property `apm:launchCronExpression`,
 * `ON_INSTALL` - to launch the script after package installation (additional configuration required, see [Install hook](#install-hook)),
 * `ON_INSTALL_IF_MODIFIED` - to launch the script after package installation if the file's changed (additional configuration required, see [Install hook](#install-hook)).
 

@@ -24,15 +24,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
-@Getter
-@RequiredArgsConstructor
 public class Pagination {
 
   private final int offset;
   private final int limit;
+
+  public Pagination(int offset, int limit) {
+    this.offset = offset;
+    this.limit = limit;
+  }
 
   public <T> List<T> getPage(List<T> list) {
     int fromIndex = offset;
@@ -58,5 +59,13 @@ public class Pagination {
       index++;
     }
     return results;
+  }
+
+  public int getOffset() {
+    return offset;
+  }
+
+  public int getLimit() {
+    return limit;
   }
 }

@@ -31,10 +31,12 @@ import com.cognifide.apm.core.utils.RuntimeUtils;
 import com.day.cq.commons.jcr.JcrConstants;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.PostConstruct;
@@ -42,6 +44,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.jcr.RepositoryException;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
@@ -90,6 +93,10 @@ public class ScriptModel implements MutableScript {
   @Inject
   @Named(ScriptNode.APM_LAUNCH_SCHEDULE)
   private Date launchSchedule;
+
+  @Inject
+  @Named(ScriptNode.APM_LAUNCH_CRON_EXPRESSION)
+  private String cronExpression;
 
   @Inject
   @Named(ScriptNode.APM_LAST_EXECUTED)
@@ -164,6 +171,11 @@ public class ScriptModel implements MutableScript {
   @Override
   public Date getLaunchSchedule() {
     return launchSchedule;
+  }
+
+  @Override
+  public String getCronExpression() {
+    return StringUtils.defaultString(cronExpression);
   }
 
   @Override
@@ -259,5 +271,31 @@ public class ScriptModel implements MutableScript {
 
   private static List<String> getArrayProperty(Resource resource, String name) {
     return Lists.newArrayList(resource.getValueMap().get(name, new String[]{}));
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj instanceof ScriptModel) {
+      ScriptModel that = (ScriptModel) obj;
+      return Objects.equals(path, that.path)
+          && Objects.equals(launchEnabled, that.launchEnabled)
+          && Objects.equals(launchMode, that.launchMode)
+          && Objects.equals(launchEnvironment, that.launchEnvironment)
+          && Arrays.equals(launchRunModes, that.launchRunModes)
+          && Objects.equals(launchHook, that.launchHook)
+          && Objects.equals(launchSchedule, that.launchSchedule)
+          && Objects.equals(cronExpression, that.cronExpression)
+          && Objects.equals(checksum, that.checksum)
+          && Objects.equals(verified, that.verified);
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(path);
   }
 }

@@ -23,7 +23,6 @@ import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ScriptFinder;
 import java.io.IOException;
 import javax.inject.Inject;
-import lombok.Getter;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -45,13 +44,10 @@ public final class ConsoleModel {
 
   private static final String CONTENT_FILE_CHARSET = "UTF-8";
 
-  @Getter
   private final String fileName;
 
-  @Getter
   private final boolean edit;
 
-  @Getter
   private final String content;
 
   @Inject
@@ -75,5 +71,17 @@ public final class ConsoleModel {
       LOG.warn("Cannot read content of default script template.", e);
       return "";
     }
+  }
+
+  public String getFileName() {
+    return fileName;
+  }
+
+  public boolean isEdit() {
+    return edit;
+  }
+
+  public String getContent() {
+    return content;
   }
 }

@@ -164,6 +164,8 @@ class ReferenceFinder(
 
         override fun getLaunchSchedule(): Date? = null
 
+        override fun getCronExpression(): String? = null
+
         override fun getLastExecuted(): Date? = null
 
         override fun getChecksum(): String? = null

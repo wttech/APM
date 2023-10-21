@@ -23,7 +23,6 @@ package com.cognifide.apm.core.history;
 import com.cognifide.apm.core.services.ResourceResolverProvider;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
 import java.util.Calendar;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -35,11 +34,14 @@ import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.AttributeType;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Slf4j
 @Component
 @Designate(ocd = HistoryAutocleanService.Config.class)
 public class HistoryAutocleanService implements Runnable {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(HistoryAutocleanService.class);
 
   private Config config;
 
@@ -63,7 +65,7 @@ public class HistoryAutocleanService implements Runnable {
 
   private void deleteHistoryByEntries(ResourceResolver resolver) {
     if (config.maxEntries() >= 0) {
-      log.info("Looking for items exceeding limit of {} items", config.maxEntries());
+      LOGGER.info("Looking for items exceeding limit of {} items", config.maxEntries());
       history.findAllResources(resolver)
           .stream()
           .skip(config.maxEntries())
@@ -73,7 +75,7 @@ public class HistoryAutocleanService implements Runnable {
 
   private void deleteHistoryByDays(ResourceResolver resolver) {
     if (config.maxDays() >= 0) {
-      log.info("Looking for items older than {} days", config.maxDays());
+      LOGGER.info("Looking for items older than {} days", config.maxDays());
       Calendar calendar = Calendar.getInstance();
       calendar.add(Calendar.DAY_OF_MONTH, -config.maxDays());
       history.findAllResources(resolver)
@@ -88,7 +90,7 @@ public class HistoryAutocleanService implements Runnable {
 
   private void deleteItem(ResourceResolver resolver, Resource resource) {
     try {
-      log.info("Deleting: {}", resource.getPath());
+      LOGGER.info("Deleting: {}", resource.getPath());
       resolver.delete(resource);
     } catch (PersistenceException e) {
       throw new RuntimeException(e);

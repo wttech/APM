@@ -37,6 +37,8 @@ public final class ScriptNode {
 
   public static final String APM_LAUNCH_SCHEDULE = "apm:launchSchedule";
 
+  public static final String APM_LAUNCH_CRON_EXPRESSION = "apm:launchCronExpression";
+
   public static final String APM_LAST_EXECUTED = "apm:lastExecuted";
 
   public static final String APM_CHECKSUM = "apm:checksum";
