@@ -38,6 +38,7 @@ import com.cognifide.apm.core.grammar.antlr.ApmLangParser.RunScriptContext;
 import com.cognifide.apm.core.grammar.argument.ArgumentResolverException;
 import com.cognifide.apm.core.grammar.argument.Arguments;
 import com.cognifide.apm.core.grammar.common.Functions;
+import com.cognifide.apm.core.grammar.datasource.DataSourceInvoker;
 import com.cognifide.apm.core.grammar.executioncontext.ExecutionContext;
 import com.cognifide.apm.core.grammar.parsedscript.InvalidSyntaxException;
 import com.cognifide.apm.core.grammar.parsedscript.InvalidSyntaxMessageFactory;
@@ -68,16 +69,19 @@ public class ScriptRunner {
 
   private final ActionInvoker actionInvoker;
 
-  public ScriptRunner(ScriptFinder scriptFinder, ResourceResolver resourceResolver, boolean validateOnly, ActionInvoker actionInvoker) {
+  private final DataSourceInvoker dataSourceInvoker;
+
+  public ScriptRunner(ScriptFinder scriptFinder, ResourceResolver resourceResolver, boolean validateOnly, ActionInvoker actionInvoker, DataSourceInvoker dataSourceInvoker) {
     this.scriptFinder = scriptFinder;
     this.resourceResolver = resourceResolver;
     this.validateOnly = validateOnly;
     this.actionInvoker = actionInvoker;
+    this.dataSourceInvoker = dataSourceInvoker;
   }
 
   public Progress execute(Script script, Progress progress, Map<String, String> initialDefinitions) {
     try {
-      ExecutionContext executionContext = ExecutionContext.create(scriptFinder, resourceResolver, script, progress);
+      ExecutionContext executionContext = ExecutionContext.create(scriptFinder, resourceResolver, dataSourceInvoker, script, progress);
       initialDefinitions.forEach((name, value) -> executionContext.setVariable(name, new ApmString(value)));
       Executor executor = new Executor(executionContext);
       executor.visit(executionContext.getRoot().getApm());
@@ -263,7 +267,7 @@ public class ScriptRunner {
 
     @Override
     public Status visitImportScript(ImportScriptContext ctx) {
-      ImportScript.Result result = new ImportScript(executionContext).importScript(ctx);
+      ImportScript.Result result = new ImportScript(executionContext, resourceResolver, dataSourceInvoker).importScript(ctx);
       executionContext.getVariableHolder().setAll(result.getVariableHolder());
       progress(ctx, Status.SUCCESS, "import", result.toMessages());
       return Status.SUCCESS;

@@ -28,6 +28,7 @@ import com.cognifide.apm.core.grammar.antlr.ApmLangParser;
 import com.cognifide.apm.core.grammar.argument.ArgumentResolver;
 import com.cognifide.apm.core.grammar.argument.Arguments;
 import com.cognifide.apm.core.grammar.common.StackWithRoot;
+import com.cognifide.apm.core.grammar.datasource.DataSourceInvoker;
 import com.cognifide.apm.core.grammar.parsedscript.ParsedScript;
 import com.cognifide.apm.core.logger.Progress;
 import java.util.HashMap;
@@ -45,6 +46,8 @@ public class ExecutionContext implements ExternalExecutionContext {
 
   private final ResourceResolver resourceResolver;
 
+  private final DataSourceInvoker dataSourceInvoker;
+
   private final ParsedScript root;
 
   private final Progress progress;
@@ -53,9 +56,10 @@ public class ExecutionContext implements ExternalExecutionContext {
 
   private final StackWithRoot<RunScript> runScripts;
 
-  private ExecutionContext(ScriptFinder scriptFinder, ResourceResolver resourceResolver, ParsedScript root, Progress progress) {
+  private ExecutionContext(ScriptFinder scriptFinder, ResourceResolver resourceResolver, DataSourceInvoker dataSourceInvoker, ParsedScript root, Progress progress) {
     this.scriptFinder = scriptFinder;
     this.resourceResolver = resourceResolver;
+    this.dataSourceInvoker = dataSourceInvoker;
     this.root = root;
     this.progress = progress;
     this.parsedScripts = new HashMap<>();
@@ -63,8 +67,8 @@ public class ExecutionContext implements ExternalExecutionContext {
     registerScript(root);
   }
 
-  public static ExecutionContext create(ScriptFinder scriptFinder, ResourceResolver resourceResolver, Script script, Progress progress) {
-    return new ExecutionContext(scriptFinder, resourceResolver, ParsedScript.create(script), progress);
+  public static ExecutionContext create(ScriptFinder scriptFinder, ResourceResolver resourceResolver, DataSourceInvoker dataSourceInvoker, Script script, Progress progress) {
+    return new ExecutionContext(scriptFinder, resourceResolver, dataSourceInvoker, ParsedScript.create(script), progress);
   }
 
   public ParsedScript getRoot() {
@@ -80,7 +84,7 @@ public class ExecutionContext implements ExternalExecutionContext {
   }
 
   private ArgumentResolver getArgumentResolver() {
-    return new ArgumentResolver(getVariableHolder());
+    return new ArgumentResolver(getVariableHolder(), resourceResolver, dataSourceInvoker);
   }
 
   public ParsedScript loadScript(String path) {

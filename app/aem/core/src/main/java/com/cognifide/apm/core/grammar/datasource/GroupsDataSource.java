@@ -19,9 +19,9 @@
  */
 package com.cognifide.apm.core.grammar.datasource;
 
-import com.cognifide.apm.core.grammar.ApmList;
-import com.cognifide.apm.core.grammar.ApmString;
 import com.cognifide.apm.core.grammar.ApmType;
+import com.cognifide.apm.core.grammar.ApmType.ApmList;
+import com.cognifide.apm.core.grammar.ApmType.ApmString;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;

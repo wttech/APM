@@ -25,6 +25,7 @@ import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.grammar.ReferenceFinder;
 import com.cognifide.apm.core.grammar.ScriptExecutionException;
+import com.cognifide.apm.core.grammar.datasource.DataSourceInvoker;
 import com.cognifide.apm.core.history.History;
 import com.cognifide.apm.core.history.ScriptHistory;
 import com.cognifide.apm.core.services.version.ScriptVersion;
@@ -59,9 +60,12 @@ public class ModifiedScriptFinder {
   @Reference
   private History history;
 
+  @Reference
+  private DataSourceInvoker dataSourceInvoker;
+
   public List<Script> findAll(Predicate<Script> filter, ResourceResolver resolver) {
     List<Script> all = scriptFinder.findAll(filter, resolver);
-    ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resolver);
+    ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resolver, dataSourceInvoker);
     List<Script> modified = new ArrayList<>();
     all.stream()
         .filter(Script::isValid)

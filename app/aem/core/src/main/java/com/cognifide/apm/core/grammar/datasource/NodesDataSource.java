@@ -19,10 +19,10 @@
  */
 package com.cognifide.apm.core.grammar.datasource;
 
-import com.cognifide.apm.core.grammar.ApmList;
-import com.cognifide.apm.core.grammar.ApmMap;
-import com.cognifide.apm.core.grammar.ApmString;
 import com.cognifide.apm.core.grammar.ApmType;
+import com.cognifide.apm.core.grammar.ApmType.ApmList;
+import com.cognifide.apm.core.grammar.ApmType.ApmMap;
+import com.cognifide.apm.core.grammar.ApmType.ApmString;
 import com.google.common.collect.ImmutableMap;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -46,7 +46,7 @@ public class NodesDataSource implements DataSource {
     String regex = (String) parameters.get(1);
     Pattern pattern = Pattern.compile(regex);
     Resource root = resolver.getResource(path);
-    List<ApmMap> values = StreamSupport.stream(root.getChildren().spliterator(), false)
+    List<ApmType> values = StreamSupport.stream(root.getChildren().spliterator(), false)
         .filter(resource -> pattern.matcher(resource.getName()).matches())
         .map(resource -> new ApmMap(ImmutableMap.of(
             "path", new ApmString(resource.getPath()),

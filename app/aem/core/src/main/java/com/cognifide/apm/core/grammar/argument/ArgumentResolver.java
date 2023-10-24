@@ -30,6 +30,7 @@ import com.cognifide.apm.core.grammar.ApmType.ApmString;
 import com.cognifide.apm.core.grammar.antlr.ApmLangBaseVisitor;
 import com.cognifide.apm.core.grammar.antlr.ApmLangParser;
 import com.cognifide.apm.core.grammar.common.Functions;
+import com.cognifide.apm.core.grammar.datasource.DataSourceInvoker;
 import com.cognifide.apm.core.grammar.executioncontext.VariableHolder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,6 +45,7 @@ import java.util.stream.Stream;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang.text.StrSubstitutor;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.sling.api.resource.ResourceResolver;
 
 public class ArgumentResolver {
 
@@ -51,8 +53,14 @@ public class ArgumentResolver {
 
   private final SingleArgumentResolver singleArgumentResolver;
 
-  public ArgumentResolver(VariableHolder variableHolder) {
+  private final ResourceResolver resourceResolver;
+
+  private final DataSourceInvoker dataSourceInvoker;
+
+  public ArgumentResolver(VariableHolder variableHolder, ResourceResolver resourceResolver, DataSourceInvoker dataSourceInvoker) {
     this.variableHolder = variableHolder;
+    this.resourceResolver = resourceResolver;
+    this.dataSourceInvoker = dataSourceInvoker;
     this.singleArgumentResolver = new SingleArgumentResolver();
   }
 
@@ -193,6 +201,8 @@ public class ArgumentResolver {
         }
       } else if (ctx.value() != null) {
         return visit(ctx.value());
+      } else if (ctx.dataSource() != null) {
+        return visit(ctx.dataSource());
       } else {
         return super.visitExpression(ctx);
       }
@@ -238,6 +248,18 @@ public class ArgumentResolver {
     public ApmType visitVariable(ApmLangParser.VariableContext ctx) {
       String name = Functions.getIdentifier(ctx.variableIdentifier());
       return variableHolder.get(name);
+    }
+
+    @Override
+    public ApmType visitDataSource(ApmLangParser.DataSourceContext ctx) {
+      String name = Functions.getIdentifier(ctx.identifier());
+      List<ApmType> values = ctx.children
+          .stream()
+          .map(child -> child.accept(this))
+          .filter(value -> !(value instanceof ApmEmpty))
+          .collect(Collectors.toList());
+      return Optional.ofNullable(dataSourceInvoker.determine(name, resourceResolver, values))
+          .orElseThrow(() -> new ArgumentResolverException(String.format("Data source \"%s\" not found", name.toUpperCase())));
     }
   }
 }

@@ -27,6 +27,7 @@ import com.cognifide.apm.core.grammar.antlr.ApmLangBaseVisitor;
 import com.cognifide.apm.core.grammar.antlr.ApmLangParser;
 import com.cognifide.apm.core.grammar.argument.ArgumentResolver;
 import com.cognifide.apm.core.grammar.common.Functions;
+import com.cognifide.apm.core.grammar.datasource.DataSourceInvoker;
 import com.cognifide.apm.core.grammar.executioncontext.ExecutionContext;
 import com.cognifide.apm.core.grammar.executioncontext.VariableHolder;
 import com.cognifide.apm.core.grammar.parsedscript.ParsedScript;
@@ -37,15 +38,22 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.sling.api.resource.ResourceResolver;
 
 public class ImportScript {
 
   private final ExecutionContext executionContext;
 
+  private final ResourceResolver resourceResolver;
+
+  private final DataSourceInvoker dataSourceInvoker;
+
   private final Set<ParsedScript> visitedScripts;
 
-  public ImportScript(ExecutionContext executionContext) {
+  public ImportScript(ExecutionContext executionContext, ResourceResolver resourceResolver, DataSourceInvoker dataSourceInvoker) {
     this.executionContext = executionContext;
+    this.resourceResolver = resourceResolver;
+    this.dataSourceInvoker = dataSourceInvoker;
     this.visitedScripts = new HashSet<>();
   }
 
@@ -68,7 +76,7 @@ public class ImportScript {
 
     public ImportScriptVisitor() {
       this.variableHolder = new VariableHolder();
-      this.argumentResolver = new ArgumentResolver(variableHolder);
+      this.argumentResolver = new ArgumentResolver(variableHolder, resourceResolver, dataSourceInvoker);
     }
 
     @Override

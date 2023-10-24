@@ -24,6 +24,7 @@ import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.grammar.ReferenceFinder;
 import com.cognifide.apm.core.grammar.ScriptExecutionException;
+import com.cognifide.apm.core.grammar.datasource.DataSourceInvoker;
 import com.cognifide.apm.core.scripts.MutableScriptWrapper;
 import com.cognifide.apm.core.scripts.ScriptNode;
 import com.day.cq.commons.jcr.JcrUtil;
@@ -62,6 +63,9 @@ public class VersionServiceImpl implements VersionService {
   @Reference
   private ScriptFinder scriptFinder;
 
+  @Reference
+  private DataSourceInvoker dataSourceInvoker;
+
   @Override
   public ScriptVersion getScriptVersion(ResourceResolver resolver, Script script) {
     String scriptVersionPath = getScriptVersionPath(script);
@@ -86,7 +90,7 @@ public class VersionServiceImpl implements VersionService {
 
   @Override
   public void updateVersionIfNeeded(ResourceResolver resolver, Script... scripts) {
-    ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resolver);
+    ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resolver, dataSourceInvoker);
     for (Script script : scripts) {
       try {
         List<Script> subtree = referenceFinder.findReferences(script);
