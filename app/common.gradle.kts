@@ -2,7 +2,6 @@
  * Common configuration for all application artifacts
  */
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 repositories {
     jcenter()
@@ -16,12 +15,6 @@ tasks {
             sourceCompatibility = "1.8"
             targetCompatibility = "1.8"
             encoding = "UTF-8"
-        }
-    }
-
-    withType<KotlinCompile>().configureEach {
-        kotlinOptions {
-            jvmTarget = "1.8"
         }
     }
 

@@ -18,16 +18,16 @@
  * =========================LICENSE_END==================================
  */
 
-repositories {
-    mavenLocal()
-    jcenter()
-    gradlePluginPortal()
-    maven("https://dl.bintray.com/cognifide/maven-public")
-    maven("https://repo.adobe.com/nexus/content/groups/public")
-    maven("https://plugins.gradle.org/m2")
-}
+package com.cognifide.apm.core.endpoints.params;
 
-dependencies {
-    implementation("org.apache.sling:org.apache.sling.caconfig.bnd-plugin:1.0.2")
-    implementation("com.cognifide.gradle:aem-plugin:15.5.5")
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Target({ElementType.FIELD, ElementType.PARAMETER})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface DateFormat {
+
+  String value();
 }

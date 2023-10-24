@@ -18,16 +18,37 @@
  * =========================LICENSE_END==================================
  */
 
-repositories {
-    mavenLocal()
-    jcenter()
-    gradlePluginPortal()
-    maven("https://dl.bintray.com/cognifide/maven-public")
-    maven("https://repo.adobe.com/nexus/content/groups/public")
-    maven("https://plugins.gradle.org/m2")
-}
+package com.cognifide.apm.core.endpoints;
 
-dependencies {
-    implementation("org.apache.sling:org.apache.sling.caconfig.bnd-plugin:1.0.2")
-    implementation("com.cognifide.gradle:aem-plugin:15.5.5")
+import com.cognifide.apm.core.endpoints.params.RequestParameter;
+import javax.inject.Inject;
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.models.annotations.Model;
+
+@Model(adaptables = SlingHttpServletRequest.class)
+public class ScriptMoveForm {
+
+  @Inject
+  @RequestParameter("path")
+  private String path;
+
+  @Inject
+  @RequestParameter("dest")
+  private String dest;
+
+  @Inject
+  @RequestParameter("rename")
+  private String rename;
+
+  public String getPath() {
+    return path;
+  }
+
+  public String getDest() {
+    return dest;
+  }
+
+  public String getRename() {
+    return rename;
+  }
 }

@@ -18,16 +18,11 @@
  * =========================LICENSE_END==================================
  */
 
-repositories {
-    mavenLocal()
-    jcenter()
-    gradlePluginPortal()
-    maven("https://dl.bintray.com/cognifide/maven-public")
-    maven("https://repo.adobe.com/nexus/content/groups/public")
-    maven("https://plugins.gradle.org/m2")
-}
+package com.cognifide.apm.core.grammar;
 
-dependencies {
-    implementation("org.apache.sling:org.apache.sling.caconfig.bnd-plugin:1.0.2")
-    implementation("com.cognifide.gradle:aem-plugin:15.5.5")
+public class ScriptExecutionException extends RuntimeException {
+
+  public ScriptExecutionException(String message) {
+    super(message);
+  }
 }

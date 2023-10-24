@@ -24,9 +24,9 @@ import com.cognifide.apm.api.actions.Action
 import com.cognifide.apm.api.actions.annotations.Mapper
 import com.cognifide.apm.api.exceptions.InvalidActionMapperException
 import com.cognifide.apm.core.crypto.DecryptionService
-import com.cognifide.apm.core.grammar.ApmList
-import com.cognifide.apm.core.grammar.ApmString
 import com.cognifide.apm.core.grammar.ApmType
+import com.cognifide.apm.core.grammar.ApmType.ApmList
+import com.cognifide.apm.core.grammar.ApmType.ApmString
 import com.cognifide.apm.core.grammar.argument.Arguments
 import spock.lang.Specification
 import spock.lang.Unroll

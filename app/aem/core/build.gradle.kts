@@ -3,8 +3,6 @@ import org.gradle.jvm.tasks.Jar
 
 plugins {
     id("com.cognifide.aem.bundle")
-    kotlin("jvm")
-    id("org.jetbrains.kotlin.plugin.noarg") version "1.6.21"
     antlr
     groovy
     java
@@ -33,8 +31,6 @@ aem {
                         ).joinToString(","))
                 excludePackage("org.antlr.stringtemplate", "org.antlr.v4.gui")
                 embedPackage("org.antlr:antlr4-runtime:4.7.2", "org.antlr.v4.runtime.*")
-                embedPackage("org.jetbrains.kotlin:kotlin-reflect:1.6.21", "kotlin.reflect.*")
-                embedPackage("org.jetbrains.kotlin:kotlin-stdlib:1.6.21", "kotlin.*")
             }
         }
     }
@@ -45,9 +41,6 @@ dependencies {
     implementation(project(":app:aem:actions.main"))
 
     antlr("org.antlr:antlr4:4.7.2")
-
-    compileOnly(kotlin("stdlib-jdk8"))
-    compileOnly(kotlin("reflect"))
 }
 
 sourceSets {
@@ -59,10 +52,6 @@ sourceSets {
 }
 
 tasks {
-    named("compileKotlin").configure {
-        dependsOn("generateGrammarSource")
-    }
-
     named("generateGrammarSource", AntlrTask::class).configure {
         maxHeapSize = "64m"
         arguments = arguments + listOf("-visitor", "-long-messages", "-package", "com.cognifide.apm.core.grammar.antlr")

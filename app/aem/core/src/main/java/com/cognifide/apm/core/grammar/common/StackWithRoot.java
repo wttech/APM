@@ -18,16 +18,41 @@
  * =========================LICENSE_END==================================
  */
 
-repositories {
-    mavenLocal()
-    jcenter()
-    gradlePluginPortal()
-    maven("https://dl.bintray.com/cognifide/maven-public")
-    maven("https://repo.adobe.com/nexus/content/groups/public")
-    maven("https://plugins.gradle.org/m2")
-}
+package com.cognifide.apm.core.grammar.common;
 
-dependencies {
-    implementation("org.apache.sling:org.apache.sling.caconfig.bnd-plugin:1.0.2")
-    implementation("com.cognifide.gradle:aem-plugin:15.5.5")
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.Iterator;
+import java.util.List;
+
+public class StackWithRoot<T> implements Iterable<T> {
+
+  private final T root;
+
+  private final Deque<T> internal;
+
+  public StackWithRoot(T root) {
+    this.root = root;
+    this.internal = new ArrayDeque<>();
+  }
+
+  @Override
+  public Iterator<T> iterator() {
+    List<T> values = new ArrayList<>(internal);
+    values.add(root);
+    return values.iterator();
+  }
+
+  public void push(T element) {
+    internal.push(element);
+  }
+
+  public T pop() {
+    return internal.isEmpty() ? root : internal.pop();
+  }
+
+  public T peek() {
+    return internal.isEmpty() ? root : internal.peek();
+  }
 }

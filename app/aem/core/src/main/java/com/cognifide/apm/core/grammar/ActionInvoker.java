@@ -18,16 +18,13 @@
  * =========================LICENSE_END==================================
  */
 
-repositories {
-    mavenLocal()
-    jcenter()
-    gradlePluginPortal()
-    maven("https://dl.bintray.com/cognifide/maven-public")
-    maven("https://repo.adobe.com/nexus/content/groups/public")
-    maven("https://plugins.gradle.org/m2")
-}
+package com.cognifide.apm.core.grammar;
 
-dependencies {
-    implementation("org.apache.sling:org.apache.sling.caconfig.bnd-plugin:1.0.2")
-    implementation("com.cognifide.gradle:aem-plugin:15.5.5")
+import com.cognifide.apm.api.status.Status;
+import com.cognifide.apm.core.grammar.argument.Arguments;
+import com.cognifide.apm.core.grammar.executioncontext.ExternalExecutionContext;
+
+public interface ActionInvoker {
+
+  Status runAction(ExternalExecutionContext executionContext, String commandName, Arguments arguments);
 }
