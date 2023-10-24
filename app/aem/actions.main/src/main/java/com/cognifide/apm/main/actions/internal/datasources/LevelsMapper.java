@@ -35,7 +35,7 @@ public class LevelsMapper {
           "&nbsp;&nbsp;&nbsp;&nbsp;{regex: '(.+)_(.+)',paramNames: ['param1', 'param2']}, # 1st level<br>" +
           "&nbsp;&nbsp;&nbsp;&nbsp;{excludeRegex: '[^:]+'}, # 2nd level<br>" +
           "&nbsp;&nbsp;&nbsp;&nbsp;{template: '/apps/test/pageTemplate', resourceType: 'test/pageRenderer'}, # 3rd level<br>" +
-          "&nbsp;&nbsp;&nbsp;&nbsp;{properties: [ # 4rd level<br>" +
+          "&nbsp;&nbsp;&nbsp;&nbsp;{properties: [ # 4th level<br>" +
           "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{name: 'jcr:primaryType', regex: 'cq:Page'},<br>" +
           "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{name: 'jcr:primaryType', excludeRegex: 'cq:PageContent'},<br>" +
           "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{name: 'jcr:content/cq:template', regex: '/apps/test/pageTemplate'},<br>" +
