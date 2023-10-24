@@ -18,16 +18,21 @@
  * =========================LICENSE_END==================================
  */
 
-repositories {
-    mavenLocal()
-    jcenter()
-    gradlePluginPortal()
-    maven("https://dl.bintray.com/cognifide/maven-public")
-    maven("https://repo.adobe.com/nexus/content/groups/public")
-    maven("https://plugins.gradle.org/m2")
-}
+package com.cognifide.apm.core.grammar.executioncontext;
 
-dependencies {
-    implementation("org.apache.sling:org.apache.sling.caconfig.bnd-plugin:1.0.2")
-    implementation("com.cognifide.gradle:aem-plugin:15.5.5")
+import com.cognifide.apm.core.grammar.ApmType;
+import com.cognifide.apm.core.logger.Progress;
+import org.apache.jackrabbit.api.security.user.Authorizable;
+
+public interface ExternalExecutionContext {
+
+  Progress getProgress();
+
+  void setVariable(String key, ApmType value);
+
+  ApmType getVariable(String key);
+
+  void setAuthorizable(Authorizable authorizable);
+
+  Authorizable getAuthorizable();
 }

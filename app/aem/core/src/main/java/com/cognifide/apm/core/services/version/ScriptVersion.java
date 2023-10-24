@@ -1,4 +1,4 @@
-/*
+/*-
  * ========================LICENSE_START=================================
  * AEM Permission Management
  * %%
@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,17 +17,11 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
+package com.cognifide.apm.core.services.version;
 
-repositories {
-    mavenLocal()
-    jcenter()
-    gradlePluginPortal()
-    maven("https://dl.bintray.com/cognifide/maven-public")
-    maven("https://repo.adobe.com/nexus/content/groups/public")
-    maven("https://plugins.gradle.org/m2")
-}
+public interface ScriptVersion {
 
-dependencies {
-    implementation("org.apache.sling:org.apache.sling.caconfig.bnd-plugin:1.0.2")
-    implementation("com.cognifide.gradle:aem-plugin:15.5.5")
+  String getScriptPath();
+
+  String getLastChecksum();
 }
