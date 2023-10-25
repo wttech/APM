@@ -56,6 +56,9 @@ public class LevelsDataSource implements DataSource {
     String rootPath = (String) parameters.get(0);
     List<Config> configs = determineConfigs(parameters);
     Resource root = resolver.getResource(rootPath);
+    if (root == null) {
+      return new ApmEmpty();
+    }
     return traverseTree(root, 0, configs);
   }
 
@@ -107,7 +110,7 @@ public class LevelsDataSource implements DataSource {
     private final List<ConfigProperty> properties;
 
     public Config(Map<String, Object> map) {
-      String regex = (String) map.get("excludeRegex");
+      String regex = (String) map.get("regex");
       pattern = StringUtils.isNotEmpty(regex) ? Pattern.compile(regex) : null;
       String excludeRegex = (String) map.get("excludeRegex");
       excludePattern = StringUtils.isNotEmpty(excludeRegex) ? Pattern.compile(excludeRegex) : null;
