@@ -31,8 +31,8 @@ import com.cognifide.apm.core.grammar.datasource.DataSourceInvoker;
 import com.cognifide.apm.core.grammar.executioncontext.ExecutionContext;
 import com.cognifide.apm.core.grammar.parsedscript.ParsedScript;
 import com.cognifide.apm.core.progress.ProgressImpl;
-import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
@@ -86,7 +86,7 @@ public class ReferenceFinder {
     if (refGraph.getNode(script) == null) {
       ApmLangParser.ApmContext apmContext = ParsedScript.create(script).getApm();
       ExecutionContext executionContext = ExecutionContext.create(scriptFinder, resourceResolver, dataSourceInvoker, script, new ProgressImpl(resourceResolver.getUserID()));
-      findReferences(refGraph, refGraph.addNode(script), ImmutableList.of(script.getPath()), executionContext, apmContext);
+      findReferences(refGraph, refGraph.addNode(script), Collections.singletonList(script.getPath()), executionContext, apmContext);
     }
   }
 

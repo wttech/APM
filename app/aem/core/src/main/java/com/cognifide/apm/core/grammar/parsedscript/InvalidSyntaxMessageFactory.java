@@ -21,6 +21,7 @@
 package com.cognifide.apm.core.grammar.parsedscript;
 
 import com.google.common.collect.ImmutableList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.antlr.v4.runtime.CharStream;
@@ -47,7 +48,7 @@ public final class InvalidSyntaxMessageFactory {
     if (offendingToken != null && StringUtils.isNotBlank(offendingToken.getText())) {
       return ImmutableList.of(invalidLine, String.format("Invalid sequence: %s", offendingToken.getText()));
     } else {
-      return ImmutableList.of(invalidLine);
+      return Collections.singletonList(invalidLine);
     }
   }
 
