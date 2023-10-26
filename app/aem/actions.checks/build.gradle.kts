@@ -27,6 +27,7 @@ aem {
         jar {
             bundle {
                 attribute("APM-Actions", "com.cognifide.apm.checks.actions")
+                installPath.set("/apps/apm-checks/install")
             }
         }
     }

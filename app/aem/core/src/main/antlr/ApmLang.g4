@@ -107,12 +107,12 @@ plus
 expression
     : expression plus expression
     | value
+    | dataSource
     ;
 
 argument
     : expression
     | path
-    | dataSource
     ;
 
 command

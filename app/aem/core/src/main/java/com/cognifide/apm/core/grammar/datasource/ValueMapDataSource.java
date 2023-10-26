@@ -19,11 +19,11 @@
  */
 package com.cognifide.apm.core.grammar.datasource;
 
-import com.cognifide.apm.core.grammar.ApmInteger;
-import com.cognifide.apm.core.grammar.ApmList;
-import com.cognifide.apm.core.grammar.ApmMap;
-import com.cognifide.apm.core.grammar.ApmString;
 import com.cognifide.apm.core.grammar.ApmType;
+import com.cognifide.apm.core.grammar.ApmType.ApmInteger;
+import com.cognifide.apm.core.grammar.ApmType.ApmList;
+import com.cognifide.apm.core.grammar.ApmType.ApmMap;
+import com.cognifide.apm.core.grammar.ApmType.ApmString;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -44,8 +44,8 @@ public class ValueMapDataSource implements DataSource {
   }
 
   @Override
-  public ApmType determine(ResourceResolver resolver, List<ApmType> parameters) {
-    String path = parameters.get(0).getString();
+  public ApmType determine(ResourceResolver resolver, List<Object> parameters) {
+    String path = (String) parameters.get(0);
     ValueMap valueMap = resolver.getResource(path).getValueMap();
     Map<String, ApmType> map = new HashMap<>();
     for (Map.Entry<String, Object> entry : valueMap.entrySet()) {

@@ -20,11 +20,9 @@
 package com.cognifide.apm.core.ui.models;
 
 import javax.inject.Inject;
-import lombok.Getter;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Model;
 
-@Getter
 @Model(adaptables = Resource.class)
 public final class DashboardTileModel {
 
@@ -37,4 +35,15 @@ public final class DashboardTileModel {
   @Inject
   private String title;
 
+  public String getIcon() {
+    return icon;
+  }
+
+  public String getPath() {
+    return path;
+  }
+
+  public String getTitle() {
+    return title;
+  }
 }

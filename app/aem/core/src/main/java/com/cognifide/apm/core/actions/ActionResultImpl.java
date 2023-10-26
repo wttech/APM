@@ -26,18 +26,14 @@ import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
 public class ActionResultImpl implements ActionResult {
 
-  @Getter
   private String authorizable;
 
-  @Getter
   private List<Message> messages;
 
-  @Getter
   private Status status;
 
   public ActionResultImpl(String authorizable) {
@@ -131,5 +127,17 @@ public class ActionResultImpl implements ActionResult {
       }
     }
     return pattern;
+  }
+
+  public String getAuthorizable() {
+    return authorizable;
+  }
+
+  public List<Message> getMessages() {
+    return messages;
+  }
+
+  public Status getStatus() {
+    return status;
   }
 }

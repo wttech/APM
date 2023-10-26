@@ -26,9 +26,6 @@ aem {
 
 dependencies {
     implementation(project(":app:aem:api"))
-
-    compileOnly("org.projectlombok:lombok:1.18.8")
-    annotationProcessor("org.projectlombok:lombok:1.18.8")
 }
 
 tasks {

@@ -21,12 +21,8 @@
 package com.cognifide.apm.core.scripts;
 
 import java.io.InputStream;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
-@Getter
-@RequiredArgsConstructor
 class FileDescriptor {
 
   private static final String SCRIPT_PATH = "/conf/apm/scripts";
@@ -36,6 +32,12 @@ class FileDescriptor {
   private final String name;
 
   private final InputStream inputStream;
+
+  public FileDescriptor(String path, String name, InputStream inputStream) {
+    this.path = path;
+    this.name = name;
+    this.inputStream = inputStream;
+  }
 
   public static FileDescriptor createFileDescriptor(String originalFileName, String savePath, InputStream inputStream) {
     String path = getPathFromOriginalFileName(savePath, originalFileName);
@@ -68,4 +70,15 @@ class FileDescriptor {
     return fileName;
   }
 
+  public String getPath() {
+    return path;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public InputStream getInputStream() {
+    return inputStream;
+  }
 }

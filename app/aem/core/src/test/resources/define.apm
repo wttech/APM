@@ -43,8 +43,11 @@ DEFINE tab3 [['a', 'b'], ['c', 'd']]
 DEFINE obj {x:'a', y:1, z:['c', 1], 't':'t'}
 DEFINE tabEnum [a, b, "c", "d", 1, 2]
 DEFINE tab4 [1 + 2, "a" + "b"]
+DEFINE tabNested [[[1, 2], [3, 4]], [[5, 6], [7, 8]]]
 DEFINE func FUNC('a')
 DEFINE funcTab [FUNC('b'), UPPER('c')]
+DEFINE funcSum UPPER('a') + UPPER('b') + 1
+DEFINE funcNested FUNC(UPPER('a') + FUNC('b')) + 1
 SHOW $a
 SHOW $b
 SHOW $tab1
@@ -62,6 +65,10 @@ SHOW ${obj[t]}
 SHOW $tab4
 SHOW $tabEnum
 SHOW $tab3
+SHOW $tabNested[0][1][0]
+SHOW $tabNested[1][0][1]
 SHOW $func
 SHOW $funcTab[0]
 SHOW $funcTab[1]
+SHOW $funcSum
+SHOW $funcNested

@@ -19,8 +19,8 @@
  */
 package com.cognifide.apm.core.grammar.datasource;
 
-import com.cognifide.apm.core.grammar.ApmString;
 import com.cognifide.apm.core.grammar.ApmType;
+import com.cognifide.apm.core.grammar.ApmType.ApmString;
 import java.util.List;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;
@@ -34,8 +34,8 @@ public class UpperDataSource implements DataSource {
   }
 
   @Override
-  public ApmType determine(ResourceResolver resolver, List<ApmType> parameters) {
-    String value = parameters.get(0).getString();
+  public ApmType determine(ResourceResolver resolver, List<Object> parameters) {
+    String value = (String) parameters.get(0);
     return new ApmString(value.toUpperCase());
   }
 }

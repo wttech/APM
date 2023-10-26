@@ -1,0 +1,68 @@
+/*
+ * ========================LICENSE_START=================================
+ * AEM Permission Management
+ * %%
+ * Copyright (C) 2013 Wunderman Thompson Technology
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * =========================LICENSE_END==================================
+ */
+
+package com.cognifide.apm.core.grammar.executioncontext;
+
+import com.cognifide.apm.core.grammar.parsedscript.ParsedScript;
+import java.util.Objects;
+
+public class RunScript {
+
+  private final ParsedScript parsedScript;
+
+  private final VariableHolder variableHolder;
+
+  private final String path;
+
+  public RunScript(ParsedScript parsedScript) {
+    this.parsedScript = parsedScript;
+    this.variableHolder = new VariableHolder();
+    this.path = parsedScript.getPath();
+  }
+
+  public ParsedScript getParsedScript() {
+    return parsedScript;
+  }
+
+  public VariableHolder getVariableHolder() {
+    return variableHolder;
+  }
+
+  public String getPath() {
+    return path;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj instanceof RunScript) {
+      RunScript that = (RunScript) obj;
+      return Objects.equals(path, that.path);
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(path);
+  }
+}

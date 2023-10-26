@@ -15,9 +15,6 @@ apply(from = rootProject.file("app/aem/common.gradle.kts"))
 dependencies {
     implementation(project(":app:aem:api"))
     implementation(project(":app:aem:core"))
-
-    compileOnly("org.projectlombok:lombok:1.18.8")
-    annotationProcessor("org.projectlombok:lombok:1.18.8")
 }
 
 tasks {

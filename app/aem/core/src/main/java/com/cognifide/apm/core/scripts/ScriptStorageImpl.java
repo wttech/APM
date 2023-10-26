@@ -82,7 +82,7 @@ public class ScriptStorageImpl implements ScriptStorage {
   public Script save(ScriptUploadForm form, ResourceResolver resolver) throws RepositoryException, PersistenceException {
     FileDescriptor fileDescriptor = FileDescriptor.createFileDescriptor(form.getFileName(), form.getSavePath(), form.getFile());
     validate(Collections.singletonList(fileDescriptor));
-    return saveScript(fileDescriptor, form.toLaunchMetadata(), form.getOverwrite(), resolver);
+    return saveScript(fileDescriptor, form.toLaunchMetadata(), form.isOverwrite(), resolver);
   }
 
   private Script saveScript(FileDescriptor descriptor, LaunchMetadata launchMetadata, boolean overwrite,
@@ -112,6 +112,7 @@ public class ScriptStorageImpl implements ScriptStorage {
       setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_RUN_MODES, launchMetadata.getLaunchRunModes());
       setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_HOOK, launchMetadata.getExecutionHook());
       setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_SCHEDULE, launchMetadata.getExecutionSchedule());
+      setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_CRON_EXPRESSION, launchMetadata.getCronExpression());
       removeProperty(fileNode, ScriptNode.APM_LAST_EXECUTED);
       JcrUtils.setLastModified(fileNode, Calendar.getInstance());
       session.save();

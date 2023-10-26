@@ -27,5 +27,5 @@ public interface DataSource {
 
   String getName();
 
-  ApmType determine(ResourceResolver resolver, List<ApmType> parameters);
+  ApmType determine(ResourceResolver resolver, List<Object> parameters);
 }

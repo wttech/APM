@@ -23,10 +23,15 @@ package com.cognifide.apm.core.grammar
 import com.cognifide.apm.api.scripts.Script
 import com.cognifide.apm.api.services.ScriptFinder
 import com.cognifide.apm.api.status.Status
+import com.cognifide.apm.core.crypto.DecryptionService
+import com.cognifide.apm.core.grammar.ApmType.ApmString
+import com.cognifide.apm.core.grammar.argument.Arguments
 import com.cognifide.apm.core.grammar.datasource.DataSource
 import com.cognifide.apm.core.grammar.datasource.DataSourceInvoker
+import com.cognifide.apm.core.grammar.executioncontext.ExternalExecutionContext
 import com.cognifide.apm.core.progress.ProgressImpl
 import org.apache.commons.io.IOUtils
+import org.apache.commons.lang3.reflect.FieldUtils
 import org.apache.sling.api.resource.ResourceResolver
 import spock.lang.Specification
 
@@ -95,9 +100,13 @@ class ScriptRunnerTest extends Specification {
                      "Executing command SHOW [3, \"ab\"]",
                      "Executing command SHOW [\"a\", \"b\", \"c\", \"d\", 1, 2]",
                      "Executing command SHOW [\n\t[\"a\", \"b\"],\n\t[\"c\", \"d\"]\n]",
+                     "Executing command SHOW 3",
+                     "Executing command SHOW 6",
                      "Executing command SHOW \"a\"",
                      "Executing command SHOW \"b\"",
-                     "Executing command SHOW \"C\""]
+                     "Executing command SHOW \"C\"",
+                     "Executing command SHOW \"AB1\"",
+                     "Executing command SHOW \"Ab1\""]
     }
 
     def "run define map"() {
@@ -216,7 +225,7 @@ class ScriptRunnerTest extends Specification {
     private Script createScript(String file) {
         def content = IOUtils.toString(getClass().getResourceAsStream(file))
         def script = Mock(Script)
-        script.path >> "/conf/apm/scripts/main.apm"
+        script.path >> ("/conf/apm/scripts" + file)
         script.data >> content
         return script
     }
@@ -224,7 +233,7 @@ class ScriptRunnerTest extends Specification {
     private static ActionInvoker createActionInvoker() {
         new ActionInvoker() {
             @Override
-            Status runAction(com.cognifide.apm.core.grammar.executioncontext.ExternalExecutionContext context, String commandName, com.cognifide.apm.core.grammar.argument.Arguments arguments) {
+            Status runAction(ExternalExecutionContext context, String commandName, Arguments arguments) {
                 def command = new StringBuilder("Executing command ")
                 command.append(commandName)
                 arguments.required.each {
@@ -238,6 +247,7 @@ class ScriptRunnerTest extends Specification {
 
     private static DataSourceInvoker createDataSourceInvoker() {
         def dataSourceInvoker = new DataSourceInvoker()
+        FieldUtils.writeField(dataSourceInvoker, "decryptionService", new DecryptionService(), true)
         def bindDataSource = DataSourceInvoker.class.getDeclaredMethod("bindDataSource", DataSource.class)
         bindDataSource.setAccessible(true)
         bindDataSource.invoke(dataSourceInvoker, new DataSource() {
@@ -247,8 +257,8 @@ class ScriptRunnerTest extends Specification {
             }
 
             @Override
-            ApmType determine(ResourceResolver resolver, List<ApmType> parameters) {
-                return parameters.get(0)
+            ApmType determine(ResourceResolver resolver, List<Object> parameters) {
+                return new ApmString(parameters.get(0))
             }
         })
         bindDataSource.invoke(dataSourceInvoker, new DataSource() {
@@ -258,8 +268,8 @@ class ScriptRunnerTest extends Specification {
             }
 
             @Override
-            ApmType determine(ResourceResolver resolver, List<ApmType> parameters) {
-                return new ApmString(parameters.get(0).getString().toUpperCase())
+            ApmType determine(ResourceResolver resolver, List<Object> parameters) {
+                return new ApmString(parameters.get(0).toUpperCase())
             }
         })
         return dataSourceInvoker

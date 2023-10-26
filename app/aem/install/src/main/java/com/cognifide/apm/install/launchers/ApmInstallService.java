@@ -33,23 +33,30 @@ import com.cognifide.apm.core.services.version.ScriptVersion;
 import com.cognifide.apm.core.services.version.VersionService;
 import com.cognifide.apm.core.utils.RuntimeUtils;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
-import java.lang.management.ManagementFactory;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Dictionary;
+import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.observation.ResourceChange;
+import org.apache.sling.api.resource.observation.ResourceChangeListener;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.Designate;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 @Component(
-    service = ApmInstallService.class,
     immediate = true,
     property = {
         Property.DESCRIPTION + "APM Launches configured scripts",
@@ -57,9 +64,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
     }
 )
 @Designate(ocd = ApmInstallService.Configuration.class, factory = true)
-public class ApmInstallService extends AbstractLauncher {
-
-  private static final String AEM_MUTABLE_CONTENT_INSTANCE = "aem-install-mutable-content";
+public class ApmInstallService extends AbstractLauncher implements Runnable {
 
   @Reference
   private ResourceResolverProvider resolverProvider;
@@ -79,20 +84,47 @@ public class ApmInstallService extends AbstractLauncher {
   @Reference
   private DataSourceInvoker dataSourceInvoker;
 
+  private List<String> scriptPaths;
+
+  private boolean ifModified;
+
+  private Set<ServiceRegistration<ResourceChangeListener>> registrations;
+
   @Activate
-  public void activate(Configuration config) {
+  public void activate(Configuration config, BundleContext bundleContext) {
+    scriptPaths = Arrays.asList(config.scriptPaths());
+    ifModified = config.ifModified();
+    if (StringUtils.isEmpty(config.scheduler_expression())) {
+      processAllScripts();
+    }
+    if (ifModified) {
+      registerScripts(bundleContext);
+    }
+  }
+
+  @Deactivate
+  public void deactivate() {
+    registrations.forEach(ServiceRegistration::unregister);
+    registrations.clear();
+  }
+
+  @Override
+  public void run() {
+    processAllScripts();
+  }
+
+  private void processAllScripts() {
     SlingHelper.operateTraced(resolverProvider, resolver -> {
-      boolean compositeNodeStore = RuntimeUtils.determineCompositeNodeStore(resolver);
-      String instanceName = ManagementFactory.getRuntimeMXBean().getName();
-      if (!compositeNodeStore || StringUtils.contains(instanceName, AEM_MUTABLE_CONTENT_INSTANCE)) {
-        processScripts(config, resolver);
+      if (RuntimeUtils.isMutableContentInstance(resolver)) {
+        List<Script> scripts = determineScripts(scriptPaths, resolver);
+        processScripts(scripts, resolver);
       }
     });
   }
 
-  private void processScripts(Configuration config, ResourceResolver resolver) throws PersistenceException {
+  private List<Script> determineScripts(List<String> scriptPaths, ResourceResolver resolver) {
     ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resolver, dataSourceInvoker);
-    List<Script> scripts = Arrays.stream(config.scriptPaths())
+    return scriptPaths.stream()
         .map(scriptPath -> scriptFinder.find(scriptPath, resolver))
         .filter(Objects::nonNull)
         .filter(script -> {
@@ -100,18 +132,59 @@ public class ApmInstallService extends AbstractLauncher {
           String checksum = versionService.countChecksum(subtree);
           ScriptVersion scriptVersion = versionService.getScriptVersion(resolver, script);
           HistoryEntry lastLocalRun = history.findScriptHistory(resolver, script).getLastLocalRun();
-          return !config.ifModified()
+          return !ifModified
               || !checksum.equals(scriptVersion.getLastChecksum())
               || lastLocalRun == null
               || !checksum.equals(lastLocalRun.getChecksum());
         })
         .collect(Collectors.toList());
-    processScripts(scripts, resolver);
+  }
+
+  private void registerScripts(BundleContext bundleContext) {
+    registrations = new HashSet<>();
+    SlingHelper.operateTraced(resolverProvider, resolver -> {
+      if (RuntimeUtils.isMutableContentInstance(resolver)) {
+        scriptPaths.forEach(scriptPath -> registerScript(scriptPath, resolver, bundleContext));
+      }
+    });
+  }
+
+  private void registerScript(String scriptPath, ResourceResolver resolver, BundleContext bundleContext) {
+    Script script = scriptFinder.find(scriptPath, resolver);
+    ScriptResourceChangeListener service = new ScriptResourceChangeListener(script, scriptPath);
+    Dictionary<String, Object> dictionary = new Hashtable<>();
+    dictionary.put(ResourceChangeListener.CHANGES, new String[]{"ADDED", "CHANGED", "REMOVED"});
+    dictionary.put(ResourceChangeListener.PATHS, scriptPath);
+    ServiceRegistration<ResourceChangeListener> registration = bundleContext.registerService(ResourceChangeListener.class, service, dictionary);
+    registrations.add(registration);
   }
 
   @Override
   protected ScriptManager getScriptManager() {
     return scriptManager;
+  }
+
+  private class ScriptResourceChangeListener implements ResourceChangeListener {
+
+    private Script prevScript;
+
+    private final String scriptPath;
+
+    public ScriptResourceChangeListener(Script script, String scriptPath) {
+      this.prevScript = script;
+      this.scriptPath = scriptPath;
+    }
+
+    @Override
+    public void onChange(List<ResourceChange> changes) {
+      SlingHelper.operateTraced(resolverProvider, resolver -> {
+        List<Script> scripts = determineScripts(Collections.singletonList(scriptPath), resolver);
+        if (!scripts.isEmpty() && !Objects.equals(prevScript, scripts.get(0))) {
+          prevScript = scripts.get(0);
+          processScripts(scripts, resolver);
+        }
+      });
+    }
   }
 
   @ObjectClassDefinition(name = "AEM Permission Management - Install Launcher Configuration")
@@ -123,6 +196,7 @@ public class ApmInstallService extends AbstractLauncher {
     @AttributeDefinition(name = "If Modified", description = "Executed script, only if script content's changed")
     boolean ifModified();
 
+    @AttributeDefinition(name = "CRON Expression", description = "Cron expression for scheduled execution")
+    String scheduler_expression();
   }
-
 }

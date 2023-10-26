@@ -30,14 +30,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
-@Getter
-@RequiredArgsConstructor
 public abstract class ParameterDescriptor {
 
   private final Class<? extends ApmType> type;
+
+  public ParameterDescriptor(Class<? extends ApmType> type) {
+    this.type = type;
+  }
 
   abstract Object getArgument(Arguments arguments, DecryptionService decryptionService);
 
@@ -49,7 +49,10 @@ public abstract class ParameterDescriptor {
     return this.type.equals(apmType.getClass());
   }
 
-  @Getter
+  public Class<? extends ApmType> getType() {
+    return type;
+  }
+
   public static class RequiredParameterDescriptor extends ParameterDescriptor {
 
     private final int index;
@@ -79,9 +82,16 @@ public abstract class ParameterDescriptor {
     List<ArgumentDescription> toArgumentDescriptions() {
       return argumentDescriptions;
     }
+
+    public int getIndex() {
+      return index;
+    }
+
+    public List<ArgumentDescription> getArgumentDescriptions() {
+      return argumentDescriptions;
+    }
   }
 
-  @Getter
   public static class NamedParameterDescriptor extends ParameterDescriptor {
 
     private final String name;
@@ -109,9 +119,16 @@ public abstract class ParameterDescriptor {
     List<ArgumentDescription> toArgumentDescriptions() {
       return argumentDescriptions;
     }
+
+    public String getName() {
+      return name;
+    }
+
+    public List<ArgumentDescription> getArgumentDescriptions() {
+      return argumentDescriptions;
+    }
   }
 
-  @Getter
   public static class FlagsParameterDescriptor extends ParameterDescriptor {
 
     private final List<ArgumentDescription> argumentDescriptions;
@@ -137,9 +154,12 @@ public abstract class ParameterDescriptor {
     List<ArgumentDescription> toArgumentDescriptions() {
       return argumentDescriptions;
     }
+
+    public List<ArgumentDescription> getArgumentDescriptions() {
+      return argumentDescriptions;
+    }
   }
 
-  @Getter
   public static class FlagParameterDescriptor extends ParameterDescriptor {
 
     private final List<ArgumentDescription> argumentDescriptions;
@@ -164,6 +184,14 @@ public abstract class ParameterDescriptor {
     @Override
     List<ArgumentDescription> toArgumentDescriptions() {
       return argumentDescriptions;
+    }
+
+    public List<ArgumentDescription> getArgumentDescriptions() {
+      return argumentDescriptions;
+    }
+
+    public String getFlag() {
+      return flag;
     }
   }
 }
