@@ -20,8 +20,6 @@
  */
 package com.cognifide.apm.core.ui.datasources;
 
-import static com.cognifide.apm.core.ui.models.ScriptsRowModel.SCRIPTS_ROW_RESOURCE_TYPE;
-
 import com.adobe.granite.ui.components.ds.DataSource;
 import com.adobe.granite.ui.components.ds.SimpleDataSource;
 import com.cognifide.apm.core.Property;
@@ -76,7 +74,7 @@ public class ScriptsDatasourceServlet extends SlingSafeMethodsServlet {
 
     @Override
     public String getResourceType() {
-      return SCRIPTS_ROW_RESOURCE_TYPE;
+      return ScriptsRowModel.SCRIPTS_ROW_RESOURCE_TYPE;
     }
   }
 
