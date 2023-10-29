@@ -62,9 +62,7 @@ public class RemoveParents implements Action {
     try {
       authorizable = context.getCurrentAuthorizable();
       actionResult.setAuthorizable(authorizable.getID());
-      LOGGER.info(
-          String.format("Removing authorizable with id = %s from groups %s", authorizable.getID(),
-              groupIds));
+      LOGGER.info("Removing authorizable with id={} from groups {}", authorizable.getID(), groupIds);
     } catch (RepositoryException | ActionExecutionException e) {
       actionResult.logError(MessagingUtils.createMessage(e));
       return actionResult;

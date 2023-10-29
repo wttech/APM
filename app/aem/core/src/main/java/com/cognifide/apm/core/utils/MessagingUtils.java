@@ -96,7 +96,7 @@ public final class MessagingUtils {
       paths.add(script.getPath());
     }
 
-    return StringUtils.join(paths, "\n");
+    return String.join("\n", paths);
   }
 
 }

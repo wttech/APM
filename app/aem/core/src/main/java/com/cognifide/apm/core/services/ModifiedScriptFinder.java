@@ -78,7 +78,7 @@ public class ModifiedScriptFinder {
                   modified.add(script);
                 }
               } catch (ScriptExecutionException e) {
-                LOGGER.error(e.getMessage());
+                LOGGER.error(e.getMessage(), e);
               }
             }
         );

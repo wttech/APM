@@ -50,7 +50,7 @@
             <p>${map.description}</p>
             <div data-sly-test="${map.examples}" class="code-example">
               <strong>Examples</strong>
-              <code data-sly-repeat.example="${map.examples}">${example}</code>
+              <code data-sly-repeat.example="${map.examples}">${example @ context='html'}</code>
             </div>
           </td>
         </tr>
