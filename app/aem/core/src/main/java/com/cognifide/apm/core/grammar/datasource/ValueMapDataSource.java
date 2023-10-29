@@ -20,17 +20,21 @@
 package com.cognifide.apm.core.grammar.datasource;
 
 import com.cognifide.apm.core.grammar.ApmType;
+import com.cognifide.apm.core.grammar.ApmType.ApmEmpty;
 import com.cognifide.apm.core.grammar.ApmType.ApmInteger;
 import com.cognifide.apm.core.grammar.ApmType.ApmList;
 import com.cognifide.apm.core.grammar.ApmType.ApmMap;
+import com.cognifide.apm.core.grammar.ApmType.ApmPair;
 import com.cognifide.apm.core.grammar.ApmType.ApmString;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
 import org.osgi.service.component.annotations.Component;
@@ -46,26 +50,29 @@ public class ValueMapDataSource implements DataSource {
   @Override
   public ApmType determine(ResourceResolver resolver, List<Object> parameters) {
     String path = (String) parameters.get(0);
-    ValueMap valueMap = resolver.getResource(path).getValueMap();
-    Map<String, ApmType> map = new HashMap<>();
-    for (Map.Entry<String, Object> entry : valueMap.entrySet()) {
-      String key = entry.getKey();
-      Object value = entry.getValue();
-      if (value instanceof Object[]) {
-        List<ApmType> list = Arrays.stream((Object[]) value)
-            .map(this::determineValue)
-            .collect(Collectors.toList());
-        map.put(key, new ApmList(list));
-      } else {
-        map.put(key, determineValue(value));
-      }
+    String regex = parameters.size() > 1 ? (String) parameters.get(1) : null;
+    Pattern pattern = StringUtils.isNotEmpty(regex) ? Pattern.compile(regex) : null;
+    Resource resource = resolver.getResource(path);
+    if (resource == null) {
+      return new ApmEmpty();
     }
+    ValueMap valueMap = resource.getValueMap();
+    Map<String, ApmType> map = valueMap.entrySet()
+        .stream()
+        .filter(entry -> pattern == null || pattern.matcher(entry.getKey()).matches())
+        .map(entry -> new ApmPair(entry.getKey(), determineValue(entry.getValue())))
+        .collect(Collectors.toMap(ApmPair::getKey, ApmPair::getValue));
     return new ApmMap(map);
   }
 
   private ApmType determineValue(Object value) {
     ApmType result;
-    if (value instanceof Integer) {
+    if (value instanceof Object[]) {
+      List<ApmType> list = Arrays.stream((Object[]) value)
+          .map(this::determineValue)
+          .collect(Collectors.toList());
+      result = new ApmList(list);
+    } else if (value instanceof Integer) {
       result = new ApmInteger((Integer) value);
     } else if (value instanceof Calendar) {
       result = new ApmString((((Calendar) value).toInstant()).toString());

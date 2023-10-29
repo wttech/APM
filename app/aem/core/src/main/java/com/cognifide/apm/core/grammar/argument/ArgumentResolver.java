@@ -160,8 +160,8 @@ public class ArgumentResolver {
           .collect(Collectors.toMap(
               ApmPair::getKey,
               ApmPair::getValue,
-              (key, value) -> {
-                throw new IllegalStateException(String.format("Duplicate key %s", key));
+              (existing, replacement) -> {
+                throw new IllegalStateException("Duplicate key");
               },
               LinkedHashMap::new
           ));

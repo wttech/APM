@@ -137,11 +137,11 @@ public class LevelsDataSource implements DataSource {
       }
       if (result && !StringUtils.isAllEmpty(template, resourceType)) {
         ValueMap valueMap;
-        if (resource.isResourceType(NameConstants.NT_PAGE)) {
+        if (isPrimaryType(resource, NameConstants.NT_PAGE)) {
           valueMap = Optional.ofNullable(resource.getChild(JcrConstants.JCR_CONTENT))
               .map(Resource::getValueMap)
               .orElse(ValueMap.EMPTY);
-        } else if (!resource.isResourceType("cq:PageContent")) {
+        } else if (!isPrimaryType(resource, "cq:PageContent")) {
           valueMap = resource.getValueMap();
         } else {
           valueMap = ValueMap.EMPTY;
@@ -166,6 +166,10 @@ public class LevelsDataSource implements DataSource {
       }
       return params;
     }
+
+    public boolean isPrimaryType(Resource resource, String primaryType) {
+      return StringUtils.equals(resource.getValueMap().get(JcrConstants.JCR_PRIMARYTYPE, String.class), primaryType);
+    }
   }
 
   private static class ConfigProperty {
@@ -178,7 +182,7 @@ public class LevelsDataSource implements DataSource {
 
     public ConfigProperty(Map<String, Object> map) {
       name = (String) map.get("name");
-      String regex = (String) map.get("excludeRegex");
+      String regex = (String) map.get("regex");
       pattern = StringUtils.isNotEmpty(regex) ? Pattern.compile(regex) : null;
       String excludeRegex = (String) map.get("excludeRegex");
       excludePattern = StringUtils.isNotEmpty(excludeRegex) ? Pattern.compile(excludeRegex) : null;
@@ -188,10 +192,10 @@ public class LevelsDataSource implements DataSource {
       String value = resource.getValueMap().get(name, String.class);
       boolean result = StringUtils.isNotEmpty(value);
       if (result && pattern != null) {
-        result = pattern.matcher(resource.getName()).matches();
+        result = pattern.matcher(value).matches();
       }
       if (result && excludePattern != null) {
-        result = !excludePattern.matcher(resource.getName()).matches();
+        result = !excludePattern.matcher(value).matches();
       }
       return result;
     }
