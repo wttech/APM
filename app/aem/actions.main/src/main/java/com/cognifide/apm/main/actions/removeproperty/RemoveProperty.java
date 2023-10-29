@@ -55,8 +55,7 @@ public class RemoveProperty implements Action {
     try {
       Authorizable authorizable = context.getCurrentAuthorizable();
       actionResult.setAuthorizable(authorizable.getID());
-      LOGGER.info(String.format("Removing property %s from authorizable with id = %s", nameProperty,
-          authorizable.getID()));
+      LOGGER.info("Removing property {} from authorizable with id={}", nameProperty, authorizable.getID());
       if (!simulate) {
         authorizable.removeProperty(nameProperty);
       }

@@ -150,11 +150,8 @@ public class ScriptRunner {
           int index = iterator.nextIndex();
           Map<String, ApmType> value = iterator.next();
           executionContext.createLocalContext();
-          String valueStr = value.entrySet()
-              .stream()
-              .map(entry -> String.format("%s=%s", entry.getKey(), entry.getValue()))
-              .collect(Collectors.joining());
-          progress(ctx, Status.SUCCESS, "for-each", String.format("%d. Begin: %s", index, valueStr));
+          Arguments arguments = new Arguments(Collections.emptyList(), value, Collections.emptyList());
+          progress(ctx, Status.SUCCESS, "for-each", String.format("%d. Begin", index), arguments);
           value.forEach(executionContext::setVariable);
           visit(ctx.body());
           progress(ctx, Status.SUCCESS, "for-each", String.format("%d. End", index));

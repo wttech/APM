@@ -81,8 +81,8 @@ public class Allow implements Action {
         context.getSession().getNode(path);
         PermissionActionHelper permissionActionHelper = new PermissionActionHelper(
             context.getValueFactory(), path, permissions, restrictions);
-        LOGGER.info(String.format("Adding permissions %s for authorizable with id = %s for path = %s %s",
-            permissions.toString(), context.getCurrentAuthorizable().getID(), path, restrictions));
+        LOGGER.info("Adding permissions {} for authorizable with id={} for path={} {}",
+            permissions.toString(), context.getCurrentAuthorizable().getID(), path, restrictions);
         if (simulate) {
           permissionActionHelper.checkPermissions(context.getAccessControlManager());
         } else {

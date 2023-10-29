@@ -44,6 +44,8 @@ public interface ExecutionResult {
 
     List<String> getParameters();
 
+    List<String> getPrettyParameters();
+
     Status getStatus();
   }
 }

@@ -76,6 +76,13 @@ public class ProgressEntry implements Entry {
   }
 
   @Override
+  public List<String> getPrettyParameters() {
+    return parameters.stream()
+        .map(message -> message.replaceAll("\n", "<br>").replaceAll("\t", "&nbsp;&nbsp;&nbsp;&nbsp;"))
+        .collect(Collectors.toList());
+  }
+
+  @Override
   public Status getStatus() {
     return status;
   }

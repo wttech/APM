@@ -136,7 +136,7 @@ public class ApmInstallHook extends OsgiAwareInstallHook {
     } else {
       PackageException packageException = new PackageException(String.format("Script cannot be executed properly: %s", scriptPath));
       onError(context, ProgressTrackerListener.Mode.TEXT, "", packageException);
-      LOGGER.error("", packageException);
+      LOGGER.error(packageException.getMessage(), packageException);
       result.getEntries()
           .stream()
           .filter(entry -> entry.getStatus() == Status.ERROR)

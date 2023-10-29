@@ -28,7 +28,6 @@ import com.cognifide.apm.api.status.Status;
 import com.cognifide.apm.main.utils.MessagingUtils;
 import java.util.List;
 import javax.jcr.RepositoryException;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.api.security.user.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +54,7 @@ public class RemoveUser implements Action {
 
   private ActionResult process(Context context, boolean execute) {
     ActionResult actionResult = context.createActionResult();
-    LOGGER.info(String.format("Removing users with ids = %s", StringUtils.join(ids, ", ")));
+    LOGGER.info("Removing users with ids={}", String.join(", ", ids));
     for (String id : ids) {
       try {
         User user = context.getAuthorizableManager().getUser(id);

@@ -51,7 +51,7 @@ public class ClearFromGroupDetacher {
 
       if (authorizable.isGroup()) {
         final Group group = context.getCurrentGroup();
-        LOGGER.info(String.format("Removing all members of group with id = %s", group.getID()));
+        LOGGER.info("Removing all members of group with id={}", group.getID());
         Iterator<Authorizable> groupMembers = getGroupMembers(actionResult, group);
 
         detachAllMembers(actionResult, group, groupMembers);
@@ -71,8 +71,7 @@ public class ClearFromGroupDetacher {
       Authorizable currentAuthorizable = context.getCurrentAuthorizable();
       Iterator<Group> groups = getGroupParents(actionResult, currentAuthorizable);
 
-      LOGGER.info(String.format("Removing all memberships of authorizable with id = %s",
-          currentAuthorizable.getID()));
+      LOGGER.info("Removing all memberships of authorizable with id={}", currentAuthorizable.getID());
       detachFromParents(actionResult, currentAuthorizable, groups);
     } catch (RepositoryException | ActionExecutionException e) {
       actionResult.logError(MessagingUtils.createMessage(e));
