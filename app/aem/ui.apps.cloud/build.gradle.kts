@@ -20,7 +20,7 @@ apply(from = rootProject.file("app/aem/common.gradle.kts"))
 aem {
     tasks {
         packageCompose {
-            mergePackageProject(":app:aem:ui.apps.base")
+            from(project(":app:aem:ui.apps.base").layout.projectDirectory.dir("src/main/content"))
             installBundleProject(":app:aem:api")
             installBundleProject(":app:aem:runmodes.cloud")
             installBundleProject(":app:aem:core")
