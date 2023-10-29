@@ -84,4 +84,4 @@ tasks {
 apply(from = "gradle/common.gradle.kts")
 
 fun formatVersion(version: String, position: ScmPosition) =
-        version + "-" + position.branch.replace("/", "").replace(".", "")
+    version + "-" + position.branch.replace("/", "").replace(".", "")

@@ -20,15 +20,7 @@ aem {
         jar {
             bundle {
                 importPackage("javax.annotation;version=0.0.0", "!android.os")
-                attribute("Sling-Model-Packages",
-                        listOf(
-                                "com.cognifide.apm.core.crypto",
-                                "com.cognifide.apm.core.endpoints",
-                                "com.cognifide.apm.core.ui.models",
-                                "com.cognifide.apm.core.scripts",
-                                "com.cognifide.apm.core.services",
-                                "com.cognifide.apm.core.history"
-                        ).joinToString(","))
+                attribute("Sling-Model-Packages", "com.cognifide.apm.core")
                 excludePackage("org.antlr.stringtemplate", "org.antlr.v4.gui")
                 embedPackage("org.antlr:antlr4-runtime:4.7.2", "org.antlr.v4.runtime.*")
             }
