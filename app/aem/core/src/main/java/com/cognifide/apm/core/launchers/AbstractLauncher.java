@@ -23,7 +23,7 @@ import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ExecutionMode;
 import com.cognifide.apm.api.services.ExecutionResult;
 import com.cognifide.apm.api.services.ScriptManager;
-import com.cognifide.apm.core.utils.MessagingUtils;
+import com.cognifide.apm.main.utils.MessagingUtils;
 import java.util.List;
 import javax.jcr.RepositoryException;
 import org.apache.sling.api.resource.PersistenceException;

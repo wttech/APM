@@ -24,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 public final class MessagingUtils {
 
   private MessagingUtils() {
+    // intentionally empty
   }
 
   public static String createMessage(Exception e) {
