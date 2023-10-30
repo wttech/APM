@@ -106,7 +106,9 @@ class ScriptRunnerTest extends Specification {
                      "Executing command SHOW \"b\"",
                      "Executing command SHOW \"C\"",
                      "Executing command SHOW \"AB1\"",
-                     "Executing command SHOW \"Ab1\""]
+                     "Executing command SHOW \"Ab1\"",
+                     "Executing command SHOW \"const\"",
+                     "Executing command SHOW \"CONST\""]
     }
 
     def "run define map"() {
@@ -270,6 +272,17 @@ class ScriptRunnerTest extends Specification {
             @Override
             ApmType determine(ResourceResolver resolver, List<Object> parameters) {
                 return new ApmString(parameters.get(0).toUpperCase())
+            }
+        })
+        bindDataSource.invoke(dataSourceInvoker, new DataSource() {
+            @Override
+            String getName() {
+                return "CONST"
+            }
+
+            @Override
+            ApmType determine(ResourceResolver resolver, List<Object> parameters) {
+                return new ApmString("const")
             }
         })
         return dataSourceInvoker

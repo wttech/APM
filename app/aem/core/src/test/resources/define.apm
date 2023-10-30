@@ -48,6 +48,8 @@ DEFINE func FUNC('a')
 DEFINE funcTab [FUNC('b'), UPPER('c')]
 DEFINE funcSum UPPER('a') + UPPER('b') + 1
 DEFINE funcNested FUNC(UPPER('a') + FUNC('b')) + 1
+DEFINE const CONST()
+DEFINE constUpper UPPER(CONST())
 SHOW $a
 SHOW $b
 SHOW $tab1
@@ -72,3 +74,5 @@ SHOW $funcTab[0]
 SHOW $funcTab[1]
 SHOW $funcSum
 SHOW $funcNested
+SHOW $const
+SHOW $constUpper
