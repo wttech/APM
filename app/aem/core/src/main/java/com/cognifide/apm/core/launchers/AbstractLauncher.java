@@ -23,8 +23,8 @@ import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ExecutionMode;
 import com.cognifide.apm.api.services.ExecutionResult;
 import com.cognifide.apm.api.services.ScriptManager;
-import com.cognifide.apm.core.utils.MessagingUtils;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.jcr.RepositoryException;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -41,8 +41,10 @@ public abstract class AbstractLauncher {
 
   protected void processScripts(List<Script> scripts, ResourceResolver resolver) throws PersistenceException {
     if (!scripts.isEmpty()) {
-      logger.info("Launcher will try to run following scripts: {}", scripts.size());
-      logger.info(MessagingUtils.describeScripts(scripts));
+      String scriptPathsStr = scripts.stream()
+          .map(Script::getPath)
+          .collect(Collectors.joining("\n"));
+      logger.info("Launcher will try to run following scripts: {}\n{}", scripts.size(), scriptPathsStr);
       for (Script script : scripts) {
         processScript(script, resolver);
       }

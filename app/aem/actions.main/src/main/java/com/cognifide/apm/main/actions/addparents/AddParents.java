@@ -75,8 +75,7 @@ public class AddParents implements Action {
         if (authorizable.isGroup()) {
           ActionUtils.checkCyclicRelations(group, (Group) authorizable);
         }
-        LOGGER.info(String.format("Adding Authorizable with id = %s to group with id = %s",
-            authorizable.getID(), group.getID()));
+        LOGGER.info("Adding Authorizable with id={} to group with id={}", authorizable.getID(), group.getID());
 
         boolean flag = true;
         if (execute) {

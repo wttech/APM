@@ -28,7 +28,6 @@ import com.cognifide.apm.api.status.Status;
 import com.cognifide.apm.main.utils.MessagingUtils;
 import java.util.List;
 import javax.jcr.RepositoryException;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.api.security.user.Group;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +55,7 @@ public class DeleteGroup implements Action {
   private ActionResult process(Context context, boolean execute) {
     ActionResult actionResult = context.createActionResult();
 
-    LOGGER.info(String.format("Removing groups with ids = %s", StringUtils.join(ids, ", ")));
+    LOGGER.info("Removing groups with ids={}", String.join(", ", ids));
     for (String id : ids) {
       try {
         Group group = context.getAuthorizableManager().getGroup(id);
