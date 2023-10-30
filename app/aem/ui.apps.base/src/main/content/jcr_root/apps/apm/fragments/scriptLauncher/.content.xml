@@ -1,63 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
-          xmlns:jcr="http://www.jcp.org/jcr/1.0"
-          xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:granite="http://www.adobe.com/jcr/granite/1.0"
-          granite:class="apm-editor-launcher hidden"
-          jcr:primaryType="nt:unstructured"
-          jcr:title="Launcher"
-          sling:resourceType="granite/ui/components/coral/foundation/form/fieldset">
-    <items jcr:primaryType="nt:unstructured">
-        <disabled
-                jcr:primaryType="nt:unstructured"
-                sling:resourceType="granite/ui/components/coral/foundation/form/checkbox"
-                text="Disabled"
-                fieldLabel="Disabled"
-                fieldDescription="Script with disabled launcher can not be launched neither manually through UI, nor automatically. But it can be referenced by other scripts using IMPORT or RUN."
-                name="apm:launchEnabled"
-                value="false"
-                uncheckedValue="true"/>
-        <mode
-                jcr:primaryType="nt:unstructured"
-                sling:resourceType="granite/ui/components/coral/foundation/form/select"
-                fieldLabel="Mode"
-                name="apm:launchMode">
-            <datasource
-                    jcr:primaryType="nt:unstructured"
-                    sling:resourceType="apm/datasource/launchModes"/>
-        </mode>
-        <environment
-                jcr:primaryType="nt:unstructured"
-                sling:resourceType="granite/ui/components/coral/foundation/form/select"
-                fieldLabel="Environment"
-                name="apm:launchEnvironment">
-            <datasource
-                    jcr:primaryType="nt:unstructured"
-                    sling:resourceType="apm/datasource/launchEnvironments"/>
-        </environment>
-        <runModes
-                jcr:primaryType="nt:unstructured"
-                sling:resourceType="granite/ui/components/coral/foundation/form/multifield"
-                fieldLabel="Run Modes">
-            <field jcr:primaryType="nt:unstructured"
-                   sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
-                   name="apm:launchRunModes"/>
-        </runModes>
-        <hook
-                jcr:primaryType="nt:unstructured"
-                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
-                fieldLabel="Hook"
-                name="apm:launchHook"/>
-        <schedule
-                jcr:primaryType="nt:unstructured"
-                sling:resourceType="granite/ui/components/coral/foundation/form/datepicker"
-                fieldLabel="Schedule"
-                name="apm:launchSchedule"
-                type="datetime"
-                valueFormat="YYYY-MM-DD[T]HH:mm:ss"/>
-        <cronExpression
-                jcr:primaryType="nt:unstructured"
-                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
-                fieldLabel="CRON expression"
-                name="apm:launchCronExpression"/>
-    </items>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+  xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:granite="http://www.adobe.com/jcr/granite/1.0"
+  granite:class="apm-editor-launcher hidden"
+  jcr:primaryType="nt:unstructured"
+  jcr:title="Launcher"
+  sling:resourceType="granite/ui/components/coral/foundation/form/fieldset">
+  <items jcr:primaryType="nt:unstructured">
+    <disabled
+      jcr:primaryType="nt:unstructured"
+      sling:resourceType="granite/ui/components/coral/foundation/form/checkbox"
+      text="Disabled"
+      fieldLabel="Disabled"
+      fieldDescription="Script with disabled launcher can not be launched neither manually through UI, nor automatically. But it can be referenced by other scripts using IMPORT or RUN."
+      name="apm:launchEnabled"
+      value="false"
+      uncheckedValue="true"/>
+    <mode
+      jcr:primaryType="nt:unstructured"
+      sling:resourceType="granite/ui/components/coral/foundation/form/select"
+      fieldLabel="Mode"
+      name="apm:launchMode">
+      <datasource
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="apm/datasource/launchModes"/>
+    </mode>
+    <environment
+      jcr:primaryType="nt:unstructured"
+      sling:resourceType="granite/ui/components/coral/foundation/form/select"
+      fieldLabel="Environment"
+      name="apm:launchEnvironment">
+      <datasource
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="apm/datasource/launchEnvironments"/>
+    </environment>
+    <runModes
+      jcr:primaryType="nt:unstructured"
+      sling:resourceType="granite/ui/components/coral/foundation/form/multifield"
+      fieldLabel="Run Modes">
+      <field jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+        name="apm:launchRunModes"/>
+    </runModes>
+    <hook
+      jcr:primaryType="nt:unstructured"
+      sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+      fieldLabel="Hook"
+      name="apm:launchHook"/>
+    <schedule
+      jcr:primaryType="nt:unstructured"
+      sling:resourceType="granite/ui/components/coral/foundation/form/datepicker"
+      fieldLabel="Schedule"
+      name="apm:launchSchedule"
+      type="datetime"
+      valueFormat="YYYY-MM-DD[T]HH:mm:ss"/>
+    <cronExpression
+      jcr:primaryType="nt:unstructured"
+      sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+      fieldLabel="CRON expression"
+      name="apm:launchCronExpression"/>
+  </items>
 </jcr:root>
