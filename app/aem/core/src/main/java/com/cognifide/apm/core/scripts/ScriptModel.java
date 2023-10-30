@@ -130,7 +130,7 @@ public class ScriptModel implements MutableScript {
       try {
         scriptManager.process(this, ExecutionMode.VALIDATION, resource.getResourceResolver());
       } catch (RepositoryException | PersistenceException e) {
-        LOGGER.error("", e);
+        LOGGER.error(e.getMessage(), e);
       }
     }
   }

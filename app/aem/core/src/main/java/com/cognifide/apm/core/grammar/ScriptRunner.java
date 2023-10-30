@@ -158,7 +158,7 @@ public class ScriptRunner {
           String valueStr = value.entrySet()
               .stream()
               .map(entry -> String.format("%s=%s", entry.getKey(), entry.getValue()))
-              .collect(Collectors.joining());
+              .collect(Collectors.joining("\n"));
           progress(ctx, Status.SUCCESS, "for-each", String.format("%d. Begin: %s", index, valueStr));
           value.forEach(executionContext::setVariable);
           visit(ctx.body());

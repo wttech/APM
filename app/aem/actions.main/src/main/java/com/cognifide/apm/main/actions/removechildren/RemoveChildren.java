@@ -28,7 +28,6 @@ import com.cognifide.apm.api.status.Status;
 import com.cognifide.apm.main.utils.MessagingUtils;
 import java.util.List;
 import javax.jcr.RepositoryException;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.apache.jackrabbit.api.security.user.Group;
 import org.slf4j.Logger;
@@ -60,8 +59,7 @@ public class RemoveChildren implements Action {
     try {
       group = context.getCurrentGroup();
       actionResult.setAuthorizable(group.getID());
-      LOGGER.info(String.format("Removing authorizables %s from group with id = %s",
-          StringUtils.join(authorizableIds, ", "), group.getID()));
+      LOGGER.info("Removing authorizables {} from group with id={}", String.join(", ", authorizableIds), group.getID());
     } catch (RepositoryException | ActionExecutionException e) {
       actionResult.logError(MessagingUtils.createMessage(e));
       return actionResult;

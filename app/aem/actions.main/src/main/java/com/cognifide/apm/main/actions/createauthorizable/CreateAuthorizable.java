@@ -90,20 +90,16 @@ public class CreateAuthorizable implements Action {
   private void logMessage(ActionResult actionResult, Authorizable authorizable) throws RepositoryException {
     if (!ignoreIfExists) {
       if (authorizable instanceof Group) {
-        actionResult.logError(authorizableExists(authorizable.getID(), "Group"));
+        actionResult.logError(MessagingUtils.authorizableExists(authorizable.getID(), "Group"));
       } else {
-        actionResult.logError(authorizableExists(authorizable.getID(), "User"));
+        actionResult.logError(MessagingUtils.authorizableExists(authorizable.getID(), "User"));
       }
     } else {
       if (authorizable instanceof Group) {
-        actionResult.changeStatus(Status.SKIPPED, authorizableExists(authorizable.getID(), "Group"));
+        actionResult.changeStatus(Status.SKIPPED, MessagingUtils.authorizableExists(authorizable.getID(), "Group"));
       } else {
-        actionResult.changeStatus(Status.SKIPPED, authorizableExists(authorizable.getID(), "User"));
+        actionResult.changeStatus(Status.SKIPPED, MessagingUtils.authorizableExists(authorizable.getID(), "User"));
       }
     }
-  }
-
-  private static String authorizableExists(String authorizableId, String type) {
-    return "Authorizable with id: " + authorizableId + " already exists, and is a " + type;
   }
 }

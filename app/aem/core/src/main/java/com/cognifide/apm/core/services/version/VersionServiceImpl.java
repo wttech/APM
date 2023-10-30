@@ -104,7 +104,7 @@ public class VersionServiceImpl implements VersionService {
           createVersion(resolver, script);
         }
       } catch (ScriptExecutionException | PersistenceException e) {
-        LOGGER.error(e.getMessage());
+        LOGGER.error(e.getMessage(), e);
       }
     }
   }
