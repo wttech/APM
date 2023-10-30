@@ -19,7 +19,6 @@
  */
 package com.cognifide.apm.main.utils;
 
-import com.cognifide.apm.api.scripts.Script;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
@@ -74,11 +73,5 @@ public final class MessagingUtils {
   public static String unknownPermissions(List<String> permissions) {
     return permissions.stream()
         .collect(Collectors.joining(", ", "Unknown permissions: ", ""));
-  }
-
-  public static String describeScripts(List<Script> scripts) {
-    return scripts.stream()
-        .map(Script::getPath)
-        .collect(Collectors.joining("\n"));
   }
 }
