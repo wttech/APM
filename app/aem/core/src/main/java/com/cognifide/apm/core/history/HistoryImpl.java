@@ -29,6 +29,7 @@ import com.cognifide.apm.core.services.ResourceResolverProvider;
 import com.cognifide.apm.core.services.version.VersionService;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
 import com.day.cq.commons.jcr.JcrConstants;
+import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.Calendar;
 import java.util.LinkedList;
@@ -40,7 +41,6 @@ import javax.jcr.Session;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.sling.api.resource.AbstractResourceVisitor;
-import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.api.resource.ValueMap;
@@ -164,18 +164,16 @@ public class HistoryImpl implements History {
       session.save();
       resolver.commit();
       return resolver.getResource(historyEntryNode.getPath()).adaptTo(HistoryEntryImpl.class);
-    } catch (PersistenceException | RepositoryException e) {
+    } catch (IOException | RepositoryException e) {
       LOG.error("Issues with saving to repository while logging script execution", e);
       return null;
     }
   }
 
-  private Resource writeProperties(ResourceResolver resolver, Node historyEntry, HistoryEntryWriter
-      historyEntryWriter)
-      throws RepositoryException {
+  private void writeProperties(ResourceResolver resolver, Node historyEntry, HistoryEntryWriter historyEntryWriter)
+      throws RepositoryException, IOException {
     Resource entryResource = resolver.getResource(historyEntry.getPath());
     historyEntryWriter.writeTo(entryResource);
-    return entryResource;
   }
 
   private Node createHistoryEntryNode(Node scriptHistoryNode, Script script, ExecutionMode mode)
@@ -204,5 +202,4 @@ public class HistoryImpl implements History {
   private String getScriptHistoryPath(Script script) {
     return HISTORY_FOLDER + "/" + script.getPath().replace("/", "_").substring(1);
   }
-
 }

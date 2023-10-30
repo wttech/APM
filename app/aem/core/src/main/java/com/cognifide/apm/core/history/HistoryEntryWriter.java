@@ -20,21 +20,34 @@
 
 package com.cognifide.apm.core.history;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
+import org.apache.commons.io.IOUtils;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.Resource;
 
 public final class HistoryEntryWriter {
 
   private final String author;
+
   private final Calendar executionTime;
+
   private final String executor;
+
   private final long executionDuration;
+
   private final String fileName;
+
   private final String filePath;
+
   private final Boolean isRunSuccessful;
+
   private final String mode;
+
   private final String progressLog;
+
   private final String instanceName;
 
   private HistoryEntryWriter(String author, Calendar executionTime, String executor, long executionDuration, String fileName, String filePath, Boolean isRunSuccessful, String mode, String progressLog, String instanceName) {
@@ -54,13 +67,15 @@ public final class HistoryEntryWriter {
     return new HistoryEntryWriterBuilder();
   }
 
-  public void writeTo(Resource historyLogResource) {
+  public void writeTo(Resource historyLogResource) throws IOException {
     ModifiableValueMap valueMap = historyLogResource.adaptTo(ModifiableValueMap.class);
     valueMap.put(HistoryEntryImpl.SCRIPT_NAME, fileName);
     valueMap.put(HistoryEntryImpl.SCRIPT_PATH, filePath);
     valueMap.put(HistoryEntryImpl.AUTHOR, author);
     valueMap.put(HistoryEntryImpl.MODE, mode);
-    valueMap.put(HistoryEntryImpl.PROGRESS_LOG, progressLog);
+    try (InputStream progressLogInput = IOUtils.toInputStream(progressLog, StandardCharsets.UTF_8)) {
+      valueMap.put(HistoryEntryImpl.PROGRESS_LOG, progressLogInput);
+    }
     valueMap.put(HistoryEntryImpl.IS_RUN_SUCCESSFUL, isRunSuccessful);
     valueMap.put(HistoryEntryImpl.EXECUTION_TIME, executionTime);
     valueMap.put(HistoryEntryImpl.EXECUTION_DURATION, executionDuration);
@@ -71,14 +86,23 @@ public final class HistoryEntryWriter {
   public static class HistoryEntryWriterBuilder {
 
     private String author;
+
     private Calendar executionTime;
+
     private String executor;
+
     private long executionDuration;
+
     private String fileName;
+
     private String filePath;
+
     private Boolean isRunSuccessful;
+
     private String mode;
+
     private String progressLog;
+
     private String instanceName;
 
     private HistoryEntryWriterBuilder() {
