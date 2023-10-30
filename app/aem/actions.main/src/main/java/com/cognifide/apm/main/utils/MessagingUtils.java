@@ -50,12 +50,12 @@ public final class MessagingUtils {
     return "New password for user " + userId + " was set";
   }
 
-  public static String authorizableExists(String authorizableId, String type) {
-    return "Authorizable with id: " + authorizableId + " already exists, and is a " + type;
-  }
-
   public static String addingGroupToItself(String groupId) {
     return "You can not add group " + groupId + " to itself";
+  }
+
+  public static String authorizableExists(String authorizableId, String type) {
+    return "Authorizable with id: " + authorizableId + " already exists, and is a " + type;
   }
 
   public static String groupHasNoMembers(String groupId) {
