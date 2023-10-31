@@ -19,15 +19,14 @@
  */
 package com.cognifide.apm.main.utils;
 
-import com.cognifide.apm.api.scripts.Script;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 
 public final class MessagingUtils {
 
   private MessagingUtils() {
+    // intentionally empty
   }
 
   public static String createMessage(Exception e) {
@@ -54,8 +53,8 @@ public final class MessagingUtils {
     return "You can not add group " + groupId + " to itself";
   }
 
-  public static String authorizableNotExists(String authorizableId) {
-    return "Authorizable with id: " + authorizableId + " does not exists";
+  public static String authorizableExists(String authorizableId, String type) {
+    return "Authorizable with id: " + authorizableId + " already exists, and is a " + type;
   }
 
   public static String groupHasNoMembers(String groupId) {
@@ -72,31 +71,7 @@ public final class MessagingUtils {
   }
 
   public static String unknownPermissions(List<String> permissions) {
-    if (permissions.size() == 1) {
-      return "Unknown permission: " + permissions.get(0);
-    }
-    StringBuilder result = new StringBuilder();
-    result.append("Unknown permissions: ");
-    Iterator<String> it = permissions.iterator();
-
-    while (it.hasNext()) {
-      result.append(it.next());
-      if (it.hasNext()) {
-        result.append(", ");
-      }
-    }
-
-    return result.toString();
+    return permissions.stream()
+        .collect(Collectors.joining(", ", "Unknown permissions: ", ""));
   }
-
-  public static String describeScripts(List<Script> scripts) {
-    List<String> paths = new LinkedList<>();
-
-    for (Script script : scripts) {
-      paths.add(script.getPath());
-    }
-
-    return StringUtils.join(paths, "\n");
-  }
-
 }

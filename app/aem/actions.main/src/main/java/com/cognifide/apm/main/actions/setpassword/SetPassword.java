@@ -54,7 +54,7 @@ public class SetPassword implements Action {
     try {
       User user = context.getCurrentUser();
       actionResult.setAuthorizable(user.getID());
-      LOGGER.info(String.format("Setting password for user with id = %s", user.getID()));
+      LOGGER.info("Setting password for user with id={}", user.getID());
       if (execute) {
         user.changePassword(password);
       }

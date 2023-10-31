@@ -59,8 +59,7 @@ public class SetProperty implements Action {
     try {
       Authorizable authorizable = context.getCurrentAuthorizable();
       actionResult.setAuthorizable(authorizable.getID());
-      LOGGER.info(String.format("Setting property %s for authorizable with id = %s", nameProperty,
-          authorizable.getID()));
+      LOGGER.info("Setting property {} for authorizable with id={}", nameProperty, authorizable.getID());
       final Value value = context.getValueFactory().createValue(valueProperty);
 
       if (!simulate) {
@@ -68,7 +67,7 @@ public class SetProperty implements Action {
       }
 
       actionResult.logMessage(
-          "Property " + nameProperty + " for " + authorizable.getID() + " added vith value: "
+          "Property " + nameProperty + " for " + authorizable.getID() + " added with value: "
               + valueProperty);
     } catch (RepositoryException | ActionExecutionException e) {
       actionResult.logError(MessagingUtils.createMessage(e));

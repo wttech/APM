@@ -64,8 +64,7 @@ public class RemoveAll implements Action {
       if (context.isCompositeNodeStore() && PathUtils.isAppsOrLibsPath(path)) {
         actionResult.changeStatus(Status.SKIPPED, "Skipped removing all privileges for " + authorizable.getID() + " on " + path);
       } else {
-        LOGGER.info(String.format("Removing all priveleges for authorizable with id = %s on path = %s",
-            authorizable.getID(), path));
+        LOGGER.info("Removing all priveleges for authorizable with id={} on path={}", authorizable.getID(), path);
         if (execute) {
           removeAll(context, authorizable);
         }

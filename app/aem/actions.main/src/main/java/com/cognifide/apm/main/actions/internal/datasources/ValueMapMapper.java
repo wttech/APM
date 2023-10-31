@@ -31,10 +31,20 @@ public class ValueMapMapper {
 
   @Mapping(
       examples = "VALUEMAP('/content/dam')",
-      reference = "Provides value map for given resource path"
+      reference = "Provides value map with all properties for given resource path"
   )
   public Action mapAction(
       @Required(value = "path", description = "Resource path") String path) {
+    throw new NotImplementedException("");
+  }
+
+  @Mapping(
+      examples = "VALUEMAP('/content/dam', '[^:]+')",
+      reference = "Provides value map with properties which matching given regex for given resource path"
+  )
+  public Action mapAction(
+      @Required(value = "path", description = "Resource path") String path,
+      @Required(value = "regex", description = "Regex expression") String regex) {
     throw new NotImplementedException("");
   }
 }

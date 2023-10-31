@@ -77,8 +77,7 @@ public class Purge implements Action {
       if (context.isCompositeNodeStore() && PathUtils.isAppsOrLibsPath(path)) {
         actionResult.changeStatus(Status.SKIPPED, "Skipped purging privileges for " + authorizable.getID() + " on " + path);
       } else {
-        LOGGER.info(String.format("Purging privileges for authorizable with id=%s under path=%s",
-            authorizable.getID(), path));
+        LOGGER.info("Purging privileges for authorizable with id={} under path={}", authorizable.getID(), path);
         if (execute) {
           purge(context, actionResult);
         }
