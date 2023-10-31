@@ -61,7 +61,7 @@ public class ScriptModel implements MutableScript {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ScriptModel.class);
 
-  private final String path;
+  private String path;
 
   @Self
   private Resource resource;
@@ -120,12 +120,9 @@ public class ScriptModel implements MutableScript {
 
   private String data;
 
-  public ScriptModel(Resource resource) {
-    this.path = resource.getPath();
-  }
-
   @PostConstruct
   private void afterCreated() {
+    path = resource.getPath();
     if (verified == null) {
       try {
         scriptManager.process(this, ExecutionMode.VALIDATION, resource.getResourceResolver());

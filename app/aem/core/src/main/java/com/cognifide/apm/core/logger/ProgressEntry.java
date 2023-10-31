@@ -26,7 +26,6 @@ import com.cognifide.apm.api.status.Status;
 import com.google.common.collect.ImmutableList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ProgressEntry implements Entry {
 
@@ -72,22 +71,8 @@ public class ProgressEntry implements Entry {
   }
 
   @Override
-  public List<String> getPrettyMessages() {
-    return messages.stream()
-        .map(message -> message.replaceAll("\n", "<br>").replaceAll("\t", "&nbsp;&nbsp;&nbsp;&nbsp;"))
-        .collect(Collectors.toList());
-  }
-
-  @Override
   public List<String> getParameters() {
     return parameters;
-  }
-
-  @Override
-  public List<String> getPrettyParameters() {
-    return parameters.stream()
-        .map(message -> message.replaceAll("\n", "<br>").replaceAll("\t", "&nbsp;&nbsp;&nbsp;&nbsp;"))
-        .collect(Collectors.toList());
   }
 
   @Override
