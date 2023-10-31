@@ -92,7 +92,9 @@ class ScriptRunnerTest extends Specification {
                      "Executing command SHOW \"t\"",
                      "Executing command SHOW [3, \"ab\"]",
                      "Executing command SHOW [\"a\", \"b\", \"c\", \"d\", 1, 2]",
-                     "Executing command SHOW [\n\t[\"a\", \"b\"],\n\t[\"c\", \"d\"]\n]"]
+                     "Executing command SHOW [\n\t[\"a\", \"b\"],\n\t[\"c\", \"d\"]\n]",
+                     "Executing command SHOW []",
+                     "Executing command SHOW {}"]
     }
 
     def "run macro"() {
