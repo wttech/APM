@@ -156,7 +156,7 @@ flag
     ;
 
 body
-    : BLOCK_BEGIN command* BLOCK_END
+    : BLOCK_BEGIN command+ BLOCK_END
     ;
 
 /*
