@@ -43,10 +43,6 @@ public class ClassScanner {
 
   private final BundleContext context;
 
-  public ClassScanner(Bundle bundle) {
-    this(bundle, null);
-  }
-
   public ClassScanner(Bundle bundle, BundleContext context) {
     this.bundle = bundle;
     this.context = context;
@@ -109,14 +105,6 @@ public class ClassScanner {
 
   public List<Class<?>> findClasses(String header, Class<? extends Annotation> annotation) {
     return findClasses(parsePackagesFromHeader(header), annotation);
-  }
-
-  public List<Class<?>> findClasses(Class<? extends Annotation> annotation) {
-    return findClasses(Collections.singletonList("/"), annotation);
-  }
-
-  public List<Class<?>> findClasses() {
-    return findClasses(Collections.singletonList("/"), null);
   }
 
   private String toClassName(URL url) {

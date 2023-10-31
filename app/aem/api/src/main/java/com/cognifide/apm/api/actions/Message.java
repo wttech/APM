@@ -33,7 +33,7 @@ public final class Message {
   }
 
   private Message() {
-    // Gson library needs this
+    // GSON library needs this
   }
 
   public String getText() {

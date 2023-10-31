@@ -35,10 +35,6 @@ public class CompositeAction implements Action {
     this.actions = ImmutableList.copyOf(actions);
   }
 
-  public CompositeAction(Action... actions) {
-    this.actions = ImmutableList.copyOf(actions);
-  }
-
   @Override
   public ActionResult simulate(Context context) throws ActionExecutionException {
     ActionResult result = context.createActionResult();

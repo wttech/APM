@@ -98,7 +98,7 @@ public class ActionMapperRegistryImpl implements RegistryChangedListener, Action
   private static Map<String, MapperDescriptor> createActionMappers(List<Class<?>> classes) {
     MapperDescriptorFactory mapperDescriptorFactory = new MapperDescriptorFactory();
     Map<String, MapperDescriptor> mappers = Maps.newHashMapWithExpectedSize(classes.size());
-    for (Class clazz : classes) {
+    for (Class<?> clazz : classes) {
       try {
         MapperDescriptor mapperDescriptor = mapperDescriptorFactory.create(clazz);
         mappers.put(mapperDescriptor.getName(), mapperDescriptor);

@@ -44,7 +44,7 @@ public class AnnotatedClassRegistry {
 
   private static final Logger LOG = LoggerFactory.getLogger(AnnotatedClassRegistry.class);
 
-  private final BundleTracker tracker;
+  private final BundleTracker<?> tracker;
 
   private final Map<Long, List<Class<?>>> classes = new ConcurrentHashMap<>();
 
@@ -62,7 +62,7 @@ public class AnnotatedClassRegistry {
     this.bundleHeader = bundleHeader;
     this.annotationClass = annotationClass;
 
-    this.tracker = new BundleTracker(bundleContext, Bundle.ACTIVE, new BundleTrackerCustomizer<Bundle>() {
+    this.tracker = new BundleTracker<>(bundleContext, Bundle.ACTIVE, new BundleTrackerCustomizer<Bundle>() {
 
       @Override
       public Bundle addingBundle(Bundle bundle, BundleEvent bundleEvent) {

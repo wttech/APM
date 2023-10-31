@@ -25,12 +25,7 @@ public class ExecutionException extends Exception {
     super(message);
   }
 
-  public ExecutionException(final Throwable throwable) {
-    super(throwable);
-  }
-
   public ExecutionException(final String message, final Throwable throwable) {
     super(message, throwable);
   }
-
 }

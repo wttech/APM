@@ -19,19 +19,16 @@
  */
 package com.cognifide.apm.main.utils;
 
-import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.apm.api.exceptions.ActionExecutionException;
 import java.util.Iterator;
-import java.util.List;
 import javax.jcr.RepositoryException;
 import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.apache.jackrabbit.api.security.user.Group;
 
 public final class ActionUtils {
 
-  public static final String ASSERTION_FAILED_MSG = "Assertion failed";
-
   private ActionUtils() {
+    // intentionally empty
   }
 
   /**
@@ -68,12 +65,6 @@ public final class ActionUtils {
       }
     } catch (RepositoryException e) {
       throw new ActionExecutionException(MessagingUtils.createMessage(e));
-    }
-  }
-
-  public static void logErrors(List<String> errors, ActionResult actionResult) {
-    for (String error : errors) {
-      actionResult.logError(error);
     }
   }
 }

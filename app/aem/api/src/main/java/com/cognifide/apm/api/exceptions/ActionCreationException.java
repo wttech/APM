@@ -24,9 +24,4 @@ public class ActionCreationException extends ActionException {
   public ActionCreationException(final String message) {
     super(message);
   }
-
-  public ActionCreationException(final String message, final Throwable throwable) {
-    super(message, throwable);
-  }
-
 }
