@@ -21,19 +21,24 @@ package com.cognifide.apm.core.services.version;
 
 import javax.inject.Inject;
 import org.apache.sling.api.resource.Resource;
+import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Model;
 
-@Model(adaptables = Resource.class)
+@Model(adaptables = Resource.class, defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
 public class ScriptVersionModel implements ScriptVersion {
 
-  private final String scriptPath;
-
-  private final String lastChecksum;
+  @Inject
+  private String scriptPath;
 
   @Inject
-  public ScriptVersionModel(String scriptPath, String lastChecksum) {
+  private String lastChecksum;
+
+  public ScriptVersionModel() {
+    // intentionally empty
+  }
+
+  public ScriptVersionModel(String scriptPath) {
     this.scriptPath = scriptPath;
-    this.lastChecksum = lastChecksum;
   }
 
   @Override
