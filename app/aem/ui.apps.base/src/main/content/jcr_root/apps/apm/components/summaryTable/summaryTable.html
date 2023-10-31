@@ -55,7 +55,7 @@
         <td class="_coral-Table-cell">${execution.command.toUpperCase}</td>
         <td class="_coral-Table-cell">
           <ul>
-            <li data-sly-repeat.text="${execution.parameters}"><code>${text @ context='html'}</code></li>
+            <li data-sly-repeat.text="${execution.parameters}">${text}</li>
           </ul>
         </td>
         <td class="_coral-Table-cell">
@@ -63,7 +63,7 @@
         </td>
         <td class="_coral-Table-cell">
           <ul>
-            <li data-sly-repeat.text="${execution.messages}"><code>${text @ context='html'}</code></li>
+            <li data-sly-repeat.text="${execution.messages}">${text}</li>
           </ul>
         </td>
       </tr>
