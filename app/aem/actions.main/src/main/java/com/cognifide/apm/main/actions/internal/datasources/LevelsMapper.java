@@ -33,7 +33,7 @@ public class LevelsMapper {
   @Mapping(
       examples = "LEVELS('/content', [\n" +
           "\t{regex: '(.+)_(.+)',paramNames: ['param1', 'param2']}, # 1st level\n" +
-          "\t{excludeRegex: '[^:]+'}, # 2nd level\n" +
+          "\t{excludeRegex: '.+:.+'}, # 2nd level\n" +
           "\t{template: '/apps/test/pageTemplate', resourceType: 'test/pageRenderer'}, # 3rd level\n" +
           "\t{properties: [ # 4th level\n" +
           "\t\t{name: 'jcr:primaryType', regex: 'cq:Page'},\n" +
