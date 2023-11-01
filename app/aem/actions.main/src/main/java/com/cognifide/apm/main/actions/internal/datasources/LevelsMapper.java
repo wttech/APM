@@ -32,15 +32,15 @@ public class LevelsMapper {
 
   @Mapping(
       examples = "LEVELS('/content', [\n" +
-          "    {regex: '(.+)_(.+)',paramNames: ['param1', 'param2']}, # 1st level\n" +
-          "    {excludeRegex: '[^:]+'}, # 2nd level\n" +
-          "    {template: '/apps/test/pageTemplate', resourceType: 'test/pageRenderer'}, # 3rd level\n" +
-          "    {properties: [ # 4th level\n" +
-          "        {name: 'jcr:primaryType', regex: 'cq:Page'},\n" +
-          "        {name: 'jcr:primaryType', excludeRegex: 'cq:PageContent'},\n" +
-          "        {name: 'jcr:content/cq:template', regex: '/apps/test/pageTemplate'},\n" +
-          "        {name: 'jcr:content/sling:resourceType', regex: 'test/pageRenderer'}\n" +
-          "    ]}\n" +
+          "\t{regex: '(.+)_(.+)',paramNames: ['param1', 'param2']}, # 1st level\n" +
+          "\t{excludeRegex: '[^:]+'}, # 2nd level\n" +
+          "\t{template: '/apps/test/pageTemplate', resourceType: 'test/pageRenderer'}, # 3rd level\n" +
+          "\t{properties: [ # 4th level\n" +
+          "\t\t{name: 'jcr:primaryType', regex: 'cq:Page'},\n" +
+          "\t\t{name: 'jcr:primaryType', excludeRegex: 'cq:PageContent'},\n" +
+          "\t\t{name: 'jcr:content/cq:template', regex: '/apps/test/pageTemplate'},\n" +
+          "\t\t{name: 'jcr:content/sling:resourceType', regex: 'test/pageRenderer'}\n" +
+          "\t]}\n" +
           "])",
       reference = "Provides levels of content for given resource path matching given content structure map"
   )
