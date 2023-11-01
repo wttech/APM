@@ -77,11 +77,11 @@ public class ScriptUploadForm {
   private OffsetDateTime launchSchedule;
 
   @Inject
-  @RequestParameter(ScriptNode.APM_LAUNCH_HOOK)
-  private String cronExpression;
+  @RequestParameter(ScriptNode.APM_LAUNCH_CRON_EXPRESSION)
+  private String launchCronExpression;
 
   public LaunchMetadata toLaunchMetadata() {
-    return new LaunchMetadata(launchEnabled, launchMode, launchEnvironment, launchRunModes, launchHook, launchSchedule, cronExpression);
+    return new LaunchMetadata(launchEnabled, launchMode, launchEnvironment, launchRunModes, launchHook, launchSchedule, launchCronExpression);
   }
 
   public String getFileName() {
