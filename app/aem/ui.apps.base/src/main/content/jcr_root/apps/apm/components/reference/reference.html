@@ -88,14 +88,12 @@
     Wrap them into square brackets like in examples below.
 
     <div class="code-example">
-      <code>
-        FOR-USER "foo" BEGIN
-        ALLOW "/content" ["ALL"]
-        ALLOW "/etc" ["READ"]
-        DENY "/content/bar" ["MODIFY", "DELETE"]
-        ALLOW "/content/bar" ["jcr:nodeTypeManagement"]
-        END
-      </code>
+      <code>FOR-USER 'foo' BEGIN
+	ALLOW '/content' ['ALL']
+	ALLOW '/etc' ['READ']
+	DENY '/content/bar' ['MODIFY', 'DELETE']
+	ALLOW '/content/bar' ['jcr:nodeTypeManagement']
+END</code>
     </div>
 
     The default ACL effects the whole subtree of the target node, you can limit it by adding a
@@ -104,13 +102,11 @@
     You can use STRICT as a glob pattern to match a target node only. See examples below:
 
     <div class="code-example">
-      <code>
-        FOR-USER "foo" BEGIN
-        ALLOW "/content" glob="bar" ["ALL"]
-        DENY "/content" glob="bar" ["jcr:nodeTypeManagement"]
-        ALLOW "/content/foo" glob="STRICT" ["ALL"]
-        END
-      </code>
+      <code>FOR-USER 'foo' BEGIN
+	ALLOW '/content' glob='bar' ['ALL']
+	DENY '/content' glob='bar' ['jcr:nodeTypeManagement']
+	ALLOW '/content/foo' glob='STRICT' ['ALL']
+END</code>
     </div>
   </section>
   <section>
