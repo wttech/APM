@@ -33,7 +33,7 @@ name
     ;
 
 privilegeName
-    : IDENTIFIER ':' IDENTIFIER
+    : IDENTIFIER COLON IDENTIFIER
     ;
 
 path
@@ -42,7 +42,7 @@ path
     ;
 
 array
-    : ARRAY_BEGIN arrayValue (',' arrayValue)* ARRAY_END
+    : ARRAY_BEGIN (arrayValue (COMMA arrayValue)*)? ARRAY_END
     ;
 
 arrayValue
@@ -53,11 +53,11 @@ arrayValue
     ;
 
 structure
-    : STRUCTURE_BEGIN structureEntry (',' structureEntry)* STRUCTURE_END
+    : STRUCTURE_BEGIN (structureEntry (COMMA structureEntry)*)? STRUCTURE_END
     ;
 
 structureEntry
-    : structureKey ':' structureValue
+    : structureKey COLON structureValue
     ;
 
 structureKey
@@ -175,6 +175,12 @@ STRUCTURE_BEGIN
     ;
 STRUCTURE_END
     : '}'
+    ;
+COMMA
+    : ','
+    ;
+COLON
+    : ':'
     ;
 BLOCK_BEGIN
     : 'begin'
