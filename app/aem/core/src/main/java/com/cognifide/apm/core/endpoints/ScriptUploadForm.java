@@ -22,13 +22,12 @@ package com.cognifide.apm.core.endpoints;
 
 import com.cognifide.apm.api.scripts.LaunchEnvironment;
 import com.cognifide.apm.api.scripts.LaunchMode;
-import com.cognifide.apm.core.endpoints.params.DateFormat;
 import com.cognifide.apm.core.endpoints.params.FileName;
 import com.cognifide.apm.core.endpoints.params.RequestParameter;
 import com.cognifide.apm.core.scripts.LaunchMetadata;
 import com.cognifide.apm.core.scripts.ScriptNode;
 import java.io.InputStream;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import javax.inject.Inject;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.models.annotations.Model;
@@ -75,8 +74,7 @@ public class ScriptUploadForm {
 
   @Inject
   @RequestParameter(ScriptNode.APM_LAUNCH_SCHEDULE)
-  @DateFormat("yyyy-MM-dd'T'HH:mm:ss")
-  private LocalDateTime launchSchedule;
+  private OffsetDateTime launchSchedule;
 
   @Inject
   @RequestParameter(ScriptNode.APM_LAUNCH_HOOK)

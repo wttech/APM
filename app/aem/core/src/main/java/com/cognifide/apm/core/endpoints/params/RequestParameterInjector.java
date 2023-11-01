@@ -26,7 +26,7 @@ import java.io.InputStream;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Map;
@@ -84,8 +84,8 @@ public class RequestParameterInjector implements Injector, StaticInjectAnnotatio
       return BooleanUtils.toBoolean(parameterValue.getString());
     } else if (type == InputStream.class) {
       return toInputStream(parameterValue);
-    } else if (type == LocalDateTime.class) {
-      return toLocalDateTime(annotatedElement, parameterValue);
+    } else if (type == OffsetDateTime.class) {
+      return toOffsetDateTime(parameterValue);
     } else if (type.isEnum()) {
       return toEnum(type, parameterValue);
     } else if (type == String[].class) {
@@ -120,11 +120,8 @@ public class RequestParameterInjector implements Injector, StaticInjectAnnotatio
         ));
   }
 
-  private LocalDateTime toLocalDateTime(AnnotatedElement annotatedElement, org.apache.sling.api.request.RequestParameter parameterValue) {
-    String dateFormat = Optional.ofNullable(annotatedElement.getAnnotation(DateFormat.class))
-        .map(DateFormat::value)
-        .orElse(DateTimeFormatter.ISO_LOCAL_DATE_TIME.toString());
-    return LocalDateTime.parse(parameterValue.getString(), DateTimeFormatter.ofPattern(dateFormat));
+  private OffsetDateTime toOffsetDateTime(org.apache.sling.api.request.RequestParameter parameterValue) {
+    return OffsetDateTime.parse(parameterValue.getString(), DateTimeFormatter.ISO_OFFSET_DATE_TIME);
   }
 
   @Override
