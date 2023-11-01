@@ -50,6 +50,8 @@ DEFINE funcSum UPPER('a') + UPPER('b') + 1
 DEFINE funcNested FUNC(UPPER('a') + FUNC('b')) + 1
 DEFINE const CONST()
 DEFINE constUpper UPPER(CONST())
+DEFINE emptyList []
+DEFINE emptyMap {}
 SHOW $a
 SHOW $b
 SHOW $tab1
@@ -76,3 +78,5 @@ SHOW $funcSum
 SHOW $funcNested
 SHOW $const
 SHOW $constUpper
+SHOW $emptyList
+SHOW $emptyMap

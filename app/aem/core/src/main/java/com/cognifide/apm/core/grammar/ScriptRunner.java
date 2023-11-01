@@ -150,6 +150,10 @@ public class ScriptRunner {
     public Status visitForEach(ForEachContext ctx) {
       List<Map<String, ApmType>> values = readValues(ctx);
       ListIterator<Map<String, ApmType>> iterator = values.listIterator();
+      if (!iterator.hasNext() && shouldVisitNextChild()) {
+        String key = ctx.IDENTIFIER().toString();
+        progress(ctx, Status.SKIPPED, "for-each", String.format("%s is always empty", key));
+      }
       while (iterator.hasNext() && shouldVisitNextChild()) {
         try {
           int index = iterator.nextIndex();
