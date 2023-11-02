@@ -23,6 +23,7 @@ import com.cognifide.apm.api.scripts.LaunchEnvironment;
 import com.cognifide.apm.api.scripts.LaunchMode;
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.RunModesProvider;
+import java.util.Date;
 import java.util.Set;
 import java.util.function.Predicate;
 import org.apache.commons.lang3.StringUtils;
@@ -94,11 +95,14 @@ public class ScriptFilters {
   }
 
   private static Predicate<Script> withSchedule() {
-    return script -> script.getLaunchMode() == LaunchMode.ON_SCHEDULE && script.getLaunchSchedule() != null;
+    return script -> script.getLaunchMode() == LaunchMode.ON_SCHEDULE
+        && script.getLaunchSchedule() != null
+        && script.getLaunchSchedule().after(new Date());
   }
 
   private static Predicate<Script> withCronExpression() {
-    return script -> script.getLaunchMode() == LaunchMode.ON_CRON_EXPRESSION && StringUtils.isNotEmpty(script.getLaunchCronExpression());
+    return script -> script.getLaunchMode() == LaunchMode.ON_CRON_EXPRESSION
+        && StringUtils.isNotEmpty(script.getLaunchCronExpression());
   }
 
   private static Predicate<Script> enabled() {
