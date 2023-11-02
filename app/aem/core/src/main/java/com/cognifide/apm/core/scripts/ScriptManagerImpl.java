@@ -160,9 +160,7 @@ public class ScriptManagerImpl implements ScriptManager {
     }
 
     updateScriptProperties(script, mode, progress.isSuccess());
-    if (progress.isSuccess()) {
-      versionService.updateVersionIfNeeded(resolver, script);
-    }
+    versionService.updateVersionIfNeeded(resolver, script);
     saveHistory(script, mode, progress);
     eventManager.trigger(new ScriptExecutedEvent(script, mode, progress.isSuccess()));
 
