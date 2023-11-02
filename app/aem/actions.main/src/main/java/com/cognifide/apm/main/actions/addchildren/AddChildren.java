@@ -101,7 +101,7 @@ public class AddChildren implements Action {
     }
 
     if (actionResult.getStatus() == Status.ERROR) {
-      actionResult.logError("Execution interrupted");
+      actionResult.logError(ActionUtils.EXECUTION_INTERRUPTED_MSG);
     }
     return actionResult;
   }

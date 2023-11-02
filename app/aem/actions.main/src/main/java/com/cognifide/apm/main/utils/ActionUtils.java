@@ -29,7 +29,7 @@ import org.apache.jackrabbit.api.security.user.Group;
 
 public final class ActionUtils {
 
-  public static final String ASSERTION_FAILED_MSG = "Assertion failed";
+  public static final String EXECUTION_INTERRUPTED_MSG = "Execution interrupted";
 
   private ActionUtils() {
   }
