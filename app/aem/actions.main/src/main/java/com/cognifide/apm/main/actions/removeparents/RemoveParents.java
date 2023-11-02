@@ -66,6 +66,7 @@ public class RemoveParents implements Action {
       LOGGER.info("Removing authorizable with id={} from groups {}", authorizable.getID(), String.join(", ", groupIds));
     } catch (RepositoryException | ActionExecutionException e) {
       actionResult.logError(MessagingUtils.createMessage(e));
+      actionResult.logError(ActionUtils.EXECUTION_INTERRUPTED_MSG);
       return actionResult;
     }
 

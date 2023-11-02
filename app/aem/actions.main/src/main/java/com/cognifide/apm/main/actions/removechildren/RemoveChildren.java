@@ -63,6 +63,7 @@ public class RemoveChildren implements Action {
       LOGGER.info("Removing authorizables {} from group with id={}", String.join(", ", authorizableIds), group.getID());
     } catch (RepositoryException | ActionExecutionException e) {
       actionResult.logError(MessagingUtils.createMessage(e));
+      actionResult.logError(ActionUtils.EXECUTION_INTERRUPTED_MSG);
       return actionResult;
     }
 

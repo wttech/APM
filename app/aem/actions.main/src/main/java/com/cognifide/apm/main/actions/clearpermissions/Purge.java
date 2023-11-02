@@ -25,6 +25,7 @@ import com.cognifide.apm.api.actions.Context;
 import com.cognifide.apm.api.actions.Message;
 import com.cognifide.apm.api.exceptions.ActionExecutionException;
 import com.cognifide.apm.api.status.Status;
+import com.cognifide.apm.main.utils.ActionUtils;
 import com.cognifide.apm.main.utils.MessagingUtils;
 import com.cognifide.apm.main.utils.PathUtils;
 import java.util.HashSet;
@@ -87,6 +88,9 @@ public class Purge implements Action {
       actionResult.logError(MessagingUtils.createMessage(e));
     }
 
+    if (actionResult.getStatus() == Status.ERROR) {
+      actionResult.logError(ActionUtils.EXECUTION_INTERRUPTED_MSG);
+    }
     return actionResult;
   }
 

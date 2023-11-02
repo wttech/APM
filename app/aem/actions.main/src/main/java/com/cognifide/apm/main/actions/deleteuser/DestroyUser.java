@@ -24,8 +24,10 @@ import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.apm.api.actions.Context;
 import com.cognifide.apm.api.exceptions.ActionExecutionException;
 import com.cognifide.apm.api.exceptions.AuthorizableNotFoundException;
+import com.cognifide.apm.api.status.Status;
 import com.cognifide.apm.main.actions.clearpermissions.Purge;
 import com.cognifide.apm.main.actions.removeparents.RemoveParents;
+import com.cognifide.apm.main.utils.ActionUtils;
 import com.cognifide.apm.main.utils.MessagingUtils;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -67,6 +69,10 @@ public class DestroyUser implements Action {
       actionResult = context.createActionResult();
       actionResult.logWarning(MessagingUtils.createMessage(e));
     }
+
+    if (actionResult.getStatus() == Status.ERROR) {
+      actionResult.logError(ActionUtils.EXECUTION_INTERRUPTED_MSG);
+    }
     return actionResult;
   }
 
@@ -90,6 +96,10 @@ public class DestroyUser implements Action {
     } catch (AuthorizableNotFoundException e) {
       actionResult = context.createActionResult();
       actionResult.logWarning(MessagingUtils.createMessage(e));
+    }
+
+    if (actionResult.getStatus() == Status.ERROR) {
+      actionResult.logError(ActionUtils.EXECUTION_INTERRUPTED_MSG);
     }
     return actionResult;
   }
