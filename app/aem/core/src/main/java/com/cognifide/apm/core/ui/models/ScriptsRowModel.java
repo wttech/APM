@@ -19,8 +19,6 @@
  */
 package com.cognifide.apm.core.ui.models;
 
-import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
-
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.core.history.History;
 import com.cognifide.apm.core.history.HistoryEntry;
@@ -81,7 +79,7 @@ public final class ScriptsRowModel {
   @PostConstruct
   private void afterCreated() {
     this.isFolder = isFolder(resource);
-    this.scriptName = defaultIfEmpty(getProperty(resource, JcrConstants.JCR_TITLE), resource.getName());
+    this.scriptName = StringUtils.defaultIfEmpty(getProperty(resource, JcrConstants.JCR_TITLE), resource.getName());
     if (!isFolder) {
       Optional.ofNullable(resource.adaptTo(ScriptModel.class)).ifPresent(script -> {
         ScriptHistory scriptHistory = history.findScriptHistory(resource.getResourceResolver(), script);
