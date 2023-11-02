@@ -108,13 +108,13 @@ public class ScriptStorageImpl implements ScriptStorage {
       contentNode.setProperty(JcrConstants.JCR_DATA, binary);
       contentNode.setProperty(JcrConstants.JCR_ENCODING, SCRIPT_ENCODING.name());
       fileNode.addMixin(ScriptNode.APM_SCRIPT);
-      fileNode.setProperty(ScriptNode.APM_LAUNCH_ENABLED, launchMetadata.isExecutionEnabled());
+      fileNode.setProperty(ScriptNode.APM_LAUNCH_ENABLED, launchMetadata.isLaunchEnabled());
       setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_MODE, launchMetadata.getLaunchMode());
       setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_ENVIRONMENT, launchMetadata.getLaunchEnvironment());
       setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_RUN_MODES, launchMetadata.getLaunchRunModes());
-      setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_HOOK, launchMetadata.getExecutionHook());
-      setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_SCHEDULE, launchMetadata.getExecutionSchedule());
-      setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_CRON_EXPRESSION, launchMetadata.getCronExpression());
+      setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_HOOK, launchMetadata.getLaunchHook());
+      setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_SCHEDULE, launchMetadata.getLaunchSchedule());
+      setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_CRON_EXPRESSION, launchMetadata.getLaunchCronExpression());
       removeProperty(fileNode, ScriptNode.APM_LAST_EXECUTED);
       JcrUtils.setLastModified(fileNode, Calendar.getInstance());
       session.save();

@@ -53,7 +53,7 @@ public interface Script {
   /**
    * Get CRON expression
    */
-  String getCronExpression();
+  String getLaunchCronExpression();
 
   /**
    * Get last execution date
