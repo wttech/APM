@@ -22,7 +22,7 @@ package com.cognifide.apm.core.scripts;
 
 import com.cognifide.apm.api.scripts.LaunchEnvironment;
 import com.cognifide.apm.api.scripts.LaunchMode;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 public class LaunchMetadata {
 
@@ -36,12 +36,12 @@ public class LaunchMetadata {
 
   private final String launchHook;
 
-  private final LocalDateTime launchSchedule;
+  private final OffsetDateTime launchSchedule;
 
   private final String launchCronExpression;
 
   public LaunchMetadata(boolean launchEnabled, LaunchMode launchMode, LaunchEnvironment launchEnvironment,
-      String[] launchRunModes, String launchHook, LocalDateTime launchSchedule, String launchCronExpression) {
+      String[] launchRunModes, String launchHook, OffsetDateTime launchSchedule, String launchCronExpression) {
     this.launchEnabled = launchEnabled;
     this.launchMode = launchMode;
     this.launchEnvironment = launchEnvironment;
@@ -71,7 +71,7 @@ public class LaunchMetadata {
     return launchHook;
   }
 
-  public LocalDateTime getLaunchSchedule() {
+  public OffsetDateTime getLaunchSchedule() {
     return launchSchedule;
   }
 

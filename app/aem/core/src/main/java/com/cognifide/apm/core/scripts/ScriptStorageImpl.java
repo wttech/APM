@@ -29,11 +29,12 @@ import com.cognifide.apm.core.endpoints.ScriptUploadForm;
 import com.day.cq.commons.jcr.JcrConstants;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -128,12 +129,11 @@ public class ScriptStorageImpl implements ScriptStorage {
   private void setOrRemoveProperty(Node node, String name, Object value) throws RepositoryException {
     if (value == null) {
       removeProperty(node, name);
-    } else if (value instanceof LocalDateTime) {
-      LocalDateTime localDateTime = (LocalDateTime) value;
+    } else if (value instanceof OffsetDateTime) {
+      OffsetDateTime offsetDateTime = (OffsetDateTime) value;
+      Date date = Date.from(offsetDateTime.toInstant());
       Calendar calendar = Calendar.getInstance();
-      calendar.clear();
-      calendar.set(localDateTime.getYear(), localDateTime.getMonthValue() - 1, localDateTime.getDayOfMonth(),
-          localDateTime.getHour(), localDateTime.getMinute(), localDateTime.getSecond());
+      calendar.setTime(date);
       node.setProperty(name, calendar);
     } else if (value instanceof String[]) {
       node.setProperty(name, (String[]) value);

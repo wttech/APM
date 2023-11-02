@@ -73,8 +73,13 @@ public final class HistoryEntryWriter {
     valueMap.put(HistoryEntryImpl.SCRIPT_PATH, filePath);
     valueMap.put(HistoryEntryImpl.AUTHOR, author);
     valueMap.put(HistoryEntryImpl.MODE, mode);
-    try (InputStream progressLogInput = IOUtils.toInputStream(progressLog, StandardCharsets.UTF_8)) {
-      valueMap.put(HistoryEntryImpl.PROGRESS_LOG, progressLogInput);
+    int logWarnStringSizeThreshold = Integer.getInteger("oak.repository.node.property.logWarnStringSizeThreshold", 102400);
+    if (progressLog.length() > logWarnStringSizeThreshold) {
+      try (InputStream progressLogInput = IOUtils.toInputStream(progressLog, StandardCharsets.UTF_8)) {
+        valueMap.put(HistoryEntryImpl.PROGRESS_LOG, progressLogInput);
+      }
+    } else {
+      valueMap.put(HistoryEntryImpl.PROGRESS_LOG, progressLog);
     }
     valueMap.put(HistoryEntryImpl.IS_RUN_SUCCESSFUL, isRunSuccessful);
     valueMap.put(HistoryEntryImpl.EXECUTION_TIME, executionTime);
