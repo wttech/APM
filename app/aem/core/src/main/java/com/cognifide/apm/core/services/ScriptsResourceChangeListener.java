@@ -78,7 +78,6 @@ public class ScriptsResourceChangeListener implements ResourceChangeListener {
   @Activate
   public void activate(BundleContext bundleContext) {
     registeredScripts = new HashMap<>();
-
     SlingHelper.operateTraced(resolverProvider, resolver ->
         scriptFinder.findAll(onScheduleOrCronExpression(runModesProvider), resolver)
             .forEach(script -> registerScript(script, bundleContext))
@@ -99,26 +98,32 @@ public class ScriptsResourceChangeListener implements ResourceChangeListener {
 
     SlingHelper.operateTraced(resolverProvider, resolver ->
         changes.stream()
-            .filter(resourceChange -> StringUtils.endsWith(resourceChange.getPath(), Apm.FILE_EXT))
-            .forEach(resourceChange -> {
-              if (resourceChange.getType() == ResourceChange.ChangeType.ADDED) {
-                Script script = scriptFinder.find(resourceChange.getPath(), resolver);
+            .filter(change -> StringUtils.endsWith(change.getPath(), Apm.FILE_EXT))
+            .forEach(change -> {
+              if (change.getType() == ResourceChange.ChangeType.ADDED) {
+                Script script = scriptFinder.find(change.getPath(), resolver);
                 if (onScheduleOrCronExpression(runModesProvider).test(script)) {
                   registerScript(script, bundleContext);
                 }
-              } else if (resourceChange.getType() == ResourceChange.ChangeType.REMOVED) {
-                RegisterScript registeredScript = registeredScripts.get(resourceChange.getPath());
+              } else if (change.getType() == ResourceChange.ChangeType.REMOVED) {
+                RegisterScript registeredScript = registeredScripts.get(change.getPath());
                 if (registeredScript != null) {
                   registeredScript.registration.unregister();
-                  registeredScripts.remove(resourceChange.getPath());
+                  registeredScripts.remove(change.getPath());
                 }
-              } else if (resourceChange.getType() == ResourceChange.ChangeType.CHANGED) {
-                Script script = scriptFinder.find(resourceChange.getPath(), resolver);
-                RegisterScript registeredScript = registeredScripts.get(resourceChange.getPath());
-                if (onScheduleOrCronExpression(runModesProvider).test(script) && !Objects.equals(script, registeredScript.script)) {
+              } else if (change.getType() == ResourceChange.ChangeType.CHANGED) {
+                Script script = scriptFinder.find(change.getPath(), resolver);
+                RegisterScript registeredScript = registeredScripts.get(change.getPath());
+                if (registeredScript == null) {
+                  if (onScheduleOrCronExpression(runModesProvider).test(script)) {
+                    registerScript(script, bundleContext);
+                  }
+                } else if (!Objects.equals(script, registeredScript.script)) {
                   registeredScript.registration.unregister();
-                  registeredScripts.remove(resourceChange.getPath());
-                  registerScript(script, bundleContext);
+                  registeredScripts.remove(change.getPath());
+                  if (onScheduleOrCronExpression(runModesProvider).test(script)) {
+                    registerScript(script, bundleContext);
+                  }
                 }
               }
             })
@@ -130,9 +135,10 @@ public class ScriptsResourceChangeListener implements ResourceChangeListener {
     Dictionary<String, Object> dictionary = new Hashtable<>();
     if (script.getLaunchMode() == LaunchMode.ON_SCHEDULE) {
       SimpleDateFormat cronExpressionFormat = new SimpleDateFormat("s m H d M ? y");
-      dictionary.put("scheduler.expression", cronExpressionFormat.format(script.getLaunchSchedule()));
+      String cronExpression = cronExpressionFormat.format(script.getLaunchSchedule());
+      dictionary.put("scheduler.expression", cronExpression);
     } else if (script.getLaunchMode() == LaunchMode.ON_CRON_EXPRESSION) {
-      dictionary.put("scheduler.expression", script.getCronExpression());
+      dictionary.put("scheduler.expression", script.getLaunchCronExpression());
     }
     ServiceRegistration<Runnable> registration = bundleContext.registerService(Runnable.class, service, dictionary);
     registeredScripts.put(script.getPath(), new RegisterScript(script, registration));

@@ -98,7 +98,7 @@ public class ScriptFilters {
   }
 
   private static Predicate<Script> withCronExpression() {
-    return script -> script.getLaunchMode() == LaunchMode.ON_CRON_EXPRESSION && StringUtils.isNotEmpty(script.getCronExpression());
+    return script -> script.getLaunchMode() == LaunchMode.ON_CRON_EXPRESSION && StringUtils.isNotEmpty(script.getLaunchCronExpression());
   }
 
   private static Predicate<Script> enabled() {
