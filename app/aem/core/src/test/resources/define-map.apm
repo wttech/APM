@@ -1,0 +1,46 @@
+
+ # ========================LICENSE_START=================================
+ # AEM Permission Management
+ # %%
+ # Copyright (C) 2013 Wunderman Thompson Technology
+ # %%
+ # Licensed under the Apache License, Version 2.0 (the "License");
+ # you may not use this file except in compliance with the License.
+ # You may obtain a copy of the License at
+ # 
+ #      http://www.apache.org/licenses/LICENSE-2.0
+ # 
+ # Unless required by applicable law or agreed to in writing, software
+ # distributed under the License is distributed on an "AS IS" BASIS,
+ # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ # See the License for the specific language governing permissions and
+ # limitations under the License.
+ # =========================LICENSE_END==================================
+
+DEFINE x {
+    num : 1,
+    str: 'a',
+    list: [2, 'b'],
+    'str1': 'c',
+    'part1:part2': 'd',
+    "str2": "e",
+    ":::": "f"
+}
+
+SHOW $x.num
+SHOW $x[num]
+SHOW $x['num']
+SHOW $x["num"]
+SHOW $x.str
+SHOW $x.list[0]
+SHOW $x.list[1]
+SHOW $x['list'][0]
+SHOW $x['list'][1]
+SHOW $x["str1"]
+SHOW $x["part1:part2"]
+SHOW $x["str2"]
+SHOW $x[":::"]
+SHOW $x['str1']
+SHOW $x['part1:part2']
+SHOW $x['str2']
+SHOW $x[':::']

@@ -23,4 +23,6 @@ package com.cognifide.apm.main.actions;
 public class ActionGroup {
 
   public static final String CORE = "core";
+
+  public static final String DATASOURCE = "datasource";
 }

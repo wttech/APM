@@ -24,6 +24,7 @@ import com.cognifide.apm.api.scripts.Script
 import com.cognifide.apm.api.services.ScriptFinder
 import com.cognifide.apm.core.grammar.ReferenceGraph.Transition
 import com.cognifide.apm.core.grammar.ReferenceGraph.TreeNode
+import com.cognifide.apm.core.grammar.datasource.DataSourceInvoker
 import org.apache.commons.io.IOUtils
 import org.apache.sling.api.resource.ResourceResolver
 import spock.lang.Specification
@@ -36,11 +37,12 @@ class ReferenceFinderTest extends Specification {
         }
     }
     ResourceResolver resourceResolver = Mock(ResourceResolver)
+    DataSourceInvoker dataSourceInvoker = new DataSourceInvoker()
 
     def "return all scripts included and imported to given script (recursively) including current script"() {
         given:
         Script script = createScript("/import-and-run3.apm")
-        ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resourceResolver)
+        ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resourceResolver, dataSourceInvoker)
 
         when:
         List<Script> references = referenceFinder.findReferences(script)
@@ -59,7 +61,7 @@ class ReferenceFinderTest extends Specification {
     def "cycle found in script's tree"() {
         given:
         Script script = createScript("/import-and-run2.apm")
-        ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resourceResolver)
+        ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resourceResolver, dataSourceInvoker)
 
         when:
         referenceFinder.findReferences(script)
@@ -72,7 +74,7 @@ class ReferenceFinderTest extends Specification {
     def "ERROR found in script's tree"() {
         given:
         Script script = createScript("/import-and-run1.apm")
-        ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resourceResolver)
+        ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resourceResolver, dataSourceInvoker)
 
         when:
         referenceFinder.findReferences(script)
@@ -85,7 +87,7 @@ class ReferenceFinderTest extends Specification {
     def "return reference graph for given script"() {
         given:
         Script script = createScript("/import-and-run1.apm")
-        ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resourceResolver)
+        ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resourceResolver, dataSourceInvoker)
 
         when:
         ReferenceGraph referenceGraph = referenceFinder.getReferenceGraph(script)
@@ -111,7 +113,7 @@ class ReferenceFinderTest extends Specification {
         given:
         Script script1 = createScript("/import-and-run1.apm")
         Script script2 = createScript("/import-and-run2.apm")
-        ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resourceResolver)
+        ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resourceResolver, dataSourceInvoker)
 
         when:
         ReferenceGraph referenceGraph = referenceFinder.getReferenceGraph(script1, script2)

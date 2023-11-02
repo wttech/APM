@@ -27,6 +27,7 @@ import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.apm.core.grammar.antlr.ApmLangBaseVisitor;
 import com.cognifide.apm.core.grammar.antlr.ApmLangParser;
 import com.cognifide.apm.core.grammar.common.Functions;
+import com.cognifide.apm.core.grammar.datasource.DataSourceInvoker;
 import com.cognifide.apm.core.grammar.executioncontext.ExecutionContext;
 import com.cognifide.apm.core.grammar.parsedscript.ParsedScript;
 import com.cognifide.apm.core.progress.ProgressImpl;
@@ -46,9 +47,12 @@ public class ReferenceFinder {
 
   private final ResourceResolver resourceResolver;
 
-  public ReferenceFinder(ScriptFinder scriptFinder, ResourceResolver resourceResolver) {
+  private final DataSourceInvoker dataSourceInvoker;
+
+  public ReferenceFinder(ScriptFinder scriptFinder, ResourceResolver resourceResolver, DataSourceInvoker dataSourceInvoker) {
     this.scriptFinder = scriptFinder;
     this.resourceResolver = resourceResolver;
+    this.dataSourceInvoker = dataSourceInvoker;
   }
 
   public List<Script> findReferences(Script script) {
@@ -81,7 +85,7 @@ public class ReferenceFinder {
   private void fillReferenceGraph(ReferenceGraph refGraph, Script script) {
     if (refGraph.getNode(script) == null) {
       ApmLangParser.ApmContext apmContext = ParsedScript.create(script).getApm();
-      ExecutionContext executionContext = ExecutionContext.create(scriptFinder, resourceResolver, script, new ProgressImpl(resourceResolver.getUserID()));
+      ExecutionContext executionContext = ExecutionContext.create(scriptFinder, resourceResolver, dataSourceInvoker, script, new ProgressImpl(resourceResolver.getUserID()));
       findReferences(refGraph, refGraph.addNode(script), ImmutableList.of(script.getPath()), executionContext, apmContext);
     }
   }

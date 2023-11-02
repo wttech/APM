@@ -65,6 +65,10 @@ structureKey
     | STRING_LITERAL
     ;
 
+dataSource
+    : identifier BRACKET_BEGIN (argument (COMMA argument)*)? BRACKET_END
+    ;
+
 structureValue
     : value
     | argument
@@ -103,6 +107,7 @@ plus
 expression
     : expression plus expression
     | value
+    | dataSource
     ;
 
 argument
@@ -175,6 +180,12 @@ STRUCTURE_BEGIN
     ;
 STRUCTURE_END
     : '}'
+    ;
+BRACKET_BEGIN
+    : '('
+    ;
+BRACKET_END
+    : ')'
     ;
 COMMA
     : ','
@@ -271,7 +282,7 @@ fragment IdentifierPart
     : Letter LetterOrDigit*
     ;
 fragment VariablePart
-    : IdentifierPart (ARRAY_BEGIN LetterOrDigit+ ARRAY_END)?
+    : IdentifierPart (ARRAY_BEGIN (NUMBER_LITERAL | IDENTIFIER | STRING_LITERAL) ARRAY_END)*
     ;
 fragment PathPart
     : '/' (~[\r\n\t ])+

@@ -23,8 +23,15 @@ package com.cognifide.apm.core.grammar
 import com.cognifide.apm.api.scripts.Script
 import com.cognifide.apm.api.services.ScriptFinder
 import com.cognifide.apm.api.status.Status
+import com.cognifide.apm.core.crypto.DecryptionService
+import com.cognifide.apm.core.grammar.ApmType.ApmString
+import com.cognifide.apm.core.grammar.argument.Arguments
+import com.cognifide.apm.core.grammar.datasource.DataSource
+import com.cognifide.apm.core.grammar.datasource.DataSourceInvoker
+import com.cognifide.apm.core.grammar.executioncontext.ExternalExecutionContext
 import com.cognifide.apm.core.progress.ProgressImpl
 import org.apache.commons.io.IOUtils
+import org.apache.commons.lang3.reflect.FieldUtils
 import org.apache.sling.api.resource.ResourceResolver
 import spock.lang.Specification
 
@@ -32,7 +39,7 @@ class ScriptRunnerTest extends Specification {
 
     def scriptFinder = Mock(ScriptFinder)
     def resourceResolver = Mock(ResourceResolver)
-    def scriptExecutor = new ScriptRunner(scriptFinder, resourceResolver, false, createActionInvoker())
+    def scriptExecutor = new ScriptRunner(scriptFinder, resourceResolver, false, createActionInvoker(), createDataSourceInvoker())
 
     def "run for-each"() {
         given:
@@ -93,8 +100,47 @@ class ScriptRunnerTest extends Specification {
                      "Executing command SHOW [3, \"ab\"]",
                      "Executing command SHOW [\"a\", \"b\", \"c\", \"d\", 1, 2]",
                      "Executing command SHOW [\n\t[\"a\", \"b\"],\n\t[\"c\", \"d\"]\n]",
+                     "Executing command SHOW 3",
+                     "Executing command SHOW 6",
+                     "Executing command SHOW \"a\"",
+                     "Executing command SHOW \"b\"",
+                     "Executing command SHOW \"C\"",
+                     "Executing command SHOW \"AB1\"",
+                     "Executing command SHOW \"Ab1\"",
+                     "Executing command SHOW \"const\"",
+                     "Executing command SHOW \"CONST\"",
                      "Executing command SHOW []",
                      "Executing command SHOW {}"]
+    }
+
+    def "run define map"() {
+        given:
+        Script script = createScript("/define-map.apm")
+
+        when:
+        def result = scriptExecutor.execute(script, new ProgressImpl(""))
+
+        then:
+        def commands = result.entries
+                .collect { it.command }
+                .findAll { it.startsWith("Executing") }
+        commands == ["Executing command SHOW 1",
+                     "Executing command SHOW 1",
+                     "Executing command SHOW 1",
+                     "Executing command SHOW 1",
+                     "Executing command SHOW \"a\"",
+                     "Executing command SHOW 2",
+                     "Executing command SHOW \"b\"",
+                     "Executing command SHOW 2",
+                     "Executing command SHOW \"b\"",
+                     "Executing command SHOW \"c\"",
+                     "Executing command SHOW \"d\"",
+                     "Executing command SHOW \"e\"",
+                     "Executing command SHOW \"f\"",
+                     "Executing command SHOW \"c\"",
+                     "Executing command SHOW \"d\"",
+                     "Executing command SHOW \"e\"",
+                     "Executing command SHOW \"f\""]
     }
 
     def "run macro"() {
@@ -191,7 +237,7 @@ class ScriptRunnerTest extends Specification {
     private static ActionInvoker createActionInvoker() {
         new ActionInvoker() {
             @Override
-            Status runAction(com.cognifide.apm.core.grammar.executioncontext.ExternalExecutionContext context, String commandName, com.cognifide.apm.core.grammar.argument.Arguments arguments) {
+            Status runAction(ExternalExecutionContext context, String commandName, Arguments arguments) {
                 def command = new StringBuilder("Executing command ")
                 command.append(commandName)
                 arguments.required.each {
@@ -201,5 +247,46 @@ class ScriptRunnerTest extends Specification {
                 return Status.SUCCESS
             }
         }
+    }
+
+    private static DataSourceInvoker createDataSourceInvoker() {
+        def dataSourceInvoker = new DataSourceInvoker()
+        FieldUtils.writeField(dataSourceInvoker, "decryptionService", new DecryptionService(), true)
+        def bindDataSource = DataSourceInvoker.class.getDeclaredMethod("bindDataSource", DataSource.class)
+        bindDataSource.setAccessible(true)
+        bindDataSource.invoke(dataSourceInvoker, new DataSource() {
+            @Override
+            String getName() {
+                return "FUNC"
+            }
+
+            @Override
+            ApmType determine(ResourceResolver resolver, List<Object> parameters) {
+                return new ApmString(parameters.get(0))
+            }
+        })
+        bindDataSource.invoke(dataSourceInvoker, new DataSource() {
+            @Override
+            String getName() {
+                return "UPPER"
+            }
+
+            @Override
+            ApmType determine(ResourceResolver resolver, List<Object> parameters) {
+                return new ApmString(parameters.get(0).toUpperCase())
+            }
+        })
+        bindDataSource.invoke(dataSourceInvoker, new DataSource() {
+            @Override
+            String getName() {
+                return "CONST"
+            }
+
+            @Override
+            ApmType determine(ResourceResolver resolver, List<Object> parameters) {
+                return new ApmString("const")
+            }
+        })
+        return dataSourceInvoker
     }
 }

@@ -24,6 +24,7 @@ import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.grammar.ReferenceFinder;
+import com.cognifide.apm.core.grammar.datasource.DataSourceInvoker;
 import com.cognifide.apm.core.history.History;
 import com.cognifide.apm.core.history.HistoryEntry;
 import com.cognifide.apm.core.launchers.AbstractLauncher;
@@ -80,6 +81,9 @@ public class ApmInstallService extends AbstractLauncher implements Runnable {
   @Reference
   private History history;
 
+  @Reference
+  private DataSourceInvoker dataSourceInvoker;
+
   private List<String> scriptPaths;
 
   private boolean ifModified;
@@ -119,7 +123,7 @@ public class ApmInstallService extends AbstractLauncher implements Runnable {
   }
 
   private List<Script> determineScripts(List<String> scriptPaths, ResourceResolver resolver) {
-    ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resolver);
+    ReferenceFinder referenceFinder = new ReferenceFinder(scriptFinder, resolver, dataSourceInvoker);
     return scriptPaths.stream()
         .map(scriptPath -> scriptFinder.find(scriptPath, resolver))
         .filter(Objects::nonNull)
