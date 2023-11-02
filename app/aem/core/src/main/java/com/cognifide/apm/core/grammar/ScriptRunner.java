@@ -25,6 +25,7 @@ import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.apm.api.status.Status;
 import com.cognifide.apm.core.grammar.ApmType.ApmEmpty;
 import com.cognifide.apm.core.grammar.ApmType.ApmList;
+import com.cognifide.apm.core.grammar.ApmType.ApmMap;
 import com.cognifide.apm.core.grammar.ApmType.ApmString;
 import com.cognifide.apm.core.grammar.antlr.ApmLangBaseVisitor;
 import com.cognifide.apm.core.grammar.antlr.ApmLangParser.AllowDenyCommandContext;
@@ -280,6 +281,8 @@ public class ScriptRunner {
       if (variableValue instanceof ApmList) {
         values = variableValue.getList();
       } else if (variableValue instanceof ApmEmpty) {
+        values = Collections.emptyList();
+      } else if (variableValue instanceof ApmMap && variableValue.getMap().isEmpty()) {
         values = Collections.emptyList();
       } else {
         values = ImmutableList.of(variableValue);
