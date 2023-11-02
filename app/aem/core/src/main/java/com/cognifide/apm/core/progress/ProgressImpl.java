@@ -19,9 +19,6 @@
  */
 package com.cognifide.apm.core.progress;
 
-import static java.lang.String.format;
-import static java.util.Collections.singletonList;
-
 import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.apm.api.actions.Message;
 import com.cognifide.apm.api.status.Status;
@@ -87,14 +84,14 @@ public class ProgressImpl implements Progress {
     }
     final List<String> parameters = new ArrayList<>();
     arguments.getRequired().forEach(it -> parameters.add(it.toString()));
-    arguments.getNamed().forEach((key, value) -> parameters.add(format("%s=%s", key, value)));
-    arguments.getFlags().forEach(it -> parameters.add(format("--%s", it)));
+    arguments.getNamed().forEach((key, value) -> parameters.add(String.format("%s=%s", key, value)));
+    arguments.getFlags().forEach(it -> parameters.add(String.format("--%s", it)));
     return parameters;
   }
 
   @Override
   public void addEntry(Status status, String message) {
-    this.entries.add(shortEntry("", singletonList(message), status));
+    this.entries.add(shortEntry("", Collections.singletonList(message), status));
   }
 
   @Override
@@ -104,7 +101,7 @@ public class ProgressImpl implements Progress {
 
   @Override
   public void addEntry(Status status, String message, String command) {
-    this.entries.add(shortEntry(command, singletonList(message), status));
+    this.entries.add(shortEntry(command, Collections.singletonList(message), status));
   }
 
   @Override

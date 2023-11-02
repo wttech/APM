@@ -19,8 +19,6 @@
  */
 package com.cognifide.apm.core.scripts;
 
-import static java.lang.String.format;
-
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.apm.core.Apm;
@@ -178,7 +176,7 @@ public class ScriptStorageImpl implements ScriptStorage {
   private static void ensurePropertyMatchesPattern(List<String> errors, String property, String value,
       Pattern pattern) {
     if (!pattern.matcher(value).matches()) {
-      errors.add(format("Invalid %s: \"%s\"", property, value));
+      errors.add(String.format("Invalid %s: \"%s\"", property, value));
     }
   }
 

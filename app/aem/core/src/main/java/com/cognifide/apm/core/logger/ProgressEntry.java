@@ -19,13 +19,12 @@
  */
 package com.cognifide.apm.core.logger;
 
-import static org.apache.commons.lang3.StringUtils.defaultString;
-
 import com.cognifide.apm.api.services.ExecutionResult.Entry;
 import com.cognifide.apm.api.status.Status;
 import com.google.common.collect.ImmutableList;
 import java.util.Collections;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 
 public class ProgressEntry implements Entry {
 
@@ -44,11 +43,11 @@ public class ProgressEntry implements Entry {
   public ProgressEntry(Status status, List<String> messages, String command, String authorizable,
       List<String> parameters, Position position) {
     this.status = status != null ? status : Status.SUCCESS;
-    this.command = defaultString(command);
+    this.command = StringUtils.defaultString(command);
     this.position = position;
     this.messages = messages != null ? ImmutableList.copyOf(messages) : Collections.emptyList();
     this.parameters = parameters != null ? ImmutableList.copyOf(parameters) : Collections.emptyList();
-    this.authorizable = defaultString(authorizable);
+    this.authorizable = StringUtils.defaultString(authorizable);
   }
 
   @Override

@@ -20,8 +20,6 @@
 
 package com.cognifide.apm.core.actions;
 
-import static java.util.Collections.singletonList;
-
 import com.cognifide.apm.api.actions.annotations.Flag;
 import com.cognifide.apm.api.actions.annotations.Named;
 import com.cognifide.apm.api.actions.annotations.Required;
@@ -29,6 +27,7 @@ import com.cognifide.apm.core.crypto.DecryptionService;
 import com.cognifide.apm.core.grammar.ApmType;
 import com.cognifide.apm.core.grammar.argument.Arguments;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,7 +61,7 @@ public abstract class ParameterDescriptor {
     public RequiredParameterDescriptor(Class<? extends ApmType> type, int index, Required required) {
       super(type);
       this.index = index;
-      this.argumentDescriptions = singletonList(new ArgumentDescription(
+      this.argumentDescriptions = Collections.singletonList(new ArgumentDescription(
           required != null ? required.value() : "(" + index + ")",
           "required",
           required != null ? required.description() : ""
@@ -101,7 +100,7 @@ public abstract class ParameterDescriptor {
     public NamedParameterDescriptor(Class<? extends ApmType> type, Named named) {
       super(type);
       this.name = named.value();
-      this.argumentDescriptions = singletonList(new ArgumentDescription(
+      this.argumentDescriptions = Collections.singletonList(new ArgumentDescription(
           name, "named", named.description()
       ));
     }
@@ -168,7 +167,7 @@ public abstract class ParameterDescriptor {
 
     public FlagParameterDescriptor(Class<? extends ApmType> type, Flag flag) {
       super(type);
-      this.argumentDescriptions = singletonList(new ArgumentDescription(flag.value(), "flag", flag.description()));
+      this.argumentDescriptions = Collections.singletonList(new ArgumentDescription(flag.value(), "flag", flag.description()));
       this.flag = flag.value();
     }
 
