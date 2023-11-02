@@ -78,7 +78,6 @@ public class ScriptsResourceChangeListener implements ResourceChangeListener {
   @Activate
   public void activate(BundleContext bundleContext) {
     registeredScripts = new HashMap<>();
-
     SlingHelper.operateTraced(resolverProvider, resolver ->
         scriptFinder.findAll(onScheduleOrCronExpression(runModesProvider), resolver)
             .forEach(script -> registerScript(script, bundleContext))
@@ -116,7 +115,9 @@ public class ScriptsResourceChangeListener implements ResourceChangeListener {
                 Script script = scriptFinder.find(change.getPath(), resolver);
                 RegisterScript registeredScript = registeredScripts.get(change.getPath());
                 if (registeredScript == null) {
-                  registerScript(script, bundleContext);
+                  if (onScheduleOrCronExpression(runModesProvider).test(script)) {
+                    registerScript(script, bundleContext);
+                  }
                 } else if (!Objects.equals(script, registeredScript.script)) {
                   registeredScript.registration.unregister();
                   registeredScripts.remove(change.getPath());
