@@ -34,7 +34,7 @@ public class LowerMapper {
       reference = "Converts string to lower case"
   )
   public Action mapAction(
-      @Required(value = "value", description = "") String value) {
+      @Required(value = "value", description = "string") String value) {
     throw new NotImplementedException("");
   }
 }
