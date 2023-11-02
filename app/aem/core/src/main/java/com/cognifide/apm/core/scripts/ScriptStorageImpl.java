@@ -27,11 +27,12 @@ import com.cognifide.apm.core.endpoints.ScriptUploadForm;
 import com.day.cq.commons.jcr.JcrConstants;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -106,13 +107,13 @@ public class ScriptStorageImpl implements ScriptStorage {
       contentNode.setProperty(JcrConstants.JCR_DATA, binary);
       contentNode.setProperty(JcrConstants.JCR_ENCODING, SCRIPT_ENCODING.name());
       fileNode.addMixin(ScriptNode.APM_SCRIPT);
-      fileNode.setProperty(ScriptNode.APM_LAUNCH_ENABLED, launchMetadata.isExecutionEnabled());
+      fileNode.setProperty(ScriptNode.APM_LAUNCH_ENABLED, launchMetadata.isLaunchEnabled());
       setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_MODE, launchMetadata.getLaunchMode());
       setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_ENVIRONMENT, launchMetadata.getLaunchEnvironment());
       setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_RUN_MODES, launchMetadata.getLaunchRunModes());
-      setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_HOOK, launchMetadata.getExecutionHook());
-      setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_SCHEDULE, launchMetadata.getExecutionSchedule());
-      setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_CRON_EXPRESSION, launchMetadata.getCronExpression());
+      setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_HOOK, launchMetadata.getLaunchHook());
+      setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_SCHEDULE, launchMetadata.getLaunchSchedule());
+      setOrRemoveProperty(fileNode, ScriptNode.APM_LAUNCH_CRON_EXPRESSION, launchMetadata.getLaunchCronExpression());
       removeProperty(fileNode, ScriptNode.APM_LAST_EXECUTED);
       JcrUtils.setLastModified(fileNode, Calendar.getInstance());
       session.save();
@@ -126,12 +127,11 @@ public class ScriptStorageImpl implements ScriptStorage {
   private void setOrRemoveProperty(Node node, String name, Object value) throws RepositoryException {
     if (value == null) {
       removeProperty(node, name);
-    } else if (value instanceof LocalDateTime) {
-      LocalDateTime localDateTime = (LocalDateTime) value;
+    } else if (value instanceof OffsetDateTime) {
+      OffsetDateTime offsetDateTime = (OffsetDateTime) value;
+      Date date = Date.from(offsetDateTime.toInstant());
       Calendar calendar = Calendar.getInstance();
-      calendar.clear();
-      calendar.set(localDateTime.getYear(), localDateTime.getMonthValue() - 1, localDateTime.getDayOfMonth(),
-          localDateTime.getHour(), localDateTime.getMinute(), localDateTime.getSecond());
+      calendar.setTime(date);
       node.setProperty(name, calendar);
     } else if (value instanceof String[]) {
       node.setProperty(name, (String[]) value);

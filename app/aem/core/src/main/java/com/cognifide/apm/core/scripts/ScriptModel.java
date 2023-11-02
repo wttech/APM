@@ -44,7 +44,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.jcr.RepositoryException;
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.Resource;
@@ -61,7 +60,7 @@ public class ScriptModel implements MutableScript {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ScriptModel.class);
 
-  private final String path;
+  private String path;
 
   @Self
   private Resource resource;
@@ -96,7 +95,7 @@ public class ScriptModel implements MutableScript {
 
   @Inject
   @Named(ScriptNode.APM_LAUNCH_CRON_EXPRESSION)
-  private String cronExpression;
+  private String launchCronExpression;
 
   @Inject
   @Named(ScriptNode.APM_LAST_EXECUTED)
@@ -120,12 +119,9 @@ public class ScriptModel implements MutableScript {
 
   private String data;
 
-  public ScriptModel(Resource resource) {
-    this.path = resource.getPath();
-  }
-
   @PostConstruct
   private void afterCreated() {
+    path = resource.getPath();
     if (verified == null) {
       try {
         scriptManager.process(this, ExecutionMode.VALIDATION, resource.getResourceResolver());
@@ -174,8 +170,8 @@ public class ScriptModel implements MutableScript {
   }
 
   @Override
-  public String getCronExpression() {
-    return StringUtils.defaultString(cronExpression);
+  public String getLaunchCronExpression() {
+    return launchCronExpression;
   }
 
   @Override
@@ -287,7 +283,7 @@ public class ScriptModel implements MutableScript {
           && Arrays.equals(launchRunModes, that.launchRunModes)
           && Objects.equals(launchHook, that.launchHook)
           && Objects.equals(launchSchedule, that.launchSchedule)
-          && Objects.equals(cronExpression, that.cronExpression)
+          && Objects.equals(launchCronExpression, that.launchCronExpression)
           && Objects.equals(checksum, that.checksum)
           && Objects.equals(verified, that.verified);
     }

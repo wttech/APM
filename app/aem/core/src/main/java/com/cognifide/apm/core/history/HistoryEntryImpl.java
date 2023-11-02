@@ -22,33 +22,53 @@ package com.cognifide.apm.core.history;
 import com.cognifide.apm.core.logger.ProgressEntry;
 import com.cognifide.apm.core.progress.ProgressHelper;
 import com.cognifide.apm.core.utils.CalendarUtils;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.commons.io.IOUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.Default;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Model;
+import org.apache.sling.models.annotations.injectorspecific.Self;
 
 @Model(adaptables = Resource.class, defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
 public class HistoryEntryImpl implements HistoryEntry {
 
   public static final String AUTHOR = "author";
+
   public static final String EXECUTION_TIME = "executionTime";
+
   public static final String EXECUTION_DURATION = "executionDuration";
+
   public static final String EXECUTOR = "executor";
+
   public static final String SCRIPT_PATH = "scriptPath";
+
   public static final String SCRIPT_NAME = "scriptName";
+
   public static final String IS_RUN_SUCCESSFUL = "isRunSuccessful";
+
   public static final String MODE = "mode";
+
   public static final String CHECKSUM = "checksum";
+
   public static final String PROGRESS_LOG = "summaryJSON";
+
   public static final String UPLOAD_TIME = "uploadTime";
+
   public static final String SCRIPT_CONTENT_PATH = "scriptContentPath";
+
   public static final String INSTANCE_NAME = "instanceName";
+
+  @Self
+  private Resource resource;
 
   @Inject
   @Named(AUTHOR)
@@ -91,8 +111,6 @@ public class HistoryEntryImpl implements HistoryEntry {
   @Named(UPLOAD_TIME)
   private Date uploadTime;
 
-  @Inject
-  @Named(PROGRESS_LOG)
   private String executionSummaryJson;
 
   @Inject
@@ -103,25 +121,22 @@ public class HistoryEntryImpl implements HistoryEntry {
   @Named(INSTANCE_NAME)
   private String instanceName;
 
-  private final String path;
+  private String path;
 
   private Calendar executionTimeCalendar;
 
   private List<ProgressEntry> executionSummary;
 
-  public HistoryEntryImpl(Resource resource) {
-    this.path = resource.getPath();
-  }
-
   public List<ProgressEntry> getExecutionSummary() {
-    if (this.executionSummary == null) {
-      this.executionSummary = ProgressHelper.fromJson(getExecutionSummaryJson());
+    if (executionSummary == null) {
+      executionSummary = ProgressHelper.fromJson(getExecutionSummaryJson());
     }
-    return this.executionSummary;
+    return executionSummary;
   }
 
   @PostConstruct
   private void afterCreated() {
+    path = resource.getPath();
     executionTimeCalendar = CalendarUtils.asCalendar(executionTime);
   }
 
@@ -166,6 +181,18 @@ public class HistoryEntryImpl implements HistoryEntry {
   }
 
   public String getExecutionSummaryJson() {
+    if (executionSummaryJson == null) {
+      Object progressLog = resource.getValueMap().get(PROGRESS_LOG);
+      if (progressLog instanceof InputStream) {
+        try {
+          executionSummaryJson = IOUtils.toString((InputStream) progressLog, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+          executionSummaryJson = "[]";
+        }
+      } else {
+        executionSummaryJson = (String) progressLog;
+      }
+    }
     return executionSummaryJson;
   }
 

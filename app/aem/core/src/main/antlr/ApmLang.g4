@@ -42,7 +42,7 @@ path
     ;
 
 array
-    : ARRAY_BEGIN arrayValue (COMMA arrayValue)* ARRAY_END
+    : ARRAY_BEGIN (arrayValue (COMMA arrayValue)*)? ARRAY_END
     ;
 
 arrayValue
@@ -53,7 +53,7 @@ arrayValue
     ;
 
 structure
-    : STRUCTURE_BEGIN structureEntry (COMMA structureEntry)* STRUCTURE_END
+    : STRUCTURE_BEGIN (structureEntry (COMMA structureEntry)*)? STRUCTURE_END
     ;
 
 structureEntry

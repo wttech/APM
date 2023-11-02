@@ -213,7 +213,7 @@ public class ReferenceFinder {
     }
 
     @Override
-    public String getCronExpression() {
+    public String getLaunchCronExpression() {
       return null;
     }
 

@@ -35,7 +35,6 @@
   $(document).on('cui-contentloaded', function () {
 
     const fieldNames = [
-      'apm:launchEnabled',
       'apm:launchMode',
       'apm:launchEnvironment',
       'apm:launchRunModes',
@@ -101,9 +100,9 @@
         const formData = new FormData();
         $.each(fieldNames, (index, fieldName) => {
           const originalValue = fieldName === 'apm:launchRunModes'
-              ? originalFormData.getAll(fieldName)
-              : originalFormData.get(fieldName);
-          if (originalValue) {
+              ? originalFormData.getAll(fieldName).filter((item) => item.trim().length)
+              : (originalFormData.get(fieldName) || '').trim();
+          if (originalValue.length) {
             formData.set(fieldName, originalValue);
           }
         });
@@ -182,7 +181,7 @@
           let message = response.message;
           if (response.errors) {
             message += '<ul>';
-            response.errors.forEach((error) => message += '<li>' + error);
+            response.errors.forEach((error) => message += '<li>' + error + '</li>');
             message += '</ul>';
           }
           self.uiHelper.notify('error', message, 'error');

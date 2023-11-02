@@ -29,6 +29,7 @@ import com.cognifide.apm.core.grammar.ApmType.ApmString;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -50,8 +51,11 @@ public class ValueMapDataSource implements DataSource {
   @Override
   public ApmType determine(ResourceResolver resolver, List<Object> parameters) {
     String path = (String) parameters.get(0);
-    String regex = parameters.size() > 1 ? (String) parameters.get(1) : null;
+    Map<String, String> regexMap = parameters.size() > 1 ? (Map<String, String>) parameters.get(1) : Collections.emptyMap();
+    String regex = regexMap.get("regex");
     Pattern pattern = StringUtils.isNotEmpty(regex) ? Pattern.compile(regex) : null;
+    String excludeRegex = regexMap.get("excludeRegex");
+    Pattern excludePattern = StringUtils.isNotEmpty(excludeRegex) ? Pattern.compile(excludeRegex) : null;
     Resource resource = resolver.getResource(path);
     if (resource == null) {
       return new ApmEmpty();
@@ -60,6 +64,7 @@ public class ValueMapDataSource implements DataSource {
     Map<String, ApmType> map = valueMap.entrySet()
         .stream()
         .filter(entry -> pattern == null || pattern.matcher(entry.getKey()).matches())
+        .filter(entry -> excludePattern == null || !excludePattern.matcher(entry.getKey()).matches())
         .map(entry -> new ApmPair(entry.getKey(), determineValue(entry.getValue())))
         .collect(Collectors.toMap(ApmPair::getKey, ApmPair::getValue));
     return new ApmMap(map);

@@ -24,6 +24,7 @@ import com.cognifide.apm.api.actions.annotations.Mapper;
 import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.apm.api.actions.annotations.Required;
 import com.cognifide.apm.main.actions.ActionGroup;
+import java.util.Map;
 import org.apache.commons.lang3.NotImplementedException;
 
 @Mapper(value = "VALUEMAP", group = ActionGroup.DATASOURCE)
@@ -39,12 +40,15 @@ public class ValueMapMapper {
   }
 
   @Mapping(
-      examples = "VALUEMAP('/content/dam', '[^:]+')",
-      reference = "Provides value map with properties which matching given regex for given resource path"
+      examples = "VALUEMAP('/content/dam', {\n" +
+          "\tregex: 'prop.+',\n" +
+          "\texcludeRegex: '.+:.+'\n" +
+          "})",
+      reference = "Provides value map with properties which matching given regex expressions for given resource path"
   )
   public Action mapAction(
       @Required(value = "path", description = "Resource path") String path,
-      @Required(value = "regex", description = "Regex expression") String regex) {
+      @Required(value = "regexMap", description = "Map of regex expressions") Map<String, String> regex) {
     throw new NotImplementedException("");
   }
 }

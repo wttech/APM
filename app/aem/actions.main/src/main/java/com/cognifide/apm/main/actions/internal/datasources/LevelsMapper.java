@@ -31,16 +31,16 @@ import org.apache.commons.lang3.NotImplementedException;
 public class LevelsMapper {
 
   @Mapping(
-      examples = "LEVELS('/content', [<br>" +
-          "&nbsp;&nbsp;&nbsp;&nbsp;{regex: '(.+)_(.+)',paramNames: ['param1', 'param2']}, # 1st level<br>" +
-          "&nbsp;&nbsp;&nbsp;&nbsp;{excludeRegex: '[^:]+'}, # 2nd level<br>" +
-          "&nbsp;&nbsp;&nbsp;&nbsp;{template: '/apps/test/pageTemplate', resourceType: 'test/pageRenderer'}, # 3rd level<br>" +
-          "&nbsp;&nbsp;&nbsp;&nbsp;{properties: [ # 4th level<br>" +
-          "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{name: 'jcr:primaryType', regex: 'cq:Page'},<br>" +
-          "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{name: 'jcr:primaryType', excludeRegex: 'cq:PageContent'},<br>" +
-          "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{name: 'jcr:content/cq:template', regex: '/apps/test/pageTemplate'},<br>" +
-          "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{name: 'jcr:content/sling:resourceType', regex: 'test/pageRenderer'}<br>" +
-          "&nbsp;&nbsp;&nbsp;&nbsp;]}<br>" +
+      examples = "LEVELS('/content', [\n" +
+          "\t{regex: '(.+)_(.+)',paramNames: ['param1', 'param2']}, # 1st level\n" +
+          "\t{excludeRegex: '.+:.+'}, # 2nd level\n" +
+          "\t{template: '/apps/test/pageTemplate', resourceType: 'test/pageRenderer'}, # 3rd level\n" +
+          "\t{properties: [ # 4th level\n" +
+          "\t\t{name: 'jcr:primaryType', regex: 'cq:Page'},\n" +
+          "\t\t{name: 'jcr:primaryType', excludeRegex: 'cq:PageContent'},\n" +
+          "\t\t{name: 'jcr:content/cq:template', regex: '/apps/test/pageTemplate'},\n" +
+          "\t\t{name: 'jcr:content/sling:resourceType', regex: 'test/pageRenderer'}\n" +
+          "\t]}\n" +
           "])",
       reference = "Provides levels of content for given resource path matching given content structure map"
   )

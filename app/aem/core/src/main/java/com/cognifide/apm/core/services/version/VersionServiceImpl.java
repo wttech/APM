@@ -71,7 +71,7 @@ public class VersionServiceImpl implements VersionService {
     String scriptVersionPath = getScriptVersionPath(script);
     return Optional.ofNullable(resolver.getResource(scriptVersionPath))
         .map(resource -> resource.adaptTo(ScriptVersionModel.class))
-        .orElse(new ScriptVersionModel(script.getPath(), null));
+        .orElse(new ScriptVersionModel(script.getPath()));
   }
 
   @Override
@@ -139,14 +139,12 @@ public class VersionServiceImpl implements VersionService {
     return JcrUtils.getOrCreateByPath(path, "sling:OrderedFolder", "sling:OrderedFolder", session, true);
   }
 
-  private Node copyScriptContent(Node parent, Script script, Session session) throws RepositoryException {
+  private void copyScriptContent(Node parent, Script script, Session session) throws RepositoryException {
     if (!parent.hasNode(SCRIPT_NODE_NAME)) {
       Node source = session.getNode(script.getPath());
       Node file = JcrUtil.copy(source, parent, SCRIPT_NODE_NAME);
       file.addMixin(ScriptNode.APM_SCRIPT);
-      return file;
     }
-    return parent.getNode(SCRIPT_NODE_NAME);
   }
 
   private String normalizedPath(Script script) {

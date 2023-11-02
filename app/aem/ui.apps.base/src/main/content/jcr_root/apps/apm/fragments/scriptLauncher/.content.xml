@@ -52,7 +52,8 @@
       fieldLabel="Schedule"
       name="apm:launchSchedule"
       type="datetime"
-      valueFormat="YYYY-MM-DD[T]HH:mm:ss"/>
+      displayedFormat="YYYY-MM-DD HH:mm"
+      valueFormat="YYYY-MM-DD[T]HH:mm:ssZ"/>
     <cronExpression
       jcr:primaryType="nt:unstructured"
       sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
