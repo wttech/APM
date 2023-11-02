@@ -132,7 +132,7 @@ public class ScriptsResourceChangeListener implements ResourceChangeListener {
                 if (onScheduleOrCronExpression(runModesProvider).test(script)) {
                   registerScript(script, bundleContext);
                 }
-              } else if (!Objects.equals(script, registeredScript.script)) {
+              } else if (!Objects.equals(script, registeredScript.script) || script.getLaunchMode() == LaunchMode.ON_SCHEDULE) {
                 registeredScript.registration.unregister();
                 registeredScripts.remove(change.getPath());
                 if (onScheduleOrCronExpression(runModesProvider).test(script)) {
