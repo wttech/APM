@@ -34,7 +34,6 @@ import com.google.common.collect.Sets;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -239,9 +238,9 @@ public class ScriptModel implements MutableScript {
     ResourceResolver resolver = resource.getResourceResolver();
     boolean compositeNodeStore = RuntimeUtils.determineCompositeNodeStore(resolver);
     if (!compositeNodeStore || !PathUtils.isAppsOrLibsPath(path)) {
-      ModifiableValueMap vm = resource.adaptTo(ModifiableValueMap.class);
-      ResourceMixinUtil.addMixin(vm, ScriptNode.APM_SCRIPT);
-      vm.put(name, convertValue(value));
+      ModifiableValueMap valueMap = resource.adaptTo(ModifiableValueMap.class);
+      ResourceMixinUtil.addMixin(valueMap, ScriptNode.APM_SCRIPT);
+      valueMap.put(name, convertValue(value));
 
       resolver.commit();
     }
@@ -249,7 +248,7 @@ public class ScriptModel implements MutableScript {
 
   private Object convertValue(Object obj) {
     if (obj instanceof Date) {
-      Calendar calendar = new GregorianCalendar();
+      Calendar calendar = Calendar.getInstance();
       calendar.setTime((Date) obj);
 
       return calendar;

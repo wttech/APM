@@ -29,9 +29,8 @@
     <a href="${item.scriptContentPath}" download="${item.scriptName}"
        style="text-decoration:none; color:#4b4b4b">${item.scriptName}</a>
   </td>
-  <td is="coral-table-cell" value="${item.executionTime.time || 0}">
-    <time datetime="${item.executionTime.time || 0}"
-          data-sly-test="${item.executionTime}"
+  <td is="coral-table-cell" value="${item.executionTime.timeInMillis || 0}">
+    <time data-sly-test="${item.executionTime}" datetime="${item.executionTime.timeInMillis || 0}"
           data-sly-use.execLast="${'com.adobe.cq.xf.ui.DateFormatter' @ date=item.executionTimeCalendar, simpleFormat='yyyy-MM-dd HH:mm:ss'}">
       ${execLast.date}
     </time>
