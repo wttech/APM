@@ -24,6 +24,8 @@ import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.apm.api.actions.Context;
 import com.cognifide.apm.api.actions.SessionSavingMode;
 import com.cognifide.apm.api.actions.SessionSavingPolicy;
+import com.cognifide.apm.api.status.Status;
+import com.cognifide.apm.main.utils.ActionUtils;
 import com.cognifide.apm.main.utils.MessagingUtils;
 
 public class SessionSave implements Action {
@@ -55,6 +57,10 @@ public class SessionSave implements Action {
       } catch (IllegalArgumentException e) {
         actionResult.logError(MessagingUtils.createMessage(e));
       }
+    }
+
+    if (actionResult.getStatus() == Status.ERROR) {
+      actionResult.logError(ActionUtils.EXECUTION_INTERRUPTED_MSG);
     }
     return actionResult;
   }

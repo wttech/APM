@@ -27,6 +27,7 @@ import com.cognifide.apm.api.status.Status;
 import com.cognifide.apm.main.permissions.PermissionActionHelper;
 import com.cognifide.apm.main.permissions.Restrictions;
 import com.cognifide.apm.main.permissions.exceptions.PermissionException;
+import com.cognifide.apm.main.utils.ActionUtils;
 import com.cognifide.apm.main.utils.MessagingUtils;
 import com.cognifide.apm.main.utils.PathUtils;
 import java.util.Collections;
@@ -103,10 +104,13 @@ public class Allow implements Action {
         actionResult.logWarning("Path " + path + " not found");
       } else {
         actionResult.logError("Path " + path + " not found");
-        return actionResult;
       }
     } catch (RepositoryException | PermissionException | ActionExecutionException e) {
       actionResult.logError(MessagingUtils.createMessage(e));
+    }
+
+    if (actionResult.getStatus() == Status.ERROR) {
+      actionResult.logError(ActionUtils.EXECUTION_INTERRUPTED_MSG);
     }
     return actionResult;
   }

@@ -22,6 +22,8 @@ package com.cognifide.apm.main.actions.removechildrengroups;
 import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.apm.api.actions.Context;
 import com.cognifide.apm.api.exceptions.ActionExecutionException;
+import com.cognifide.apm.api.status.Status;
+import com.cognifide.apm.main.utils.ActionUtils;
 import com.cognifide.apm.main.utils.MessagingUtils;
 import java.util.Iterator;
 import javax.jcr.RepositoryException;
@@ -61,6 +63,10 @@ public class ClearFromGroupDetacher {
     } catch (RepositoryException | ActionExecutionException e) {
       actionResult.logError(MessagingUtils.createMessage(e));
     }
+
+    if (actionResult.getStatus() == Status.ERROR) {
+      actionResult.logError(ActionUtils.EXECUTION_INTERRUPTED_MSG);
+    }
     return actionResult;
   }
 
@@ -75,6 +81,10 @@ public class ClearFromGroupDetacher {
       detachFromParents(actionResult, currentAuthorizable, groups);
     } catch (RepositoryException | ActionExecutionException e) {
       actionResult.logError(MessagingUtils.createMessage(e));
+    }
+
+    if (actionResult.getStatus() == Status.ERROR) {
+      actionResult.logError(ActionUtils.EXECUTION_INTERRUPTED_MSG);
     }
     return actionResult;
   }
