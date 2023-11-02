@@ -25,7 +25,6 @@ import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.grammar.ReferenceFinder;
 import com.cognifide.apm.core.grammar.ScriptExecutionException;
 import com.cognifide.apm.core.scripts.MutableScriptWrapper;
-import com.cognifide.apm.core.scripts.ScriptNode;
 import com.day.cq.commons.jcr.JcrUtil;
 import com.day.crx.JcrConstants;
 import java.util.List;
@@ -112,7 +111,6 @@ public class VersionServiceImpl implements VersionService {
       Node versionNode = createVersionNode(scriptNode, script, session);
       copyScriptContent(versionNode, script, session);
       session.save();
-      resolver.commit();
     } catch (Exception e) {
       LOGGER.error("Issues with saving to repository while logging script execution", e);
     }
@@ -120,7 +118,7 @@ public class VersionServiceImpl implements VersionService {
 
   private Node createScriptNode(Script script, Session session) throws RepositoryException {
     String path = getScriptVersionPath(script);
-    Node scriptHistory = JcrUtils.getOrCreateByPath(path, "sling:OrderedFolder", JcrConstants.NT_UNSTRUCTURED, session, true);
+    Node scriptHistory = JcrUtils.getOrCreateByPath(path, "sling:OrderedFolder", JcrConstants.NT_UNSTRUCTURED, session, false);
     scriptHistory.setProperty("scriptPath", script.getPath());
     scriptHistory.setProperty("lastChecksum", script.getChecksum());
     return scriptHistory;
@@ -132,14 +130,13 @@ public class VersionServiceImpl implements VersionService {
 
   private Node createVersionNode(Node parent, Script script, Session session) throws RepositoryException {
     String path = parent.getPath() + "/" + script.getChecksum();
-    return JcrUtils.getOrCreateByPath(path, "sling:OrderedFolder", "sling:OrderedFolder", session, true);
+    return JcrUtils.getOrCreateByPath(path, "sling:OrderedFolder", "sling:OrderedFolder", session, false);
   }
 
   private void copyScriptContent(Node parent, Script script, Session session) throws RepositoryException {
     if (!parent.hasNode(SCRIPT_NODE_NAME)) {
       Node source = session.getNode(script.getPath());
-      Node file = JcrUtil.copy(source, parent, SCRIPT_NODE_NAME);
-      file.addMixin(ScriptNode.APM_SCRIPT);
+      JcrUtil.copy(source, parent, SCRIPT_NODE_NAME);
     }
   }
 
