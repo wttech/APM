@@ -24,6 +24,8 @@ import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.apm.api.actions.Context;
 import com.cognifide.apm.api.exceptions.ActionExecutionException;
 import com.cognifide.apm.api.exceptions.AuthorizableNotFoundException;
+import com.cognifide.apm.api.status.Status;
+import com.cognifide.apm.main.utils.ActionUtils;
 import com.cognifide.apm.main.utils.MessagingUtils;
 import javax.jcr.RepositoryException;
 import org.apache.jackrabbit.api.security.user.Group;
@@ -75,6 +77,10 @@ public class ForAuthorizable implements Action {
       } else {
         actionResult.logError(MessagingUtils.createMessage(e));
       }
+    }
+
+    if (actionResult.getStatus() == Status.ERROR) {
+      actionResult.logError(ActionUtils.EXECUTION_INTERRUPTED_MSG);
     }
     return actionResult;
   }
