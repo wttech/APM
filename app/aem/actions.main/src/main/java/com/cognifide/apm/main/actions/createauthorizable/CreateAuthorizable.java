@@ -24,6 +24,7 @@ import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.apm.api.actions.Context;
 import com.cognifide.apm.api.status.Status;
 import com.cognifide.apm.main.actions.forauthorizable.ForAuthorizable;
+import com.cognifide.apm.main.utils.ActionUtils;
 import com.cognifide.apm.main.utils.MessagingUtils;
 import javax.jcr.RepositoryException;
 import org.apache.jackrabbit.api.security.user.Authorizable;
@@ -83,6 +84,8 @@ public class CreateAuthorizable implements Action {
     if (actionResult.getStatus() != Status.ERROR) {
       ActionResult forAuthorizableActionResult = new ForAuthorizable(id, false, createStrategy == CreateAuthorizableStrategy.GROUP).process(context);
       actionResult.changeStatus(forAuthorizableActionResult.getStatus(), forAuthorizableActionResult.getMessages().get(0).getText());
+    } else {
+      actionResult.logError(ActionUtils.EXECUTION_INTERRUPTED_MSG);
     }
     return actionResult;
   }

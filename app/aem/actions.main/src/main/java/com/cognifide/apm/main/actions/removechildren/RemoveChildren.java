@@ -25,6 +25,7 @@ import com.cognifide.apm.api.actions.Context;
 import com.cognifide.apm.api.exceptions.ActionExecutionException;
 import com.cognifide.apm.api.exceptions.AuthorizableNotFoundException;
 import com.cognifide.apm.api.status.Status;
+import com.cognifide.apm.main.utils.ActionUtils;
 import com.cognifide.apm.main.utils.MessagingUtils;
 import java.util.List;
 import javax.jcr.RepositoryException;
@@ -62,6 +63,7 @@ public class RemoveChildren implements Action {
       LOGGER.info("Removing authorizables {} from group with id={}", String.join(", ", authorizableIds), group.getID());
     } catch (RepositoryException | ActionExecutionException e) {
       actionResult.logError(MessagingUtils.createMessage(e));
+      actionResult.logError(ActionUtils.EXECUTION_INTERRUPTED_MSG);
       return actionResult;
     }
 
@@ -82,7 +84,7 @@ public class RemoveChildren implements Action {
     }
 
     if (actionResult.getStatus() == Status.ERROR) {
-      actionResult.logError("Execution interrupted");
+      actionResult.logError(ActionUtils.EXECUTION_INTERRUPTED_MSG);
     }
     return actionResult;
   }

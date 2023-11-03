@@ -29,7 +29,9 @@ import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.apm.core.Apm;
 import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.launchers.ApmInstallService;
+import com.cognifide.apm.core.ui.models.ScriptsRowModel;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
+import com.day.cq.commons.jcr.JcrConstants;
 import java.text.SimpleDateFormat;
 import java.util.Dictionary;
 import java.util.HashMap;
@@ -38,6 +40,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.sling.api.resource.ModifiableValueMap;
+import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.api.resource.observation.ResourceChange;
 import org.apache.sling.api.resource.observation.ResourceChangeListener;
 import org.osgi.framework.Bundle;
@@ -96,38 +100,48 @@ public class ScriptsResourceChangeListener implements ResourceChangeListener {
     Bundle currentBundle = FrameworkUtil.getBundle(ScriptsResourceChangeListener.class);
     BundleContext bundleContext = currentBundle.getBundleContext();
 
-    SlingHelper.operateTraced(resolverProvider, resolver ->
-        changes.stream()
-            .filter(change -> StringUtils.endsWith(change.getPath(), Apm.FILE_EXT))
-            .forEach(change -> {
-              if (change.getType() == ResourceChange.ChangeType.ADDED) {
-                Script script = scriptFinder.find(change.getPath(), resolver);
+    SlingHelper.operateTraced(resolverProvider, resolver -> {
+      // rename copy/paste folders
+      changes.stream()
+          .filter(change -> change.getType() == ResourceChange.ChangeType.ADDED)
+          .map(change -> resolver.getResource(change.getPath()))
+          .filter(ScriptsRowModel::isFolder)
+          .forEach(resource -> {
+            ValueMap valueMap = resource.adaptTo(ModifiableValueMap.class);
+            valueMap.put(JcrConstants.JCR_TITLE, resource.getName());
+          });
+      //register schedule or cron expression scripts
+      changes.stream()
+          .filter(change -> StringUtils.endsWith(change.getPath(), Apm.FILE_EXT))
+          .forEach(change -> {
+            if (change.getType() == ResourceChange.ChangeType.ADDED) {
+              Script script = scriptFinder.find(change.getPath(), resolver);
+              if (onScheduleOrCronExpression(runModesProvider).test(script)) {
+                registerScript(script, bundleContext);
+              }
+            } else if (change.getType() == ResourceChange.ChangeType.REMOVED) {
+              RegisterScript registeredScript = registeredScripts.get(change.getPath());
+              if (registeredScript != null) {
+                registeredScript.registration.unregister();
+                registeredScripts.remove(change.getPath());
+              }
+            } else if (change.getType() == ResourceChange.ChangeType.CHANGED) {
+              Script script = scriptFinder.find(change.getPath(), resolver);
+              RegisterScript registeredScript = registeredScripts.get(change.getPath());
+              if (registeredScript == null) {
                 if (onScheduleOrCronExpression(runModesProvider).test(script)) {
                   registerScript(script, bundleContext);
                 }
-              } else if (change.getType() == ResourceChange.ChangeType.REMOVED) {
-                RegisterScript registeredScript = registeredScripts.get(change.getPath());
-                if (registeredScript != null) {
-                  registeredScript.registration.unregister();
-                  registeredScripts.remove(change.getPath());
-                }
-              } else if (change.getType() == ResourceChange.ChangeType.CHANGED) {
-                Script script = scriptFinder.find(change.getPath(), resolver);
-                RegisterScript registeredScript = registeredScripts.get(change.getPath());
-                if (registeredScript == null) {
-                  if (onScheduleOrCronExpression(runModesProvider).test(script)) {
-                    registerScript(script, bundleContext);
-                  }
-                } else if (!Objects.equals(script, registeredScript.script)) {
-                  registeredScript.registration.unregister();
-                  registeredScripts.remove(change.getPath());
-                  if (onScheduleOrCronExpression(runModesProvider).test(script)) {
-                    registerScript(script, bundleContext);
-                  }
+              } else if (!Objects.equals(script, registeredScript.script) || script.getLaunchMode() == LaunchMode.ON_SCHEDULE) {
+                registeredScript.registration.unregister();
+                registeredScripts.remove(change.getPath());
+                if (onScheduleOrCronExpression(runModesProvider).test(script)) {
+                  registerScript(script, bundleContext);
                 }
               }
-            })
-    );
+            }
+          });
+    });
   }
 
   private void registerScript(Script script, BundleContext bundleContext) {

@@ -65,6 +65,7 @@ public class AddParents implements Action {
       actionResult.setAuthorizable(authorizable.getID());
     } catch (RepositoryException | ActionExecutionException e) {
       actionResult.logError(MessagingUtils.createMessage(e));
+      actionResult.logError(ActionUtils.EXECUTION_INTERRUPTED_MSG);
       return actionResult;
     }
 
@@ -101,7 +102,7 @@ public class AddParents implements Action {
     }
 
     if (actionResult.getStatus() == Status.ERROR) {
-      actionResult.logError("Execution interrupted");
+      actionResult.logError(ActionUtils.EXECUTION_INTERRUPTED_MSG);
     }
     return actionResult;
   }
