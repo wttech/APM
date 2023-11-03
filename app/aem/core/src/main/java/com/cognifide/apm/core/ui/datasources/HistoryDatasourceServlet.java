@@ -24,7 +24,6 @@ import com.adobe.granite.ui.components.ds.SimpleDataSource;
 import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.history.History;
 import com.cognifide.apm.core.utils.Pagination;
-import com.google.common.primitives.Ints;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.Servlet;
@@ -64,16 +63,16 @@ public class HistoryDatasourceServlet extends SlingSafeMethodsServlet {
 
   private Pagination createPagination(SlingHttpServletRequest request) {
     String[] selectors = request.getRequestPathInfo().getSelectors();
-    if (selectors == null || selectors.length < 2) {
+    if (selectors.length < 2) {
       return new Pagination(0, DEFAULT_LIMIT + 1);
     } else {
-      Integer offset = Ints.tryParse(selectors[0]);
-      Integer limit = Ints.tryParse(selectors[1]);
+      int offset = Integer.parseInt(selectors[0]);
+      int limit = Integer.parseInt(selectors[1]);
       return new Pagination(offset, limit + 1);
     }
   }
 
-  private class ResourceTypeWrapper extends ResourceWrapper {
+  private static class ResourceTypeWrapper extends ResourceWrapper {
 
     ResourceTypeWrapper(Resource resource) {
       super(resource);
