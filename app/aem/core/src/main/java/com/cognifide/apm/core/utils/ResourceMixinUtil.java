@@ -31,10 +31,10 @@ public class ResourceMixinUtil {
     // empty constructor
   }
 
-  public static void addMixin(ModifiableValueMap vm, String mixin) {
-    Set<String> mixins = new HashSet<>(Arrays.asList(vm.get(JcrConstants.JCR_MIXINTYPES, new String[0])));
+  public static void addMixin(ModifiableValueMap valueMap, String mixin) {
+    Set<String> mixins = new HashSet<>(Arrays.asList(valueMap.get(JcrConstants.JCR_MIXINTYPES, new String[]{})));
     mixins.add(mixin);
-    vm.put(JcrConstants.JCR_MIXINTYPES, mixins.toArray(new String[]{}));
+    valueMap.put(JcrConstants.JCR_MIXINTYPES, mixins.toArray(new String[]{}));
   }
 
 }

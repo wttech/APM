@@ -56,7 +56,7 @@ public class CheckAuthorizableExists implements Action {
   public ActionResult process(final Context context, boolean execute) {
     ActionResult actionResult = context.createActionResult();
     try {
-      Authorizable authorizable = null;
+      Authorizable authorizable;
       if (shouldBeGroup) {
         authorizable = context.getAuthorizableManager().getGroupIfExists(id);
       } else {

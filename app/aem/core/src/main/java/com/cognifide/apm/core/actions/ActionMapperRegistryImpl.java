@@ -28,13 +28,13 @@ import com.cognifide.apm.core.actions.scanner.RegistryChangedListener;
 import com.cognifide.apm.main.services.ApmActionsMainService;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -92,15 +92,13 @@ public class ActionMapperRegistryImpl implements RegistryChangedListener, Action
 
   @Override
   public Collection<MapperDescriptor> getMappers() {
-    return mappers.get().values()
-        .stream()
-        .collect(Collectors.toList());
+    return new ArrayList<>(mappers.get().values());
   }
 
   private static Map<String, MapperDescriptor> createActionMappers(List<Class<?>> classes) {
     MapperDescriptorFactory mapperDescriptorFactory = new MapperDescriptorFactory();
     Map<String, MapperDescriptor> mappers = Maps.newHashMapWithExpectedSize(classes.size());
-    for (Class clazz : classes) {
+    for (Class<?> clazz : classes) {
       try {
         MapperDescriptor mapperDescriptor = mapperDescriptorFactory.create(clazz);
         mappers.put(mapperDescriptor.getName(), mapperDescriptor);

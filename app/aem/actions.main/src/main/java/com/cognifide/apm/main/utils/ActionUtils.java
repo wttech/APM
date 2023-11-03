@@ -32,6 +32,7 @@ public final class ActionUtils {
   public static final String EXECUTION_INTERRUPTED_MSG = "Execution interrupted";
 
   private ActionUtils() {
+    // intentionally empty
   }
 
   /**

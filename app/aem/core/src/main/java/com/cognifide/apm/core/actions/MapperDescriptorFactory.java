@@ -115,9 +115,9 @@ public class MapperDescriptorFactory {
   }
 
   private <T extends Annotation> T getAnnotation(Annotation[] annotations, Class<T> type) {
-    for (int i = 0; i < annotations.length; i++) {
-      if (type.isInstance(annotations[i])) {
-        return (T) annotations[i];
+    for (Annotation annotation : annotations) {
+      if (type.isInstance(annotation)) {
+        return (T) annotation;
       }
     }
     return null;
@@ -129,16 +129,15 @@ public class MapperDescriptorFactory {
 
   private Class<? extends ApmType> getApmType(Type type) {
     if (type instanceof Class) {
-      Class aClass = (Class) type;
-      if (String.class.equals(aClass)) {
+      Class<?> clazz = (Class<?>) type;
+      if (String.class.equals(clazz)) {
         return ApmString.class;
-      }
-      if (Integer.class.equals(aClass)) {
+      } else if (Integer.class.equals(clazz)) {
         return ApmInteger.class;
       }
     } else if (type instanceof ParameterizedType) {
       ParameterizedType parameterizedType = (ParameterizedType) type;
-      Class rawType = (Class) parameterizedType.getRawType();
+      Class<?> rawType = (Class<?>) parameterizedType.getRawType();
       if (List.class.equals(rawType)) {
         return ApmList.class;
       } else if (Map.class.equals(rawType)) {

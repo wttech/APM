@@ -24,7 +24,6 @@ import com.cognifide.apm.api.exceptions.ActionCreationException;
 import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.grammar.argument.Arguments;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -82,7 +81,7 @@ public class ActionFactoryImpl implements ActionFactory {
   }
 
   private void sortReferences(List<CommandDescription> references) {
-    Collections.sort(references, Comparator.comparing(CommandDescription::getGroup, (o1, o2) -> {
+    references.sort(Comparator.comparing(CommandDescription::getGroup, (o1, o2) -> {
       if (CORE_GROUP.equals(o1) && CORE_GROUP.equals(o2)) {
         return 0;
       }

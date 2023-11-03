@@ -32,6 +32,7 @@ public final class ActionUtils {
   public static final String ASSERTION_FAILED_MSG = "Assertion failed";
 
   private ActionUtils() {
+    // intentionally empty
   }
 
   /**
