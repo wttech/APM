@@ -20,12 +20,7 @@
 package com.cognifide.apm.checks.utils;
 
 import com.cognifide.apm.api.actions.ActionResult;
-import com.cognifide.apm.api.exceptions.ActionExecutionException;
-import java.util.Iterator;
 import java.util.List;
-import javax.jcr.RepositoryException;
-import org.apache.jackrabbit.api.security.user.Authorizable;
-import org.apache.jackrabbit.api.security.user.Group;
 
 public final class ActionUtils {
 
@@ -33,43 +28,6 @@ public final class ActionUtils {
 
   private ActionUtils() {
     // intentionally empty
-  }
-
-  /**
-   * Adding group to another group may result in cyclic relation. Let current group be the group where we
-   * want to add current authorizable to. If current authorizable contains group such that current group
-   * belongs to, then we prevent such operation.
-   *
-   * @param currentGroup   The group where we want to add current authorizable
-   * @param groupToBeAdded Authorizable we want to add
-   * @throws ActionExecutionException Throw exception, if adding operation results in cyclic relation
-   */
-  public static void checkCyclicRelations(Group currentGroup, Group groupToBeAdded)
-      throws ActionExecutionException {
-    try {
-      if (groupToBeAdded.getID().equals(currentGroup.getID())) {
-        throw new ActionExecutionException(MessagingUtils.addingGroupToItself(currentGroup.getID()));
-      }
-      Iterator<Group> parents = currentGroup.memberOf();
-      while (parents.hasNext()) {
-        Group currentParent = parents.next();
-        // Is added group among my parents?
-        if (currentParent.getID().equals(groupToBeAdded.getID())) {
-          throw new ActionExecutionException(MessagingUtils.cyclicRelationsForbidden(
-              currentGroup.getID(), groupToBeAdded.getID()));
-        }
-        // ... and are its children among my parents?
-        for (Iterator<Authorizable> children = groupToBeAdded.getMembers(); children.hasNext(); ) {
-          Authorizable currentChild = children.next();
-          if (currentParent.getID().equals(currentChild.getID())) {
-            throw new ActionExecutionException(MessagingUtils.cyclicRelationsForbidden(
-                currentChild.getID(), groupToBeAdded.getID()));
-          }
-        }
-      }
-    } catch (RepositoryException e) {
-      throw new ActionExecutionException(MessagingUtils.createMessage(e));
-    }
   }
 
   public static void logErrors(List<String> errors, ActionResult actionResult) {
