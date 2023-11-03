@@ -2,3 +2,4 @@
 apm-scripts.js
 fileupload.js
 view-mode.js
+deleteitem.js
