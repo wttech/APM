@@ -129,11 +129,10 @@ public class MapperDescriptorFactory {
 
   private Class<? extends ApmType> getApmType(Type type) {
     if (type instanceof Class) {
-      Class<?> aClass = (Class<?>) type;
+      Class aClass = (Class) type;
       if (String.class.equals(aClass)) {
         return ApmString.class;
-      }
-      if (Integer.class.equals(aClass)) {
+      } else if (Integer.class.equals(clazz)) {
         return ApmInteger.class;
       }
     } else if (type instanceof ParameterizedType) {

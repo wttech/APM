@@ -81,7 +81,7 @@ public class PermissionActionHelper {
 
     Map<String, Value> singleValueRestrictions = restrictions.getSingleValueRestrictions(valueFactory);
     Map<String, Value[]> multiValueRestrictions = restrictions.getMultiValueRestrictions(valueFactory);
-    jackrabbitAcl.addEntry(principal, privileges.toArray(new Privilege[0]), allow,
+    jackrabbitAcl.addEntry(principal, privileges.toArray(new Privilege[]{}), allow,
         singleValueRestrictions, multiValueRestrictions);
   }
 

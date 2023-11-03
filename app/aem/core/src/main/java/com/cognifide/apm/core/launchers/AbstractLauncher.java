@@ -43,8 +43,8 @@ public abstract class AbstractLauncher {
     if (!scripts.isEmpty()) {
       String scriptPathsStr = scripts.stream()
           .map(Script::getPath)
-          .collect(Collectors.joining("\n"));
-      logger.info("Launcher will try to run following scripts: {}\n{}", scripts.size(), scriptPathsStr);
+          .collect(Collectors.joining(", "));
+      logger.info("Launcher will try to run following scripts ({}): {}", scripts.size(), scriptPathsStr);
       for (Script script : scripts) {
         processScript(script, resolver);
       }
