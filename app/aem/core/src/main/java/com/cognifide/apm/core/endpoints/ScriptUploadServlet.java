@@ -39,6 +39,8 @@ import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component(
     service = Servlet.class,
@@ -50,6 +52,8 @@ import org.osgi.service.component.annotations.Reference;
     }
 )
 public class ScriptUploadServlet extends SlingAllMethodsServlet {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(ScriptUploadServlet.class);
 
   @Reference
   private ScriptStorage scriptStorage;
@@ -66,12 +70,15 @@ public class ScriptUploadServlet extends SlingAllMethodsServlet {
       try {
         Script script = scriptStorage.save(form, resourceResolver);
         scriptManager.process(script, ExecutionMode.VALIDATION, resourceResolver);
-        return ResponseEntity.ok("File successfully saved")
+        LOGGER.info("Script {} successfully saved", script.getPath());
+        return ResponseEntity.ok("Script successfully saved")
             .addEntry("uploadedScript", new ScriptDto(script));
       } catch (ScriptStorageException e) {
+        LOGGER.error("Errors while saving script", e);
         return ResponseEntity.badRequest(StringUtils.defaultString(e.getMessage(), "Errors while saving script"))
             .addEntry("errors", e.getErrors());
       } catch (PersistenceException | RepositoryException e) {
+        LOGGER.error("Errors while saving script", e);
         throw new RuntimeException(e);
       }
     });
