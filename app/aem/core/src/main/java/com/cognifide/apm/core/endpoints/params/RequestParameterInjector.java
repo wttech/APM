@@ -89,7 +89,13 @@ public class RequestParameterInjector implements Injector, StaticInjectAnnotatio
     } else if (type.isEnum()) {
       return toEnum(type, parameterValue);
     } else if (type == String[].class) {
-      return parameterValue.getString().split(",");
+      if (parameterValue.getString().contains(",")) {
+        return parameterValue.getString().split(",");
+      } else {
+        return Arrays.stream(request.getRequestParameters(parameterName))
+            .map(org.apache.sling.api.request.RequestParameter::getString)
+            .toArray(String[]::new);
+      }
     }
     return parameterValue.getString();
   }

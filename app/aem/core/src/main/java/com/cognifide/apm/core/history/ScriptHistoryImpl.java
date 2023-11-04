@@ -20,8 +20,11 @@
 
 package com.cognifide.apm.core.history;
 
+import com.cognifide.apm.api.services.ExecutionMode;
+import java.util.Comparator;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Model;
@@ -72,20 +75,28 @@ public class ScriptHistoryImpl implements ScriptHistory {
 
   @Override
   public HistoryEntry getLastLocalRun() {
-    lastLocalRun = getHistoryEntry(lastLocalRun, lastLocalRunPath);
+    lastLocalRun = getHistoryEntry(lastLocalRun, lastLocalRunPath, ExecutionMode.RUN);
     return lastLocalRun;
   }
 
   @Override
   public HistoryEntry getLastLocalDryRun() {
-    lastLocalDryRun = getHistoryEntry(lastLocalDryRun, lastLocalDryRunPath);
+    lastLocalDryRun = getHistoryEntry(lastLocalDryRun, lastLocalDryRunPath, ExecutionMode.DRY_RUN);
     return lastLocalDryRun;
   }
 
-  private HistoryEntry getHistoryEntry(HistoryEntry entry, String historyEntryPath) {
+  private HistoryEntry getHistoryEntry(HistoryEntry entry, String historyEntryPath, ExecutionMode mode) {
     HistoryEntry historyEntry = entry;
     if (historyEntry == null && resource != null && historyEntryPath != null) {
       historyEntry = history.findHistoryEntry(resource.getResourceResolver(), historyEntryPath);
+      if (historyEntry == null) {
+        historyEntry = history.findAllHistoryEntries(resource.getResourceResolver())
+            .stream()
+            .filter(it -> StringUtils.equals(it.getScriptPath(), scriptPath)
+                && StringUtils.equals(it.getMode(), mode.toString()))
+            .max(Comparator.comparing(HistoryEntry::getExecutionTime))
+            .orElse(new HistoryEntryImpl());
+      }
     }
     return historyEntry;
   }

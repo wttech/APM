@@ -19,22 +19,15 @@
  */
 package com.cognifide.apm.core.endpoints;
 
-import com.cognifide.apm.api.scripts.Script;
-import com.cognifide.apm.api.services.ExecutionMode;
-import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.apm.core.Property;
-import com.cognifide.apm.core.endpoints.dto.ScriptDto;
 import com.cognifide.apm.core.endpoints.response.ResponseEntity;
 import com.cognifide.apm.core.endpoints.utils.RequestProcessor;
-import com.cognifide.apm.core.scripts.ScriptStorage;
-import com.cognifide.apm.core.scripts.ScriptStorageException;
 import java.io.IOException;
-import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import javax.servlet.Servlet;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
-import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
@@ -45,41 +38,35 @@ import org.slf4j.LoggerFactory;
 @Component(
     service = Servlet.class,
     property = {
-        Property.PATH + "/bin/apm/scripts/upload",
+        Property.PATH + "/bin/apm/scripts/delete",
         Property.METHOD + "POST",
-        Property.DESCRIPTION + "APM Script Upload Servlet",
+        Property.DESCRIPTION + "APM Script Delete Servlet",
         Property.VENDOR
     }
 )
-public class ScriptUploadServlet extends SlingAllMethodsServlet {
+public class ScriptDeleteServlet extends SlingAllMethodsServlet {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ScriptUploadServlet.class);
-
-  @Reference
-  private ScriptStorage scriptStorage;
-
-  @Reference
-  private ScriptManager scriptManager;
+  private static final Logger LOGGER = LoggerFactory.getLogger(ScriptDeleteServlet.class);
 
   @Reference
   private ModelFactory modelFactory;
 
   @Override
   protected void doPost(SlingHttpServletRequest request, SlingHttpServletResponse response) throws IOException {
-    RequestProcessor.process(modelFactory, ScriptUploadForm.class, request, response, (form, resourceResolver) -> {
+    RequestProcessor.process(modelFactory, ScriptDeleteForm.class, request, response, (form, resourceResolver) -> {
       try {
-        Script script = scriptStorage.save(form, resourceResolver);
-        scriptManager.process(script, ExecutionMode.VALIDATION, resourceResolver);
-        LOGGER.info("Script {} successfully saved", script.getPath());
-        return ResponseEntity.ok("Script successfully saved")
-            .addEntry("uploadedScript", new ScriptDto(script));
-      } catch (ScriptStorageException e) {
-        LOGGER.error("Errors while saving script", e);
-        return ResponseEntity.badRequest(StringUtils.defaultString(e.getMessage(), "Errors while saving script"))
-            .addEntry("errors", e.getErrors());
-      } catch (PersistenceException | RepositoryException e) {
-        LOGGER.error("Errors while saving script", e);
-        throw new RuntimeException(e);
+        Session session = resourceResolver.adaptTo(Session.class);
+        for (String path : form.getPaths()) {
+          if (session.nodeExists(path)) {
+            session.removeItem(path);
+            LOGGER.info("Item {} successfully deleted", path);
+          }
+        }
+        session.save();
+        return ResponseEntity.ok("Item(s) successfully deleted");
+      } catch (Exception e) {
+        LOGGER.error("Error while deleting item(s)", e);
+        return ResponseEntity.badRequest(StringUtils.defaultString(e.getMessage(), "Errors while deleting item(s)"));
       }
     });
   }
