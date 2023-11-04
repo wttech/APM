@@ -115,7 +115,7 @@
           granite:rel="cq-siteadmin-admin-actions-delete-activator"
           jcr:primaryType="nt:unstructured"
           sling:resourceType="granite/ui/components/coral/foundation/collection/action"
-          action="cq.wcm.delete"
+          action="com.cognifide.apm.delete"
           icon="delete"
           relScope="collection"
           target=".cq-experience-fragments-admin-childpages"
