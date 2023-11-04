@@ -23,9 +23,12 @@ import com.cognifide.apm.core.Apm;
 import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.endpoints.response.ResponseEntity;
 import com.cognifide.apm.core.endpoints.utils.RequestProcessor;
+import com.cognifide.apm.core.scripts.FileDescriptor;
+import com.cognifide.apm.core.scripts.ScriptStorageException;
 import com.day.cq.commons.jcr.JcrConstants;
 import com.day.cq.commons.jcr.JcrUtil;
 import java.io.IOException;
+import java.util.List;
 import javax.jcr.Session;
 import javax.servlet.Servlet;
 import org.apache.commons.lang3.StringUtils;
@@ -62,6 +65,7 @@ public class ScriptMoveServlet extends SlingAllMethodsServlet {
         String rename = containsExtension(form.getPath())
             ? (form.getRename() + (containsExtension(form.getRename()) ? "" : Apm.FILE_EXT))
             : JcrUtil.createValidName(form.getRename());
+        validate(dest, rename);
         String destPath = String.format("%s/%s", dest, rename);
         if (!StringUtils.equals(form.getPath(), destPath)) {
           destPath = createUniquePath(destPath, resourceResolver);
@@ -92,5 +96,12 @@ public class ScriptMoveServlet extends SlingAllMethodsServlet {
       counter++;
     }
     return path + (counter > 0 ? counter : "") + extension;
+  }
+
+  private void validate(String path, String name) {
+    List<String> validationErrors = new FileDescriptor(path, name, null).validate();
+    if (!validationErrors.isEmpty()) {
+      throw new ScriptStorageException("Script errors", validationErrors);
+    }
   }
 }
