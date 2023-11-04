@@ -32,6 +32,8 @@ import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component(
     service = Servlet.class,
@@ -44,6 +46,8 @@ import org.osgi.service.component.annotations.Reference;
 )
 public class ScriptDeleteServlet extends SlingAllMethodsServlet {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(ScriptDeleteServlet.class);
+
   @Reference
   private ModelFactory modelFactory;
 
@@ -55,11 +59,13 @@ public class ScriptDeleteServlet extends SlingAllMethodsServlet {
         for (String path : form.getPaths()) {
           if (session.nodeExists(path)) {
             session.removeItem(path);
+            LOGGER.info("Item {} successfully deleted", path);
           }
         }
         session.save();
         return ResponseEntity.ok("Item(s) successfully deleted");
       } catch (Exception e) {
+        LOGGER.error("Error while deleting item(s)", e);
         return ResponseEntity.badRequest(StringUtils.defaultString(e.getMessage(), "Errors while deleting item(s)"));
       }
     });
