@@ -258,7 +258,7 @@
             href.uritemplate="/apps/apm/views/move.html{+item}"/>
         </move>
         <deletepage
-          granite:class="foundation-collection-action dialog-delete-script"
+          granite:class="foundation-collection-action"
           granite:rel="cq-siteadmin-admin-actions-delete-activator"
           jcr:primaryType="nt:unstructured"
           sling:resourceType="granite/ui/components/coral/foundation/collection/action"
