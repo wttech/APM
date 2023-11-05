@@ -102,14 +102,17 @@ public class ScriptsResourceChangeListener implements ResourceChangeListener {
 
     SlingHelper.operateTraced(resolverProvider, resolver -> {
       // rename copy/paste folders
-      changes.stream()
-          .filter(change -> change.getType() == ResourceChange.ChangeType.ADDED)
-          .map(change -> resolver.getResource(change.getPath()))
-          .filter(ScriptsRowModel::isFolder)
-          .forEach(resource -> {
-            ValueMap valueMap = resource.adaptTo(ModifiableValueMap.class);
-            valueMap.put(JcrConstants.JCR_TITLE, resource.getName());
-          });
+      boolean onlyAdded = changes.stream()
+          .allMatch(change -> change.getType() == ResourceChange.ChangeType.ADDED);
+      if (onlyAdded) {
+        changes.stream()
+            .map(change -> resolver.getResource(change.getPath()))
+            .filter(ScriptsRowModel::isFolder)
+            .forEach(resource -> {
+              ValueMap valueMap = resource.adaptTo(ModifiableValueMap.class);
+              valueMap.put(JcrConstants.JCR_TITLE, resource.getName());
+            });
+      }
       //register schedule or cron expression scripts
       changes.stream()
           .filter(change -> StringUtils.endsWith(change.getPath(), Apm.FILE_EXT))

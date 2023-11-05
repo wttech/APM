@@ -62,7 +62,7 @@ public class ScriptStorageImpl implements ScriptStorage {
 
   private static final Pattern FILE_NAME_PATTERN = Pattern.compile("[0-9a-zA-Z_\\-]+\\.apm");
 
-  private static final Pattern PATH_PATTERN = Pattern.compile("/[0-9a-zA-Z_\\-/]+");
+  private static final Pattern PATH_PATTERN = Pattern.compile("(/[0-9a-zA-Z_\\-]+)+");
 
   private static final Charset SCRIPT_ENCODING = StandardCharsets.UTF_8;
 
@@ -173,7 +173,7 @@ public class ScriptStorageImpl implements ScriptStorage {
     return errors;
   }
 
-  private static void ensurePropertyMatchesPattern(List<String> errors, String property, String value,
+  public static void ensurePropertyMatchesPattern(List<String> errors, String property, String value,
       Pattern pattern) {
     if (!pattern.matcher(value).matches()) {
       errors.add(String.format("Invalid %s: \"%s\"", property, value));
