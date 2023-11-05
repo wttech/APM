@@ -23,7 +23,6 @@ import com.cognifide.apm.core.Apm;
 import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.endpoints.response.ResponseEntity;
 import com.cognifide.apm.core.endpoints.utils.RequestProcessor;
-import com.cognifide.apm.core.scripts.ScriptStorageException;
 import com.cognifide.apm.core.scripts.ScriptStorageImpl;
 import com.day.cq.commons.jcr.JcrConstants;
 import com.day.cq.commons.jcr.JcrUtil;
@@ -31,6 +30,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import javax.jcr.Session;
 import javax.servlet.Servlet;
 import org.apache.commons.lang3.StringUtils;
@@ -118,7 +118,9 @@ public class ScriptMoveServlet extends SlingAllMethodsServlet {
         containsExtension(name) ? SCRIPT_PATTERN : FOLDER_PATTERN);
     ScriptStorageImpl.ensurePropertyMatchesPattern(validationErrors, "destination", path, DESTINATION_PATTERN);
     if (!validationErrors.isEmpty()) {
-      throw new ScriptStorageException("Script errors", validationErrors);
+      String message = validationErrors.stream()
+          .collect(Collectors.joining("\n", "Validation errors:\n", ""));
+      throw new RuntimeException(message);
     }
   }
 }
