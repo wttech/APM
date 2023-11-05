@@ -21,18 +21,11 @@
 package com.cognifide.apm.core.scripts;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 
-public class FileDescriptor {
+class FileDescriptor {
 
   private static final String SCRIPT_PATH = "/conf/apm/scripts";
-
-  private static final Pattern FILE_NAME_PATTERN = Pattern.compile("[0-9a-zA-Z_\\-]+\\.apm");
-
-  private static final Pattern PATH_PATTERN = Pattern.compile("(/[0-9a-zA-Z_\\-]+)+");
 
   private final String path;
 
@@ -87,18 +80,5 @@ public class FileDescriptor {
 
   public InputStream getInputStream() {
     return inputStream;
-  }
-
-  public List<String> validate() {
-    List<String> errors = new ArrayList<>();
-    ensurePropertyMatchesPattern(errors, "file name", name, FILE_NAME_PATTERN);
-    ensurePropertyMatchesPattern(errors, "file path", path, PATH_PATTERN);
-    return errors;
-  }
-
-  private void ensurePropertyMatchesPattern(List<String> errors, String property, String value, Pattern pattern) {
-    if (!pattern.matcher(value).matches()) {
-      errors.add(String.format("Invalid %s: \"%s\"", property, value));
-    }
   }
 }

@@ -23,12 +23,14 @@ import com.cognifide.apm.core.Apm;
 import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.endpoints.response.ResponseEntity;
 import com.cognifide.apm.core.endpoints.utils.RequestProcessor;
-import com.cognifide.apm.core.scripts.FileDescriptor;
 import com.cognifide.apm.core.scripts.ScriptStorageException;
+import com.cognifide.apm.core.scripts.ScriptStorageImpl;
 import com.day.cq.commons.jcr.JcrConstants;
 import com.day.cq.commons.jcr.JcrUtil;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 import javax.jcr.Session;
 import javax.servlet.Servlet;
 import org.apache.commons.lang3.StringUtils;
@@ -41,6 +43,8 @@ import org.apache.sling.api.servlets.SlingAllMethodsServlet;
 import org.apache.sling.models.factory.ModelFactory;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component(
     service = Servlet.class,
@@ -52,6 +56,14 @@ import org.osgi.service.component.annotations.Reference;
     }
 )
 public class ScriptMoveServlet extends SlingAllMethodsServlet {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(ScriptMoveServlet.class);
+
+  private static final Pattern SCRIPT_PATTERN = Pattern.compile("[0-9a-zA-Z_\\-]+\\.apm");
+
+  private static final Pattern FOLDER_PATTERN = Pattern.compile("[0-9a-zA-Z_\\-]+");
+
+  private static final Pattern DESTINATION_PATTERN = Pattern.compile("(/[0-9a-zA-Z_\\-]+)+");
 
   @Reference
   private ModelFactory modelFactory;
@@ -77,8 +89,10 @@ public class ScriptMoveServlet extends SlingAllMethodsServlet {
           valueMap.put(JcrConstants.JCR_TITLE, form.getRename());
         }
         resourceResolver.commit();
+        LOGGER.info("Item successfully moved from {} to {}", form.getPath(), destPath);
         return ResponseEntity.ok("Item successfully moved");
       } catch (Exception e) {
+        LOGGER.error("Errors while moving item", e);
         return ResponseEntity.badRequest(StringUtils.defaultString(e.getMessage(), "Errors while moving item"));
       }
     });
@@ -99,7 +113,10 @@ public class ScriptMoveServlet extends SlingAllMethodsServlet {
   }
 
   private void validate(String path, String name) {
-    List<String> validationErrors = new FileDescriptor(path, name, null).validate();
+    List<String> validationErrors = new ArrayList<>();
+    ScriptStorageImpl.ensurePropertyMatchesPattern(validationErrors, "rename", name,
+        containsExtension(name) ? SCRIPT_PATTERN : FOLDER_PATTERN);
+    ScriptStorageImpl.ensurePropertyMatchesPattern(validationErrors, "destination", path, DESTINATION_PATTERN);
     if (!validationErrors.isEmpty()) {
       throw new ScriptStorageException("Script errors", validationErrors);
     }

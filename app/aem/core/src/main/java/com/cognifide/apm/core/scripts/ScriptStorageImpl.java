@@ -28,11 +28,13 @@ import com.day.cq.commons.jcr.JcrConstants;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.jcr.Binary;
 import javax.jcr.Node;
@@ -57,6 +59,10 @@ import org.slf4j.LoggerFactory;
 public class ScriptStorageImpl implements ScriptStorage {
 
   private static final Logger LOG = LoggerFactory.getLogger(ScriptStorageImpl.class);
+
+  private static final Pattern FILE_NAME_PATTERN = Pattern.compile("[0-9a-zA-Z_\\-]+\\.apm");
+
+  private static final Pattern PATH_PATTERN = Pattern.compile("(/[0-9a-zA-Z_\\-]+)+");
 
   private static final Charset SCRIPT_ENCODING = StandardCharsets.UTF_8;
 
@@ -153,10 +159,25 @@ public class ScriptStorageImpl implements ScriptStorage {
 
   private void validate(Collection<FileDescriptor> fileDescriptors) {
     List<String> validationErrors = fileDescriptors.stream()
-        .flatMap(fileDescriptor -> fileDescriptor.validate().stream())
+        .flatMap(fileDescriptor -> validate(fileDescriptor).stream())
         .collect(Collectors.toList());
     if (!validationErrors.isEmpty()) {
       throw new ScriptStorageException("Script errors", validationErrors);
     }
   }
+
+  private List<String> validate(FileDescriptor file) {
+    List<String> errors = new ArrayList<>();
+    ensurePropertyMatchesPattern(errors, "file name", file.getName(), FILE_NAME_PATTERN);
+    ensurePropertyMatchesPattern(errors, "file path", file.getPath(), PATH_PATTERN);
+    return errors;
+  }
+
+  public static void ensurePropertyMatchesPattern(List<String> errors, String property, String value,
+      Pattern pattern) {
+    if (!pattern.matcher(value).matches()) {
+      errors.add(String.format("Invalid %s: \"%s\"", property, value));
+    }
+  }
+
 }
