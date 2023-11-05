@@ -83,13 +83,15 @@ public class ScriptMoveServlet extends SlingAllMethodsServlet {
           destPath = createUniquePath(destPath, resourceResolver);
           session.move(form.getPath(), destPath);
           session.save();
+          LOGGER.info("Item successfully moved from {} to {}", form.getPath(), destPath);
         }
         if (!containsExtension(form.getPath())) {
           ValueMap valueMap = resourceResolver.getResource(destPath).adaptTo(ModifiableValueMap.class);
+          String prevTitle = valueMap.get(JcrConstants.JCR_TITLE, String.class);
           valueMap.put(JcrConstants.JCR_TITLE, form.getRename());
+          resourceResolver.commit();
+          LOGGER.info("Item successfully renamed from {} to {}", prevTitle, form.getRename());
         }
-        resourceResolver.commit();
-        LOGGER.info("Item successfully moved from {} to {}", form.getPath(), destPath);
         return ResponseEntity.ok("Item successfully moved");
       } catch (Exception e) {
         LOGGER.error("Errors while moving item", e);
