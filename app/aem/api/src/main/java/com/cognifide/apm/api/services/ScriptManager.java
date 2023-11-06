@@ -26,7 +26,6 @@ import org.apache.sling.api.resource.ResourceResolver;
 
 public interface ScriptManager {
 
-
   /**
    * Fail-safe execution of script in concrete mode (dry run, automatic execution, validation)
    */
