@@ -22,11 +22,11 @@ package com.cognifide.apm.core.actions.scanner;
 import com.google.common.collect.ImmutableList;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
@@ -46,7 +46,7 @@ public class AnnotatedClassRegistry {
 
   private final BundleTracker<?> tracker;
 
-  private final Map<Long, List<Class<?>>> classes = new ConcurrentHashMap<>();
+  private final Map<Long, List<Class<?>>> classes = new HashMap<>();
 
   private final Class<? extends Annotation> annotationClass;
 

@@ -26,15 +26,11 @@ import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.actions.scanner.AnnotatedClassRegistry;
 import com.cognifide.apm.core.actions.scanner.RegistryChangedListener;
 import com.cognifide.apm.main.services.ApmActionsMainService;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -62,8 +58,7 @@ public class ActionMapperRegistryImpl implements RegistryChangedListener, Action
 
   private AnnotatedClassRegistry registry;
 
-  private final AtomicReference<Map<String, MapperDescriptor>> mappers = new AtomicReference<>(
-      Collections.emptyMap());
+  private Map<String, MapperDescriptor> mappers;
 
   @Activate
   public void activate(ComponentContext componentContext) {
@@ -81,18 +76,18 @@ public class ActionMapperRegistryImpl implements RegistryChangedListener, Action
 
   @Override
   public void registryChanged(List<Class<?>> registeredClasses) {
-    this.mappers.set(ImmutableMap.copyOf(createActionMappers(registeredClasses)));
+    mappers = createActionMappers(registeredClasses);
   }
 
   @Override
   public Optional<MapperDescriptor> getMapper(String name) {
     Preconditions.checkNotNull(name, "Name cannot be null");
-    return Optional.ofNullable(mappers.get().get(name.trim().toUpperCase()));
+    return Optional.ofNullable(mappers.get(name.trim().toUpperCase()));
   }
 
   @Override
   public Collection<MapperDescriptor> getMappers() {
-    return new ArrayList<>(mappers.get().values());
+    return mappers.values();
   }
 
   private static Map<String, MapperDescriptor> createActionMappers(List<Class<?>> classes) {

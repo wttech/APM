@@ -49,9 +49,9 @@ import com.cognifide.apm.core.services.version.VersionService;
 import com.cognifide.apm.core.utils.RuntimeUtils;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import org.apache.jackrabbit.api.JackrabbitSession;
@@ -92,12 +92,16 @@ public class ScriptManagerImpl implements ScriptManager {
   @Reference
   private DataSourceInvoker dataSourceInvoker;
 
-  @Reference(
-      cardinality = ReferenceCardinality.MULTIPLE,
-      policy = ReferencePolicy.DYNAMIC,
-      service = DefinitionsProvider.class
-  )
-  private final Set<DefinitionsProvider> definitionsProviders = new CopyOnWriteArraySet<>();
+  private final Set<DefinitionsProvider> definitionsProviders = new HashSet<>();
+
+  @Reference(policy = ReferencePolicy.DYNAMIC, cardinality = ReferenceCardinality.MULTIPLE, service = DefinitionsProvider.class)
+  protected final void bindDefinitionsProvider(DefinitionsProvider definitionsProvider) {
+    definitionsProviders.add(definitionsProvider);
+  }
+
+  protected final void unbindDefinitionsProvider(DefinitionsProvider definitionsProvider) {
+    definitionsProviders.remove(definitionsProvider);
+  }
 
   private Progress execute(Script script, ExecutionMode mode, Map<String, String> customDefinitions,
       ResourceResolver resolver, String executor) throws ExecutionException, RepositoryException {
