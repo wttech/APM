@@ -48,10 +48,7 @@ import com.cognifide.apm.core.services.event.EventManager;
 import com.cognifide.apm.core.services.version.VersionService;
 import com.cognifide.apm.core.utils.RuntimeUtils;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import org.apache.jackrabbit.api.JackrabbitSession;
@@ -59,8 +56,6 @@ import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,7 +67,7 @@ import org.slf4j.LoggerFactory;
 )
 public class ScriptManagerImpl implements ScriptManager {
 
-  private static final Logger LOG = LoggerFactory.getLogger(ScriptManagerImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ScriptManagerImpl.class);
 
   @Reference
   private ActionFactory actionFactory;
@@ -90,17 +85,13 @@ public class ScriptManagerImpl implements ScriptManager {
   private History history;
 
   @Reference
+  private DefinitionsProvider definitionsProvider;
+
+  @Reference
   private DataSourceInvoker dataSourceInvoker;
 
-  @Reference(
-      cardinality = ReferenceCardinality.MULTIPLE,
-      policy = ReferencePolicy.DYNAMIC,
-      service = DefinitionsProvider.class
-  )
-  private final Set<DefinitionsProvider> definitionsProviders = new CopyOnWriteArraySet<>();
-
-  private Progress execute(Script script, ExecutionMode mode, Map<String, String> customDefinitions,
-      ResourceResolver resolver, String executor) throws ExecutionException, RepositoryException {
+  private Progress execute(Script script, ExecutionMode mode, ResourceResolver resolver, String executor)
+      throws ExecutionException, RepositoryException {
     if (script == null) {
       throw new ExecutionException("Script is not specified");
     }
@@ -111,7 +102,7 @@ public class ScriptManagerImpl implements ScriptManager {
 
     String path = script.getPath();
 
-    LOG.info(String.format("Script execution started: %s [%s]", path, mode));
+    LOGGER.info(String.format("Script execution started: %s [%s]", path, mode));
     Progress progress = new ProgressImpl(executor);
     ActionExecutor actionExecutor = createExecutor(mode, resolver);
     Context context = actionExecutor.getContext();
@@ -132,16 +123,14 @@ public class ScriptManagerImpl implements ScriptManager {
             }
             return result.getStatus();
           } catch (RepositoryException | ActionCreationException e) {
-            LOG.error("Error while processing command: {}", commandName, e);
+            LOGGER.error("Error while processing command: {}", commandName, e);
             progress.addEntry(Status.ERROR, e.getMessage(), commandName);
             return Status.ERROR;
           }
         }, dataSourceInvoker);
 
     try {
-      Map<String, String> definitions = new HashMap<>();
-      definitions.putAll(getPredefinedDefinitions());
-      definitions.putAll(customDefinitions);
+      Map<String, String> definitions = definitionsProvider.getPredefinedDefinitions();
       scriptRunner.execute(script, progress, definitions);
     } catch (RuntimeException e) {
       progress.addEntry(Status.ERROR, e.getMessage());
@@ -153,11 +142,11 @@ public class ScriptManagerImpl implements ScriptManager {
   }
 
   @Override
-  public Progress process(Script script, ExecutionMode mode, Map<String, String> customDefinitions,
-      ResourceResolver resolver, String executor) throws RepositoryException, PersistenceException {
+  public Progress process(Script script, ExecutionMode mode, ResourceResolver resolver, String executor)
+      throws RepositoryException, PersistenceException {
     Progress progress;
     try {
-      progress = execute(script, mode, customDefinitions, resolver, executor);
+      progress = execute(script, mode, resolver, executor);
     } catch (ExecutionException e) {
       progress = new ProgressImpl(executor);
       progress.addEntry(Status.ERROR, e.getMessage());
@@ -189,13 +178,6 @@ public class ScriptManagerImpl implements ScriptManager {
     if (ExecutionMode.VALIDATION.equals(mode)) {
       mutableScriptWrapper.setValid(success);
     }
-  }
-
-  @Override
-  public Map<String, String> getPredefinedDefinitions() {
-    Map<String, String> predefinedDefinitions = new HashMap<>();
-    definitionsProviders.forEach(provider -> predefinedDefinitions.putAll(provider.getPredefinedDefinitions()));
-    return predefinedDefinitions;
   }
 
   private ActionExecutor createExecutor(ExecutionMode mode, ResourceResolver resolver) throws RepositoryException {

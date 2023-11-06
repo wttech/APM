@@ -19,7 +19,7 @@
  */
 package com.cognifide.apm.core.endpoints;
 
-import com.cognifide.apm.api.services.ScriptManager;
+import com.cognifide.apm.api.services.DefinitionsProvider;
 import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.utils.ServletUtils;
 import java.io.IOException;
@@ -42,10 +42,10 @@ import org.osgi.service.component.annotations.Reference;
 public class DefinitionsServlet extends SlingAllMethodsServlet {
 
   @Reference
-  private ScriptManager scriptManager;
+  private DefinitionsProvider definitionsProvider;
 
   @Override
   protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) throws IOException {
-    ServletUtils.writeJson(response, scriptManager.getPredefinedDefinitions());
+    ServletUtils.writeJson(response, definitionsProvider.getPredefinedDefinitions());
   }
 }

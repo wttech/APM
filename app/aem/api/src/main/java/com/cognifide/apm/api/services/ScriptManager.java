@@ -20,13 +20,12 @@
 package com.cognifide.apm.api.services;
 
 import com.cognifide.apm.api.scripts.Script;
-import java.util.Collections;
-import java.util.Map;
 import javax.jcr.RepositoryException;
 import org.apache.sling.api.resource.PersistenceException;
 import org.apache.sling.api.resource.ResourceResolver;
 
 public interface ScriptManager {
+
 
   /**
    * Fail-safe execution of script in concrete mode (dry run, automatic execution, validation)
@@ -39,27 +38,6 @@ public interface ScriptManager {
   /**
    * Fail-safe execution of script in concrete mode (dry run, automatic execution, validation)
    */
-  default ExecutionResult process(Script script, ExecutionMode mode, Map<String, String> customDefinitions, ResourceResolver resolver)
-      throws RepositoryException, PersistenceException {
-    return process(script, mode, customDefinitions, resolver, resolver.getUserID());
-  }
-
-  /**
-   * Fail-safe execution of script in concrete mode (dry run, automatic execution, validation)
-   */
-  default ExecutionResult process(Script script, ExecutionMode mode, ResourceResolver resolver, String executor)
-      throws RepositoryException, PersistenceException {
-    return process(script, mode, Collections.emptyMap(), resolver, executor);
-  }
-
-  /**
-   * Fail-safe execution of script in concrete mode (dry run, automatic execution, validation)
-   */
-  ExecutionResult process(Script script, ExecutionMode mode, Map<String, String> customDefinitions, ResourceResolver resolver, String executor)
+  ExecutionResult process(Script script, ExecutionMode mode, ResourceResolver resolver, String executor)
       throws RepositoryException, PersistenceException;
-
-  /**
-   * Get predefined variables accessible in script via syntax: ${definitionName}
-   */
-  Map<String, String> getPredefinedDefinitions();
 }

@@ -20,7 +20,7 @@
 
 package com.cognifide.apm.core.ui.models;
 
-import com.cognifide.apm.api.services.ScriptManager;
+import com.cognifide.apm.api.services.DefinitionsProvider;
 import com.cognifide.apm.core.actions.ActionFactory;
 import com.cognifide.apm.core.actions.CommandDescription;
 import java.util.List;
@@ -38,9 +38,9 @@ public class ReferencesModel {
   private final Map<String, String> definitions;
 
   @Inject
-  public ReferencesModel(@OSGiService ActionFactory actionFactory, @OSGiService ScriptManager scriptManager) {
+  public ReferencesModel(@OSGiService ActionFactory actionFactory, @OSGiService DefinitionsProvider definitionsProvider) {
     this.references = actionFactory.getCommandDescriptions();
-    this.definitions = scriptManager.getPredefinedDefinitions();
+    this.definitions = definitionsProvider.getPredefinedDefinitions();
   }
 
   public List<CommandDescription> getReferences() {

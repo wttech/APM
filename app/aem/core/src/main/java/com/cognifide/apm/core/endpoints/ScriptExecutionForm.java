@@ -22,7 +22,6 @@ package com.cognifide.apm.core.endpoints;
 
 import com.cognifide.apm.api.services.ExecutionMode;
 import com.cognifide.apm.core.endpoints.params.RequestParameter;
-import java.util.Map;
 import javax.inject.Inject;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.models.annotations.Model;
@@ -42,10 +41,6 @@ public class ScriptExecutionForm {
   @RequestParameter("async")
   private boolean async;
 
-  @Inject
-  @RequestParameter("define")
-  private Map<String, String> customDefinitions;
-
   public String getScript() {
     return script;
   }
@@ -56,9 +51,5 @@ public class ScriptExecutionForm {
 
   public boolean isAsync() {
     return async;
-  }
-
-  public Map<String, String> getCustomDefinitions() {
-    return customDefinitions;
   }
 }

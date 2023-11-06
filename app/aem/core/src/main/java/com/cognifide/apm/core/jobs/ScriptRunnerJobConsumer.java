@@ -29,7 +29,6 @@ import com.cognifide.apm.core.jobs.JobResultsCache.ExecutionSummary;
 import com.cognifide.apm.core.services.ResourceResolverProvider;
 import com.cognifide.apm.core.services.async.AsyncScriptExecutorImpl;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
-import java.util.Collections;
 import java.util.Map;
 import javax.jcr.RepositoryException;
 import org.apache.commons.lang3.StringUtils;
@@ -45,7 +44,7 @@ import org.slf4j.LoggerFactory;
 )
 public class ScriptRunnerJobConsumer {
 
-  private static final Logger LOG = LoggerFactory.getLogger(ScriptRunnerJobConsumer.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ScriptRunnerJobConsumer.class);
 
   @Reference
   private History history;
@@ -63,7 +62,7 @@ public class ScriptRunnerJobConsumer {
   private ResourceResolverProvider resolverProvider;
 
   public void process(Map<String, Object> properties) {
-    LOG.info("Script runner properties consumer started");
+    LOGGER.info("Script runner properties consumer started");
     String id = (String) properties.get(AsyncScriptExecutorImpl.ID);
     ExecutionMode mode = getMode(properties);
     String userId = getUserId(properties);
@@ -71,11 +70,11 @@ public class ScriptRunnerJobConsumer {
       Script script = getScript(properties, resolver);
       if (script != null && mode != null) {
         try {
-          ExecutionResult executionResult = scriptManager.process(script, mode, getDefinitions(properties), resolver, userId);
+          ExecutionResult executionResult = scriptManager.process(script, mode, resolver, userId);
           String summaryPath = getSummaryPath(resolver, script, mode);
           jobResultsCache.put(id, ExecutionSummary.finished(executionResult, summaryPath));
         } catch (RepositoryException | PersistenceException e) {
-          LOG.error("Script manager failed to process script", e);
+          LOGGER.error("Script manager failed to process script", e);
         }
       }
     });
@@ -96,17 +95,9 @@ public class ScriptRunnerJobConsumer {
     if (StringUtils.isNotBlank(modeName)) {
       result = StringUtils.isEmpty(modeName) ? ExecutionMode.DRY_RUN : ExecutionMode.valueOf(modeName.toUpperCase());
     } else {
-      LOG.error("Mode is null");
+      LOGGER.error("Mode is null");
     }
     return result;
-  }
-
-  private Map<String, String> getDefinitions(Map<String, Object> properties) {
-    Map<String, String> definitions = (Map<String, String>) properties.get(AsyncScriptExecutorImpl.DEFINITIONS);
-    if (definitions == null) {
-      definitions = Collections.emptyMap();
-    }
-    return definitions;
   }
 
   private Script getScript(Map<String, Object> properties, ResourceResolver resolver) {
@@ -114,12 +105,12 @@ public class ScriptRunnerJobConsumer {
     if (StringUtils.isNotBlank(scriptSearchPath)) {
       Script script = scriptFinder.find(scriptSearchPath, resolver);
       if (script == null) {
-        LOG.error("Script not found: {}", scriptSearchPath);
+        LOGGER.error("Script not found: {}", scriptSearchPath);
         return null;
       }
       return script;
     } else {
-      LOG.error("Script search path is blank");
+      LOGGER.error("Script search path is blank");
       return null;
     }
   }

@@ -24,14 +24,12 @@ import com.cognifide.apm.core.Property;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
@@ -60,13 +58,9 @@ public class RequestParameterInjector implements Injector, StaticInjectAnnotatio
   public Object getValue(Object adaptable, String fieldName, Type type, AnnotatedElement annotatedElement, DisposalCallbackRegistry disposalCallbackRegistry) {
     if (adaptable instanceof SlingHttpServletRequest) {
       RequestParameter annotation = annotatedElement.getAnnotation(RequestParameter.class);
-      if (annotation != null) {
-        String parameterName = annotation.value();
-        if (type instanceof ParameterizedType && ((ParameterizedType) type).getRawType() instanceof Class<?> && Map.class.isAssignableFrom((Class<?>) ((ParameterizedType) type).getRawType())) {
-          return extractParams((SlingHttpServletRequest) adaptable, parameterName);
-        } else if (type instanceof Class<?>) {
-          return getValue((SlingHttpServletRequest) adaptable, (Class<?>) type, parameterName, annotatedElement);
-        }
+      if (annotation != null && type instanceof Class<?>) {
+        String parameterName = StringUtils.defaultString(annotation.value(), fieldName);
+        return getValue((SlingHttpServletRequest) adaptable, (Class<?>) type, parameterName, annotatedElement);
       }
     }
     return null;
@@ -92,7 +86,9 @@ public class RequestParameterInjector implements Injector, StaticInjectAnnotatio
       if (parameterValue.getString().contains(",")) {
         return parameterValue.getString().split(",");
       } else {
-        return Arrays.stream(request.getRequestParameters(parameterName))
+        return Optional.ofNullable(request.getRequestParameters(parameterName))
+            .map(Arrays::stream)
+            .orElse(Stream.empty())
             .map(org.apache.sling.api.request.RequestParameter::getString)
             .toArray(String[]::new);
       }
@@ -113,17 +109,6 @@ public class RequestParameterInjector implements Injector, StaticInjectAnnotatio
         .filter(item -> StringUtils.equals(item.toString(), parameterValue.getString()))
         .findFirst()
         .orElse(null);
-  }
-
-  private Map<String, String> extractParams(SlingHttpServletRequest request, String prefix) {
-    return request.getParameterMap()
-        .entrySet()
-        .stream()
-        .filter(entry -> StringUtils.startsWith(entry.getKey(), prefix))
-        .collect(Collectors.toMap(
-            entry -> StringUtils.uncapitalize(StringUtils.removeStart(entry.getKey(), prefix)),
-            entry -> entry.getValue()[0]
-        ));
   }
 
   private OffsetDateTime toOffsetDateTime(org.apache.sling.api.request.RequestParameter parameterValue) {

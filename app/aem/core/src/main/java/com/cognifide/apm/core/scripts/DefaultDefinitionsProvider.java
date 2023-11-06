@@ -24,12 +24,12 @@ import java.util.HashMap;
 import java.util.Map;
 import org.osgi.service.component.annotations.Component;
 
-@Component
+@Component(service = DefinitionsProvider.class)
 public class DefaultDefinitionsProvider implements DefinitionsProvider {
 
   @Override
   public Map<String, String> getPredefinedDefinitions() {
-    final Map<String, String> definitions = new HashMap<>();
+    Map<String, String> definitions = new HashMap<>();
 
     // Modules
     definitions.put("Websites", "/libs/wcm/core/content/siteadmin");

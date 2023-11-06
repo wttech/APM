@@ -21,11 +21,10 @@ package com.cognifide.apm.core.services.async;
 
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ExecutionMode;
-import java.util.Map;
 
 public interface AsyncScriptExecutor {
 
-  String process(Script script, ExecutionMode executionMode, Map<String, String> customDefinitions, String executor);
+  String process(Script script, ExecutionMode executionMode, String executor);
 
   ExecutionStatus checkStatus(String id);
 }
