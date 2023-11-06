@@ -27,11 +27,11 @@ import org.osgi.service.event.Event;
 
 public abstract class ApmEvent {
 
-  private final static String SCRIPT_LAUNCHED = "com/cognifide/apm/Script/LAUNCHED";
+  private static final String SCRIPT_LAUNCHED = "com/cognifide/apm/Script/LAUNCHED";
 
-  private final static String SCRIPT_EXECUTED = "com/cognifide/apm/Script/EXECUTED";
+  private static final String SCRIPT_EXECUTED = "com/cognifide/apm/Script/EXECUTED";
 
-  private final static String INSTALL_HOOK_EXECUTED = "com/cognifide/apm/InstallHook/EXECUTED";
+  private static final String INSTALL_HOOK_EXECUTED = "com/cognifide/apm/InstallHook/EXECUTED";
 
   private final String topic;
 
