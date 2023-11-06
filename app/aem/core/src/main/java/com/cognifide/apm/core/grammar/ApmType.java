@@ -34,10 +34,6 @@ public abstract class ApmType {
     return null;
   }
 
-  protected String toPrettyString(int depth, int prefixDepth) {
-    return null;
-  }
-
   public Integer getInteger() {
     return null;
   }
@@ -51,6 +47,14 @@ public abstract class ApmType {
   }
 
   public Map<String, ApmType> getMap() {
+    return null;
+  }
+
+  public boolean isEmpty() {
+    return false;
+  }
+
+  protected String toPrettyString(int depth, int prefixDepth) {
     return null;
   }
 
@@ -150,6 +154,11 @@ public abstract class ApmType {
     }
 
     @Override
+    public boolean isEmpty() {
+      return values.isEmpty();
+    }
+
+    @Override
     protected String toPrettyString(int depth, int prefixDepth) {
       boolean simpleList = values.stream()
           .allMatch(value -> value instanceof ApmInteger || value instanceof ApmString);
@@ -194,6 +203,11 @@ public abstract class ApmType {
     @Override
     public Map<String, ApmType> getMap() {
       return values;
+    }
+
+    @Override
+    public boolean isEmpty() {
+      return values.isEmpty();
     }
 
     @Override
@@ -255,6 +269,11 @@ public abstract class ApmType {
     }
 
     @Override
+    public boolean isEmpty() {
+      return value.isEmpty();
+    }
+
+    @Override
     protected String toPrettyString(int depth, int prefixDepth) {
       return StringUtils.repeat('\t', depth) + key + ": " + value.toPrettyString(depth, 0);
     }
@@ -262,5 +281,9 @@ public abstract class ApmType {
 
   public static class ApmEmpty extends ApmType {
 
+    @Override
+    public boolean isEmpty() {
+      return true;
+    }
   }
 }
