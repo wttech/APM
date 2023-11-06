@@ -23,9 +23,8 @@ package com.cognifide.apm.core.grammar;
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.apm.api.status.Status;
-import com.cognifide.apm.core.grammar.ApmType.ApmEmpty;
 import com.cognifide.apm.core.grammar.ApmType.ApmList;
-import com.cognifide.apm.core.grammar.ApmType.ApmMap;
+import com.cognifide.apm.core.grammar.ApmType.ApmPair;
 import com.cognifide.apm.core.grammar.ApmType.ApmString;
 import com.cognifide.apm.core.grammar.antlr.ApmLangBaseVisitor;
 import com.cognifide.apm.core.grammar.antlr.ApmLangParser.AllowDenyCommandContext;
@@ -49,7 +48,6 @@ import com.cognifide.apm.core.grammar.utils.RequiredVariablesChecker;
 import com.cognifide.apm.core.logger.Position;
 import com.cognifide.apm.core.logger.Progress;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -148,8 +146,8 @@ public class ScriptRunner {
 
     @Override
     public Status visitForEach(ForEachContext ctx) {
-      List<Map<String, ApmType>> values = readValues(ctx);
-      ListIterator<Map<String, ApmType>> iterator = values.listIterator();
+      List<ApmPair> values = readValues(ctx);
+      ListIterator<ApmPair> iterator = values.listIterator();
       if (!iterator.hasNext() && shouldVisitNextChild()) {
         String key = ctx.IDENTIFIER().toString();
         progress(ctx, Status.SKIPPED, "for-each", String.format("%s is always empty", key));
@@ -157,16 +155,16 @@ public class ScriptRunner {
       while (iterator.hasNext() && shouldVisitNextChild()) {
         try {
           int index = iterator.nextIndex();
-          Map<String, ApmType> value = iterator.next();
-          executionContext.createLocalContext();
-          String valueStr = value.entrySet()
-              .stream()
-              .map(entry -> String.format("%s=%s", entry.getKey(), entry.getValue()))
-              .collect(Collectors.joining("\n"));
-          progress(ctx, Status.SUCCESS, "for-each", String.format("%d. Begin: %s", index, valueStr));
-          value.forEach(executionContext::setVariable);
-          visit(ctx.body());
-          progress(ctx, Status.SUCCESS, "for-each", String.format("%d. End", index));
+          ApmPair value = iterator.next();
+          if (value.isEmpty()) {
+            progress(ctx, Status.SKIPPED, "for-each", String.format("%d. %s is empty", index, value.getKey()));
+          } else {
+            executionContext.createLocalContext();
+            progress(ctx, Status.SUCCESS, "for-each", String.format("%d. Begin: %s=%s", index, value.getKey(), value.getValue()));
+            executionContext.setVariable(value.getKey(), value.getValue());
+            visit(ctx.body());
+            progress(ctx, Status.SUCCESS, "for-each", String.format("%d. End", index));
+          }
         } finally {
           executionContext.removeLocalContext();
         }
@@ -278,21 +276,19 @@ public class ScriptRunner {
       return Status.SUCCESS;
     }
 
-    private List<Map<String, ApmType>> readValues(ForEachContext ctx) {
+    private List<ApmPair> readValues(ForEachContext ctx) {
       String key = ctx.IDENTIFIER().toString();
       ApmType variableValue = executionContext.resolveArgument(ctx.argument());
       List<ApmType> values;
-      if (variableValue instanceof ApmList) {
+      if (variableValue.isEmpty()) {
+        values = Collections.emptyList();
+      } else if (variableValue instanceof ApmList) {
         values = variableValue.getList();
-      } else if (variableValue instanceof ApmEmpty) {
-        values = Collections.emptyList();
-      } else if (variableValue instanceof ApmMap && variableValue.getMap().isEmpty()) {
-        values = Collections.emptyList();
       } else {
         values = ImmutableList.of(variableValue);
       }
       return values.stream()
-          .map(value -> ImmutableMap.of(key, value))
+          .map(value -> new ApmPair(key, value))
           .collect(Collectors.toList());
     }
 
