@@ -30,7 +30,7 @@ allprojects {
             publications?.configureEach {
                 if (this is MavenPublication) {
                     pom {
-                        url.set("https://github.com/Cognifide/APM")
+                        url.set("https://github.com/wttech/APM")
                         organization {
                             name.set("Wunderman Thompson Technology")
                             url.set("https://www.wundermanthompson.com")
