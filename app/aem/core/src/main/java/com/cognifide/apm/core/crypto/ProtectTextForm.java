@@ -21,15 +21,13 @@
 package com.cognifide.apm.core.crypto;
 
 import com.cognifide.apm.core.endpoints.params.RequestParameter;
-import javax.inject.Inject;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.models.annotations.Model;
 
 @Model(adaptables = SlingHttpServletRequest.class)
 public class ProtectTextForm {
 
-  @Inject
-  @RequestParameter(value = "text", optional = false)
+  @RequestParameter(optional = false)
   private String text;
 
   public String getText() {

@@ -59,7 +59,7 @@ public class RequestParameterInjector implements Injector, StaticInjectAnnotatio
     if (adaptable instanceof SlingHttpServletRequest) {
       RequestParameter annotation = annotatedElement.getAnnotation(RequestParameter.class);
       if (annotation != null && type instanceof Class<?>) {
-        String parameterName = annotation.value();
+        String parameterName = StringUtils.defaultIfEmpty(annotation.value(), fieldName);
         return getValue((SlingHttpServletRequest) adaptable, (Class<?>) type, parameterName, annotatedElement);
       }
     }

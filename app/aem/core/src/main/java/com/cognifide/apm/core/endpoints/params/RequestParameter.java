@@ -33,7 +33,7 @@ import org.apache.sling.models.spi.injectorspecific.InjectAnnotation;
 @Source("apm-request-parameter")
 public @interface RequestParameter {
 
-  String value();
+  String value() default "";
 
   boolean optional() default true;
 }

@@ -28,55 +28,43 @@ import com.cognifide.apm.core.scripts.LaunchMetadata;
 import com.cognifide.apm.core.scripts.ScriptNode;
 import java.io.InputStream;
 import java.time.OffsetDateTime;
-import javax.inject.Inject;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.models.annotations.Model;
 
 @Model(adaptables = SlingHttpServletRequest.class)
 public class ScriptUploadForm {
 
-  @Inject
-  @RequestParameter(value = "file", optional = false)
+  @RequestParameter(optional = false)
   private InputStream file;
 
-  @Inject
   @RequestParameter(value = "file", optional = false)
   @FileName
   private String fileName;
 
-  @Inject
-  @RequestParameter("overwrite")
+  @RequestParameter
   private boolean overwrite;
 
-  @Inject
   @RequestParameter(ScriptNode.APM_SAVE_PATH)
   private String savePath;
 
-  @Inject
   @RequestParameter(ScriptNode.APM_LAUNCH_ENABLED)
   private boolean launchEnabled;
 
-  @Inject
   @RequestParameter(ScriptNode.APM_LAUNCH_MODE)
   private LaunchMode launchMode;
 
-  @Inject
   @RequestParameter(ScriptNode.APM_LAUNCH_ENVIRONMENT)
   private LaunchEnvironment launchEnvironment;
 
-  @Inject
   @RequestParameter(ScriptNode.APM_LAUNCH_RUN_MODES)
   private String[] launchRunModes;
 
-  @Inject
   @RequestParameter(ScriptNode.APM_LAUNCH_HOOK)
   private String launchHook;
 
-  @Inject
   @RequestParameter(ScriptNode.APM_LAUNCH_SCHEDULE)
   private OffsetDateTime launchSchedule;
 
-  @Inject
   @RequestParameter(ScriptNode.APM_LAUNCH_CRON_EXPRESSION)
   private String launchCronExpression;
 

@@ -21,23 +21,19 @@
 package com.cognifide.apm.core.endpoints;
 
 import com.cognifide.apm.core.endpoints.params.RequestParameter;
-import javax.inject.Inject;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.models.annotations.Model;
 
 @Model(adaptables = SlingHttpServletRequest.class)
 public class ScriptMoveForm {
 
-  @Inject
-  @RequestParameter("path")
+  @RequestParameter
   private String path;
 
-  @Inject
-  @RequestParameter("dest")
+  @RequestParameter
   private String dest;
 
-  @Inject
-  @RequestParameter("rename")
+  @RequestParameter
   private String rename;
 
   public String getPath() {
