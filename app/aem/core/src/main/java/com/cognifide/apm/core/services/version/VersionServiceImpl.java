@@ -55,9 +55,9 @@ public class VersionServiceImpl implements VersionService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(VersionServiceImpl.class);
 
-  private final static String VERSIONS_ROOT = "/var/apm/versions";
+  private static final String VERSIONS_ROOT = "/var/apm/versions";
 
-  private final static String SCRIPT_NODE_NAME = "script";
+  private static final String SCRIPT_NODE_NAME = "script";
 
   @Reference
   private ScriptFinder scriptFinder;

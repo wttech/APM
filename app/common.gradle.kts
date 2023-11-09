@@ -4,9 +4,9 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
 repositories {
+    mavenLocal()
     jcenter()
     maven("https://repo.adobe.com/nexus/content/groups/public")
-    maven("https://dl.bintray.com/acs/releases")
 }
 
 tasks {

@@ -30,10 +30,10 @@ allprojects {
             publications?.configureEach {
                 if (this is MavenPublication) {
                     pom {
-                        url.set("https://github.com/Cognifide/APM")
+                        url.set("https://github.com/wttech/APM")
                         organization {
-                            name.set("Cognifide")
-                            url.set("https://www.cognifide.com")
+                            name.set("Wunderman Thompson Technology")
+                            url.set("https://www.wundermanthompson.com")
                         }
                         licenses {
                             license {
@@ -43,52 +43,17 @@ allprojects {
                         }
                         developers {
                             developer {
-                                name.set("Marcin Jędraszczyk")
-                                email.set("marcin.jedraszczyk@cognifide.com")
+                                name.set("Dominik Przybyl")
+                                email.set("dominik.przybyl@wundermanthompson.com")
                                 organization.set("Wunderman Thompson Technology")
-                                organizationUrl.set("https://www.cognifide.com")
-                                roles.set(listOf("architect", "lead developer"))
+                                organizationUrl.set("https://www.wundermanthompson.com")
+                                roles.set(listOf("architect", "developer"))
                             }
                             developer {
-                                name.set("Piotr Marcinkowski")
-                                email.set("piotr.marcinkowski@cognifide.com")
+                                name.set("Krystian Panek")
+                                email.set("krystian.panek@wundermanthompson.com")
                                 organization.set("Wunderman Thompson Technology")
-                                organizationUrl.set("https://www.cognifide.com")
-                                roles.set(listOf("developer"))
-                            }
-                            developer {
-                                name.set("Maciej Geisler")
-                                email.set("maciej.geisler@cognifide.com")
-                                organization.set("Wunderman Thompson Technology")
-                                organizationUrl.set("https://www.cognifide.com")
-                                roles.set(listOf("developer"))
-                            }
-                            developer {
-                                name.set("Mateusz Bloch")
-                                email.set("mateusz.bloch@cognifide.com")
-                                organization.set("Wunderman Thompson Technology")
-                                organizationUrl.set("https://www.cognifide.com")
-                                roles.set(listOf("tester"))
-                            }
-                            developer {
-                                name.set("Katarzyna Wielgosz")
-                                email.set("katarzyna.wielgosz@cognifide.com")
-                                organization.set("Wunderman Thompson Technology")
-                                organizationUrl.set("https://www.cognifide.com")
-                                roles.set(listOf("consultant"))
-                            }
-                            developer {
-                                name.set("Marek Krokosiński")
-                                email.set("marek.krokosinski@cognifide.com")
-                                organization.set("Wunderman Thompson Technology")
-                                organizationUrl.set("https://www.cognifide.com")
-                                roles.set(listOf("consultant"))
-                            }
-                            developer {
-                                name.set("Piotr Wilczyński")
-                                email.set("piotr.wilczynski@cognifide.com")
-                                organization.set("Wunderman Thompson Technology")
-                                organizationUrl.set("https://www.cognifide.com")
+                                organizationUrl.set("https://www.wundermanthompson.com")
                                 roles.set(listOf("consultant"))
                             }
                         }

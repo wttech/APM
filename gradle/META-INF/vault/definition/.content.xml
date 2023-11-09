@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:vlt="http://www.day.com/jcr/vault/1.0"
-  xmlns:jcr="http://www.jcp.org/jcr/1.0"
-  jcr:primaryType="vlt:PackageDefinition"
-  sling:resourceType="cq/packaging/components/pack/definition"
-  providerName="Cognifide"
-  providerUrl="http://www.cognifide.com">
-</jcr:root>

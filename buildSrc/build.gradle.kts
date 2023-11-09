@@ -22,7 +22,6 @@ repositories {
     mavenLocal()
     jcenter()
     gradlePluginPortal()
-    maven("https://dl.bintray.com/cognifide/maven-public")
     maven("https://repo.adobe.com/nexus/content/groups/public")
     maven("https://plugins.gradle.org/m2")
 }
