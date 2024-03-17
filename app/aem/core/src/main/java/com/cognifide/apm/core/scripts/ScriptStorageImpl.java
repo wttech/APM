@@ -58,7 +58,7 @@ import org.slf4j.LoggerFactory;
 )
 public class ScriptStorageImpl implements ScriptStorage {
 
-  private static final Logger LOG = LoggerFactory.getLogger(ScriptStorageImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ScriptStorageImpl.class);
 
   private static final Pattern FILE_NAME_PATTERN = Pattern.compile("[0-9a-zA-Z_\\-]+\\.apm");
 
@@ -119,7 +119,7 @@ public class ScriptStorageImpl implements ScriptStorage {
       session.save();
       result = scriptFinder.find(fileNode.getPath(), resolver);
     } catch (RepositoryException e) {
-      LOG.error(e.getMessage(), e);
+      LOGGER.error(e.getMessage(), e);
     }
     return result;
   }

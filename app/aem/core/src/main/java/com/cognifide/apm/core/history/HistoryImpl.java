@@ -59,7 +59,7 @@ public class HistoryImpl implements History {
 
   public static final String HISTORY_FOLDER = "/var/apm/history";
 
-  private static final Logger LOG = LoggerFactory.getLogger(HistoryImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(HistoryImpl.class);
 
   private static final String APM_HISTORY = "apmHistory";
 
@@ -165,7 +165,7 @@ public class HistoryImpl implements History {
       resolver.commit();
       return resolver.getResource(historyEntryNode.getPath()).adaptTo(HistoryEntryImpl.class);
     } catch (IOException | RepositoryException e) {
-      LOG.error("Issues with saving to repository while logging script execution", e);
+      LOGGER.error("Issues with saving to repository while logging script execution", e);
       return null;
     }
   }
