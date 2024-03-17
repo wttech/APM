@@ -22,6 +22,7 @@ package com.cognifide.apm.core.ui.models;
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ScriptFinder;
 import java.io.IOException;
+import java.io.InputStream;
 import javax.inject.Inject;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -33,8 +34,6 @@ import org.slf4j.LoggerFactory;
 
 @Model(adaptables = SlingHttpServletRequest.class)
 public final class ConsoleModel {
-
-  public static final String PATH_PARAM = "path";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ConsoleModel.class);
 
@@ -66,11 +65,14 @@ public final class ConsoleModel {
 
   private String getContentDefault() {
     try {
-      return IOUtils.toString(getClass().getResourceAsStream(CONTENT_FILE), CONTENT_FILE_CHARSET);
+      InputStream inputStream = getClass().getResourceAsStream(CONTENT_FILE);
+      if (inputStream != null) {
+        return IOUtils.toString(inputStream, CONTENT_FILE_CHARSET);
+      }
     } catch (IOException e) {
       LOGGER.warn("Cannot read content of default script template.", e);
-      return "";
     }
+    return "";
   }
 
   public String getFileName() {

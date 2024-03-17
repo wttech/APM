@@ -99,7 +99,7 @@ public class ScriptManagerImpl implements ScriptManager {
   )
   private final Set<DefinitionsProvider> definitionsProviders = new CopyOnWriteArraySet<>();
 
-  private Progress execute(Script script, ExecutionMode mode, Map<String, String> customDefinitions,
+  private Progress execute(Script script, ExecutionMode mode,
       ResourceResolver resolver, String executor) throws ExecutionException, RepositoryException {
     if (script == null) {
       throw new ExecutionException("Script is not specified");
@@ -139,9 +139,7 @@ public class ScriptManagerImpl implements ScriptManager {
         }, dataSourceInvoker);
 
     try {
-      Map<String, String> definitions = new HashMap<>();
-      definitions.putAll(getPredefinedDefinitions());
-      definitions.putAll(customDefinitions);
+      Map<String, String> definitions = getPredefinedDefinitions();
       scriptRunner.execute(script, progress, definitions);
     } catch (RuntimeException e) {
       progress.addEntry(Status.ERROR, e.getMessage());
@@ -153,11 +151,11 @@ public class ScriptManagerImpl implements ScriptManager {
   }
 
   @Override
-  public Progress process(Script script, ExecutionMode mode, Map<String, String> customDefinitions,
+  public Progress process(Script script, ExecutionMode mode,
       ResourceResolver resolver, String executor) throws RepositoryException, PersistenceException {
     Progress progress;
     try {
-      progress = execute(script, mode, customDefinitions, resolver, executor);
+      progress = execute(script, mode, resolver, executor);
     } catch (ExecutionException e) {
       progress = new ProgressImpl(executor);
       progress.addEntry(Status.ERROR, e.getMessage());

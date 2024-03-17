@@ -47,8 +47,6 @@ public class AsyncScriptExecutorImpl implements AsyncScriptExecutor {
 
   public static final String USER_ID = "userName";
 
-  public static final String DEFINITIONS = "definitions";
-
   public static final String ID = "id";
 
   @Reference
@@ -58,14 +56,13 @@ public class AsyncScriptExecutorImpl implements AsyncScriptExecutor {
   private JobResultsCache jobResultsCache;
 
   @Override
-  public String process(Script script, ExecutionMode executionMode, Map<String, String> customDefinitions, String executor) {
+  public String process(Script script, ExecutionMode executionMode, String executor) {
     String id = UUID.randomUUID().toString();
     Map<String, Object> properties = ImmutableMap.of(
         ID, id,
         SCRIPT_PATH, script.getPath(),
         EXECUTION_MODE, executionMode.toString(),
-        USER_ID, executor,
-        DEFINITIONS, customDefinitions
+        USER_ID, executor
     );
     jobResultsCache.put(id, ExecutionSummary.running());
     new Thread(() -> scriptRunnerJobConsumer.process(properties)).start();

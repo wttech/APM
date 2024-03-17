@@ -123,13 +123,13 @@ public class ScriptExecutionServlet extends SlingAllMethodsServlet {
   }
 
   private ResponseEntity asyncExecute(Script script, ScriptExecutionForm form, String executor) {
-    String id = asyncScriptExecutor.process(script, form.getExecutionMode(), form.getCustomDefinitions(), executor);
+    String id = asyncScriptExecutor.process(script, form.getExecutionMode(), executor);
     return ResponseEntity.ok("Script successfully queued for async execution")
         .addEntry("id", id);
   }
 
   private ResponseEntity syncExecute(Script script, ScriptExecutionForm form, ResourceResolver resourceResolver, String executor) throws PersistenceException, RepositoryException {
-    ExecutionResult result = scriptManager.process(script, form.getExecutionMode(), form.getCustomDefinitions(), resourceResolver, executor);
+    ExecutionResult result = scriptManager.process(script, form.getExecutionMode(), resourceResolver, executor);
     if (result.isSuccess()) {
       return ResponseEntity.ok("Script successfully executed")
           .addEntry("output", result.getEntries());

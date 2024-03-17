@@ -29,7 +29,6 @@ import com.cognifide.apm.core.jobs.JobResultsCache.ExecutionSummary;
 import com.cognifide.apm.core.services.ResourceResolverProvider;
 import com.cognifide.apm.core.services.async.AsyncScriptExecutorImpl;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
-import java.util.Collections;
 import java.util.Map;
 import javax.jcr.RepositoryException;
 import org.apache.commons.lang3.StringUtils;
@@ -71,7 +70,7 @@ public class ScriptRunnerJobConsumer {
       Script script = getScript(properties, resolver);
       if (script != null && mode != null) {
         try {
-          ExecutionResult executionResult = scriptManager.process(script, mode, getDefinitions(properties), resolver, userId);
+          ExecutionResult executionResult = scriptManager.process(script, mode, resolver, userId);
           String summaryPath = getSummaryPath(resolver, script, mode);
           jobResultsCache.put(id, ExecutionSummary.finished(executionResult, summaryPath));
         } catch (RepositoryException | PersistenceException e) {
@@ -99,14 +98,6 @@ public class ScriptRunnerJobConsumer {
       LOGGER.error("Mode is null");
     }
     return result;
-  }
-
-  private Map<String, String> getDefinitions(Map<String, Object> properties) {
-    Map<String, String> definitions = (Map<String, String>) properties.get(AsyncScriptExecutorImpl.DEFINITIONS);
-    if (definitions == null) {
-      definitions = Collections.emptyMap();
-    }
-    return definitions;
   }
 
   private Script getScript(Map<String, Object> properties, ResourceResolver resolver) {
