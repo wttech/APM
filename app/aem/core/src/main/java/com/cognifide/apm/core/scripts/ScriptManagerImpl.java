@@ -99,8 +99,8 @@ public class ScriptManagerImpl implements ScriptManager {
   )
   private final Set<DefinitionsProvider> definitionsProviders = new CopyOnWriteArraySet<>();
 
-  private Progress execute(Script script, ExecutionMode mode,
-      ResourceResolver resolver, String executor) throws ExecutionException, RepositoryException {
+  private Progress execute(Script script, ExecutionMode mode, ResourceResolver resolver, String executor)
+      throws ExecutionException, RepositoryException {
     if (script == null) {
       throw new ExecutionException("Script is not specified");
     }
@@ -151,8 +151,8 @@ public class ScriptManagerImpl implements ScriptManager {
   }
 
   @Override
-  public Progress process(Script script, ExecutionMode mode,
-      ResourceResolver resolver, String executor) throws RepositoryException, PersistenceException {
+  public Progress process(Script script, ExecutionMode mode, ResourceResolver resolver, String executor)
+      throws RepositoryException, PersistenceException {
     Progress progress;
     try {
       progress = execute(script, mode, resolver, executor);
