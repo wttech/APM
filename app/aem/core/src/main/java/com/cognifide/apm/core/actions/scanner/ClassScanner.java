@@ -52,7 +52,7 @@ public class ClassScanner {
     this.context = context;
   }
 
-  private static final Logger LOG = LoggerFactory.getLogger(ClassScanner.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ClassScanner.class);
 
   public List<Class<?>> findClasses(String packageName) {
     @SuppressWarnings("unchecked") final Enumeration<URL> classUrls = bundle
@@ -61,7 +61,7 @@ public class ClassScanner {
     final ArrayList<Class<?>> classes = new ArrayList<>();
 
     if (classUrls == null) {
-      LOG.warn("No classes found in bundle: {}", bundleName);
+      LOGGER.warn("No classes found in bundle: {}", bundleName);
     } else {
       while (classUrls.hasMoreElements()) {
         final URL url = classUrls.nextElement();
@@ -70,14 +70,14 @@ public class ClassScanner {
         try {
           if (BundleUtils.isFragment(bundle)) {
             if (context == null) {
-              LOG.warn("Cannot load class from fragment bundle {} if context is unspecified",
+              LOGGER.warn("Cannot load class from fragment bundle {} if context is unspecified",
                   bundleName);
             }
 
             final Bundle hostBundle = BundleUtils.getHostBundle(context, bundle);
 
             if (hostBundle == null) {
-              LOG.warn("Cannot find host bundle for {}", bundleName);
+              LOGGER.warn("Cannot find host bundle for {}", bundleName);
             } else {
               classes.add(hostBundle.loadClass(className));
             }
@@ -85,7 +85,7 @@ public class ClassScanner {
             classes.add(bundle.loadClass(className));
           }
         } catch (ClassNotFoundException e) {
-          LOG.warn("Unable to load class", e);
+          LOGGER.warn("Unable to load class", e);
         }
       }
     }

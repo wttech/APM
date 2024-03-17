@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  */
 public class AnnotatedClassRegistry {
 
-  private static final Logger LOG = LoggerFactory.getLogger(AnnotatedClassRegistry.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AnnotatedClassRegistry.class);
 
   private final BundleTracker<?> tracker;
 
@@ -106,15 +106,15 @@ public class AnnotatedClassRegistry {
       classes.put(bundle.getBundleId(), scanned);
       notifyChangeListeners();
     }
-    if (LOG.isDebugEnabled()) {
-      LOG.debug("Adding classes ({}) from bundle: {}", scanned.size(), bundle.getSymbolicName());
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Adding classes ({}) from bundle: {}", scanned.size(), bundle.getSymbolicName());
     }
   }
 
   private void unregisterClasses(Bundle bundle) {
     final List<Class<?>> registered = classes.get(bundle.getBundleId());
-    if (LOG.isDebugEnabled()) {
-      LOG.debug("Removing classes ({}) from bundle: {}", registered.size(), bundle.getSymbolicName());
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Removing classes ({}) from bundle: {}", registered.size(), bundle.getSymbolicName());
     }
     classes.remove(bundle.getBundleId());
     notifyChangeListeners();

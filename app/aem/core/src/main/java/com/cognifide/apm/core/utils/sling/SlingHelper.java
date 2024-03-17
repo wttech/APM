@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 
 public final class SlingHelper {
 
-  private static final Logger LOG = LoggerFactory.getLogger(SlingHelper.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SlingHelper.class);
 
   private static final String RESOLVE_ERROR_MESSAGE = "Error occurred while resolving data from repository.";
 
@@ -55,7 +55,7 @@ public final class SlingHelper {
     try {
       return resolve(provider, callback);
     } catch (ResolveException e) {
-      LOG.error(RESOLVE_ERROR_MESSAGE, e);
+      LOGGER.error(RESOLVE_ERROR_MESSAGE, e);
     }
     return defaultValue;
   }
@@ -82,7 +82,7 @@ public final class SlingHelper {
     try {
       operate(provider, callback);
     } catch (OperateException e) {
-      LOG.error(OPERATE_ERROR_MESSAGE, e);
+      LOGGER.error(OPERATE_ERROR_MESSAGE, e);
     }
   }
 

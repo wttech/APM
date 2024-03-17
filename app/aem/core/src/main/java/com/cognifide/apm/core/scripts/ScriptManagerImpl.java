@@ -72,7 +72,7 @@ import org.slf4j.LoggerFactory;
 )
 public class ScriptManagerImpl implements ScriptManager {
 
-  private static final Logger LOG = LoggerFactory.getLogger(ScriptManagerImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ScriptManagerImpl.class);
 
   @Reference
   private ActionFactory actionFactory;
@@ -111,7 +111,7 @@ public class ScriptManagerImpl implements ScriptManager {
 
     String path = script.getPath();
 
-    LOG.info(String.format("Script execution started: %s [%s]", path, mode));
+    LOGGER.info(String.format("Script execution started: %s [%s]", path, mode));
     Progress progress = new ProgressImpl(executor);
     ActionExecutor actionExecutor = createExecutor(mode, resolver);
     Context context = actionExecutor.getContext();
@@ -132,7 +132,7 @@ public class ScriptManagerImpl implements ScriptManager {
             }
             return result.getStatus();
           } catch (RepositoryException | ActionCreationException e) {
-            LOG.error("Error while processing command: {}", commandName, e);
+            LOGGER.error("Error while processing command: {}", commandName, e);
             progress.addEntry(Status.ERROR, e.getMessage(), commandName);
             return Status.ERROR;
           }
