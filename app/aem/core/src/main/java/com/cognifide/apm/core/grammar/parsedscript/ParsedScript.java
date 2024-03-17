@@ -53,8 +53,8 @@ public class ParsedScript {
   }
 
   public static ParsedScript create(Script script) {
-    Logger LOGGER = LoggerFactory.getLogger(ParsedScript.class);
-    LOGGER.warn("Script parsing {}", script.getPath());
+    Logger logger = LoggerFactory.getLogger(ParsedScript.class);
+    logger.warn("Script parsing {}", script.getPath());
     ApmLangParser apmLangParser = ApmLangParserFactory.createParserForScriptContent(script.getData());
     return new ParsedScript(script, apmLangParser.apm());
   }

@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
 )
 public class ActionMapperRegistryImpl implements RegistryChangedListener, ActionMapperRegistry {
 
-  private static final Logger LOG = LoggerFactory.getLogger(ActionMapperRegistryImpl.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ActionMapperRegistryImpl.class);
 
   private static final String BUNDLE_HEADER = "APM-Actions";
 
@@ -103,12 +103,12 @@ public class ActionMapperRegistryImpl implements RegistryChangedListener, Action
         MapperDescriptor mapperDescriptor = mapperDescriptorFactory.create(clazz);
         mappers.put(mapperDescriptor.getName(), mapperDescriptor);
       } catch (InvalidActionMapperException e) {
-        LOG.warn("Cannot register ActionMapper of class " + clazz.getName(), e);
+        LOGGER.warn("Cannot register ActionMapper of class " + clazz.getName(), e);
       }
     }
 
-    if (LOG.isDebugEnabled()) {
-      LOG.debug("Created {} action mappers from {} classes", mappers.size(), classes.size());
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Created {} action mappers from {} classes", mappers.size(), classes.size());
     }
     return mappers;
   }

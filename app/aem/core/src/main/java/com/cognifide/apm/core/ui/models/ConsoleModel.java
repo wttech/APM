@@ -36,7 +36,7 @@ public final class ConsoleModel {
 
   public static final String PATH_PARAM = "path";
 
-  private static final Logger LOG = LoggerFactory.getLogger(ConsoleModel.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ConsoleModel.class);
 
   private static final String FILE_NAME_DEFAULT = "filename";
 
@@ -68,7 +68,7 @@ public final class ConsoleModel {
     try {
       return IOUtils.toString(getClass().getResourceAsStream(CONTENT_FILE), CONTENT_FILE_CHARSET);
     } catch (IOException e) {
-      LOG.warn("Cannot read content of default script template.", e);
+      LOGGER.warn("Cannot read content of default script template.", e);
       return "";
     }
   }
