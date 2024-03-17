@@ -22,19 +22,23 @@ package com.cognifide.apm.core.endpoints;
 
 import com.cognifide.apm.api.services.ExecutionMode;
 import com.cognifide.apm.core.endpoints.params.RequestParameter;
+import javax.inject.Inject;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.models.annotations.Model;
 
 @Model(adaptables = SlingHttpServletRequest.class)
 public class ScriptExecutionForm {
 
-  @RequestParameter(optional = false)
+  @Inject
+  @RequestParameter(value = "script", optional = false)
   private String script;
 
-  @RequestParameter(optional = false)
+  @Inject
+  @RequestParameter(value = "executionMode", optional = false)
   private ExecutionMode executionMode;
 
-  @RequestParameter
+  @Inject
+  @RequestParameter("async")
   private boolean async;
 
   public String getScript() {

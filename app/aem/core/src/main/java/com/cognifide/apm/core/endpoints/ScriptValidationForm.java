@@ -21,16 +21,19 @@
 package com.cognifide.apm.core.endpoints;
 
 import com.cognifide.apm.core.endpoints.params.RequestParameter;
+import javax.inject.Inject;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.models.annotations.Model;
 
 @Model(adaptables = SlingHttpServletRequest.class)
 public class ScriptValidationForm {
 
-  @RequestParameter(optional = false)
+  @Inject
+  @RequestParameter(value = "path", optional = false)
   private String path;
 
-  @RequestParameter(optional = false)
+  @Inject
+  @RequestParameter(value = "content", optional = false)
   private String content;
 
   public String getPath() {
