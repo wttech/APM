@@ -77,12 +77,16 @@ public class ScriptExecutionServlet extends SlingAllMethodsServlet {
         return ResponseEntity.ok("Script successfully executed")
             .addEntry("status", status.getStatus())
             .addEntry("output", ((ExecutionStatus.FinishedSuccessfulExecution) status).getEntries())
-            .addEntry("path", ((ExecutionStatus.FinishedSuccessfulExecution) status).getPath());
+            .addEntry("path", ((ExecutionStatus.FinishedSuccessfulExecution) status).getPath())
+            .addEntry("timestamp", ((ExecutionStatus.FinishedSuccessfulExecution) status).getTimestamp())
+            .addEntry("formattedDate", ((ExecutionStatus.FinishedSuccessfulExecution) status).getFormattedDate());
       } else if (status instanceof ExecutionStatus.FinishedFailedExecution) {
         return ResponseEntity.internalServerError("Errors while executing script")
             .addEntry("status", status.getStatus())
             .addEntry("output", ((ExecutionStatus.FinishedFailedExecution) status).getEntries())
             .addEntry("path", ((ExecutionStatus.FinishedFailedExecution) status).getPath())
+            .addEntry("timestamp", ((ExecutionStatus.FinishedFailedExecution) status).getTimestamp())
+            .addEntry("formattedDate", ((ExecutionStatus.FinishedFailedExecution) status).getFormattedDate())
             .addEntry("errors", ((ExecutionStatus.FinishedFailedExecution) status).getError().getMessages());
       } else {
         return ResponseEntity.ok("Script is still being processed")

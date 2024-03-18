@@ -26,6 +26,7 @@ import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.jobs.JobResultsCache;
 import com.cognifide.apm.core.jobs.JobResultsCache.ExecutionSummary;
 import com.cognifide.apm.core.jobs.ScriptRunnerJobConsumer;
+import com.cognifide.apm.core.ui.utils.DateFormatter;
 import com.google.common.collect.ImmutableMap;
 import java.util.List;
 import java.util.Map;
@@ -86,12 +87,14 @@ public class AsyncScriptExecutorImpl implements AsyncScriptExecutor {
 
   private ExecutionStatus finishedExecution(ExecutionSummary executionSummary) {
     String path = executionSummary.getPath();
+    long timestamp = executionSummary.getResult().getStartTime().getTimeInMillis();
+    String formattedDate = DateFormatter.determineFormattedDate(executionSummary.getResult().getStartTime());
     List<ExecutionResult.Entry> entries = executionSummary.getResult().getEntries();
     ExecutionResult.Entry errorEntry = executionSummary.getResult().getLastError();
     if (errorEntry != null) {
-      return new ExecutionStatus.FinishedFailedExecution(path, entries, errorEntry);
+      return new ExecutionStatus.FinishedFailedExecution(path, timestamp, formattedDate, entries, errorEntry);
     } else {
-      return new ExecutionStatus.FinishedSuccessfulExecution(path, entries);
+      return new ExecutionStatus.FinishedSuccessfulExecution(path, timestamp, formattedDate, entries);
     }
   }
 }

@@ -22,7 +22,13 @@
   <coral-list>
     <coral-list-item icon="file">Script: <strong>${item.entry.scriptName}</strong></coral-list-item>
     <coral-list-item icon="user">User: <strong>${item.entry.executor}</strong></coral-list-item>
-    <coral-list-item icon="clock" data-sly-test="${item.entry.executionDuration}">Duration: <strong>${item.entry.executionDuration}s</strong></coral-list-item>
+    <coral-list-item icon="calendar">Start time: <strong>
+      <time datetime="${item.entry.executionTimeCalendar.timeInMillis || 0}"
+            data-sly-use.startTime="${'com.cognifide.apm.core.ui.utils.DateFormatter' @ date=item.entry.executionTimeCalendar}">
+        ${startTime.formattedDate}
+      </time>
+    </strong></coral-list-item>
+    <coral-list-item icon="clock">Duration: <strong>${item.entry.executionDuration}s</strong></coral-list-item>
   </coral-list>
   <table class="_coral-Table">
     <thead class="_coral-Table-divider--row _coral-Table-head">
