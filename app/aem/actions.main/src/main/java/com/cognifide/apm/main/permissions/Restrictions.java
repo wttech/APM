@@ -40,12 +40,12 @@ public class Restrictions {
 
   private static final String REP_GLOB_PROPERTY = "rep:glob";
 
-  private static final String REP_NTNAMES_PROPERTY = "rep:ntNames";
+  private static final String REP_NT_NAMES_PROPERTY = "rep:ntNames";
 
-  private static final String REP_ITEMNAMES_PROPERTY = "rep:itemNames";
+  private static final String REP_ITEM_NAMES_PROPERTY = "rep:itemNames";
 
-  private static final Set<String> MULTIVALUE_REP_PROPERTIES = ImmutableSet.of(
-      REP_NTNAMES_PROPERTY, REP_ITEMNAMES_PROPERTY, "rep:prefixes", "rep:current", "rep:globs",
+  private static final Set<String> MULTI_VALUE_REP_PROPERTIES = ImmutableSet.of(
+      REP_NT_NAMES_PROPERTY, REP_ITEM_NAMES_PROPERTY, "rep:prefixes", "rep:current", "rep:globs",
       "rep:subtrees", "sling:resourceTypes", "sling:resourceTypesWithDescendants"
   );
 
@@ -76,7 +76,7 @@ public class Restrictions {
     Map<String, Value> result = new HashMap<>();
     addRestriction(valueFactory, result, REP_GLOB_PROPERTY, glob);
     for (Map.Entry<String, Object> entry : customRestrictions.entrySet()) {
-      if (!isMultivalue(entry)) {
+      if (!isMultiValue(entry)) {
         String value;
         if (entry.getValue() instanceof String) {
           value = (String) entry.getValue();
@@ -108,10 +108,10 @@ public class Restrictions {
 
   public Map<String, Value[]> getMultiValueRestrictions(ValueFactory valueFactory) throws ValueFormatException {
     Map<String, Value[]> result = new HashMap<>();
-    addRestrictions(valueFactory, result, REP_NTNAMES_PROPERTY, ntNames);
-    addRestrictions(valueFactory, result, REP_ITEMNAMES_PROPERTY, itemNames);
+    addRestrictions(valueFactory, result, REP_NT_NAMES_PROPERTY, ntNames);
+    addRestrictions(valueFactory, result, REP_ITEM_NAMES_PROPERTY, itemNames);
     for (Map.Entry<String, Object> entry : customRestrictions.entrySet()) {
-      if (isMultivalue(entry)) {
+      if (isMultiValue(entry)) {
         List<String> values;
         if (entry.getValue() instanceof String) {
           values = Collections.singletonList((String) entry.getValue());
@@ -146,11 +146,11 @@ public class Restrictions {
     }
   }
 
-  private boolean isMultivalue(Map.Entry<String, Object> entry) {
+  private boolean isMultiValue(Map.Entry<String, Object> entry) {
     boolean result;
     if (REP_GLOB_PROPERTY.equals(entry.getKey())) {
       result = false;
-    } else if (MULTIVALUE_REP_PROPERTIES.contains(entry.getKey())) {
+    } else if (MULTI_VALUE_REP_PROPERTIES.contains(entry.getKey())) {
       result = true;
     } else {
       result = entry.getValue() instanceof List;
