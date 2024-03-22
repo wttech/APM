@@ -17,7 +17,7 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.core.scripts;
+package com.cognifide.apm.core.services;
 
 import com.cognifide.apm.api.services.DefinitionsProvider;
 import java.util.HashMap;
