@@ -32,6 +32,7 @@ import javax.jcr.PropertyType;
 import javax.jcr.Value;
 import javax.jcr.ValueFactory;
 import javax.jcr.ValueFormatException;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 public class Restrictions {
@@ -40,12 +41,14 @@ public class Restrictions {
 
   private static final String REP_GLOB_PROPERTY = "rep:glob";
 
+  private static final String REP_GLOBS_PROPERTY = "rep:globs";
+
   private static final String REP_NT_NAMES_PROPERTY = "rep:ntNames";
 
   private static final String REP_ITEM_NAMES_PROPERTY = "rep:itemNames";
 
   private static final Set<String> MULTI_VALUE_REP_PROPERTIES = ImmutableSet.of(
-      REP_NT_NAMES_PROPERTY, REP_ITEM_NAMES_PROPERTY, "rep:prefixes", "rep:current", "rep:globs",
+      REP_NT_NAMES_PROPERTY, REP_ITEM_NAMES_PROPERTY, REP_GLOBS_PROPERTY, "rep:prefixes", "rep:current",
       "rep:subtrees", "sling:resourceTypes", "sling:resourceTypesWithDescendants"
   );
 
@@ -91,11 +94,15 @@ public class Restrictions {
 
   private void addRestriction(ValueFactory valueFactory, Map<String, Value> result, String key, String value) throws ValueFormatException {
     if (StringUtils.isNotBlank(value)) {
-      if (REP_GLOB_PROPERTY.equals(key)) {
-        result.put(key, normalizeGlob(valueFactory));
-      } else {
-        result.put(key, valueFactory.createValue(value, determinePropertyType(key)));
-      }
+      result.put(key, createValue(valueFactory, key, value));
+    }
+  }
+
+  private Value createValue(ValueFactory valueFactory, String key, String value) throws ValueFormatException {
+    if (StringUtils.equalsAny(key, REP_GLOB_PROPERTY, REP_GLOBS_PROPERTY)) {
+      return normalizeGlob(valueFactory);
+    } else {
+      return valueFactory.createValue(value, determinePropertyType(key));
     }
   }
 
@@ -125,15 +132,15 @@ public class Restrictions {
   }
 
   private void addRestrictions(ValueFactory valueFactory, Map<String, Value[]> result, String key, List<String> names) throws ValueFormatException {
-    if (names != null && !names.isEmpty()) {
-      result.put(key, createRestrictions(valueFactory, names, determinePropertyType(key)));
+    if (!CollectionUtils.isEmpty(names)) {
+      result.put(key, createRestrictions(valueFactory, key, names));
     }
   }
 
-  private Value[] createRestrictions(ValueFactory valueFactory, List<String> names, int propertyType) throws ValueFormatException {
+  private Value[] createRestrictions(ValueFactory valueFactory, String key, List<String> names) throws ValueFormatException {
     Value[] values = new Value[names.size()];
     for (int index = 0; index < names.size(); index++) {
-      values[index] = valueFactory.createValue(names.get(index), propertyType);
+      values[index] = createValue(valueFactory, key, names.get(index));
     }
     return values;
   }
