@@ -1,3 +1,22 @@
+/*-
+ * ========================LICENSE_START=================================
+ * AEM Permission Management
+ * %%
+ * Copyright (C) 2013 Wunderman Thompson Technology
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * =========================LICENSE_END==================================
+ */
 package com.cognifide.apm.core.services;
 
 import com.cognifide.apm.api.services.DefinitionsProvider;
@@ -28,10 +47,10 @@ public class CustomDefinitionsProvider implements DefinitionsProvider {
   public void activate(Configuration config) {
     predefinedDefinitions = Arrays.stream(config.definitions())
         .map(definition -> definition.split("="))
-        .map(parts -> StringUtils.stripAll(parts))
-        .filter(parts -> StringUtils.isNoneEmpty(parts))
+        .map(StringUtils::stripAll)
+        .filter(StringUtils::isNoneEmpty)
         .filter(parts -> parts.length == 2)
-        .collect(Collectors.toMap(parts -> parts[0], parts -> parts[1], (a, b) -> b);
+        .collect(Collectors.toMap(parts -> parts[0], parts -> parts[1], (first, second) -> first));
   }
 
   @Override
