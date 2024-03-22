@@ -94,7 +94,7 @@ public class Restrictions {
       if (REP_GLOB_PROPERTY.equals(key)) {
         result.put(key, normalizeGlob(valueFactory));
       } else {
-        result.put(key, valueFactory.createValue(value, PropertyType.NAME));
+        result.put(key, valueFactory.createValue(value, determinePropertyType(key)));
       }
     }
   }
@@ -126,16 +126,24 @@ public class Restrictions {
 
   private void addRestrictions(ValueFactory valueFactory, Map<String, Value[]> result, String key, List<String> names) throws ValueFormatException {
     if (names != null && !names.isEmpty()) {
-      result.put(key, createRestrictions(valueFactory, names));
+      result.put(key, createRestrictions(valueFactory, names, determinePropertyType(key)));
     }
   }
 
-  private Value[] createRestrictions(ValueFactory valueFactory, List<String> names) throws ValueFormatException {
+  private Value[] createRestrictions(ValueFactory valueFactory, List<String> names, int propertyType) throws ValueFormatException {
     Value[] values = new Value[names.size()];
     for (int index = 0; index < names.size(); index++) {
-      values[index] = valueFactory.createValue(names.get(index), PropertyType.NAME);
+      values[index] = valueFactory.createValue(names.get(index), propertyType);
     }
     return values;
+  }
+
+  private int determinePropertyType(String key) {
+    if (StringUtils.equalsAny(key, REP_NT_NAMES_PROPERTY, REP_ITEM_NAMES_PROPERTY)) {
+      return PropertyType.NAME;
+    } else {
+      return PropertyType.STRING;
+    }
   }
 
   private boolean isMultivalue(Map.Entry<String, Object> entry) {
