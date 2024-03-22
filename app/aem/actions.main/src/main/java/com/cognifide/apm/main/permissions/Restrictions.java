@@ -20,19 +20,17 @@
 
 package com.cognifide.apm.main.permissions;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import javax.jcr.PropertyType;
 import javax.jcr.Value;
 import javax.jcr.ValueFactory;
 import javax.jcr.ValueFormatException;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 public class Restrictions {
@@ -62,17 +60,10 @@ public class Restrictions {
 
   public Restrictions(String glob, List<String> ntNames, List<String> itemNames, Map<String, Object> customRestrictions) {
     this.glob = glob;
-    this.ntNames = notNullCopy(ntNames);
-    this.itemNames = notNullCopy(itemNames);
-    this.customRestrictions = notNullCopy(customRestrictions);
-  }
-
-  private List<String> notNullCopy(List<String> strings) {
-    return strings != null ? ImmutableList.copyOf(strings) : Collections.emptyList();
-  }
-
-  private Map<String, Object> notNullCopy(Map<String, Object> items) {
-    return items != null ? ImmutableMap.copyOf(items) : Collections.emptyMap();
+    this.ntNames = ntNames;
+    this.itemNames = itemNames;
+    this.customRestrictions = Optional.ofNullable(customRestrictions)
+        .orElse(Collections.emptyMap());
   }
 
   public Map<String, Value> getSingleValueRestrictions(ValueFactory valueFactory) throws ValueFormatException {
@@ -93,7 +84,7 @@ public class Restrictions {
   }
 
   private void addRestriction(ValueFactory valueFactory, Map<String, Value> result, String key, String value) throws ValueFormatException {
-    if (StringUtils.isNotBlank(value)) {
+    if (value != null) {
       result.put(key, createValue(valueFactory, key, value));
     }
   }
@@ -132,7 +123,7 @@ public class Restrictions {
   }
 
   private void addRestrictions(ValueFactory valueFactory, Map<String, Value[]> result, String key, List<String> names) throws ValueFormatException {
-    if (!CollectionUtils.isEmpty(names)) {
+    if (names != null) {
       result.put(key, createRestrictions(valueFactory, key, names));
     }
   }
