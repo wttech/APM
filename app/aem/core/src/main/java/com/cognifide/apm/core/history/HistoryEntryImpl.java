@@ -61,8 +61,6 @@ public class HistoryEntryImpl implements HistoryEntry {
 
   public static final String PROGRESS_LOG = "summaryJSON";
 
-  public static final String UPLOAD_TIME = "uploadTime";
-
   public static final String SCRIPT_CONTENT_PATH = "scriptContentPath";
 
   public static final String INSTANCE_NAME = "instanceName";
@@ -106,10 +104,6 @@ public class HistoryEntryImpl implements HistoryEntry {
   @Inject
   @Named(CHECKSUM)
   private String checksum;
-
-  @Inject
-  @Named(UPLOAD_TIME)
-  private Date uploadTime;
 
   private String executionSummaryJson;
 
@@ -174,10 +168,6 @@ public class HistoryEntryImpl implements HistoryEntry {
 
   public String getChecksum() {
     return checksum;
-  }
-
-  public Date getUploadTime() {
-    return uploadTime;
   }
 
   public String getExecutionSummaryJson() {

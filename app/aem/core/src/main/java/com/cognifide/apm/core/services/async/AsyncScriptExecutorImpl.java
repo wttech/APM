@@ -26,8 +26,8 @@ import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.jobs.JobResultsCache;
 import com.cognifide.apm.core.jobs.JobResultsCache.ExecutionSummary;
 import com.cognifide.apm.core.jobs.ScriptRunnerJobConsumer;
-import com.cognifide.apm.core.ui.utils.DateFormatter;
 import com.google.common.collect.ImmutableMap;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -87,14 +87,13 @@ public class AsyncScriptExecutorImpl implements AsyncScriptExecutor {
 
   private ExecutionStatus finishedExecution(ExecutionSummary executionSummary) {
     String path = executionSummary.getPath();
-    long timestamp = executionSummary.getResult().getStartTime().getTimeInMillis();
-    String formattedDate = DateFormatter.format(executionSummary.getResult().getStartTime());
+    Calendar startTime = executionSummary.getResult().getStartTime();
     List<ExecutionResult.Entry> entries = executionSummary.getResult().getEntries();
     ExecutionResult.Entry errorEntry = executionSummary.getResult().getLastError();
     if (errorEntry != null) {
-      return new ExecutionStatus.Failed(path, timestamp, formattedDate, entries, errorEntry);
+      return new ExecutionStatus.Failed(path, startTime, entries, errorEntry);
     } else {
-      return new ExecutionStatus.Successful(path, timestamp, formattedDate, entries);
+      return new ExecutionStatus.Successful(path, startTime, entries);
     }
   }
 }

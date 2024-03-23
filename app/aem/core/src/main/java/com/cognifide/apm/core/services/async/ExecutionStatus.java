@@ -20,6 +20,8 @@
 package com.cognifide.apm.core.services.async;
 
 import com.cognifide.apm.api.services.ExecutionResult;
+import com.cognifide.apm.core.ui.utils.DateFormatter;
+import java.util.Calendar;
 import java.util.List;
 
 public abstract class ExecutionStatus {
@@ -58,11 +60,11 @@ public abstract class ExecutionStatus {
 
     private final List<ExecutionResult.Entry> entries;
 
-    public Finished(String path, long timestamp, String formattedDate, List<ExecutionResult.Entry> entries) {
+    public Finished(String path, Calendar startTime, List<ExecutionResult.Entry> entries) {
       super("finished");
       this.path = path;
-      this.timestamp = timestamp;
-      this.formattedDate = formattedDate;
+      this.timestamp = startTime.getTimeInMillis();
+      this.formattedDate = DateFormatter.format(startTime);
       this.entries = entries;
     }
 
@@ -85,8 +87,8 @@ public abstract class ExecutionStatus {
 
   public static class Successful extends Finished {
 
-    public Successful(String path, long timestamp, String formattedDate, List<ExecutionResult.Entry> entries) {
-      super(path, timestamp, formattedDate, entries);
+    public Successful(String path, Calendar startTime, List<ExecutionResult.Entry> entries) {
+      super(path, startTime, entries);
     }
   }
 
@@ -94,8 +96,8 @@ public abstract class ExecutionStatus {
 
     private final ExecutionResult.Entry error;
 
-    public Failed(String path, long timestamp, String formattedDate, List<ExecutionResult.Entry> entries, ExecutionResult.Entry error) {
-      super(path, timestamp, formattedDate, entries);
+    public Failed(String path, Calendar startTime, List<ExecutionResult.Entry> entries, ExecutionResult.Entry error) {
+      super(path, startTime, entries);
       this.error = error;
     }
 
