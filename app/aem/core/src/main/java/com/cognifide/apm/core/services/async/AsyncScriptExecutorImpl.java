@@ -77,11 +77,11 @@ public class AsyncScriptExecutorImpl implements AsyncScriptExecutor {
   public ExecutionStatus checkStatus(String id) {
     ExecutionSummary executionSummary = jobResultsCache.get(id);
     if (executionSummary == null) {
-      return new ExecutionStatus.UnknownExecution();
+      return new ExecutionStatus.Unknown();
     } else if (executionSummary.isFinished()) {
       return finishedExecution(executionSummary);
     } else {
-      return new ExecutionStatus.RunningExecution();
+      return new ExecutionStatus.Running();
     }
   }
 
@@ -92,9 +92,9 @@ public class AsyncScriptExecutorImpl implements AsyncScriptExecutor {
     List<ExecutionResult.Entry> entries = executionSummary.getResult().getEntries();
     ExecutionResult.Entry errorEntry = executionSummary.getResult().getLastError();
     if (errorEntry != null) {
-      return new ExecutionStatus.FinishedFailedExecution(path, timestamp, formattedDate, entries, errorEntry);
+      return new ExecutionStatus.Failed(path, timestamp, formattedDate, entries, errorEntry);
     } else {
-      return new ExecutionStatus.FinishedSuccessfulExecution(path, timestamp, formattedDate, entries);
+      return new ExecutionStatus.Successful(path, timestamp, formattedDate, entries);
     }
   }
 }

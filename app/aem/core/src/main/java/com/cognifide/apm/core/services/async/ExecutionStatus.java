@@ -34,21 +34,21 @@ public abstract class ExecutionStatus {
     return status;
   }
 
-  public static class RunningExecution extends ExecutionStatus {
+  public static class Running extends ExecutionStatus {
 
-    public RunningExecution() {
+    public Running() {
       super("running");
     }
   }
 
-  public static class UnknownExecution extends ExecutionStatus {
+  public static class Unknown extends ExecutionStatus {
 
-    public UnknownExecution() {
+    public Unknown() {
       super("unknown");
     }
   }
 
-  protected static class FinishedExecutionStatus extends ExecutionStatus {
+  protected static class Finished extends ExecutionStatus {
 
     private final String path;
 
@@ -58,7 +58,7 @@ public abstract class ExecutionStatus {
 
     private final List<ExecutionResult.Entry> entries;
 
-    public FinishedExecutionStatus(String path, long timestamp, String formattedDate, List<ExecutionResult.Entry> entries) {
+    public Finished(String path, long timestamp, String formattedDate, List<ExecutionResult.Entry> entries) {
       super("finished");
       this.path = path;
       this.timestamp = timestamp;
@@ -83,18 +83,18 @@ public abstract class ExecutionStatus {
     }
   }
 
-  public static class FinishedSuccessfulExecution extends FinishedExecutionStatus {
+  public static class Successful extends Finished {
 
-    public FinishedSuccessfulExecution(String path, long timestamp, String formattedDate, List<ExecutionResult.Entry> entries) {
+    public Successful(String path, long timestamp, String formattedDate, List<ExecutionResult.Entry> entries) {
       super(path, timestamp, formattedDate, entries);
     }
   }
 
-  public static class FinishedFailedExecution extends FinishedExecutionStatus {
+  public static class Failed extends Finished {
 
     private final ExecutionResult.Entry error;
 
-    public FinishedFailedExecution(String path, long timestamp, String formattedDate, List<ExecutionResult.Entry> entries, ExecutionResult.Entry error) {
+    public Failed(String path, long timestamp, String formattedDate, List<ExecutionResult.Entry> entries, ExecutionResult.Entry error) {
       super(path, timestamp, formattedDate, entries);
       this.error = error;
     }
