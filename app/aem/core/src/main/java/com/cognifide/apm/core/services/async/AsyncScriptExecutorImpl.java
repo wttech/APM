@@ -88,7 +88,7 @@ public class AsyncScriptExecutorImpl implements AsyncScriptExecutor {
   private ExecutionStatus finishedExecution(ExecutionSummary executionSummary) {
     String path = executionSummary.getPath();
     long timestamp = executionSummary.getResult().getStartTime().getTimeInMillis();
-    String formattedDate = DateFormatter.determineFormattedDate(executionSummary.getResult().getStartTime());
+    String formattedDate = DateFormatter.format(executionSummary.getResult().getStartTime());
     List<ExecutionResult.Entry> entries = executionSummary.getResult().getEntries();
     ExecutionResult.Entry errorEntry = executionSummary.getResult().getLastError();
     if (errorEntry != null) {

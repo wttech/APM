@@ -36,10 +36,10 @@ public class DateFormatter {
 
   @PostConstruct
   private void afterCreated() {
-    formattedDate = determineFormattedDate(date);
+    formattedDate = format(date);
   }
 
-  public static String determineFormattedDate(Calendar date) {
+  public static String format(Calendar date) {
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     return simpleDateFormat.format(date.getTime());
   }
