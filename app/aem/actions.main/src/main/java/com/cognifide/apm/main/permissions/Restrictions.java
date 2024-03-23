@@ -75,7 +75,8 @@ public class Restrictions {
         if (entry.getValue() instanceof String) {
           value = (String) entry.getValue();
         } else {
-          value = ((List<String>) entry.getValue()).get(0);
+          List<String> values = (List<String>) entry.getValue();
+          value = values.isEmpty() ? "" : values.get(0);
         }
         addRestriction(valueFactory, result, entry.getKey(), value);
       }
@@ -112,7 +113,8 @@ public class Restrictions {
       if (isMultiValue(entry)) {
         List<String> values;
         if (entry.getValue() instanceof String) {
-          values = Collections.singletonList((String) entry.getValue());
+          String value = (String) entry.getValue();
+          values = value.isEmpty() ? Collections.emptyList() : Collections.singletonList(value);
         } else {
           values = (List<String>) entry.getValue();
         }
