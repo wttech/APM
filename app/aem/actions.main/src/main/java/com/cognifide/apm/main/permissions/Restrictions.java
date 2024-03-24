@@ -20,13 +20,12 @@
 
 package com.cognifide.apm.main.permissions;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import javax.jcr.PropertyType;
 import javax.jcr.Value;
@@ -40,12 +39,14 @@ public class Restrictions {
 
   private static final String REP_GLOB_PROPERTY = "rep:glob";
 
-  private static final String REP_NTNAMES_PROPERTY = "rep:ntNames";
+  private static final String REP_GLOBS_PROPERTY = "rep:globs";
 
-  private static final String REP_ITEMNAMES_PROPERTY = "rep:itemNames";
+  private static final String REP_NT_NAMES_PROPERTY = "rep:ntNames";
 
-  private static final Set<String> MULTIVALUE_REP_PROPERTIES = ImmutableSet.of(
-      REP_NTNAMES_PROPERTY, REP_ITEMNAMES_PROPERTY, "rep:prefixes", "rep:current", "rep:globs",
+  private static final String REP_ITEM_NAMES_PROPERTY = "rep:itemNames";
+
+  private static final Set<String> MULTI_VALUE_REP_PROPERTIES = ImmutableSet.of(
+      REP_NT_NAMES_PROPERTY, REP_ITEM_NAMES_PROPERTY, REP_GLOBS_PROPERTY, "rep:prefixes", "rep:current",
       "rep:subtrees", "sling:resourceTypes", "sling:resourceTypesWithDescendants"
   );
 
@@ -59,29 +60,23 @@ public class Restrictions {
 
   public Restrictions(String glob, List<String> ntNames, List<String> itemNames, Map<String, Object> customRestrictions) {
     this.glob = glob;
-    this.ntNames = notNullCopy(ntNames);
-    this.itemNames = notNullCopy(itemNames);
-    this.customRestrictions = notNullCopy(customRestrictions);
-  }
-
-  private List<String> notNullCopy(List<String> strings) {
-    return strings != null ? ImmutableList.copyOf(strings) : Collections.emptyList();
-  }
-
-  private Map<String, Object> notNullCopy(Map<String, Object> items) {
-    return items != null ? ImmutableMap.copyOf(items) : Collections.emptyMap();
+    this.ntNames = ntNames;
+    this.itemNames = itemNames;
+    this.customRestrictions = Optional.ofNullable(customRestrictions)
+        .orElse(Collections.emptyMap());
   }
 
   public Map<String, Value> getSingleValueRestrictions(ValueFactory valueFactory) throws ValueFormatException {
     Map<String, Value> result = new HashMap<>();
     addRestriction(valueFactory, result, REP_GLOB_PROPERTY, glob);
     for (Map.Entry<String, Object> entry : customRestrictions.entrySet()) {
-      if (!isMultivalue(entry)) {
+      if (!isMultiValue(entry)) {
         String value;
         if (entry.getValue() instanceof String) {
           value = (String) entry.getValue();
         } else {
-          value = ((List<String>) entry.getValue()).get(0);
+          List<String> values = (List<String>) entry.getValue();
+          value = values.isEmpty() ? "" : values.get(0);
         }
         addRestriction(valueFactory, result, entry.getKey(), value);
       }
@@ -90,12 +85,16 @@ public class Restrictions {
   }
 
   private void addRestriction(ValueFactory valueFactory, Map<String, Value> result, String key, String value) throws ValueFormatException {
-    if (StringUtils.isNotBlank(value)) {
-      if (REP_GLOB_PROPERTY.equals(key)) {
-        result.put(key, normalizeGlob(valueFactory));
-      } else {
-        result.put(key, valueFactory.createValue(value, PropertyType.NAME));
-      }
+    if (value != null) {
+      result.put(key, createValue(valueFactory, key, value));
+    }
+  }
+
+  private Value createValue(ValueFactory valueFactory, String key, String value) throws ValueFormatException {
+    if (StringUtils.equalsAny(key, REP_GLOB_PROPERTY, REP_GLOBS_PROPERTY)) {
+      return normalizeGlob(valueFactory);
+    } else {
+      return valueFactory.createValue(value, determinePropertyType(key));
     }
   }
 
@@ -108,13 +107,14 @@ public class Restrictions {
 
   public Map<String, Value[]> getMultiValueRestrictions(ValueFactory valueFactory) throws ValueFormatException {
     Map<String, Value[]> result = new HashMap<>();
-    addRestrictions(valueFactory, result, REP_NTNAMES_PROPERTY, ntNames);
-    addRestrictions(valueFactory, result, REP_ITEMNAMES_PROPERTY, itemNames);
+    addRestrictions(valueFactory, result, REP_NT_NAMES_PROPERTY, ntNames);
+    addRestrictions(valueFactory, result, REP_ITEM_NAMES_PROPERTY, itemNames);
     for (Map.Entry<String, Object> entry : customRestrictions.entrySet()) {
-      if (isMultivalue(entry)) {
+      if (isMultiValue(entry)) {
         List<String> values;
         if (entry.getValue() instanceof String) {
-          values = Collections.singletonList((String) entry.getValue());
+          String value = (String) entry.getValue();
+          values = value.isEmpty() ? Collections.emptyList() : Collections.singletonList(value);
         } else {
           values = (List<String>) entry.getValue();
         }
@@ -125,24 +125,32 @@ public class Restrictions {
   }
 
   private void addRestrictions(ValueFactory valueFactory, Map<String, Value[]> result, String key, List<String> names) throws ValueFormatException {
-    if (names != null && !names.isEmpty()) {
-      result.put(key, createRestrictions(valueFactory, names));
+    if (names != null) {
+      result.put(key, createRestrictions(valueFactory, key, names));
     }
   }
 
-  private Value[] createRestrictions(ValueFactory valueFactory, List<String> names) throws ValueFormatException {
+  private Value[] createRestrictions(ValueFactory valueFactory, String key, List<String> names) throws ValueFormatException {
     Value[] values = new Value[names.size()];
     for (int index = 0; index < names.size(); index++) {
-      values[index] = valueFactory.createValue(names.get(index), PropertyType.NAME);
+      values[index] = createValue(valueFactory, key, names.get(index));
     }
     return values;
   }
 
-  private boolean isMultivalue(Map.Entry<String, Object> entry) {
+  private int determinePropertyType(String key) {
+    if (StringUtils.equalsAny(key, REP_NT_NAMES_PROPERTY, REP_ITEM_NAMES_PROPERTY)) {
+      return PropertyType.NAME;
+    } else {
+      return PropertyType.STRING;
+    }
+  }
+
+  private boolean isMultiValue(Map.Entry<String, Object> entry) {
     boolean result;
     if (REP_GLOB_PROPERTY.equals(entry.getKey())) {
       result = false;
-    } else if (MULTIVALUE_REP_PROPERTIES.contains(entry.getKey())) {
+    } else if (MULTI_VALUE_REP_PROPERTIES.contains(entry.getKey())) {
       result = true;
     } else {
       result = entry.getValue() instanceof List;
