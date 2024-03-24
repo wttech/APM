@@ -40,8 +40,6 @@ public interface HistoryEntry {
 
   String getChecksum();
 
-  Date getUploadTime();
-
   String getExecutionSummaryJson();
 
   String getPath();

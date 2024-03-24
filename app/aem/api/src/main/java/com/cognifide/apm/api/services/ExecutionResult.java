@@ -20,6 +20,7 @@
 package com.cognifide.apm.api.services;
 
 import com.cognifide.apm.api.status.Status;
+import java.util.Calendar;
 import java.util.List;
 
 public interface ExecutionResult {
@@ -31,6 +32,8 @@ public interface ExecutionResult {
   Entry getLastError();
 
   String getExecutor();
+
+  Calendar getStartTime();
 
   long determineExecutionDuration();
 

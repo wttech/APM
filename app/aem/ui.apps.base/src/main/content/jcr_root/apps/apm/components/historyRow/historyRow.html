@@ -30,11 +30,10 @@
        class="foundation-collection-item-title"
        style="text-decoration:none; color:#4b4b4b">${item.scriptName}</a>
   </td>
-  <td is="coral-table-cell" value="${item.executionTime.timeInMillis || 0}">
-    <time data-sly-test="${item.executionTime}" datetime="${item.executionTime.timeInMillis || 0}"
-          class="foundation-collection-item-time"
-          data-sly-use.execLast="${'com.adobe.cq.xf.ui.DateFormatter' @ date=item.executionTimeCalendar, simpleFormat='yyyy-MM-dd HH:mm:ss'}">
-      ${execLast.date}
+  <td is="coral-table-cell" value="${item.executionTimeCalendar.timeInMillis || 0}">
+    <time data-sly-test="${item.executionTime}" datetime="${item.executionTimeCalendar.timeInMillis || 0}"
+          data-sly-use.execLast="${'com.cognifide.apm.core.ui.utils.DateFormatter' @ date=item.executionTimeCalendar}">
+      ${execLast.formattedDate}
     </time>
   </td>
   <td is="coral-table-cell" value="${item.author}">

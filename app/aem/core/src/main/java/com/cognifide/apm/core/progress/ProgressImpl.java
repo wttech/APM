@@ -29,6 +29,7 @@ import com.cognifide.apm.core.logger.Progress;
 import com.cognifide.apm.core.logger.ProgressEntry;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,7 +41,7 @@ public class ProgressImpl implements Progress {
 
   private final String executor;
 
-  private final long startTime;
+  private final Calendar startTime;
 
   public ProgressImpl(String executor) {
     this(executor, new LinkedList<>());
@@ -49,7 +50,7 @@ public class ProgressImpl implements Progress {
   public ProgressImpl(String executor, List<ProgressEntry> entries) {
     this.executor = executor;
     this.entries = entries;
-    this.startTime = System.currentTimeMillis();
+    this.startTime = Calendar.getInstance();
   }
 
   @Override
@@ -132,7 +133,12 @@ public class ProgressImpl implements Progress {
   }
 
   @Override
+  public Calendar getStartTime() {
+    return startTime;
+  }
+
+  @Override
   public long determineExecutionDuration() {
-    return (System.currentTimeMillis() - startTime) / 1000;
+    return (System.currentTimeMillis() - startTime.getTimeInMillis()) / 1000;
   }
 }

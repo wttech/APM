@@ -79,7 +79,7 @@ public class HistoryImpl implements History {
   public HistoryEntry logLocal(Script script, ExecutionMode mode, Progress progressLogger) {
     return SlingHelper.resolveDefault(resolverProvider, resolver -> {
       HistoryEntryWriter historyEntryWriter = createBuilder(resolver, script, mode, progressLogger)
-          .executionTime(Calendar.getInstance())
+          .executionTime(progressLogger.getStartTime())
           .executionDuration(progressLogger.determineExecutionDuration())
           .build();
       return createHistoryEntry(resolver, script, mode, historyEntryWriter);

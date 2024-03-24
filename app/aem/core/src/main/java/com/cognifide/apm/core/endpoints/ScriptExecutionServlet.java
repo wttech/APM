@@ -73,17 +73,21 @@ public class ScriptExecutionServlet extends SlingAllMethodsServlet {
   protected void doGet(SlingHttpServletRequest request, SlingHttpServletResponse response) throws IOException {
     RequestProcessor.process(modelFactory, ScriptExecutionStatusForm.class, request, response, (form, resourceResolver) -> {
       ExecutionStatus status = asyncScriptExecutor.checkStatus(form.getId());
-      if (status instanceof ExecutionStatus.FinishedSuccessfulExecution) {
+      if (status instanceof ExecutionStatus.Successful) {
         return ResponseEntity.ok("Script successfully executed")
             .addEntry("status", status.getStatus())
-            .addEntry("output", ((ExecutionStatus.FinishedSuccessfulExecution) status).getEntries())
-            .addEntry("path", ((ExecutionStatus.FinishedSuccessfulExecution) status).getPath());
-      } else if (status instanceof ExecutionStatus.FinishedFailedExecution) {
+            .addEntry("output", ((ExecutionStatus.Successful) status).getEntries())
+            .addEntry("path", ((ExecutionStatus.Successful) status).getPath())
+            .addEntry("timestamp", ((ExecutionStatus.Successful) status).getTimestamp())
+            .addEntry("formattedDate", ((ExecutionStatus.Successful) status).getFormattedDate());
+      } else if (status instanceof ExecutionStatus.Failed) {
         return ResponseEntity.internalServerError("Errors while executing script")
             .addEntry("status", status.getStatus())
-            .addEntry("output", ((ExecutionStatus.FinishedFailedExecution) status).getEntries())
-            .addEntry("path", ((ExecutionStatus.FinishedFailedExecution) status).getPath())
-            .addEntry("errors", ((ExecutionStatus.FinishedFailedExecution) status).getError().getMessages());
+            .addEntry("output", ((ExecutionStatus.Failed) status).getEntries())
+            .addEntry("path", ((ExecutionStatus.Failed) status).getPath())
+            .addEntry("timestamp", ((ExecutionStatus.Failed) status).getTimestamp())
+            .addEntry("formattedDate", ((ExecutionStatus.Failed) status).getFormattedDate())
+            .addEntry("errors", ((ExecutionStatus.Failed) status).getError().getMessages());
       } else {
         return ResponseEntity.ok("Script is still being processed")
             .addEntry("status", status.getStatus());

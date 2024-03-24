@@ -85,15 +85,11 @@
       this.$cell.html('<coral-wait/>');
     },
 
-    showRunStatus: function (success, summaryPath) {
+    showRunStatus: function (success, summaryPath, timestamp, formattedDate) {
       let icon = success ? 'check' : 'close';
       let href = '/apm/summary.html' + summaryPath;
-      this.$cell.html('<a data-sly-test="${run.time}" '
-          + 'is="coral-anchorbutton" '
-          + 'iconsize="S" '
-          + 'icon="' + icon + '"'
-          + 'href="' + href + '"></a>'
-          + '<time>1 second ago</time>');
+      this.$cell.html('<a is="coral-anchorbutton" iconsize="S" icon="' + icon + '" href="' + href + '"></a>'
+          + '<time datetime="' + timestamp + '">' + formattedDate + '</time>');
     },
 
     updateScript: function () {
@@ -131,11 +127,11 @@
         this.status = ScriptStatus.FINISHED;
         const runStatus = getRunStatus(data);
         showMessageOnFinished(this.mode, runStatus);
-        this.showRunStatus(runStatus !== RunStatus.ERROR, data.path);
+        this.showRunStatus(runStatus !== RunStatus.ERROR, data.path, data.timestamp, data.formattedDate);
       } else if (data.type === 'unknown') {
         this.status = ScriptStatus.FINISHED;
         showMessageOnUnknown(this.mode, self.job.message);
-        this.showRunStatus(false, '');
+        this.showRunStatus(false, '', '', '');
       }
     },
 

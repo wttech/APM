@@ -20,6 +20,8 @@
 package com.cognifide.apm.core.services.async;
 
 import com.cognifide.apm.api.services.ExecutionResult;
+import com.cognifide.apm.core.ui.utils.DateFormatter;
+import java.util.Calendar;
 import java.util.List;
 
 public abstract class ExecutionStatus {
@@ -34,34 +36,48 @@ public abstract class ExecutionStatus {
     return status;
   }
 
-  public static class RunningExecution extends ExecutionStatus {
+  public static class Running extends ExecutionStatus {
 
-    public RunningExecution() {
+    public Running() {
       super("running");
     }
   }
 
-  public static class UnknownExecution extends ExecutionStatus {
+  public static class Unknown extends ExecutionStatus {
 
-    public UnknownExecution() {
+    public Unknown() {
       super("unknown");
     }
   }
 
-  public static class FinishedSuccessfulExecution extends ExecutionStatus {
+  protected static class Finished extends ExecutionStatus {
 
     private final String path;
 
+    private final long timestamp;
+
+    private final String formattedDate;
+
     private final List<ExecutionResult.Entry> entries;
 
-    public FinishedSuccessfulExecution(String path, List<ExecutionResult.Entry> entries) {
+    public Finished(String path, Calendar startTime, List<ExecutionResult.Entry> entries) {
       super("finished");
       this.path = path;
+      this.timestamp = startTime.getTimeInMillis();
+      this.formattedDate = DateFormatter.format(startTime);
       this.entries = entries;
     }
 
     public String getPath() {
       return path;
+    }
+
+    public long getTimestamp() {
+      return timestamp;
+    }
+
+    public String getFormattedDate() {
+      return formattedDate;
     }
 
     public List<ExecutionResult.Entry> getEntries() {
@@ -69,27 +85,20 @@ public abstract class ExecutionStatus {
     }
   }
 
-  public static class FinishedFailedExecution extends ExecutionStatus {
+  public static class Successful extends Finished {
 
-    private final String path;
+    public Successful(String path, Calendar startTime, List<ExecutionResult.Entry> entries) {
+      super(path, startTime, entries);
+    }
+  }
 
-    private final List<ExecutionResult.Entry> entries;
+  public static class Failed extends Finished {
 
     private final ExecutionResult.Entry error;
 
-    public FinishedFailedExecution(String path, List<ExecutionResult.Entry> entries, ExecutionResult.Entry error) {
-      super("finished");
-      this.path = path;
-      this.entries = entries;
+    public Failed(String path, Calendar startTime, List<ExecutionResult.Entry> entries, ExecutionResult.Entry error) {
+      super(path, startTime, entries);
       this.error = error;
-    }
-
-    public String getPath() {
-      return path;
-    }
-
-    public List<ExecutionResult.Entry> getEntries() {
-      return entries;
     }
 
     public ExecutionResult.Entry getError() {

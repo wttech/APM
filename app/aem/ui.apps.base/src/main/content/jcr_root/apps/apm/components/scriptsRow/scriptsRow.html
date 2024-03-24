@@ -33,8 +33,8 @@
   </td>
   <td is="coral-table-cell" value="${item.lastModified.timeInMillis || 0}">
     <time data-sly-test="${item.lastModified}" datetime="${item.lastModified.timeInMillis || 0}"
-          data-sly-use.lastMod="${'com.adobe.cq.xf.ui.DateFormatter' @ date=item.lastModified, simpleFormat='yyyy-MM-dd HH:mm:ss'}">
-      ${lastMod.date}
+          data-sly-use.lastMod="${'com.cognifide.apm.core.ui.utils.DateFormatter' @ date=item.lastModified}">
+      ${lastMod.formattedDate}
     </time>
   </td>
   <td is="coral-table-cell" value="${item.author}">
@@ -53,8 +53,8 @@
     <a data-sly-test="${run.time}" is="coral-anchorbutton" iconsize="S" icon="${run.success ? 'check' : 'close'}"
        href="/apm/summary.html${run.summary}"></a>
     <time data-sly-test="${run.time}" datetime="${run.time.timeInMillis || 0}"
-          data-sly-use.runTime="${'com.adobe.cq.xf.ui.DateFormatter' @ date=run.time, simpleFormat='yyyy-MM-dd HH:mm:ss'}">
-      ${runTime.date}
+          data-sly-use.runTime="${'com.cognifide.apm.core.ui.utils.DateFormatter' @ date=run.time}">
+      ${runTime.formattedDate}
     </time>
   </td>
   <sly data-sly-test="${item.runs.size == 0}">
