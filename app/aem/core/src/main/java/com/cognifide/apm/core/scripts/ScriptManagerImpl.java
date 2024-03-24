@@ -51,7 +51,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.stream.Collectors;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import org.apache.jackrabbit.api.JackrabbitSession;
@@ -193,9 +195,13 @@ public class ScriptManagerImpl implements ScriptManager {
 
   @Override
   public Map<String, String> getPredefinedDefinitions() {
-    Map<String, String> predefinedDefinitions = new HashMap<>();
-    definitionsProviders.forEach(provider -> predefinedDefinitions.putAll(provider.getPredefinedDefinitions()));
-    return predefinedDefinitions;
+    return definitionsProviders.stream()
+        .flatMap(provider -> provider.getPredefinedDefinitions().entrySet().stream())
+        .collect(Collectors.toMap(
+            Map.Entry::getKey, Map.Entry::getValue,
+            (first, second) -> first,
+            () -> new TreeMap<>(String.CASE_INSENSITIVE_ORDER)
+        ));
   }
 
   private ActionExecutor createExecutor(ExecutionMode mode, ResourceResolver resolver) throws RepositoryException {
