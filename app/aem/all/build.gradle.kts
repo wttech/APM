@@ -7,8 +7,7 @@ plugins {
 description = "APM (AEM Permission Management) - AEM All-In-One Package"
 
 evaluationDependsOn(":app:aem:ui.apps")
-evaluationDependsOn(":app:aem:ui.system.user")
-evaluationDependsOn(":app:aem:ui.content")
+evaluationDependsOn(":app:aem:actions.checks")
 
 apply(from = rootProject.file("app/common.gradle.kts"))
 apply(from = rootProject.file("app/aem/common.gradle.kts"))
@@ -19,11 +18,8 @@ aem {
             nestPackageProject(":app:aem:ui.apps") {
                 dirPath.set("/apps/apm-packages/application/install")
             }
-            nestPackageProject(":app:aem:ui.system.user") {
-                dirPath.set("/apps/apm-packages/content/install")
-            }
-            nestPackageProject(":app:aem:ui.content") {
-                dirPath.set("/apps/apm-packages/content/install")
+            nestPackageProject(":app:aem:actions.checks") {
+                dirPath.set("/apps/apm-packages/application/install")
             }
         }
     }
