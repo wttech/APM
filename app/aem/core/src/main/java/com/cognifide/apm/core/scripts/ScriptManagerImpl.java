@@ -19,6 +19,24 @@
  */
 package com.cognifide.apm.core.scripts;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.stream.Collectors;
+
+import org.apache.jackrabbit.api.JackrabbitSession;
+import org.apache.sling.api.resource.PersistenceException;
+import org.apache.sling.api.resource.ResourceResolver;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.apm.api.actions.Context;
 import com.cognifide.apm.api.actions.SessionSavingMode;
@@ -150,6 +168,9 @@ public class ScriptManagerImpl implements ScriptManager {
     }
     if (progress.isSuccess()) {
       savingPolicy.save(context.getSession(), SessionSavingMode.SINGLE);
+      LOGGER.info(String.format("Script execution completed successfully: %s [%s]", path, mode));
+    } else {
+      LOGGER.info(String.format("Script execution failed: %s [%s]", path, mode));
     }
     return progress;
   }
