@@ -46,11 +46,11 @@ aem {
 
 publishing {
     publications {
-        register<MavenPublication>("apmCrx") {
+        create<MavenPublication>("apmCrx") {
             groupId = project.group.toString() + ".crx"
             artifact(tasks["packageCompose"])
             afterEvaluate {
-                artifactId = "apm-" + project.name
+                artifactId = "apm-examples"
                 version = rootProject.version
             }
             pom {
