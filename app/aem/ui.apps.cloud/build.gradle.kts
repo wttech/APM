@@ -9,10 +9,8 @@ description = "APM (AEM Permission Management) is an AEM based, cloud compatible
 
 evaluationDependsOn(":app:aem:ui.apps.base")
 evaluationDependsOn(":app:aem:api")
-evaluationDependsOn(":app:aem:runmodes.cloud")
 evaluationDependsOn(":app:aem:core")
 evaluationDependsOn(":app:aem:actions.main")
-evaluationDependsOn(":app:aem:install")
 
 apply(from = rootProject.file("app/common.gradle.kts"))
 apply(from = rootProject.file("app/aem/common.gradle.kts"))
@@ -22,12 +20,8 @@ aem {
         packageCompose {
             mergePackageProject(":app:aem:ui.apps.base")
             installBundleProject(":app:aem:api")
-            installBundleProject(":app:aem:runmodes.cloud")
             installBundleProject(":app:aem:core")
             installBundleProject(":app:aem:actions.main")
-            installBundleProject(":app:aem:install") {
-                startLevel.set(27)
-            }
             vaultDefinition {
                 duplicatesStrategy = DuplicatesStrategy.EXCLUDE
                 version.set(rootProject.version as String)
