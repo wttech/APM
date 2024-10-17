@@ -19,10 +19,13 @@ aem {
     tasks {
         jar {
             bundle {
+                symbolicName = "com.cognifide.apm"
+                exportPackage("com.cognifide.apm.*")
                 importPackage("javax.annotation;version=0.0.0", "!android.os")
                 attribute("Sling-Model-Packages", "com.cognifide.apm")
                 excludePackage("org.antlr.stringtemplate", "org.antlr.v4.gui")
                 embedPackage("org.antlr:antlr4-runtime:4.7.2", "org.antlr.v4.runtime.*")
+                attribute("APM-Actions", "com.cognifide.apm")
             }
         }
     }
