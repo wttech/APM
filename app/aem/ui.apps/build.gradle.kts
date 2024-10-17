@@ -22,6 +22,7 @@ aem {
                 duplicatesStrategy = DuplicatesStrategy.EXCLUDE
                 version.set(rootProject.version as String)
                 description.set(project.description)
+                acHandling(true)
             }
         }
     }
