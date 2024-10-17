@@ -22,7 +22,7 @@ package com.cognifide.apm.core.scripts;
 import com.cognifide.apm.api.scripts.LaunchEnvironment;
 import com.cognifide.apm.api.scripts.LaunchMode;
 import com.cognifide.apm.api.scripts.Script;
-import com.cognifide.apm.api.services.RunModesProvider;
+import com.cognifide.apm.core.services.RunModesProvider;
 import java.util.Date;
 import java.util.Set;
 import java.util.function.Predicate;

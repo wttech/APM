@@ -19,7 +19,7 @@
  */
 package com.cognifide.apm.api.scripts;
 
-import com.cognifide.apm.api.services.RunModesProvider;
+import com.cognifide.apm.core.services.RunModesProvider;
 import java.util.Arrays;
 import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
