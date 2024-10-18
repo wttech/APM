@@ -25,7 +25,7 @@ grammar ApmLang;
  */
 
 apm
-    : command+ EOF
+    : command* EOF
     ;
 
 name
