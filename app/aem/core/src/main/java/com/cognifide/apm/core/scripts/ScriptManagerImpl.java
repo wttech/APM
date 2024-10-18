@@ -169,7 +169,7 @@ public class ScriptManagerImpl implements ScriptManager {
     }
 
     updateScriptProperties(script, mode, progress.isSuccess());
-    versionService.updateVersionIfNeeded(resolver, script);
+    updateVersionIfNeeded(mode, resolver, script);
     saveHistory(script, mode, progress);
     eventManager.trigger(new ScriptExecutedEvent(script, mode, progress.isSuccess()));
 
@@ -193,6 +193,12 @@ public class ScriptManagerImpl implements ScriptManager {
 
     if (ExecutionMode.VALIDATION.equals(mode)) {
       mutableScriptWrapper.setValid(success);
+    }
+  }
+
+  private void updateVersionIfNeeded(ExecutionMode mode, ResourceResolver resolver, Script... scripts) {
+    if (mode != ExecutionMode.VALIDATION) {
+      versionService.updateVersionIfNeeded(resolver, scripts);
     }
   }
 
