@@ -25,7 +25,6 @@ import com.cognifide.apm.api.exceptions.InvalidActionMapperException;
 import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.actions.scanner.AnnotatedClassRegistry;
 import com.cognifide.apm.core.actions.scanner.RegistryChangedListener;
-import com.cognifide.apm.main.services.ApmActionsMainService;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import java.util.ArrayList;
@@ -56,9 +55,6 @@ public class ActionMapperRegistryImpl implements RegistryChangedListener, Action
   private static final Logger LOGGER = LoggerFactory.getLogger(ActionMapperRegistryImpl.class);
 
   private static final String BUNDLE_HEADER = "APM-Actions";
-
-  @Reference
-  private ApmActionsMainService apmActionsMainService;
 
   private AnnotatedClassRegistry registry;
 
