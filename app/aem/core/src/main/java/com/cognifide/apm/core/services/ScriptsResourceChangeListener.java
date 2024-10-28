@@ -23,6 +23,7 @@ import static com.cognifide.apm.core.scripts.ScriptFilters.onScheduleOrCronExpre
 
 import com.cognifide.apm.api.scripts.LaunchMode;
 import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.RunModesProvider;
 import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.apm.core.Apm;

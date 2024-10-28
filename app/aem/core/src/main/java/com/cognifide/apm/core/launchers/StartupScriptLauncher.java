@@ -24,12 +24,12 @@ import static com.cognifide.apm.core.scripts.ScriptFilters.onStartupIfModified;
 
 import com.cognifide.apm.api.scripts.LaunchEnvironment;
 import com.cognifide.apm.api.scripts.Script;
+import com.cognifide.apm.api.services.RunModesProvider;
 import com.cognifide.apm.api.services.ScriptFinder;
 import com.cognifide.apm.api.services.ScriptManager;
 import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.services.ModifiedScriptFinder;
 import com.cognifide.apm.core.services.ResourceResolverProvider;
-import com.cognifide.apm.core.services.RunModesProvider;
 import com.cognifide.apm.core.utils.sling.SlingHelper;
 import java.util.ArrayList;
 import java.util.List;

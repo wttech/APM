@@ -17,35 +17,23 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.api.scripts;
+package com.cognifide.apm.runmodes.services;
 
 import com.cognifide.apm.api.services.RunModesProvider;
-import java.util.Arrays;
-import java.util.Optional;
-import org.apache.commons.lang3.StringUtils;
+import java.util.Set;
+import org.apache.sling.settings.SlingSettingsService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
-public enum LaunchEnvironment {
+@Component
+public class RunModesProviderService implements RunModesProvider {
 
-  ALL(""), AUTHOR("author"), PUBLISH("publish");
+  @Reference
+  private SlingSettingsService slingSettings;
 
-  private final String runMode;
-
-  LaunchEnvironment(String runMode) {
-    this.runMode = runMode;
-  }
-
-  public static Optional<LaunchEnvironment> from(String text) {
-    return Arrays.stream(LaunchEnvironment.values())
-        .filter(launchEnvironment -> StringUtils.endsWithIgnoreCase(launchEnvironment.name(), text))
-        .findFirst();
-  }
-
-  public static LaunchEnvironment of(RunModesProvider runModesProvider) {
-    return runModesProvider.getRunModes().contains("author") ? AUTHOR : PUBLISH;
-  }
-
-  public String getRunMode() {
-    return runMode;
+  @Override
+  public Set<String> getRunModes() {
+    return slingSettings.getRunModes();
   }
 
 }

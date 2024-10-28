@@ -17,27 +17,12 @@
  * limitations under the License.
  * =========================LICENSE_END==================================
  */
-package com.cognifide.apm.core.services;
+package com.cognifide.apm.api.services;
 
-import com.cognifide.apm.core.Property;
 import java.util.Set;
-import org.apache.sling.settings.SlingSettingsService;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 
-@Component(
-    service = RunModesProvider.class,
-    property = {
-        Property.DESCRIPTION + "APM Service for providing run modes",
-        Property.VENDOR
-    }
-)
-public class RunModesProvider {
+public interface RunModesProvider {
 
-  @Reference
-  private SlingSettingsService slingSettings;
+  Set<String> getRunModes();
 
-  public Set<String> getRunModes() {
-    return slingSettings.getRunModes();
-  }
 }
