@@ -30,44 +30,44 @@
     </strong></coral-list-item>
     <coral-list-item icon="clock">Duration: <strong>${item.entry.executionDuration}s</strong></coral-list-item>
   </coral-list>
-  <table class="_coral-Table">
-    <thead class="_coral-Table-divider--row _coral-Table-head">
-    <tr class="entry-success _coral-Table-row">
-      <th class="_coral-Table-headerCell">
+  <table class="_coral-Table coral-Table">
+    <thead class="_coral-Table-divider--row _coral-Table-head coral-Table-divider--row coral-Table-head">
+    <tr class="entry-success _coral-Table-row coral-Table-row">
+      <th class="_coral-Table-headerCell coral-Table-headerCell">
         No
       </th>
-      <th class="_coral-Table-headerCell">
+      <th class="_coral-Table-headerCell coral-Table-headerCell">
         Authorizable
       </th>
-      <th class="_coral-Table-headerCell">
+      <th class="_coral-Table-headerCell coral-Table-headerCell">
         Action
       </th>
-      <th class="_coral-Table-headerCell">
+      <th class="_coral-Table-headerCell coral-Table-headerCell">
         Parameters
       </th>
-      <th class="_coral-Table-headerCell">
+      <th class="_coral-Table-headerCell coral-Table-headerCell">
         Status
       </th>
-      <th class="_coral-Table-headerCell">
+      <th class="_coral-Table-headerCell coral-Table-headerCell">
         Messages
       </th>
     </tr>
     </thead>
-    <tbody class="_coral-Table-divider--row _coral-Table-body">
+    <tbody class="_coral-Table-divider--row _coral-Table-body coral-Table-divider--row coral-Table-body">
     <sly data-sly-list.execution="${item.entry.executionSummary}">
-      <tr class="${execution.status.className} _coral-Table-row">
-        <td class="_coral-Table-cell">${executionList.index}</td>
-        <td class="_coral-Table-cell">${execution.authorizable}</td>
-        <td class="_coral-Table-cell">${execution.command.toUpperCase}</td>
-        <td class="_coral-Table-cell">
+      <tr class="${execution.status.className} _coral-Table-row coral-Table-row">
+        <td class="_coral-Table-cell coral-Table-cell">${executionList.index}</td>
+        <td class="_coral-Table-cell coral-Table-cell">${execution.authorizable}</td>
+        <td class="_coral-Table-cell coral-Table-cell">${execution.command.toUpperCase}</td>
+        <td class="_coral-Table-cell coral-Table-cell">
           <ul>
             <li data-sly-repeat.text="${execution.parameters}">${text}</li>
           </ul>
         </td>
-        <td class="_coral-Table-cell">
+        <td class="_coral-Table-cell coral-Table-cell">
           <coral-icon title="${execution.status.iconTitle}" icon="${execution.status.iconType}"/>
         </td>
-        <td class="_coral-Table-cell">
+        <td class="_coral-Table-cell coral-Table-cell">
           <ul>
             <li data-sly-repeat.text="${execution.messages}">${text}</li>
           </ul>

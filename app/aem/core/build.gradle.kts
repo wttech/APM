@@ -10,7 +10,7 @@ plugins {
     signing
 }
 
-description = "APM Core"
+description = "AEM Permission Management (APM)"
 
 apply(from = rootProject.file("app/common.gradle.kts"))
 apply(from = rootProject.file("app/aem/common.gradle.kts"))
@@ -19,19 +19,19 @@ aem {
     tasks {
         jar {
             bundle {
+                symbolicName = "com.cognifide.apm"
+                exportPackage("com.cognifide.apm.*")
                 importPackage("javax.annotation;version=0.0.0", "!android.os")
-                attribute("Sling-Model-Packages", "com.cognifide.apm.core")
+                attribute("Sling-Model-Packages", "com.cognifide.apm")
                 excludePackage("org.antlr.stringtemplate", "org.antlr.v4.gui")
                 embedPackage("org.antlr:antlr4-runtime:4.7.2", "org.antlr.v4.runtime.*")
+                attribute("APM-Actions", "com.cognifide.apm")
             }
         }
     }
 }
 
 dependencies {
-    implementation(project(":app:aem:api"))
-    implementation(project(":app:aem:actions.main"))
-
     antlr("org.antlr:antlr4:4.7.2")
 }
 
