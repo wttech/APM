@@ -22,8 +22,8 @@ package com.cognifide.apm.core.actions;
 import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.apm.api.actions.Message;
 import com.cognifide.apm.api.status.Status;
-import com.google.common.collect.Lists;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
@@ -53,12 +53,12 @@ public class ActionResultImpl implements ActionResult {
 
   @Override
   public ActionResult merge(ActionResult... actionResults) {
-    return merge(Lists.newArrayList(actionResults));
+    return merge(Arrays.asList(actionResults));
   }
 
   @Override
   public ActionResult merge(List<ActionResult> actionResults) {
-    List<ActionResult> all = Lists.newArrayList();
+    List<ActionResult> all = new ArrayList<>();
     all.add(this);
     all.addAll(actionResults);
     ActionResultImpl result = new ActionResultImpl();

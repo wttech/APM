@@ -25,7 +25,6 @@ import com.cognifide.apm.core.grammar.ApmType.ApmList;
 import com.cognifide.apm.core.grammar.ApmType.ApmMap;
 import com.cognifide.apm.core.grammar.ApmType.ApmString;
 import com.day.cq.wcm.api.NameConstants;
-import com.google.common.collect.ImmutableMap;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -70,10 +69,9 @@ public class LevelsDataSource implements DataSource {
     List<ApmType> list = new ArrayList<>();
     for (Resource resource : root.getChildren()) {
       if (config.isValid(resource)) {
-        Map<String, ApmType> map = new HashMap<>(ImmutableMap.of(
-            "path", new ApmString(resource.getPath()),
-            "name", new ApmString(resource.getName())
-        ));
+        Map<String, ApmType> map = new HashMap<>();
+        map.put("path", new ApmString(resource.getPath()));
+        map.put("name", new ApmString(resource.getName()));
         map.putAll(config.determineParams(resource));
         ApmType items = traverseTree(resource, depth + 1, configs);
         if (items instanceof ApmList) {

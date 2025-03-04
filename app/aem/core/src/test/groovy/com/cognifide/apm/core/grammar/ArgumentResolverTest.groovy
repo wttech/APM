@@ -28,7 +28,6 @@ import com.cognifide.apm.core.grammar.argument.ArgumentResolver
 import com.cognifide.apm.core.grammar.argument.ArgumentResolverException
 import com.cognifide.apm.core.grammar.datasource.DataSourceInvoker
 import com.cognifide.apm.core.grammar.executioncontext.VariableHolder
-import com.google.common.collect.Lists
 import org.apache.sling.api.resource.ResourceResolver
 import spock.lang.Specification
 
@@ -219,7 +218,7 @@ class ArgumentResolverTest extends Specification {
 
     def "resolve list parameters"() {
         given:
-        variableHolder.set("var1", new ApmList(Lists.newArrayList(new ApmString("val1"))))
+        variableHolder.set("var1", new ApmList(Collections.singletonList(new ApmString("val1"))))
         variableHolder.set("var2", new ApmString("val2"))
         def parameterResolver = createArgumentResolver()
         def parser = ApmLangParserHelper.createParserUsingScript("\$var1 [\$var2, 'FALSE']")
@@ -234,7 +233,7 @@ class ArgumentResolverTest extends Specification {
 
     def "resolve optional parameters"() {
         given:
-        variableHolder.set("var1", new ApmList(Lists.newArrayList(new ApmString("val1"))))
+        variableHolder.set("var1", new ApmList(Collections.singletonList(new ApmString("val1"))))
         variableHolder.set("var2", new ApmString("val2"))
         def parameterResolver = createArgumentResolver()
         def parser = ApmLangParserHelper.createParserUsingScript("\$var1 param1=[\$var2, 'FALSE'] param2='STRICT'")
@@ -249,7 +248,7 @@ class ArgumentResolverTest extends Specification {
 
     def "resolve flags"() {
         given:
-        variableHolder.set("var1", new ApmList(Lists.newArrayList(new ApmString("val1"))))
+        variableHolder.set("var1", new ApmList(Collections.singletonList(new ApmString("val1"))))
         variableHolder.set("var2", new ApmString("val2"))
         def parameterResolver = createArgumentResolver()
         def parser = ApmLangParserHelper.createParserUsingScript("\$var1 param1=[\$var2, 'FALSE'] --IF-EXISTS --DEEP")

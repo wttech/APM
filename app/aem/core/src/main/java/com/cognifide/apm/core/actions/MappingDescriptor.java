@@ -26,9 +26,9 @@ import com.cognifide.apm.api.actions.annotations.Mapping;
 import com.cognifide.apm.core.actions.ParameterDescriptor.NamedParameterDescriptor;
 import com.cognifide.apm.core.actions.ParameterDescriptor.RequiredParameterDescriptor;
 import com.cognifide.apm.core.grammar.argument.Arguments;
-import com.google.common.collect.ImmutableList;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -51,7 +51,7 @@ public class MappingDescriptor {
     this.name = mapper.value();
     this.group = mapper.group();
     this.description = mapping.reference();
-    this.examples = ImmutableList.copyOf(mapping.examples());
+    this.examples = Arrays.asList(mapping.examples());
     this.method = method;
     this.parameterDescriptors = parameterDescriptors;
   }

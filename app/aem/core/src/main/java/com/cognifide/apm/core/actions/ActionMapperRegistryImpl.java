@@ -25,11 +25,10 @@ import com.cognifide.apm.api.exceptions.InvalidActionMapperException;
 import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.actions.scanner.AnnotatedClassRegistry;
 import com.cognifide.apm.core.actions.scanner.RegistryChangedListener;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -38,7 +37,6 @@ import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Reference;
 import org.scribe.utils.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,7 +75,7 @@ public class ActionMapperRegistryImpl implements RegistryChangedListener, Action
 
   @Override
   public void registryChanged(List<Class<?>> registeredClasses) {
-    this.mappers.set(ImmutableMap.copyOf(createActionMappers(registeredClasses)));
+    this.mappers.set(Collections.unmodifiableMap(createActionMappers(registeredClasses)));
   }
 
   @Override
@@ -93,7 +91,7 @@ public class ActionMapperRegistryImpl implements RegistryChangedListener, Action
 
   private static Map<String, MapperDescriptor> createActionMappers(List<Class<?>> classes) {
     MapperDescriptorFactory mapperDescriptorFactory = new MapperDescriptorFactory();
-    Map<String, MapperDescriptor> mappers = Maps.newHashMapWithExpectedSize(classes.size());
+    Map<String, MapperDescriptor> mappers = new HashMap<>(classes.size());
     for (Class<?> clazz : classes) {
       try {
         MapperDescriptor mapperDescriptor = mapperDescriptorFactory.create(clazz);

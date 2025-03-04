@@ -29,8 +29,6 @@ import com.cognifide.apm.core.utils.PathUtils;
 import com.cognifide.apm.core.utils.ResourceMixinUtil;
 import com.cognifide.apm.core.utils.RuntimeUtils;
 import com.day.cq.commons.jcr.JcrConstants;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -38,6 +36,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -160,7 +159,7 @@ public class ScriptModel implements MutableScript {
 
   @Override
   public Set<String> getLaunchRunModes() {
-    return launchRunModes == null ? null : Sets.newHashSet(launchRunModes);
+    return launchRunModes == null ? null : Arrays.stream(launchRunModes).collect(Collectors.toSet());
   }
 
   @Override
@@ -265,7 +264,7 @@ public class ScriptModel implements MutableScript {
   }
 
   private static List<String> getArrayProperty(Resource resource, String name) {
-    return Lists.newArrayList(resource.getValueMap().get(name, new String[]{}));
+    return Arrays.asList(resource.getValueMap().get(name, new String[]{}));
   }
 
   @Override

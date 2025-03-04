@@ -27,7 +27,6 @@ import com.cognifide.apm.core.grammar.argument.Arguments;
 import com.cognifide.apm.core.logger.Position;
 import com.cognifide.apm.core.logger.Progress;
 import com.cognifide.apm.core.logger.ProgressEntry;
-import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -55,7 +54,7 @@ public class ProgressImpl implements Progress {
 
   @Override
   public List<Entry> getEntries() {
-    return Lists.newLinkedList(entries);
+    return new LinkedList<>(entries);
   }
 
   @Override

@@ -23,9 +23,9 @@ package com.cognifide.apm.core.ui.datasources;
 import com.adobe.granite.ui.components.ds.SimpleDataSource;
 import com.adobe.granite.ui.components.ds.ValueMapResource;
 import com.day.cq.commons.jcr.JcrConstants;
-import com.google.common.collect.ImmutableMap;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -73,10 +73,9 @@ class SimpleDataSourceBuilder {
   }
 
   private Resource createDataSourceItem(ResourceResolver resolver, String name, String value) {
-    Map<String, Object> valueMap = ImmutableMap.of(
-        CONFIGURATION_NAME_PROP, name,
-        CONFIGURATION_PATH_PROP, value
-    );
+    Map<String, Object> valueMap = new HashMap<>();
+    valueMap.put(CONFIGURATION_NAME_PROP, name);
+    valueMap.put(CONFIGURATION_PATH_PROP, value);
     ValueMapDecorator result = new ValueMapDecorator(valueMap);
     return new ValueMapResource(resolver, new ResourceMetadata(), JcrConstants.NT_RESOURCE, result);
   }

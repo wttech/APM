@@ -21,10 +21,9 @@ package com.cognifide.apm.core.jobs;
 
 import com.cognifide.apm.api.services.ExecutionResult;
 import com.cognifide.apm.core.Property;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import java.io.Serializable;
-import java.util.concurrent.TimeUnit;
+import java.util.HashMap;
+import java.util.Map;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 
@@ -37,21 +36,32 @@ import org.osgi.service.component.annotations.Component;
 )
 public class JobResultsCache {
 
-  private static final long DEFAULT_EXPIRATION_TIME = 10;
+  private static final long TTL = 10 * 60 * 1000;
 
-  private Cache<String, ExecutionSummary> cache;
+  private Map<String, ExecutionSummary> cache;
 
   @Activate
   public void activate() {
-    cache = CacheBuilder.newBuilder().expireAfterWrite(DEFAULT_EXPIRATION_TIME, TimeUnit.MINUTES).build();
+    cache = new HashMap<>();
   }
 
   public void put(String id, ExecutionSummary executionSummary) {
+    invalidate();
     cache.put(id, executionSummary);
   }
 
   public ExecutionSummary get(String id) {
-    return cache.getIfPresent(id);
+    invalidate();
+    return cache.get(id);
+  }
+
+  private void invalidate() {
+    long now = System.currentTimeMillis();
+    cache.forEach((key, value) -> {
+      if (value.time + TTL < now) {
+        cache.remove(key);
+      }
+    });
   }
 
   public static class ExecutionSummary implements Serializable {
@@ -59,11 +69,13 @@ public class JobResultsCache {
     private final boolean finished;
     private final ExecutionResult result;
     private final String path;
+    private final long time;
 
     private ExecutionSummary(boolean finished, ExecutionResult result, String path) {
       this.finished = finished;
       this.result = result;
       this.path = path;
+      this.time = System.currentTimeMillis();
     }
 
     public static ExecutionSummary running() {

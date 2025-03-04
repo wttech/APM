@@ -26,8 +26,9 @@ import com.cognifide.apm.core.Property;
 import com.cognifide.apm.core.jobs.JobResultsCache;
 import com.cognifide.apm.core.jobs.JobResultsCache.ExecutionSummary;
 import com.cognifide.apm.core.jobs.ScriptRunnerJobConsumer;
-import com.google.common.collect.ImmutableMap;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -61,15 +62,14 @@ public class AsyncScriptExecutorImpl implements AsyncScriptExecutor {
   @Override
   public String process(Script script, ExecutionMode executionMode, Map<String, String> customDefinitions, String executor) {
     String id = UUID.randomUUID().toString();
-    Map<String, Object> properties = ImmutableMap.of(
-        ID, id,
-        SCRIPT_PATH, script.getPath(),
-        EXECUTION_MODE, executionMode.toString(),
-        USER_ID, executor,
-        DEFINITIONS, customDefinitions
-    );
+    Map<String, Object> properties = new HashMap<>();
+    properties.put(ID, id);
+    properties.put(SCRIPT_PATH, script.getPath());
+    properties.put(EXECUTION_MODE, executionMode.toString());
+    properties.put(USER_ID, executor);
+    properties.put(DEFINITIONS, customDefinitions);
     jobResultsCache.put(id, ExecutionSummary.running());
-    new Thread(() -> scriptRunnerJobConsumer.process(properties)).start();
+    new Thread(() -> scriptRunnerJobConsumer.process(Collections.unmodifiableMap(properties))).start();
     return id;
   }
 

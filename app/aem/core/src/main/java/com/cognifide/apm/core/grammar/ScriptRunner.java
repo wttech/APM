@@ -47,7 +47,6 @@ import com.cognifide.apm.core.grammar.utils.ImportScript;
 import com.cognifide.apm.core.grammar.utils.RequiredVariablesChecker;
 import com.cognifide.apm.core.logger.Position;
 import com.cognifide.apm.core.logger.Progress;
-import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -285,7 +284,7 @@ public class ScriptRunner {
       } else if (variableValue instanceof ApmList) {
         values = variableValue.getList();
       } else {
-        values = ImmutableList.of(variableValue);
+        values = Collections.singletonList(variableValue);
       }
       return values.stream()
           .map(value -> new ApmPair(key, value))
@@ -297,7 +296,7 @@ public class ScriptRunner {
     }
 
     private void progress(ParserRuleContext ctx, Status status, String command, String detail, Arguments arguments) {
-      progress(ctx, status, command, ImmutableList.of(detail), arguments);
+      progress(ctx, status, command, Collections.singletonList(detail), arguments);
     }
 
     private void progress(ParserRuleContext ctx, Status status, String command, List<String> details) {
