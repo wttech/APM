@@ -20,8 +20,7 @@
 
 package com.cognifide.apm.core.grammar.common
 
-import java.util.stream.Collectors
-import java.util.stream.StreamSupport
+import org.apache.commons.collections4.IterableUtils
 import spock.lang.Specification
 
 class StackWithRootTest extends Specification {
@@ -33,7 +32,7 @@ class StackWithRootTest extends Specification {
         stack.push("2")
         stack.push("3")
 
-        def newList = StreamSupport.stream(stack.spliterator(), false).collect(Collectors.toList())
+        def newList = IterableUtils.toList(stack)
 
         then:
         newList == ["3", "2", "1", "root"]
