@@ -21,8 +21,8 @@ package com.cognifide.apm.core.logger;
 
 import com.cognifide.apm.api.services.ExecutionResult.Entry;
 import com.cognifide.apm.api.status.Status;
-import java.util.Collections;
 import java.util.List;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 
 public class ProgressEntry implements Entry {
@@ -44,8 +44,8 @@ public class ProgressEntry implements Entry {
     this.status = status != null ? status : Status.SUCCESS;
     this.command = StringUtils.defaultString(command);
     this.position = position;
-    this.messages = messages != null ? Collections.unmodifiableList(messages) : Collections.emptyList();
-    this.parameters = parameters != null ? Collections.unmodifiableList(parameters) : Collections.emptyList();
+    this.messages = ListUtils.emptyIfNull(messages);
+    this.parameters = ListUtils.emptyIfNull(parameters);
     this.authorizable = StringUtils.defaultString(authorizable);
   }
 

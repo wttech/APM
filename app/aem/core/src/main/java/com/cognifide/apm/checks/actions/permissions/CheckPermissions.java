@@ -34,11 +34,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.api.security.principal.PrincipalIterator;
 import org.apache.jackrabbit.api.security.user.Authorizable;
@@ -172,6 +172,6 @@ public class CheckPermissions implements Action {
   }
 
   private List<String> preparePrivilegesToCheck() {
-    return permissions.stream().map(String::toLowerCase).collect(Collectors.toList());
+    return ListUtils.transformedList(permissions, String::toLowerCase);
   }
 }

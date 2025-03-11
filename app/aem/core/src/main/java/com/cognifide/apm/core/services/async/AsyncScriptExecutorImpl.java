@@ -27,7 +27,6 @@ import com.cognifide.apm.core.jobs.JobResultsCache;
 import com.cognifide.apm.core.jobs.JobResultsCache.ExecutionSummary;
 import com.cognifide.apm.core.jobs.ScriptRunnerJobConsumer;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +68,7 @@ public class AsyncScriptExecutorImpl implements AsyncScriptExecutor {
     properties.put(USER_ID, executor);
     properties.put(DEFINITIONS, customDefinitions);
     jobResultsCache.put(id, ExecutionSummary.running());
-    new Thread(() -> scriptRunnerJobConsumer.process(Collections.unmodifiableMap(properties))).start();
+    new Thread(() -> scriptRunnerJobConsumer.process(properties)).start();
     return id;
   }
 
