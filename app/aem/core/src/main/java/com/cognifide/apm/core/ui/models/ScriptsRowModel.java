@@ -50,7 +50,8 @@ import org.apache.sling.models.annotations.injectorspecific.Self;
 public final class ScriptsRowModel {
 
   private static final Set<String> FOLDER_TYPES = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
-      JcrConstants.NT_FOLDER, "sling:OrderedFolder", "sling:Folder")));
+      JcrConstants.NT_FOLDER, "sling:OrderedFolder", "sling:Folder"
+  )));
 
   public static final String SCRIPTS_ROW_RESOURCE_TYPE = "apm/components/scriptsRow";
 
