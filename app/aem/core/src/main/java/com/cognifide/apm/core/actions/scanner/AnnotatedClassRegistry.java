@@ -19,9 +19,9 @@
  */
 package com.cognifide.apm.core.actions.scanner;
 
-import com.google.common.collect.ImmutableList;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -96,7 +96,7 @@ public class AnnotatedClassRegistry {
       flattened.addAll(entry.getValue());
     }
 
-    return ImmutableList.copyOf(flattened);
+    return Collections.unmodifiableList(flattened);
   }
 
   private void registerClasses(Bundle bundle) {

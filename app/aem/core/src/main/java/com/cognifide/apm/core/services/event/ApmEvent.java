@@ -21,7 +21,8 @@ package com.cognifide.apm.core.services.event;
 
 import com.cognifide.apm.api.scripts.Script;
 import com.cognifide.apm.api.services.ExecutionMode;
-import com.google.common.collect.ImmutableMap;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import org.osgi.service.event.Event;
 
@@ -35,7 +36,7 @@ public abstract class ApmEvent {
 
   private final String topic;
 
-  private final Map<String, Object> properties;
+  protected final Map<String, Object> properties;
 
   private ApmEvent(String topic, Map<String, Object> properties) {
     this.topic = topic;
@@ -49,28 +50,26 @@ public abstract class ApmEvent {
   public static class ScriptLaunchedEvent extends ApmEvent {
 
     public ScriptLaunchedEvent(Script script, ExecutionMode mode) {
-      super(SCRIPT_LAUNCHED, ImmutableMap.of(
-          "script", script.getPath(),
-          "mode", mode.toString()
-      ));
+      super(SCRIPT_LAUNCHED, new HashMap<>());
+      properties.put("script", script.getPath());
+      properties.put("mode", mode.toString());
     }
   }
 
   public static class ScriptExecutedEvent extends ApmEvent {
 
     public ScriptExecutedEvent(Script script, ExecutionMode mode, boolean success) {
-      super(SCRIPT_EXECUTED, ImmutableMap.of(
-          "script", script.getPath(),
-          "mode", mode.toString(),
-          "success", success
-      ));
+      super(SCRIPT_EXECUTED, new HashMap<>());
+      properties.put("script", script.getPath());
+      properties.put("mode", mode.toString());
+      properties.put("success", success);
     }
   }
 
   public static class InstallHookExecuted extends ApmEvent {
 
     public InstallHookExecuted(String hookName) {
-      super(INSTALL_HOOK_EXECUTED, ImmutableMap.of(
+      super(INSTALL_HOOK_EXECUTED, Collections.singletonMap(
           "installHookName", hookName
       ));
     }

@@ -31,7 +31,7 @@ import com.cognifide.apm.core.grammar.datasource.DataSourceInvoker;
 import com.cognifide.apm.core.grammar.executioncontext.ExecutionContext;
 import com.cognifide.apm.core.grammar.executioncontext.VariableHolder;
 import com.cognifide.apm.core.grammar.parsedscript.ParsedScript;
-import com.google.common.collect.ImmutableList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -127,7 +127,7 @@ public class ImportScript {
     }
 
     public List<String> toMessages() {
-      List<String> resultMessagesPrefix = ImmutableList.of(String.format("Import from script %s. Notice, only DEFINE actions were processed!", path));
+      List<String> resultMessagesPrefix = Collections.singletonList(String.format("Import from script %s. Notice, only DEFINE actions were processed!", path));
       List<String> importedVariables = variableHolder.toMap()
           .entrySet()
           .stream()

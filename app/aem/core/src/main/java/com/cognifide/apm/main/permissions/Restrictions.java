@@ -20,9 +20,10 @@
 
 package com.cognifide.apm.main.permissions;
 
-import com.google.common.collect.ImmutableSet;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -45,10 +46,10 @@ public class Restrictions {
 
   private static final String REP_ITEM_NAMES_PROPERTY = "rep:itemNames";
 
-  private static final Set<String> MULTI_VALUE_REP_PROPERTIES = ImmutableSet.of(
+  private static final Set<String> MULTI_VALUE_REP_PROPERTIES = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
       REP_NT_NAMES_PROPERTY, REP_ITEM_NAMES_PROPERTY, REP_GLOBS_PROPERTY, "rep:prefixes", "rep:current",
       "rep:subtrees", "sling:resourceTypes", "sling:resourceTypesWithDescendants"
-  );
+  )));
 
   private final String glob;
 

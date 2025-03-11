@@ -22,9 +22,11 @@ package com.cognifide.apm.core.endpoints.utils;
 import com.cognifide.apm.core.endpoints.params.RequestParameter;
 import com.cognifide.apm.core.endpoints.response.ResponseEntity;
 import com.cognifide.apm.core.utils.ServletUtils;
-import com.google.common.collect.ImmutableMap;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
@@ -52,13 +54,13 @@ public final class RequestProcessor {
       ServletUtils.writeJson(httpResponse, response.getBody());
     } catch (MissingElementsException e) {
       httpResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-      ServletUtils.writeJson(httpResponse, ImmutableMap.of(
-          "message", "Bad request",
-          "errors", toErrors(e)
-      ));
+      Map<String, Object> params = new HashMap<>();
+      params.put("message", "Bad request");
+      params.put("errors", toErrors(e));
+      ServletUtils.writeJson(httpResponse, params);
     } catch (Exception e) {
       httpResponse.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-      ServletUtils.writeJson(httpResponse, ImmutableMap.of(
+      ServletUtils.writeJson(httpResponse, Collections.singletonMap(
           "message", StringUtils.defaultString(e.getMessage())
       ));
     }

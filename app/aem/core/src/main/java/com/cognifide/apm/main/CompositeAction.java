@@ -23,8 +23,9 @@ import com.cognifide.apm.api.actions.Action;
 import com.cognifide.apm.api.actions.ActionResult;
 import com.cognifide.apm.api.actions.Context;
 import com.cognifide.apm.api.exceptions.ActionExecutionException;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class CompositeAction implements Action {
@@ -32,17 +33,17 @@ public class CompositeAction implements Action {
   private final List<Action> actions;
 
   public CompositeAction(List<Action> actions) {
-    this.actions = ImmutableList.copyOf(actions);
+    this.actions = Collections.unmodifiableList(actions);
   }
 
   public CompositeAction(Action... actions) {
-    this.actions = ImmutableList.copyOf(actions);
+    this.actions = Arrays.asList(actions);
   }
 
   @Override
   public ActionResult simulate(Context context) throws ActionExecutionException {
     ActionResult result = context.createActionResult();
-    List<ActionResult> actionResults = Lists.newArrayListWithCapacity(actions.size());
+    List<ActionResult> actionResults = new ArrayList<>(actions.size());
     for (Action action : actions) {
       actionResults.add(action.simulate(context));
     }
@@ -52,7 +53,7 @@ public class CompositeAction implements Action {
   @Override
   public ActionResult execute(Context context) throws ActionExecutionException {
     ActionResult result = context.createActionResult();
-    List<ActionResult> actionResults = Lists.newArrayListWithCapacity(actions.size());
+    List<ActionResult> actionResults = new ArrayList<>(actions.size());
     for (Action action : actions) {
       actionResults.add(action.execute(context));
     }

@@ -37,12 +37,12 @@ import com.cognifide.apm.core.grammar.ApmType.ApmInteger;
 import com.cognifide.apm.core.grammar.ApmType.ApmList;
 import com.cognifide.apm.core.grammar.ApmType.ApmMap;
 import com.cognifide.apm.core.grammar.ApmType.ApmString;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -58,11 +58,11 @@ public class MapperDescriptorFactory {
     Object mapper = createInstance(mapperClass);
     String name = mapperAnnotation.value();
     String group = mapperAnnotation.group();
-    List<MappingDescriptor> mappingDescriptors = Lists.newArrayList();
+    List<MappingDescriptor> mappingDescriptors = new ArrayList<>();
     for (Method method : mapperClass.getDeclaredMethods()) {
       create(mapperAnnotation, method).ifPresent(mappingDescriptors::add);
     }
-    return new MapperDescriptor(mapper, name, group, ImmutableList.copyOf(mappingDescriptors));
+    return new MapperDescriptor(mapper, name, group, Collections.unmodifiableList(mappingDescriptors));
   }
 
   @SuppressWarnings("deprecation")
@@ -85,7 +85,7 @@ public class MapperDescriptorFactory {
       throw new InvalidActionMapperException("Mapping method must have return type " + Action.class.getName());
     }
 
-    List<ParameterDescriptor> parameterDescriptors = Lists.newArrayList();
+    List<ParameterDescriptor> parameterDescriptors = new ArrayList<>();
     Type[] types = method.getGenericParameterTypes();
     Annotation[][] annotations = method.getParameterAnnotations();
     int requiredIndex = 0;
@@ -111,7 +111,7 @@ public class MapperDescriptorFactory {
       parameterDescriptors.add(parameterDescriptor);
     }
 
-    return Optional.of(new MappingDescriptor(method, mapper, mapping, ImmutableList.copyOf(parameterDescriptors)));
+    return Optional.of(new MappingDescriptor(method, mapper, mapping, Collections.unmodifiableList(parameterDescriptors)));
   }
 
   private <T extends Annotation> T getAnnotation(Annotation[] annotations, Class<T> type) {

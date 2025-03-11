@@ -19,7 +19,6 @@
  */
 package com.cognifide.apm.main.permissions;
 
-import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -73,7 +72,7 @@ public enum PrivilegeGroup {
 
   PrivilegeGroup(String title, String... privileges) {
     this.title = title;
-    this.privileges = ImmutableList.copyOf(privileges);
+    this.privileges = Arrays.asList(privileges);
   }
 
   public static Optional<PrivilegeGroup> getFromTitle(String title) {

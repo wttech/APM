@@ -20,7 +20,8 @@
 
 package com.cognifide.apm.core.grammar.common
 
-import com.google.common.collect.Lists
+import java.util.stream.Collectors
+import java.util.stream.StreamSupport
 import spock.lang.Specification
 
 class StackWithRootTest extends Specification {
@@ -32,7 +33,7 @@ class StackWithRootTest extends Specification {
         stack.push("2")
         stack.push("3")
 
-        def newList = Lists.newArrayList(stack)
+        def newList = StreamSupport.stream(stack.spliterator(), false).collect(Collectors.toList())
 
         then:
         newList == ["3", "2", "1", "root"]

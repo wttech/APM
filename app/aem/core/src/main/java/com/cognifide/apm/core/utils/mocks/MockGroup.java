@@ -19,7 +19,6 @@
  */
 package com.cognifide.apm.core.utils.mocks;
 
-import com.google.common.collect.Iterators;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.Iterator;
@@ -54,12 +53,12 @@ public class MockGroup implements Group {
 
   @Override
   public Iterator<Group> declaredMemberOf() throws RepositoryException {
-    return Iterators.emptyIterator();
+    return Collections.emptyIterator();
   }
 
   @Override
   public Iterator<Group> memberOf() throws RepositoryException {
-    return Iterators.emptyIterator();
+    return Collections.emptyIterator();
   }
 
   @Override
@@ -68,12 +67,12 @@ public class MockGroup implements Group {
 
   @Override
   public Iterator<String> getPropertyNames() throws RepositoryException {
-    return Iterators.emptyIterator();
+    return Collections.emptyIterator();
   }
 
   @Override
   public Iterator<String> getPropertyNames(String relPath) throws RepositoryException {
-    return Iterators.emptyIterator();
+    return Collections.emptyIterator();
   }
 
   @Override
@@ -106,12 +105,12 @@ public class MockGroup implements Group {
 
   @Override
   public Iterator<Authorizable> getDeclaredMembers() throws RepositoryException {
-    return Iterators.emptyIterator();
+    return Collections.emptyIterator();
   }
 
   @Override
   public Iterator<Authorizable> getMembers() throws RepositoryException {
-    return Iterators.emptyIterator();
+    return Collections.emptyIterator();
   }
 
   @Override

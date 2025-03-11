@@ -27,7 +27,6 @@ import com.cognifide.apm.api.exceptions.AuthorizableNotFoundException;
 import com.cognifide.apm.checks.utils.ActionUtils;
 import com.cognifide.apm.checks.utils.MessagingUtils;
 import com.day.cq.security.util.CqActions;
-import com.google.common.collect.Lists;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,6 +34,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
@@ -172,6 +172,6 @@ public class CheckPermissions implements Action {
   }
 
   private List<String> preparePrivilegesToCheck() {
-    return Lists.transform(permissions, String::toLowerCase);
+    return permissions.stream().map(String::toLowerCase).collect(Collectors.toList());
   }
 }
