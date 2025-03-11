@@ -36,19 +36,11 @@ public abstract class ApmEvent {
 
   private final String topic;
 
-  private final Map<String, Object> properties;
+  protected final Map<String, Object> properties;
 
   private ApmEvent(String topic, Map<String, Object> properties) {
     this.topic = topic;
     this.properties = properties;
-  }
-
-  private ApmEvent(String topic) {
-    this(topic, new HashMap<>());
-  }
-
-  protected void putProperty(String key, Object value) {
-    properties.put(key, value);
   }
 
   public Event toOsgiEvent() {
@@ -58,19 +50,19 @@ public abstract class ApmEvent {
   public static class ScriptLaunchedEvent extends ApmEvent {
 
     public ScriptLaunchedEvent(Script script, ExecutionMode mode) {
-      super(SCRIPT_LAUNCHED);
-      putProperty("script", script.getPath());
-      putProperty("mode", mode.toString());
+      super(SCRIPT_LAUNCHED, new HashMap<>());
+      properties.put("script", script.getPath());
+      properties.put("mode", mode.toString());
     }
   }
 
   public static class ScriptExecutedEvent extends ApmEvent {
 
     public ScriptExecutedEvent(Script script, ExecutionMode mode, boolean success) {
-      super(SCRIPT_EXECUTED);
-      putProperty("script", script.getPath());
-      putProperty("mode", mode.toString());
-      putProperty("success", success);
+      super(SCRIPT_EXECUTED, new HashMap<>());
+      properties.put("script", script.getPath());
+      properties.put("mode", mode.toString());
+      properties.put("success", success);
     }
   }
 

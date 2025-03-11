@@ -25,15 +25,15 @@ import com.cognifide.apm.api.actions.Context;
 import com.cognifide.apm.api.exceptions.ActionExecutionException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import org.apache.commons.collections4.ListUtils;
 
 public class CompositeAction implements Action {
 
   private final List<Action> actions;
 
   public CompositeAction(List<Action> actions) {
-    this.actions = ListUtils.unmodifiableList(actions);
+    this.actions = Collections.unmodifiableList(actions);
   }
 
   public CompositeAction(Action... actions) {

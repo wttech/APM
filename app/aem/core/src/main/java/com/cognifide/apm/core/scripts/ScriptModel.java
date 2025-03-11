@@ -32,11 +32,11 @@ import com.day.cq.commons.jcr.JcrConstants;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -159,7 +159,7 @@ public class ScriptModel implements MutableScript {
 
   @Override
   public Set<String> getLaunchRunModes() {
-    return launchRunModes == null ? null : Arrays.stream(launchRunModes).collect(Collectors.toSet());
+    return launchRunModes == null ? null : new HashSet<>(Arrays.asList(launchRunModes));
   }
 
   @Override

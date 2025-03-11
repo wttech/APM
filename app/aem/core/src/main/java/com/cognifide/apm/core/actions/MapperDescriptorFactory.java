@@ -42,10 +42,10 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.apache.commons.collections4.ListUtils;
 
 public class MapperDescriptorFactory {
 
@@ -62,7 +62,7 @@ public class MapperDescriptorFactory {
     for (Method method : mapperClass.getDeclaredMethods()) {
       create(mapperAnnotation, method).ifPresent(mappingDescriptors::add);
     }
-    return new MapperDescriptor(mapper, name, group, ListUtils.unmodifiableList(mappingDescriptors));
+    return new MapperDescriptor(mapper, name, group, Collections.unmodifiableList(mappingDescriptors));
   }
 
   @SuppressWarnings("deprecation")
@@ -111,7 +111,7 @@ public class MapperDescriptorFactory {
       parameterDescriptors.add(parameterDescriptor);
     }
 
-    return Optional.of(new MappingDescriptor(method, mapper, mapping, ListUtils.unmodifiableList(parameterDescriptors)));
+    return Optional.of(new MappingDescriptor(method, mapper, mapping, Collections.unmodifiableList(parameterDescriptors)));
   }
 
   private <T extends Annotation> T getAnnotation(Annotation[] annotations, Class<T> type) {

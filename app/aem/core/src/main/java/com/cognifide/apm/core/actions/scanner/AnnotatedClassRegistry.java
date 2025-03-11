@@ -21,12 +21,12 @@ package com.cognifide.apm.core.actions.scanner;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import org.apache.commons.collections4.ListUtils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
@@ -96,7 +96,7 @@ public class AnnotatedClassRegistry {
       flattened.addAll(entry.getValue());
     }
 
-    return ListUtils.unmodifiableList(flattened);
+    return Collections.unmodifiableList(flattened);
   }
 
   private void registerClasses(Bundle bundle) {

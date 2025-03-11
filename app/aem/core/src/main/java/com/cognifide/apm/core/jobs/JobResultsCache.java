@@ -36,7 +36,7 @@ import org.osgi.service.component.annotations.Component;
 )
 public class JobResultsCache {
 
-  private static final long TTL = 10 * 60 * 1000;
+  private static final long DEFAULT_TTL = 10 * 60 * 1000;
 
   private Map<String, ExecutionSummary> cache;
 
@@ -58,7 +58,7 @@ public class JobResultsCache {
   private void invalidate() {
     long now = System.currentTimeMillis();
     cache.forEach((key, value) -> {
-      if (value.time + TTL < now) {
+      if (value.timestamp + DEFAULT_TTL < now) {
         cache.remove(key);
       }
     });
@@ -69,13 +69,13 @@ public class JobResultsCache {
     private final boolean finished;
     private final ExecutionResult result;
     private final String path;
-    private final long time;
+    private final long timestamp;
 
     private ExecutionSummary(boolean finished, ExecutionResult result, String path) {
       this.finished = finished;
       this.result = result;
       this.path = path;
-      this.time = System.currentTimeMillis();
+      this.timestamp = System.currentTimeMillis();
     }
 
     public static ExecutionSummary running() {

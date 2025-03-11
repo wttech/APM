@@ -28,6 +28,7 @@ import com.cognifide.apm.core.utils.CalendarUtils;
 import com.cognifide.apm.core.utils.LabelUtils;
 import com.day.cq.commons.jcr.JcrConstants;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashSet;
@@ -48,14 +49,8 @@ import org.apache.sling.models.annotations.injectorspecific.Self;
 @Model(adaptables = Resource.class, defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
 public final class ScriptsRowModel {
 
-  private static final Set<String> FOLDER_TYPES;
-  static {
-    Set<String> tempSet = new HashSet<>();
-    tempSet.add(JcrConstants.NT_FOLDER);
-    tempSet.add("sling:OrderedFolder");
-    tempSet.add("sling:Folder");
-    FOLDER_TYPES = Collections.unmodifiableSet(tempSet);
-  }
+  private static final Set<String> FOLDER_TYPES = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
+      JcrConstants.NT_FOLDER, "sling:OrderedFolder", "sling:Folder")));
 
   public static final String SCRIPTS_ROW_RESOURCE_TYPE = "apm/components/scriptsRow";
 
